@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "884475709828",
+    "firebase_url": "https://spotted-2d3e5.firebaseio.com",
+    "project_id": "spotted-2d3e5",
+    "storage_bucket": "spotted-2d3e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884475709828:android:9b100c160c96c128",
+        "android_client_info": {
+          "package_name": "app.spotted"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "884475709828-o0ev33gsfrldh8v3moeiu665rs06rt8n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBStJCgETlKa1xMC7lzCv-VE1BCKb18RBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "884475709828-o0ev33gsfrldh8v3moeiu665rs06rt8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884475709828:android:7a05201b655de335c435d1",
+        "android_client_info": {
+          "package_name": "com.triade.spotted"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "884475709828-o0ev33gsfrldh8v3moeiu665rs06rt8n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBStJCgETlKa1xMC7lzCv-VE1BCKb18RBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "884475709828-o0ev33gsfrldh8v3moeiu665rs06rt8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
