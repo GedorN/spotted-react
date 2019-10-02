@@ -50,6 +50,32 @@ function HeimdallrLib() {
       return returnValue;
     })
   }
+
+  this.uploadImage = function (image) {
+    console.log('in upload: ', image);
+    const rand = 'img' + new Date().getTime().toString();
+    let uploadedUrl = null;
+
+    return new Promise((resolve) => {
+      console.log('herasdasde!');
+      firebase.storage().ref(rand).putFile(image)
+        .on('state_changed', (snapshot) => {
+          let total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('progress: ' +  total + '%');
+          if (total === 100 || snapshot.state === 'success') {
+            console.log('Upload complete: ', snapshot.downloadURL);
+            uploadedUrl = snapshot.downloadURL;
+            resolve();
+          }
+        }), (err) => {
+        console.log('Error: ', err);
+      }, (uploadedAsset) => {
+        console.log('UPLOAD ASSETS: ', uploadedAsset);
+      }
+    }).then(function (resolve) {
+        return uploadedUrl;
+    })
+  }
 }
 
 const heimdallr = new HeimdallrLib();
