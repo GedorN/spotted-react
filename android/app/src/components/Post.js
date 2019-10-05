@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Platform, Image, Text, View, ScrollView, Dimensions, FlatList, TouchableOpacity, TextInput} from 'react-native';
 
+import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 const width = Dimensions.get('screen').width;
 import firebase from 'react-native-firebase';
 
