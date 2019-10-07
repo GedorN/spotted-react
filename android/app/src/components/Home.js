@@ -177,39 +177,43 @@ export default class Home extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={{}}>
         <Button
           title="Get collections..."
           color="red"
           onPress={() => this.collection()}
         />
-        <View style={{flex: 1, flexDirection: 'column',  marginTop: 20, padding: 5}}>
-          <View style={{flexDirection: 'row'}}>
-            <UserImgProfile circular/>
+        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
+            <UserImgProfile circular />
             <TextInput
-              style={{height: 80, borderColor: 'gray', borderWidth: 1, marginLeft: 10}}
-              onChangeText={text => this.setState({postText: text})}
-              placeholder="O que você está pensando?"
-              ref={input => (this.postTextInput = input)}
+                style={{height: 80, width: 260,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
+                onChangeText={text => this.setState({postText: text})}
+                autoCapitalize="sentences"
+                multiline
+                textAlignVertical="top"
+                placeholder="O que você está pensando?"
+                ref={input => (this.postTextInput = input)}
             />
-            </View>
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <TouchableOpacity onPress={this.doPost.bind(this)}>
-                <Image
-                  style={{width: 30, height: 30}}
-                  source={require('../../../../assets/images/send.png')}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{marginLeft: 60, marginRight: 20}}
-                onPress={this.sendImagePropt.bind(this)}>
-                <Image
-                  style={{width: 30, height: 30}}
-                  source={require('../../../../assets/images/camera-icon.png')}
-                />
-              </TouchableOpacity>
-          </View>
         </View>
+        <View style={{flexDirection: 'row-reverse', marginTop: 2}}>
+            <TouchableOpacity onPress={this.doPost.bind(this)}
+                style={{marginRight: 25}}
+            >
+                <Image
+                    style={{width: 30, height: 30}}
+                    source={require('../../../../assets/images/send.png')}
+                />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.sendImagePropt.bind(this)}
+                style={{marginRight: 20}}
+            >
+                <Image
+                    style={{width: 30, height: 30}}
+                    source={require('../../../../assets/images/camera-icon.png')}
+                />
+            </TouchableOpacity>
+        </View>
+
         <FlatList
           data={this.state.postImages}
           keyExtractor={item => item.toString()}
