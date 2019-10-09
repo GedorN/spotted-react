@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-  Button,
-  Dimensions,
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  Image,
-  TouchableOpacity,
-  PermissionsAndroid,
-  FlatList,
+    Button,
+    Dimensions,
+    StyleSheet,
+    View,
+    Text,
+    TextInput,
+    Image,
+    TouchableOpacity,
+    PermissionsAndroid,
+    FlatList,
 } from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -17,14 +17,17 @@ import ImagePicker from 'react-native-image-picker';
 
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
+import Modal from "react-native-modal";
+// import Modal from '../../../../components/General/Modal';
 const width = Dimensions.get('screen').width;
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      postText: '',
-      postImages: [],
+        postText: '',
+        postImages: [],
+        showModal: false,
     };
   }
 
@@ -36,13 +39,21 @@ export default class Home extends React.Component {
   // await firebase.analytics().logEvent('foo', { bar: '123'});
   // }
 
-  collection() {
-    console.log('hey');
-    heimdallr.getCollection();
-  }
+    toggleModal () {
+        this.setState({showModal: !this.state.showModal});
+        console.log('opened');
+    }
+
+    disableModal () {
+        this.setState({showModal: false});
+    }
 
   doPost() {
     console.log('aqui');
+    if (this.state.postText == '' && this.state.postImages.length == 0 ) {
+        console.log('nothing to do...');
+        return ;
+    }
     // console.log(this.state.postText);
     /* if have unless one photo in post */
     let posImagesLenght = this.state.postImages.length;
@@ -131,18 +142,11 @@ export default class Home extends React.Component {
           } else if (response.customButton) {
             console.log('User tapped custom button: ', response.customButton);
           } else {
-            console.log('caiu aqui');
-            // this.state.postImages.push(response.path);
-            // const source = { uri: response.uri };
-
-            // You can also display the image using data:
-            // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-            // this.state.postImages.push('file://' + response.path);
+            console.log('Imagem escolhida');
             let images = this.state.postImages;
             images.push('file://' + response.path);
             this.setState({postImages: images});
-            console.log('daqui não: ', this.state.postImages);
+            console.log('Imagem: ', this.state.postImages);
           }
         });
       } else {
@@ -153,86 +157,88 @@ export default class Home extends React.Component {
     }
   }
 
-  getImages() {
-    // console.log('data: ', this.state.postImages);
-    // console.log('só não tá indo mesmo');
-    // return (
-    //   this.state.postImages.forEach((img) => {
-    //     console.log('img: ', img);
-    //     <Image source={{uri: (img)}} style={{width: 100, height: 100}} />
-    //   })
-    // )
-    return (
-      <View>
-        <Image
-          source={{
-            uri:
-              'file:///storage/emulated/0/Screenshots/Screenshot_20190919-174930.jpg',
-          }}
-          style={{width: 40, height: 40}}
-        />
-      </View>
-    );
-  }
 
   render() {
     return (
       <View style={{}}>
-        <Button
-          title="Get collections..."
-          color="red"
-          onPress={() => this.collection()}
-        />
-        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
-            <UserImgProfile circular />
-            <TextInput
-                style={{height: 80, width: 260,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
-                onChangeText={text => this.setState({postText: text})}
-                autoCapitalize="sentences"
-                multiline
-                textAlignVertical="top"
-                placeholder="O que você está pensando?"
-                ref={input => (this.postTextInput = input)}
-            />
-        </View>
-        <View style={{flexDirection: 'row-reverse', marginTop: 2}}>
-            <TouchableOpacity onPress={this.doPost.bind(this)}
+          {/*<View>*/}
+          {/*    <Modal/>*/}
+          {/*</View>*/}
+          <Modal isVisible={this.state.showModal}
+                 onBackButtonPress={this.disableModal.bind(this)}
+                 onBackdropPress={this.disableModal.bind(this)}
+          >
+              <View style={{backgroundColor: 'white', height: 500, flexDirection: 'column', justifyContent: 'space-between', padding: 3 }}>
+                  <Text>I am the modal content!</Text>
+                  <View>
+                      <View style={{ flexDirection: 'row'}}>
+                          <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
+                              {/*<Text>I am the modal content!</Text>*/}
+                          </View>
+                          <View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
+                              {/*<Text>I am the modal content!</Text>*/}
+                          </View>
+                      </View>
+                      <View style={{ flexDirection: 'row'}}>
+                          {/*<Text>I am the modal content!</Text>*/}
+                          <View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
+                              {/*<Text>I am the modal content!</Text>*/}
+                          </View>
+                          <View style={{width: 160, height: 100, backgroundColor: 'blue'}}>
+                              {/*<Text>I am the modal content!</Text>*/}
+                          </View>
+                      </View>
+                  </View>
+              </View>
+          </Modal>
+          <Button
+              title="Get collections..."
+              color="red"
+              onPress={() => this.toggleModal()}
+          />
+          <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
+              <UserImgProfile circular />
+              <TextInput
+                  style={{height: 80, width: 260,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
+                  onChangeText={text => this.setState({postText: text})}
+                  autoCapitalize="sentences"
+                  multiline
+                  textAlignVertical="top"
+                  placeholder="O que você está pensando?"
+                  ref={input => (this.postTextInput = input)}
+              />
+          </View>
+          <View style={{flexDirection: 'row-reverse', marginTop: 2}}>
+              <TouchableOpacity onPress={this.doPost.bind(this)}
                 style={{marginRight: 25}}
-            >
-                <Image
-                    style={{width: 30, height: 30}}
-                    source={require('../../../../assets/images/send.png')}
-                />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.sendImagePropt.bind(this)}
-                style={{marginRight: 20}}
-            >
-                <Image
-                    style={{width: 30, height: 30}}
-                    source={require('../../../../assets/images/camera-icon.png')}
-                />
-            </TouchableOpacity>
-        </View>
+              >
+                  <Image
+                      style={{width: 30, height: 30}}
+                      source={require('../../../../assets/images/send.png')}
+                  />
+              </TouchableOpacity>
+              <TouchableOpacity
+                  onPress={this.sendImagePropt.bind(this)}
+                  style={{marginRight: 20}}
+              >
+                  <Image
+                      style={{width: 30, height: 30}}
+                      source={require('../../../../assets/images/camera-icon.png')}
+                  />
+              </TouchableOpacity>
+          </View>
 
-        <FlatList
-          data={this.state.postImages}
-          keyExtractor={item => item.toString()}
-          extraData={this.state}
-          renderItem={({item}) => (
-            <Image
-              source={{uri: 'file://' + item}}
-              style={{width: 100, height: 100}}
-            />
-          )}
-        />
-        {/*{this.getImages.bind(this)}*/}
-        {/*<Image*/}
-        {/*  source={{*/}
-        {/*    uri:*/}
-        {/*      'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/img1568170440313?alt=media&token=af1f89dd-3553-400d-883a-7caaf23970ac',*/}
-        {/*  }}*/}
-        {/*  style={{width: 40, height: 40}}*/}
-        {/*/>*/}
+          <FlatList
+              data={this.state.postImages}
+              keyExtractor={item => item.toString()}
+              extraData={this.state}
+              renderItem={({item}) => (
+                  <Image
+                      source={{uri: 'file://' + item}}
+                      style={{width: 100, height: 100}}
+                  />
+                  )}
+          />
       </View>
     );
   }
