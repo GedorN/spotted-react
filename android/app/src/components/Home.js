@@ -31,7 +31,7 @@ export default class Home extends React.Component {
     };
   }
 
-  // async componentDidMount() {
+    // async componentDidMount() {
   // TODO: You: Do firebase things
   // const { user } = await firebase.auth().signInAnonymously();
   // console.warn('User -> ', user.toJSON());
@@ -95,6 +95,8 @@ export default class Home extends React.Component {
       result.then(function(resolve) {
         console.log('result: ', resolve);
         self.postTextInput.clear();
+        self.setState({postImages: []});
+        self.setState({showModal: false});
       });
     } else {
       console.log(sendedImages, ' has already sended...');
@@ -147,6 +149,7 @@ export default class Home extends React.Component {
             images.push('file://' + response.path);
             this.setState({postImages: images});
             console.log('Imagem: ', this.state.postImages);
+            this.setState({showModal: true});
           }
         });
       } else {
@@ -156,6 +159,106 @@ export default class Home extends React.Component {
       console.warn(err);
     }
   }
+
+
+  getModalImagesLayout() {
+      if (this.state.postImages.length === 1) {
+          return (
+              <View>
+                  <View style={{ flexDirection: 'row'}}>
+                      <View style={{width: 317, height: 350}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[0]}}
+                              style={{width: 317, height: 350}}
+                          />
+                      </View>
+                  </View>
+              </View>
+          )
+      } else if (this.state.postImages.length === 2) {
+          return (
+              <View>
+                  <View style={{ flexDirection: 'row', marginBottom: 5}}>
+                      <View style={{width: 160, height: 250, backgroundColor: 'yellow'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[0]}}
+                              style={{width: 160, height: 250}}
+                          />
+                      </View>
+                      <View style={{width: 160, height: 250, backgroundColor: 'purple'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[1]}}
+                              style={{width: 160, height: 250}}
+                          />
+                      </View>
+                  </View>
+              </View>
+          )
+      } else if (this.state.postImages.length === 3) {
+          return (
+              <View>
+                  <View style={{ flexDirection: 'row'}}>
+                      <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[1]}}
+                              style={{width: 160, height: 100}}
+                          />
+                      </View>
+                      <View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[1]}}
+                              style={{width: 160, height: 100}}
+                          />
+                      </View>
+                  </View>
+                  <View style={{ flexDirection: 'row',  marginBottom: 5}}>
+                      <View style={{width: 320, height: 100, backgroundColor: 'pink'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[2]}}
+                              style={{width: 320, height: 100}}
+                          />
+                      </View>
+                  </View>
+              </View>
+          )
+      } else if (this.state.postImages.length === 4) {
+          return (
+              <View>
+                  <View style={{ flexDirection: 'row'}}>
+                      <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[1]}}
+                              style={{width: 160, height: 100}}
+                          />
+                      </View>
+                      <View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[1]}}
+                              style={{width: 160, height: 100}}
+                          />
+                      </View>
+                  </View>
+                  <View style={{ flexDirection: 'row',  marginBottom: 5}}>
+                      <View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[2]}}
+                              style={{width: 160, height: 100}}
+                          />
+                      </View>
+                      <View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
+                          <Image
+                              source={{uri: 'file://' + this.state.postImages[3]}}
+                              style={{width: 160, height: 100}}
+                          />
+                      </View>
+                  </View>
+              </View>
+          )
+      } else {
+        return ;
+      }
+  }
+
 
 
   render() {
@@ -169,33 +272,42 @@ export default class Home extends React.Component {
                  onBackdropPress={this.disableModal.bind(this)}
           >
               <View style={{backgroundColor: 'white', height: 500, flexDirection: 'column', justifyContent: 'space-between', padding: 3 }}>
-                  <Text>I am the modal content!</Text>
                   <View>
-                      <View style={{ flexDirection: 'row'}}>
-                          <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
-                              {/*<Text>I am the modal content!</Text>*/}
-                          </View>
-                          <View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
-                              {/*<Text>I am the modal content!</Text>*/}
-                          </View>
+                      <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
+                          <UserImgProfile circular height={50} width={50}/>
+                          <TextInput
+                              style={{height: 75, width: 240,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
+                              onChangeText={text => this.setState({postText: text})}
+                              autoCapitalize="sentences"
+                              multiline
+                              textAlignVertical="top"
+                              placeholder="O que você está pensando?"
+                              ref={input => (this.postTextInput = input)}
+                          />
                       </View>
-                      <View style={{ flexDirection: 'row'}}>
-                          {/*<Text>I am the modal content!</Text>*/}
-                          <View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
-                              {/*<Text>I am the modal content!</Text>*/}
-                          </View>
-                          <View style={{width: 160, height: 100, backgroundColor: 'blue'}}>
-                              {/*<Text>I am the modal content!</Text>*/}
-                          </View>
+                      <View style={{flexDirection: 'row-reverse', marginTop: 2}}>
+                          <TouchableOpacity onPress={this.doPost.bind(this)}
+                                            style={{marginRight: 20}}
+                          >
+                              <Image
+                                  style={{width: 30, height: 30}}
+                                  source={require('../../../../assets/images/send.png')}
+                              />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                              onPress={this.sendImagePropt.bind(this)}
+                              style={{marginRight: 20}}
+                          >
+                              <Image
+                                  style={{width: 30, height: 30}}
+                                  source={require('../../../../assets/images/camera-icon.png')}
+                              />
+                          </TouchableOpacity>
                       </View>
                   </View>
+                  {this.getModalImagesLayout()}
               </View>
           </Modal>
-          <Button
-              title="Get collections..."
-              color="red"
-              onPress={() => this.toggleModal()}
-          />
           <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
               <UserImgProfile circular />
               <TextInput
@@ -228,7 +340,7 @@ export default class Home extends React.Component {
               </TouchableOpacity>
           </View>
 
-          <FlatList
+          {/*<FlatList
               data={this.state.postImages}
               keyExtractor={item => item.toString()}
               extraData={this.state}
@@ -238,7 +350,7 @@ export default class Home extends React.Component {
                       style={{width: 100, height: 100}}
                   />
                   )}
-          />
+          />*/}
       </View>
     );
   }
