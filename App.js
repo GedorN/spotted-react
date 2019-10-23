@@ -3,7 +3,9 @@ import {
   Dimensions,
   StyleSheet,
   View,
-  Text
+  Text,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 
 import Home from './android/app/src/components/Home';
@@ -22,7 +24,10 @@ export default class App extends React.Component {
     return (
       <View>
         <View style={styles.header}>
-          <Text style={{color: 'white', fontSize: 24}}>
+          <TouchableOpacity>
+              <Image source={require('./assets/images/bars-solid.png')} style={{width: 30, height: 30, tintColor: 'white'}}/>
+          </TouchableOpacity>
+          <Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>
             Spotted
           </Text>
         </View>
@@ -41,7 +46,10 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: 'red',
     color: 'white',
-    justifyContent: 'center',
-    alignItems: 'center'
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    flexDirection: 'row',
+    padding: 5,
+    paddingHorizontal: 10
   }
 });

@@ -309,6 +309,7 @@ export default class Home extends React.Component {
           <Modal isVisible={this.state.showModal}
                  onBackButtonPress={this.disableModal.bind(this)}
                  onBackdropPress={this.disableModal.bind(this)}
+                 hideModalContentWhileAnimating={true}
           >
               <View style={{backgroundColor: 'white', height: 500, flexDirection: 'column', justifyContent: 'space-between', padding: 3 }}>
                   <View>

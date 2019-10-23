@@ -58,7 +58,7 @@ function HeimdallrLib() {
 
     return new Promise((resolve) => {
       console.log('herasdasde!');
-      firebase.storage().ref(rand).putFile(image)
+      firebase.storage().ref(`${this.user_id}/${rand}`).putFile(image)
         .on('state_changed', (snapshot) => {
           let total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log('progress: ' +  total + '%');
