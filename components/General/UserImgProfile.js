@@ -13,17 +13,39 @@ export default class UserImgProfile extends React.Component {
     console.log('props: ', this.props);
   }
 
+  getImageStructure() {
+    console.log('props: ', this.props);
+    if (this.props.uri) {
+      console.log('caiu no if');
+      return (
+        <Image
+          source={{uri: this.props.uri}}
+          style={{width: this.props.width ? this.props.width : 60,
+            height: this.props.height ? this.props.height : 60,
+            borderRadius: this.props.circular ? 100 : 0,
+            borderWidth: this.props.borderWidth ? this.props.borderWidth : 0,
+            borderColor: this.props.borderColor ? this.props.borderColor : null}}
+        />
+      );
+    } else {
+      console.log('caiu no else');
+      return (
+        <Image
+          source={require('../../assets/images/mask-solid.png')}
+          style={{width: this.props.width ? this.props.width : 60,
+            height: this.props.height ? this.props.height : 60,
+            borderRadius: this.props.circular ? 100 : 0,
+            borderWidth: this.props.borderWidth ? this.props.borderWidth : 0,
+            borderColor: this.props.borderColor ? this.props.borderColor : null}}
+        />
+      );
+    }
+  }
+
   render() {
     return (
       <View>
-        <Image
-          source={{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4'}}
-          style={{width: this.props.width ? this.props.width : 60,
-                  height: this.props.height ? this.props.height : 60,
-                  borderRadius: this.props.circular ? 100 : 0,
-                  borderWidth: this.props.borderWidth ? this.props.borderWidth : 0,
-                  borderColor: this.props.borderColor ? this.props.borderColor : null}}
-        />
+        {this.getImageStructure()}
       </View>
     );
   }

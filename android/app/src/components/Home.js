@@ -218,7 +218,6 @@ export default class Home extends React.Component {
                   <View style={{ flexDirection: 'row'}}>
                       <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
                           <Image
-                              source={{uri: 'file://' + this.state.postImages[1]}}
                               style={{width: 160, height: 100}}
                           />
                           <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
@@ -314,7 +313,7 @@ export default class Home extends React.Component {
               <View style={{backgroundColor: 'white', height: 500, flexDirection: 'column', justifyContent: 'space-between', padding: 3 }}>
                   <View>
                       <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
-                          <UserImgProfile circular height={50} width={50}/>
+                          <UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>
                           <TextInput
                               style={{height: 75, width: 240,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
                               onChangeText={text => this.setState({postText: text})}
@@ -349,7 +348,7 @@ export default class Home extends React.Component {
               </View>
           </Modal>
           <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
-              <UserImgProfile circular />
+              <UserImgProfile circular uri={heimdallr.user_image}/>
               <TextInput
                   style={{height: 80, width: 260,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
                   onChangeText={text => this.setState({postText: text})}
