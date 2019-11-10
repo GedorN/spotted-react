@@ -31,6 +31,16 @@ const collections = {
         ],
         post: [
             {
+                desc: 'user_name',
+                type: 'string',
+                require: true,
+            },
+            {
+                desc: 'user_image',
+                type: 'string',
+                require: true,
+            },
+            {
                 desc: 'id_user',
                 type: 'string',
                 require: true,

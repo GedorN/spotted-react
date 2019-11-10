@@ -51,10 +51,17 @@ export default class Home extends React.Component {
     deletePostImg (pos) {
       console.log('reacheaded...');
       console.log('pos: ', pos);
-      let images = this.state.postImages;
-      console.log('in images', images);
-      images = images.slice(pos, 1);
-      this.setState({postImages: images});
+      // eu sei que esse loop tá feio, porém array.splice não funciona no react
+      let images = [];
+      images = this.state.postImages;
+        let newImg = [];
+        for (let i = 0; i < images.length; i++) {
+            if (i != pos) {
+                newImg.push(images[i]);
+            }
+        }
+      console.log('images after: ', newImg);
+      this.setState({postImages: newImg});
     }
 
   doPost() {
@@ -100,6 +107,8 @@ export default class Home extends React.Component {
       params.text = this.state.postText;
       params.id_user = heimdallr.user_id;
       params.images = this.state.postImages;
+      params.user_name = heimdallr.user_name;
+      params.user_image = heimdallr.user_image;
       let result = heimdallr.saveCollection('post', params);
       result.then(function(resolve) {
         console.log('result: ', resolve);
@@ -144,7 +153,6 @@ export default class Home extends React.Component {
          * The second arg is the callback which sends object: response (more info in the API Reference)
          */
         ImagePicker.showImagePicker(options, response => {
-          console.log('Response = ', response);
 
           if (response.didCancel) {
             console.log('User cancelled image picker');
@@ -180,7 +188,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[0]}}
                               style={{width: 317, height: 350}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
                             <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -196,7 +204,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[0]}}
                               style={{width: 160, height: 250}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -205,7 +213,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[1]}}
                               style={{width: 160, height: 250}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -218,9 +226,10 @@ export default class Home extends React.Component {
                   <View style={{ flexDirection: 'row'}}>
                       <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
                           <Image
+                              source={{uri: 'file://' + this.state.postImages[0]}}
                               style={{width: 160, height: 100}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -229,7 +238,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[1]}}
                               style={{width: 160, height: 100}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -240,7 +249,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[2]}}
                               style={{width: 320, height: 100}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -256,7 +265,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[1]}}
                               style={{width: 160, height: 100}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -265,7 +274,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[1]}}
                               style={{width: 160, height: 100}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -276,7 +285,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[2]}}
                               style={{width: 160, height: 100}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>
@@ -285,7 +294,7 @@ export default class Home extends React.Component {
                               source={{uri: 'file://' + this.state.postImages[3]}}
                               style={{width: 160, height: 100}}
                           />
-                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this)}>
+                          <TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 3)}>
                               <Image source={require('../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
                           </TouchableOpacity>
                       </View>

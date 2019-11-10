@@ -10,6 +10,7 @@ import {
 
 import Home from './android/app/src/components/Home';
 import MenuDrawer from "react-native-side-drawer";
+import heimdallr from "./components/Heimdallr/Heimdallr";
 const width = Dimensions.get('screen').width;
 
 export default class App extends React.Component {
@@ -20,6 +21,10 @@ export default class App extends React.Component {
       postImages: [],
       open: false,
     };
+  }
+
+  componentDidMount = () => {
+    heimdallr.getCollection();
   }
 
   toggleOpen = () => {
