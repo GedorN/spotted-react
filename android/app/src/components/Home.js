@@ -14,7 +14,7 @@ import {
 
 import CameraRoll from '@react-native-community/cameraroll';
 import ImagePicker from 'react-native-image-picker';
-
+import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
 import Modal from "react-native-modal";
@@ -28,8 +28,18 @@ export default class Home extends React.Component {
         postText: '',
         postImages: [],
         showModal: false,
+        posts: null,
     };
   }
+
+    componentDidMount = () => {
+        console.log('vou chamar');
+        let result = heimdallr.getCollection();
+        result.then( (resolve) => {
+            this.setState({ posts: resolve });
+            console.log('result: ', this.state.posts);
+        });
+    }
 
     // async componentDidMount() {
   // TODO: You: Do firebase things
@@ -308,6 +318,7 @@ export default class Home extends React.Component {
 
 
 
+
   render() {
     return (
       <View style={{}}>
@@ -387,7 +398,14 @@ export default class Home extends React.Component {
                   />
               </TouchableOpacity>
           </View>
-
+          <FlatList
+              style={{ marginTop: 30 }}
+              data = {this.state.posts}
+              renderItem={ ({item}) =>
+                  <PostViewer text={item._data.text}/>
+              }
+              keyExtractor={item => item._ref.id}
+          />
           {/*<FlatList
               data={this.state.postImages}
               keyExtractor={item => item.toString()}

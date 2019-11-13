@@ -23,10 +23,6 @@ export default class App extends React.Component {
     };
   }
 
-  componentDidMount = () => {
-    heimdallr.getCollection();
-  }
-
   toggleOpen = () => {
     this.setState({ open: !this.state.open });
   };

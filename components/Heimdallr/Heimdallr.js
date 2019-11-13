@@ -13,21 +13,25 @@ function HeimdallrLib() {
     //     console.log(e._data);
     //   });
     // }
-    console.log('indo pegar...');
-    const post = firebase.firestore()
-      .collection('post')
-      .get();
-      // .onSnapshot((querySnapshot) => {
-      //   console.log('here');
-      //   console.log('Total users', querySnapshot.size);
-      // });
-        post.then(function (resovle) {
-          console.log('chegou');
-          resovle.docs.forEach(e => {
-            console.log(e);
-          })
-          }
-        )
+      let docs = null;
+      return new Promise((resolve) => {
+        console.log('indo pegar...');
+        const post = firebase.firestore()
+          .collection('post')
+          .get().then((result) => {
+              console.log('chegou');
+              docs = result.docs;
+              result.docs.forEach(e => {
+                  console.log(e);
+              });
+              resolve();
+          }).catch ((e) => {
+              console.log('que caca: ', e);
+          });
+
+      }).then(function (resolve) {
+          return docs;
+      })
   }
 
   this.saveCollection = function (collection, params) {
