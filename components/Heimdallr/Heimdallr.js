@@ -6,7 +6,7 @@ function HeimdallrLib() {
   this.user_name = 'Admin';
 
 
-  this.getCollection = function () {
+  this.getCollection = function (limit) {
     // const post = firebase.firestore().collection('post');
     // post.onSnapshot(sp => {
     //   sp.forEach((e) => {
@@ -15,19 +15,36 @@ function HeimdallrLib() {
     // }
       let docs = null;
       return new Promise((resolve) => {
-        console.log('indo pegar...');
-        const post = firebase.firestore()
-          .collection('post')
-          .get().then((result) => {
-              console.log('chegou');
-              docs = result.docs;
-              result.docs.forEach(e => {
-                  console.log(e);
+          if (limit) {
+            console.log('indo pegar com limite...');
+            const post = firebase.firestore()
+              .collection('post')
+                .limit(limit)
+              .get().then((result) => {
+                  console.log('chegou');
+                  docs = result.docs;
+                  result.docs.forEach(e => {
+                      console.log(e);
+                  });
+                  resolve();
+              }).catch ((e) => {
+                  console.log('que caca: ', e);
               });
-              resolve();
-          }).catch ((e) => {
-              console.log('que caca: ', e);
-          });
+          } else {
+              console.log('indo pegar sem limite...');
+              const post = firebase.firestore()
+                  .collection('post')
+                  .get().then((result) => {
+                      console.log('chegou');
+                      docs = result.docs;
+                      result.docs.forEach(e => {
+                          console.log(e);
+                      });
+                      resolve();
+                  }).catch ((e) => {
+                      console.log('que caca: ', e);
+                  });
+          }
 
       }).then(function (resolve) {
           return docs;

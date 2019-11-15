@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     PermissionsAndroid,
     FlatList,
+    ActivityIndicator
 } from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -29,16 +30,41 @@ export default class Home extends React.Component {
         postImages: [],
         showModal: false,
         posts: null,
+        pulledPosts: 10,
+        loading: false,
     };
   }
 
     componentDidMount = () => {
         console.log('vou chamar');
-        let result = heimdallr.getCollection();
+        let result = heimdallr.getCollection(this.state.pulledPosts);
         result.then( (resolve) => {
             this.setState({ posts: resolve });
-            console.log('result: ', this.state.posts);
         });
+    }
+
+    pullMorePosts = () => {
+      console.log('pullMorePosts');
+      console.log('state before: ', this.state);
+      let self = this;
+          console.log('chegou');
+          if (true) {
+              let n = this.state.pulledPosts;
+              n = 5 + n;
+              console.log('puxando: ', n);
+              let result = heimdallr.getCollection(n);
+              result.then(function(resolve) {
+                  console.log('vou mudar', this);
+                  console.log('re: ', resolve);
+                  self.setState({posts: resolve});
+                  resolve.forEach((r) => {
+                      console.log('for each: ', r);
+                  });
+                  self.setState({pulledPosts: n});
+                  console.log('state after: ', self.state);
+              });
+          }
+
     }
 
     // async componentDidMount() {
@@ -316,6 +342,15 @@ export default class Home extends React.Component {
       }
   }
 
+    renderFooter () {
+        if (!this.state.loading) return null;
+        return (
+            <View>
+                <ActivityIndicator />
+            </View>
+        );
+    };
+
 
 
 
@@ -367,44 +402,50 @@ export default class Home extends React.Component {
                   {this.getModalImagesLayout()}
               </View>
           </Modal>
-          <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
-              <UserImgProfile circular uri={heimdallr.user_image}/>
-              <TextInput
-                  style={{height: 80, width: 260,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
-                  onChangeText={text => this.setState({postText: text})}
-                  autoCapitalize="sentences"
-                  multiline
-                  textAlignVertical="top"
-                  placeholder="O que você está pensando?"
-                  ref={input => (this.postTextInput = input)}
-              />
-          </View>
-          <View style={{flexDirection: 'row-reverse', marginTop: 2}}>
-              <TouchableOpacity onPress={this.doPost.bind(this)}
-                style={{marginRight: 25}}
-              >
-                  <Image
-                      style={{width: 30, height: 30}}
-                      source={require('../../../../assets/images/send.png')}
-                  />
-              </TouchableOpacity>
-              <TouchableOpacity
-                  onPress={this.sendImagePropt.bind(this)}
-                  style={{marginRight: 20}}
-              >
-                  <Image
-                      style={{width: 30, height: 30}}
-                      source={require('../../../../assets/images/camera-icon.png')}
-                  />
-              </TouchableOpacity>
-          </View>
+          {/*<View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>*/}
+          {/*    <UserImgProfile circular uri={heimdallr.user_image}/>*/}
+          {/*    <TextInput*/}
+          {/*        style={{height: 80, width: 260,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}*/}
+          {/*        onChangeText={text => this.setState({postText: text})}*/}
+          {/*        autoCapitalize="sentences"*/}
+          {/*        multiline*/}
+          {/*        textAlignVertical="top"*/}
+          {/*        placeholder="O que você está pensando?"*/}
+          {/*        ref={input => (this.postTextInput = input)}*/}
+          {/*    />*/}
+          {/*</View>*/}
+          {/*<View style={{flexDirection: 'row-reverse', marginTop: 2}}>*/}
+          {/*    <TouchableOpacity onPress={this.doPost.bind(this)}*/}
+          {/*      style={{marginRight: 25}}*/}
+          {/*    >*/}
+          {/*        <Image*/}
+          {/*            style={{width: 30, height: 30}}*/}
+          {/*            source={require('../../../../assets/images/send.png')}*/}
+          {/*        />*/}
+          {/*    </TouchableOpacity>*/}
+          {/*    <TouchableOpacity*/}
+          {/*        onPress={this.sendImagePropt.bind(this)}*/}
+          {/*        style={{marginRight: 20}}*/}
+          {/*    >*/}
+          {/*        <Image*/}
+          {/*            style={{width: 30, height: 30}}*/}
+          {/*            source={require('../../../../assets/images/camera-icon.png')}*/}
+          {/*        />*/}
+          {/*    </TouchableOpacity>*/}
+          {/*</View>*/}
           <FlatList
               style={{ marginTop: 30 }}
               data = {this.state.posts}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text}/>
+                  <PostViewer text={item._data.text} images={item._data.images}/>
               }
               keyExtractor={item => item._ref.id}
+              onEndReachedThreshold={10}
+              onEndReached={({ distanceFromEnd }) => {
+                  this.pullMorePosts();
+              }}
+              ListFooterComponent={this.renderFooter.bind(this)}
+
           />
           {/*<FlatList
               data={this.state.postImages}
