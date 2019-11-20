@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  Dimensions,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
+    Dimensions,
+    StyleSheet,
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    Button
 } from 'react-native';
 
 import Home from './android/app/src/components/Home';

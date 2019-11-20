@@ -10,7 +10,8 @@ import {
     TouchableOpacity,
     PermissionsAndroid,
     FlatList,
-    ActivityIndicator
+    ActivityIndicator,
+    TouchableHighlight
 } from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -342,8 +343,7 @@ export default class Home extends React.Component {
       }
   }
 
-    renderFooter () {
-        if (!this.state.loading) return null;
+    renderFooter = () =>  {
         return (
             <View>
                 <ActivityIndicator />
@@ -360,6 +360,13 @@ export default class Home extends React.Component {
           {/*<View>*/}
           {/*    <Modal/>*/}
           {/*</View>*/}
+          <TouchableOpacity
+              style={styles.fabButtom}
+              onPress={this.toggleModal.bind(this)}
+
+          >
+              <Text> + </Text>
+          </TouchableOpacity>
           <Modal isVisible={this.state.showModal}
                  onBackButtonPress={this.disableModal.bind(this)}
                  onBackdropPress={this.disableModal.bind(this)}
@@ -444,7 +451,11 @@ export default class Home extends React.Component {
               onEndReached={({ distanceFromEnd }) => {
                   this.pullMorePosts();
               }}
-              ListFooterComponent={this.renderFooter.bind(this)}
+              ListFooterComponent={ ({item}) =>
+                  <View style={{marginBottom: 70}}>
+                      <ActivityIndicator size="large" color="#0000ff" />
+                  </View>
+              }
 
           />
           {/*<FlatList
@@ -472,5 +483,19 @@ const styles = StyleSheet.create({
         height: 20,
         borderColor: 'black',
         tintColor: 'white',
+    },
+    fabButtom: {
+        width: 60,
+        height: 60,
+        borderRadius: 100,
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#03b1fc',
+        position: 'absolute',
+        bottom: 100,
+        right: 20,
+        zIndex: 1
     }
+
 });
