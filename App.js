@@ -6,10 +6,12 @@ import {
     Text,
     TouchableOpacity,
     Image,
-    Button
+    Button,
+
 } from 'react-native';
 
 import Home from './android/app/src/components/Home';
+import Login from "./android/app/src/components/Login";
 import MenuDrawer from "react-native-side-drawer";
 import heimdallr from "./components/Heimdallr/Heimdallr";
 const width = Dimensions.get('screen').width;
@@ -45,33 +47,49 @@ export default class App extends React.Component {
           //TODO tirar margem do topo
   };
 
+  returnContent = () => {
+      if (heimdallr.token === null) {
+          return (
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <Login />
+              </View>
+          )
+      } else {
+          return (
+              <View style={styles.container}>
+                  <MenuDrawer
+                      open={this.state.open}
+                      drawerContent={this.drawerContent()}
+                      drawerPercentage={60}
+                      animationTime={250}
+                      overlay={true}
+                      opacity={0.4}
+                      style={{margin: 0, padding: 0, width: 0, height: 0, display: 'none'}}
+                  >
+                      <View style={styles.header}>
+                          <TouchableOpacity onPress={this.openModal.bind(this)}>
+                              <Image source={require('./assets/images/bars-solid.png')} style={{width: 30, height: 30, tintColor: 'white'}}/>
+                          </TouchableOpacity>
+                          <Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>
+                              Spotted
+                          </Text>
+                      </View>
+                      <View>
+                          <Home/>
+                      </View>
+                  </MenuDrawer>
+
+              </View>
+          );
+      }
+  }
+
 
   render() {
     return (
-        <View style={styles.container}>
-          <MenuDrawer
-            open={this.state.open}
-            drawerContent={this.drawerContent()}
-            drawerPercentage={60}
-            animationTime={250}
-            overlay={true}
-            opacity={0.4}
-            style={{margin: 0, padding: 0, width: 0, height: 0, display: 'none'}}
-          >
-            <View style={styles.header}>
-              <TouchableOpacity onPress={this.openModal.bind(this)}>
-                  <Image source={require('./assets/images/bars-solid.png')} style={{width: 30, height: 30, tintColor: 'white'}}/>
-              </TouchableOpacity>
-              <Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>
-                Spotted
-              </Text>
-            </View>
-            <View>
-              <Home/>
-            </View>
-          </MenuDrawer>
-
-      </View>
+        <View style={{flex: 1}}>
+            {this.returnContent()}
+        </View>
     );
   }
 }

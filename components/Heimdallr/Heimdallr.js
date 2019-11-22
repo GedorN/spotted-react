@@ -4,6 +4,7 @@ function HeimdallrLib() {
   this.user_id = 'Yt5eZ0SGpy1U9QPTmIbI';
   this.user_image ='https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
   this.user_name = 'Admin';
+  this.token = null;
 
 
   this.getCollection = function (limit) {
