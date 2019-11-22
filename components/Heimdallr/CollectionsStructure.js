@@ -41,7 +41,7 @@ const collections = {
                 require: true,
             },
             {
-                desc: 'id_user',
+                desc: 'uid',
                 type: 'string',
                 require: true,
             },

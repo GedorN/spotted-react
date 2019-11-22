@@ -20,15 +20,37 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      postText: '',
-      postImages: [],
-      open: false,
+        postText: '',
+        postImages: [],
+        open: false,
+        isLogged: false,
     };
   }
 
-  toggleOpen = () => {
+  componentDidMount(): void {
+      let login = heimdallr.checkUser();
+      login.then((resolve) => {
+          console.log('checkado: ', resolve);
+          if(heimdallr.user_id) {
+              console.log('%c LOGGED', 'color: green');
+              this.setState({isLogged: true});
+          }
+      })
+  }
+
+    toggleOpen = () => {
     this.setState({ open: !this.state.open });
   };
+
+  signUp = (data) => {
+      let user = heimdallr.signIn(data);
+      user.then((resolve) => {
+          console.log('resolve asdasdasD:', resolve);
+          if(resolve.user) {
+              this.setState({ isLogged: true });
+          }
+      });
+  }
 
   openModal = () => {
     this.setState({open: true});
@@ -48,10 +70,10 @@ export default class App extends React.Component {
   };
 
   returnContent = () => {
-      if (heimdallr.token === null) {
+      if (!this.state.isLogged) {
           return (
               <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                  <Login />
+                  <Login login={this.signUp}/>
               </View>
           )
       } else {

@@ -7,6 +7,7 @@ import {
     Button,
     Text,
 } from 'react-native';
+import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 
 const width = Dimensions.get('screen').width;
 
@@ -18,7 +19,6 @@ export default class Login extends React.Component {
             password: null,
         };
     }
-
     render() {
         return (
             <View style={styles.container}>
@@ -30,18 +30,23 @@ export default class Login extends React.Component {
                         autoCapitalize='none'
                         style={styles.input}
                         placeholder='User...'
+                        autoCompleteType='email'
+                        keyboardType='email-address'
+                        textContentType='emailAddress'
                         onChangeText={text => this.setState({user: text})}
                     />
                     <TextInput
                         secureTextEntry={true}
                         style={styles.input}
                         placeholder='Password...'
+                        autoCompleteType='password'
+                        textContentType='password'
                         onChangeText={text => this.setState({password: text})}
                     />
                     <Button
                         style={styles.loginButton}
                         title='Login'
-                        onPress={() => console.warn('Login')}
+                        onPress={() => this.props.login({ user: this.state.user, password: this.state.password })}
                     />
                 </View>
             </View>

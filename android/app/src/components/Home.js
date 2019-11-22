@@ -142,7 +142,7 @@ export default class Home extends React.Component {
       params.active = 1;
       params.date = new Date();
       params.text = this.state.postText;
-      params.id_user = heimdallr.user_id;
+      params.uid = heimdallr.user_id;
       params.images = this.state.postImages;
       params.user_name = heimdallr.user_name;
       params.user_image = heimdallr.user_image;
