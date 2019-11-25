@@ -28,7 +28,7 @@ tns build <platform> --env.production
 ```
 
 
-#####Links Úteis:
+##### Links Úteis:
    Geleram vou deixando aqui links que me foram úteis durante a construção do app
    
    [Iniciando um projeto com react e firebase](https://rnfirebase.io/docs/v5.x.x/installation/basic-kit)

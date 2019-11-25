@@ -13,6 +13,7 @@ import {
 import Home from './android/app/src/components/Home';
 import Login from "./android/app/src/components/Login";
 import MenuDrawer from "react-native-side-drawer";
+import Drawer from "react-native-drawer";
 import heimdallr from "./components/Heimdallr/Heimdallr";
 const width = Dimensions.get('screen').width;
 
@@ -54,6 +55,7 @@ export default class App extends React.Component {
 
   openModal = () => {
     this.setState({open: true});
+    this._drawer.open();
   }
 
   closeModal = () => {
@@ -79,14 +81,17 @@ export default class App extends React.Component {
       } else {
           return (
               <View style={styles.container}>
-                  <MenuDrawer
-                      open={this.state.open}
-                      drawerContent={this.drawerContent()}
-                      drawerPercentage={60}
-                      animationTime={250}
-                      overlay={true}
-                      opacity={0.4}
-                      style={{margin: 0, padding: 0, width: 0, height: 0, display: 'none'}}
+                  <Drawer
+                      content={this.drawerContent()}
+                      ref={(ref) => this._drawer = ref}
+                      openDrawerOffset={100}
+                      type='overlay'
+                      captureGestures={true}
+                      tweenDuration={250}
+                      acceptPan ={true}
+                      negotiatePan={true}
+                      panThreshold={0.1}
+                      panOpenMask={0.7}
                   >
                       <View style={styles.header}>
                           <TouchableOpacity onPress={this.openModal.bind(this)}>
@@ -99,7 +104,17 @@ export default class App extends React.Component {
                       <View>
                           <Home/>
                       </View>
-                  </MenuDrawer>
+                  </Drawer>
+                  {/*<MenuDrawer*/}
+                  {/*    open={this.state.open}*/}
+                  {/*    drawerContent={this.drawerContent()}*/}
+                  {/*    drawerPercentage={60}*/}
+                  {/*    animationTime={100}*/}
+                  {/*    overlay={true}*/}
+                  {/*    opacity={0.4}*/}
+                  {/*    style={{margin: 0, padding: 0, width: 0, height: 0, display: 'none'}}*/}
+                  {/*>*/}
+                  {/*</MenuDrawer>*/}
 
               </View>
           );
