@@ -128,15 +128,33 @@ export default class PostViewer extends React.Component {
 
   render () {
     return (
-      <View >
-          <View style={styles.container}>
-              <UserImgProfile circular height={40} width={40} uri={'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4'}/>
+      <View style={styles.container}>
+          <View style={{marginTop: 5}}>
+              <UserImgProfile circular height={55} width={55} uri={'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4'}/>
+          </View>
+          <View style={styles.body}>
+              <TouchableOpacity
+                  style={{alignSelf: 'flex-end', marginRight: 10}}
+              >
+                  <Image
+                      style={{width: 20, height: 20}}
+                      source={require('../../assets/images/ellipsis-h-solid.png') }
+                  />
+              </TouchableOpacity>
               <View style={styles.post}>
                   <Text style={{color: 'white'}}> { this.props.text } </Text>
                   <View>
                       {/*{this.getModalImagesLayout()}*/}
                   </View>
               </View>
+              <TouchableOpacity
+                  style={{alignSelf: 'flex-end', marginRight: 25, marginTop: 8}}
+              >
+                  <Image
+                      style={{width: 20, height: 20}}
+                      source={require('../../assets/images/comment-regular.png') }
+                  />
+              </TouchableOpacity>
           </View>
       </View>
     );
@@ -146,12 +164,16 @@ export default class PostViewer extends React.Component {
   const styles = StyleSheet.create({
       container: {
           flexDirection: 'row',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           marginTop: 10,
           padding: 10,
       },
+      body: {
+          flexDirection: 'column',
+      },
       post: {
           backgroundColor: 'green',
+          alignSelf: 'center',
           width: width * 0.7,
           padding: 10,
           marginLeft: 10,

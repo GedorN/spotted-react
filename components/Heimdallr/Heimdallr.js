@@ -32,6 +32,7 @@ function HeimdallrLib() {
                   if (user) {
                       this.user_id = user._user.uid;
                       this.user_image = user._user.photoURL;
+                      this.user_name = user._user.displayName;
                       console.log('this.token', this.user_id);
                       u = user;
                   } else {

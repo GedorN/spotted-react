@@ -15,6 +15,7 @@ import Login from "./android/app/src/components/Login";
 import MenuDrawer from "react-native-side-drawer";
 import Drawer from "react-native-drawer";
 import heimdallr from "./components/Heimdallr/Heimdallr";
+import SideDrawer from "./components/General/SideDrawer";
 const width = Dimensions.get('screen').width;
 
 export default class App extends React.Component {
@@ -64,9 +65,7 @@ export default class App extends React.Component {
 
   drawerContent = () => {
     return (
-      <TouchableOpacity onPress={this.closeModal.bind(this)} style={styles.animatedBox}>
-        <Text>Close</Text>
-      </TouchableOpacity>
+        <SideDrawer />
     );
           //TODO tirar margem do topo
   };
