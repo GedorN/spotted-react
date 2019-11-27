@@ -85,13 +85,20 @@ function HeimdallrLib() {
             console.log('indo pegar com limite...');
             const post = firebase.firestore()
               .collection('post')
+                .orderBy('date', 'desc')
                 .limit(limit)
               .get().then((result) => {
                   console.log('chegou');
+                  let orderByDesc = [];
                   docs = result.docs;
-                  result.docs.forEach(e => {
-                      console.log(e);
-                  });
+                  // result.docs.forEach(e => {
+                  //     orderByDesc.unshift(e);
+                  //     console.log(e);
+                  // });
+                  //   for (let i = 0; i < result.docs.length; i++) {
+                  //       orderByDesc.unshift(result.docs[i]);
+                  //   }
+                  // docs = orderByDesc;
                   resolve();
               }).catch ((e) => {
                   console.log('que caca: ', e);

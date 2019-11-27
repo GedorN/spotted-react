@@ -55,14 +55,8 @@ export default class Home extends React.Component {
               console.log('puxando: ', n);
               let result = heimdallr.getCollection(n);
               result.then(function(resolve) {
-                  console.log('vou mudar', this);
-                  console.log('re: ', resolve);
                   self.setState({posts: resolve});
-                  resolve.forEach((r) => {
-                      console.log('for each: ', r);
-                  });
                   self.setState({pulledPosts: n});
-                  console.log('state after: ', self.state);
               });
           }
 
@@ -444,7 +438,7 @@ export default class Home extends React.Component {
               style={{ marginTop: 30 }}
               data = {this.state.posts}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text} images={item._data.images}/>
+                  <PostViewer text={item._data.text} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image}/>
               }
               keyExtractor={item => item._ref.id}
               onEndReachedThreshold={10}

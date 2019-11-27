@@ -70,10 +70,12 @@ const collections = {
             {
                 desc: 'id_user',
                 type: 'string',
+                require: true,
             },
             {
                 desc: 'date',
-                type:'timestamp',
+                type:'object',
+                required: true,
             },
             {
                 desc: 'text',
@@ -88,21 +90,29 @@ const collections = {
             {
                 desc: 'author',
                 type: 'string',
+                require: true,
             },
             {
                 desc: 'date',
-                type: 'timestamp'
+                type: 'object',
+                required: true,
             },
             {
                 desc: 'solved',
                 type: 'number',
+                required: true,
             },
             {
                 desc: 'report_category',
-                type: 'string',
+                type: 'number',
+                required: true,
             }
         ],
         report_category: [
+            {
+                desc: 'id_report_category',
+                type: 'number'
+            },
             {
                 desc: 'description',
                 type: 'string',

@@ -10,6 +10,8 @@ import {
 
 const width = Dimensions.get('screen').width;
 import UserImgProfile from "./UserImgProfile";
+import OptionsMenu from 'react-native-options-menu';
+import heimdallr from "../Heimdallr/Heimdallr";
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
@@ -17,7 +19,11 @@ export default class PostViewer extends React.Component {
     };
   }
 
-  getModalImagesLayout = () => {
+  componentDidMount =() =>  {
+      console.log('haha: ', this.props);
+  }
+
+    getModalImagesLayout = () => {
       console.log('%c calculando...', 'color: green');
     if (this.props.images) {
 
@@ -119,10 +125,9 @@ export default class PostViewer extends React.Component {
     }
   }
 
-  getT = () => {
-      return (
-          <Text>hahah</Text>
-      );
+  report = (prop) => {
+      console.log('Ah eu vou denunciar');
+      console.log(prop);
   }
 
 
@@ -130,15 +135,17 @@ export default class PostViewer extends React.Component {
     return (
       <View style={styles.container}>
           <View style={{marginTop: 5}}>
-              <UserImgProfile circular height={55} width={55} uri={'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4'}/>
+              <UserImgProfile circular height={55} width={55} uri={this.props.userImage}/>
           </View>
           <View style={styles.body}>
               <TouchableOpacity
                   style={{alignSelf: 'flex-end', marginRight: 10}}
               >
-                  <Image
-                      style={{width: 20, height: 20}}
-                      source={require('../../assets/images/ellipsis-h-solid.png') }
+                  <OptionsMenu
+                      button={require('../../assets/images/ellipsis-h-solid.png') }
+                      buttonStyle={{ width: 20, height: 20 }}
+                      options={['Denunciar']}
+                      actions={[this.report]}
                   />
               </TouchableOpacity>
               <View style={styles.post}>
