@@ -12,16 +12,28 @@ const width = Dimensions.get('screen').width;
 import UserImgProfile from "./UserImgProfile";
 import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
+import ReportModal from "./ReportModal";
+import Modal from "react-native-modal";
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
     this.state = {
+        showModal: false,
     };
   }
 
   componentDidMount =() =>  {
       console.log('haha: ', this.props);
   }
+
+    toggleModal () {
+        this.setState({showModal: !this.state.showModal});
+        console.log('opened');
+    }
+
+    disableModal () {
+        this.setState({showModal: false});
+    }
 
     getModalImagesLayout = () => {
       console.log('%c calculando...', 'color: green');
@@ -134,20 +146,36 @@ export default class PostViewer extends React.Component {
   render () {
     return (
       <View style={styles.container}>
+          <Modal isVisible={this.state.showModal}
+                 onBackButtonPress={this.disableModal.bind(this)}
+                 onBackdropPress={this.disableModal.bind(this)}
+                 hideModalContentWhileAnimating={true}
+          >
+              <ReportModal emitClose={this.disableModal}/>
+          </Modal>
           <View style={{marginTop: 5}}>
               <UserImgProfile circular height={55} width={55} uri={this.props.userImage}/>
           </View>
           <View style={styles.body}>
-              <TouchableOpacity
-                  style={{alignSelf: 'flex-end', marginRight: 10}}
-              >
-                  <OptionsMenu
-                      button={require('../../assets/images/ellipsis-h-solid.png') }
-                      buttonStyle={{ width: 20, height: 20 }}
-                      options={['Denunciar']}
-                      actions={[this.report]}
-                  />
-              </TouchableOpacity>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <TouchableOpacity>
+                      <Text
+                          style={{marginLeft: 16}}
+                      >
+                          {heimdallr.user_name}
+                      </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                      style={{alignSelf: 'flex-end', marginRight: 10}}
+                  >
+                      <OptionsMenu
+                          button={require('../../assets/images/ellipsis-h-solid.png') }
+                          buttonStyle={{ width: 20, height: 20 }}
+                          options={['Denunciar']}
+                          actions={[this.toggleModal.bind(this)]}
+                      />
+                  </TouchableOpacity>
+              </View>
               <View style={styles.post}>
                   <Text style={{color: 'white'}}> { this.props.text } </Text>
                   <View>

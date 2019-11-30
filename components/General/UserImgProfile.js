@@ -12,6 +12,7 @@ export default class UserImgProfile extends React.Component {
 
   getImageStructure() {
     // console.log('props: ', this.props);
+      console.log('uri: ', this.props.uri);
     if (this.props.uri) {
       return (
         <Image
