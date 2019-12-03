@@ -8,7 +8,6 @@ import {
     Text,
 } from 'react-native';
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
-
 const width = Dimensions.get('screen').width;
 
 export default class Login extends React.Component {
@@ -48,6 +47,13 @@ export default class Login extends React.Component {
                         title='Login'
                         onPress={() => this.props.login({ user: this.state.user, password: this.state.password })}
                     />
+                    <View style={{marginTop: 20}}>
+		                <Button
+			                style={styles.signUpButtom}
+			                title='Registrar-se'
+			                onPress={() => this.props.navigation.navigate('SignUp')}
+		                />
+                    </View>
                 </View>
             </View>
         );
@@ -71,11 +77,15 @@ const styles = StyleSheet.create({
     },
     loginButton: {
         marginTop: 20,
+	    marginBottom: 20,
     },
     title: {
         fontWeight: 'bold',
         fontSize: 26,
-    }
+    },
+	signUpButtom: {
+		marginTop: 60,
+	}
 });
 
 
