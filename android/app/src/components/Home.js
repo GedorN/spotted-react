@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    Button,
     Dimensions,
     StyleSheet,
     View,
@@ -11,7 +10,6 @@ import {
     PermissionsAndroid,
     FlatList,
     ActivityIndicator,
-    TouchableHighlight
 } from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -20,7 +18,6 @@ import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
 import Modal from "react-native-modal";
-// import Modal from '../../../../components/General/Modal';
 const width = Dimensions.get('screen').width;
 
 export default class Home extends React.Component {
@@ -36,73 +33,57 @@ export default class Home extends React.Component {
     };
   }
 
-    componentDidMount = () => {
-        console.log('vou chamar');
-        let result = heimdallr.getCollection(this.state.pulledPosts);
-        result.then( (resolve) => {
-            this.setState({ posts: resolve });
-        });
-    }
+  componentDidMount = () => {
+  	let result = heimdallr.getCollection(this.state.pulledPosts);
+  	result.then( (resolve) => {
+  		this.setState({ posts: resolve });
+  	});
+  }
 
-    pullMorePosts = () => {
-      console.log('pullMorePosts');
-      console.log('state before: ', this.state);
-      let self = this;
-          console.log('chegou');
-          if (true) {
-              let n = this.state.pulledPosts;
-              n = 5 + n;
-              console.log('puxando: ', n);
-              let result = heimdallr.getCollection(n);
-              result.then(function(resolve) {
-                  self.setState({posts: resolve});
-                  self.setState({pulledPosts: n});
-              });
-          }
+  pullMorePosts = () => {
+  	console.log('pullMorePosts');
+  	console.log('state before: ', this.state);
+  	let self = this;
+  	console.log('chegou');
+  	if (true) {
+  		let n = this.state.pulledPosts;
+  		n = 5 + n;
+  		console.log('puxando: ', n);
+  		let result = heimdallr.getCollection(n);
+  		result.then(function(resolve) {
+  			self.setState({posts: resolve});
+  			self.setState({pulledPosts: n});
+  		});
+  	}
+  }
 
-    }
 
-    // async componentDidMount() {
-  // TODO: You: Do firebase things
-  // const { user } = await firebase.auth().signInAnonymously();
-  // console.warn('User -> ', user.toJSON());
+  toggleModal () {
+  	this.setState({showModal: !this.state.showModal});
+  }
 
-  // await firebase.analytics().logEvent('foo', { bar: '123'});
-  // }
+  disableModal () {
+  	this.setState({showModal: false});
+  }
 
-    toggleModal () {
-        this.setState({showModal: !this.state.showModal});
-        console.log('opened');
-    }
-
-    disableModal () {
-        this.setState({showModal: false});
-    }
-
-    deletePostImg (pos) {
-      console.log('reacheaded...');
-      console.log('pos: ', pos);
-      // eu sei que esse loop tá feio, porém array.splice não funciona no react
-      let images = [];
-      images = this.state.postImages;
-        let newImg = [];
-        for (let i = 0; i < images.length; i++) {
-            if (i != pos) {
-                newImg.push(images[i]);
-            }
-        }
-      console.log('images after: ', newImg);
-      this.setState({postImages: newImg});
-    }
+  deletePostImg (pos) {
+  	// sim... esse loop está bem feio, porém array.splice não funciona no react
+	  let images = [];images = this.state.postImages;
+	  let newImg = [];
+	  for (let i = 0; i < images.length; i++) {
+	  	if (i != pos) {
+	  		newImg.push(images[i]);
+	  	}
+	  }this.setState({postImages: newImg});
+  }
 
   doPost() {
-    console.log('aqui');
     if (this.state.postText == '' && this.state.postImages.length == 0 ) {
         console.log('nothing to do...');
         return ;
     }
-    // console.log(this.state.postText);
-    /* if have unless one photo in post */
+
+    /* caso a postagem possua ao menos uma foto */
     let posImagesLenght = this.state.postImages.length;
     if (this.state.postImages.length > 0) {
       console.log('with image');
@@ -123,13 +104,16 @@ export default class Home extends React.Component {
         })
       })
     } else {
-      console.log('without image');
-      this.savePost(1);
+    	// caso a postagem não contenha imagem
+    	this.savePost(1);
     }
   }
 
   savePost(sendedImages) {
     console.log('Semaphore: ', sendedImages);
+    /* Essa condição é equivalente ao conceito de barreira (só que com uma implementação muito mais simples)
+     * Espera até que todas as fotos tenham sido enviadas para continuar
+     * */
     if (sendedImages >= 1) {
       let self = this;
       const params = {};
@@ -157,10 +141,10 @@ export default class Home extends React.Component {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         {
-          title: 'Cool Photo App Camera Permission',
+          title: 'Spotted Camera Permission',
           message:
-            'Cool Photo App needs access to your camera ' +
-            'so you can take awesome pictures.',
+            'Spotted needs access to your camera ' +
+            'so you can take awesome pictures ;)',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
@@ -168,48 +152,45 @@ export default class Home extends React.Component {
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         console.log('You can use the camera');
-        // More info on all the options is below in the API Reference... just some common use cases shown here
         const options = {
-          title: 'Enviar imagem',
-          takePhotoButtonTitle: 'Tirar foto',
-          chooseFromLibraryButtonTitle: 'Pegar do celular',
-          storageOptions: {
-            skipBackup: true,
-            path: 'images',
-          },
+        	title: 'Enviar imagem',
+	        takePhotoButtonTitle: 'Tirar foto',
+	        chooseFromLibraryButtonTitle: 'Pegar do celular',
+	        storageOptions: {
+        		skipBackup: true,
+		        path: 'images',
+	        },
         };
 
-        /**
-         * The first arg is the options object for customization (it can also be null or omitted for default options),
-         * The second arg is the callback which sends object: response (more info in the API Reference)
-         */
         ImagePicker.showImagePicker(options, response => {
-
-          if (response.didCancel) {
-            console.log('User cancelled image picker');
-          } else if (response.error) {
-            console.log('ImagePicker Error: ', response.error);
-          } else if (response.customButton) {
-            console.log('User tapped custom button: ', response.customButton);
-          } else {
-            console.log('Imagem escolhida');
-            let images = this.state.postImages;
-            images.push('file://' + response.path);
-            this.setState({postImages: images});
-            console.log('Imagem: ', this.state.postImages);
-            this.setState({showModal: true});
-          }
+        	if (response.didCancel) {
+        		console.log('User cancelled image picker');
+        	} else if (response.error) {
+        		console.log('ImagePicker Error: ', response.error);
+        	} else if (response.customButton) {
+        		console.log('User tapped custom button: ', response.customButton);
+        	} else {
+        		console.log('Imagem escolhida');
+        		let images = this.state.postImages;
+        		images.push('file://' + response.path);
+        		this.setState({postImages: images});
+        		console.log('Imagem: ', this.state.postImages);
+        		this.setState({showModal: true});
+        	}
         });
       } else {
-        console.log('Camera permission denied');
+      	console.log('Camera permission denied');
       }
     } catch (err) {
-      console.warn(err);
+    	console.warn(err);
     }
   }
 
 
   getModalImagesLayout() {
+  	/*
+  	* Existe uma condição para cada quantidade de fotos (0 a 4). O layout muda completamente
+  	* */
       if (this.state.postImages.length === 1) {
           return (
               <View>
@@ -337,13 +318,13 @@ export default class Home extends React.Component {
       }
   }
 
-    renderFooter = () =>  {
-        return (
-            <View>
-                <ActivityIndicator />
-            </View>
-        );
-    };
+  renderFooter = () =>  {
+  	return (
+  		<View>
+		    <ActivityIndicator />
+  		</View>
+    );
+  };
 
 
 
@@ -351,9 +332,6 @@ export default class Home extends React.Component {
   render() {
     return (
       <View style={{}}>
-          {/*<View>*/}
-          {/*    <Modal/>*/}
-          {/*</View>*/}
           <TouchableOpacity
               style={styles.fabButtom}
               onPress={this.toggleModal.bind(this)}
@@ -366,7 +344,7 @@ export default class Home extends React.Component {
                  onBackdropPress={this.disableModal.bind(this)}
                  hideModalContentWhileAnimating={true}
           >
-              <View style={{backgroundColor: 'white', height: 500, flexDirection: 'column', justifyContent: 'space-between', padding: 3 }}>
+              <View style={styles.modalContainer}>
                   <View>
                       <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
                           <UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>
@@ -403,37 +381,6 @@ export default class Home extends React.Component {
                   {this.getModalImagesLayout()}
               </View>
           </Modal>
-          {/*<View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>*/}
-          {/*    <UserImgProfile circular uri={heimdallr.user_image}/>*/}
-          {/*    <TextInput*/}
-          {/*        style={{height: 80, width: 260,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}*/}
-          {/*        onChangeText={text => this.setState({postText: text})}*/}
-          {/*        autoCapitalize="sentences"*/}
-          {/*        multiline*/}
-          {/*        textAlignVertical="top"*/}
-          {/*        placeholder="O que você está pensando?"*/}
-          {/*        ref={input => (this.postTextInput = input)}*/}
-          {/*    />*/}
-          {/*</View>*/}
-          {/*<View style={{flexDirection: 'row-reverse', marginTop: 2}}>*/}
-          {/*    <TouchableOpacity onPress={this.doPost.bind(this)}*/}
-          {/*      style={{marginRight: 25}}*/}
-          {/*    >*/}
-          {/*        <Image*/}
-          {/*            style={{width: 30, height: 30}}*/}
-          {/*            source={require('../../../../assets/images/send.png')}*/}
-          {/*        />*/}
-          {/*    </TouchableOpacity>*/}
-          {/*    <TouchableOpacity*/}
-          {/*        onPress={this.sendImagePropt.bind(this)}*/}
-          {/*        style={{marginRight: 20}}*/}
-          {/*    >*/}
-          {/*        <Image*/}
-          {/*            style={{width: 30, height: 30}}*/}
-          {/*            source={require('../../../../assets/images/camera-icon.png')}*/}
-          {/*        />*/}
-          {/*    </TouchableOpacity>*/}
-          {/*</View>*/}
           <FlatList
               style={{ marginTop: 30 }}
               data = {this.state.posts}
@@ -446,23 +393,12 @@ export default class Home extends React.Component {
                   this.pullMorePosts();
               }}
               ListFooterComponent={ ({item}) =>
-                  <View style={{marginBottom: 70}}>
+	              <View style={{marginBottom: 70}}>
                       <ActivityIndicator size="large" color="#0000ff" />
                   </View>
               }
 
           />
-          {/*<FlatList
-              data={this.state.postImages}
-              keyExtractor={item => item.toString()}
-              extraData={this.state}
-              renderItem={({item}) => (
-                  <Image
-                      source={{uri: 'file://' + item}}
-                      style={{width: 100, height: 100}}
-                  />
-                  )}
-          />*/}
       </View>
     );
   }
@@ -472,6 +408,13 @@ const styles = StyleSheet.create({
     container: {
         marginTop: 20,
     },
+	modalContainer: {
+    	backgroundColor: 'white',
+		height: 500,
+		flexDirection: 'column',
+		justifyContent: 'space-between',
+		padding: 3
+	},
     deleteImgIcon: {
         width: 20,
         height: 20,

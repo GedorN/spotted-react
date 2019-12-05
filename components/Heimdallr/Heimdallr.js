@@ -1,3 +1,9 @@
+/*
+* Aquele que tudo sabe e tudo vê
+* Ele fara a integração entre o sistema e o back no firebase. Todas as consultas, tratamento de queryies,
+* informações gerais devem estar aqui
+* */
+
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 function HeimdallrLib() {
@@ -73,12 +79,6 @@ function HeimdallrLib() {
       })
   }
   this.getCollection = function (limit) {
-    // const post = firebase.firestore().collection('post');
-    // post.onSnapshot(sp => {
-    //   sp.forEach((e) => {
-    //     console.log(e._data);
-    //   });
-    // }
       let docs = null;
       return new Promise((resolve) => {
           if (limit) {
@@ -91,14 +91,6 @@ function HeimdallrLib() {
                   console.log('chegou');
                   let orderByDesc = [];
                   docs = result.docs;
-                  // result.docs.forEach(e => {
-                  //     orderByDesc.unshift(e);
-                  //     console.log(e);
-                  // });
-                  //   for (let i = 0; i < result.docs.length; i++) {
-                  //       orderByDesc.unshift(result.docs[i]);
-                  //   }
-                  // docs = orderByDesc;
                   resolve();
               }).catch ((e) => {
                   console.log('que caca: ', e);
@@ -163,12 +155,10 @@ function HeimdallrLib() {
   }
 
   this.uploadImage = function (image) {
-    console.log('in upload: ', image);
     const rand = 'img' + new Date().getTime().toString();
     let uploadedUrl = null;
 
     return new Promise((resolve) => {
-      console.log('herasdasde!');
       firebase.storage().ref(`${this.user_id}/${rand}`).putFile(image)
         .on('state_changed', (snapshot) => {
           let total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;

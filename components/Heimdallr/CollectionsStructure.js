@@ -1,3 +1,8 @@
+/*
+* Nessa tela ficam definidas as estruturas das "tabelas" do firebase. Essas esturuturas controlaram as inserções e
+* updates. Assim as tabelas ficam protegidas de inserções e modificações errôneas
+* */
+
 const collections = {
         user: [
             {
