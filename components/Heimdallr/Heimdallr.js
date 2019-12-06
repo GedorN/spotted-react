@@ -78,6 +78,26 @@ function HeimdallrLib() {
           return user;
       })
   }
+
+  this.signUp = function (params) {
+  	let newUser = null;
+  	return new Promise((resolve) => {
+	    firebase.auth().createUserWithEmailAndPassword(params.email, params.password).then(
+		    (success) => {
+		    	console.log('sucessso: ', success);
+		    	newUser = success;
+			    resolve();
+		    },
+		    (error) => {
+		    	console.log('deu ruim: ',error);
+		    }
+	    )
+
+    }).then(function (resolve) {
+	    return newUser;
+    })
+  }
+
   this.getCollection = function (limit) {
       let docs = null;
       return new Promise((resolve) => {
