@@ -8,22 +8,36 @@ const collections = {
             {
                 desc: 'name',
                 type: 'string',
+	            required: true,
             },
             {
                 desc: 'email',
                 type: 'string',
+	            required: true,
             },
+	        {
+	        	desc: 'user_image',
+		        type: 'string',
+	        },
+	        {
+	        	desc: 'uid',
+		        type: 'string',
+		        required: true,
+	        },
             {
                 desc: 'creation_date',
-                type: 'timestamp',
+                type: 'object',
+	            required: true,
             },
             {
                 desc: 'birth_date',
-                type: 'timestamp',
+                type: 'object',
+	            required: true,
             },
             {
                 desc: 'active',
                 type: 'number',
+	            required: true,
             },
             {
                 desc: 'deactivation_date',
@@ -31,7 +45,8 @@ const collections = {
             },
             {
                 desc: 'password',
-                type: 'string'
+                type: 'string',
+	            required: true,
             }
         ],
         post: [

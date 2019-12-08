@@ -58,8 +58,9 @@ export default class MainScreen extends React.Component {
 	}
 
 	openModal = () => {
-		this.setState({open: true});
-		this._drawer.open();
+		heimdallr.signOut();
+		// this.setState({open: true});
+		// this._drawer.open();
 	}
 
 	closeModal = () => {

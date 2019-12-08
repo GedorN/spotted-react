@@ -13,6 +13,42 @@ function HeimdallrLib() {
   this.token = null;
 
 
+  this.signOut = function () {
+	  return new Promise((resolve) => {
+		  firebase.auth().signOut().then(
+		      (sucess) => {
+		          console.log('sign out sucess: ', sucess);
+		          resolve();
+		      },
+		      (fail) => {
+		          console.log('fail in signOut:', fail);
+		      }
+		  );
+	  }).then(function (resolve) {
+	  	console.log('Sign out successfully');
+		  this.user_id = null;
+		  this.user_image = 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
+		  this.user_name = 'Anônimo';
+		  this.token = null;
+		  return true;
+	  })
+  }
+
+  this.updateProfile = function (user) {
+	  return new Promise((resolve) => {
+		  firebase.auth().currentUser.updateProfile({
+		      displayName: user.name,
+		      photoURL: user.user_image,
+		  }).then(function () {
+		      console.log('update profile sucessful');
+		  }).catch(function (error) {
+		      console.log('update profile error: ', error);
+		  })
+	  }). then(function (resolve) {
+
+	  })
+  }
+
   this.checkUser = function () {
       let u = null;
       // firebase.auth().signOut().then(

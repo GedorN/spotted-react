@@ -36,6 +36,11 @@ export default class SideDrawer extends React.Component {
                     <TouchableOpacity>
                         <Text> Configurações </Text>
                     </TouchableOpacity>
+	                <TouchableOpacity onPress={() => {console.warn("hue")}}
+	                                  style={{marginTop: 50, backgroundColor: 'green'}}
+	                >
+		                <Text> Sair </Text>
+	                </TouchableOpacity>
                 </View>
             </View>
         );
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 2,
         flexDirection: 'column',
-        width: 200,
+        // width: 200,
         alignItems: 'center',
         backgroundColor: 'yellow',
     },
