@@ -1,3 +1,9 @@
+/*
+* Aquele que tudo sabe e tudo vê
+* Ele fara a integração entre o sistema e o back no firebase. Todas as consultas, tratamento de queryies,
+* informações gerais devem estar aqui
+* */
+
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 function HeimdallrLib() {
@@ -6,6 +12,42 @@ function HeimdallrLib() {
   this.user_name = 'Admin';
   this.token = null;
 
+
+  this.signOut = function () {
+	  return new Promise((resolve) => {
+		  firebase.auth().signOut().then(
+		      (sucess) => {
+		          console.log('sign out sucess: ', sucess);
+		          resolve();
+		      },
+		      (fail) => {
+		          console.log('fail in signOut:', fail);
+		      }
+		  );
+	  }).then(function (resolve) {
+	  	console.log('Sign out successfully');
+		  this.user_id = null;
+		  this.user_image = 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
+		  this.user_name = 'Anônimo';
+		  this.token = null;
+		  return true;
+	  })
+  }
+
+  this.updateProfile = function (user) {
+	  return new Promise((resolve) => {
+		  firebase.auth().currentUser.updateProfile({
+		      displayName: user.name,
+		      photoURL: user.user_image,
+		  }).then(function () {
+		      console.log('update profile sucessful');
+		  }).catch(function (error) {
+		      console.log('update profile error: ', error);
+		  })
+	  }). then(function (resolve) {
+
+	  })
+  }
 
   this.checkUser = function () {
       let u = null;
@@ -72,13 +114,27 @@ function HeimdallrLib() {
           return user;
       })
   }
+
+  this.signUp = function (params) {
+  	let newUser = null;
+  	return new Promise((resolve) => {
+	    firebase.auth().createUserWithEmailAndPassword(params.email, params.password).then(
+		    (success) => {
+		    	console.log('sucessso: ', success);
+		    	newUser = success;
+			    resolve();
+		    },
+		    (error) => {
+		    	console.log('deu ruim: ',error);
+		    }
+	    )
+
+    }).then(function (resolve) {
+	    return newUser;
+    })
+  }
+
   this.getCollection = function (limit) {
-    // const post = firebase.firestore().collection('post');
-    // post.onSnapshot(sp => {
-    //   sp.forEach((e) => {
-    //     console.log(e._data);
-    //   });
-    // }
       let docs = null;
       return new Promise((resolve) => {
           if (limit) {
@@ -91,14 +147,6 @@ function HeimdallrLib() {
                   console.log('chegou');
                   let orderByDesc = [];
                   docs = result.docs;
-                  // result.docs.forEach(e => {
-                  //     orderByDesc.unshift(e);
-                  //     console.log(e);
-                  // });
-                  //   for (let i = 0; i < result.docs.length; i++) {
-                  //       orderByDesc.unshift(result.docs[i]);
-                  //   }
-                  // docs = orderByDesc;
                   resolve();
               }).catch ((e) => {
                   console.log('que caca: ', e);
@@ -163,12 +211,10 @@ function HeimdallrLib() {
   }
 
   this.uploadImage = function (image) {
-    console.log('in upload: ', image);
     const rand = 'img' + new Date().getTime().toString();
     let uploadedUrl = null;
 
     return new Promise((resolve) => {
-      console.log('herasdasde!');
       firebase.storage().ref(`${this.user_id}/${rand}`).putFile(image)
         .on('state_changed', (snapshot) => {
           let total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
