@@ -131,18 +131,18 @@ export default  class SignUp extends React.Component {
 	}
 
 	setDate = (date) => {
+		this.setState({showDatePicker: false});
 		console.log('date', new Date(date.nativeEvent.timestamp));
 		this.setState({birth: new Date(date.nativeEvent.timestamp)});
 		console.log('te text is: ', this.state.birth.toString());
-		this.postTextInput.setNativeProps({text: this.state.birth.toString()});
-		this.setState({showDatePicker: false});
+		this.postTextInput.setNativeProps({text: `${this.state.birth.getDate().toString()}/${this.state.birth.getMonth().toString()}/${this.state.birth.getFullYear().toString()}`});
 	}
 
 	getDatePicker = () => {
 		console.warn('selected');
 		if (this.state.showDatePicker) {
 			return (
-				<DateTimePicker value={new Date('2020-06-12T14:42:42')}
+				<DateTimePicker value={new Date()}
 				                mode={'date'}
 				                is24Hour={true}
 				                display="default"

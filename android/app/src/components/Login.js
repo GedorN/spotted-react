@@ -6,6 +6,7 @@ import {
     Dimensions,
     Button,
     Text,
+	TouchableOpacity,
 } from 'react-native';
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 const width = Dimensions.get('screen').width;
@@ -42,6 +43,11 @@ export default class Login extends React.Component {
                         textContentType='password'
                         onChangeText={text => this.setState({password: text})}
                     />
+                    <TouchableOpacity style={styles.forgotPassword}>
+	                    <Text style={{color: '#0645AD'}}>
+		                    Esqueci minha senha
+	                    </Text>
+                    </TouchableOpacity>
                     <Button
                         style={styles.loginButton}
                         title='Login'
@@ -85,6 +91,10 @@ const styles = StyleSheet.create({
     },
 	signUpButtom: {
 		marginTop: 60,
+	},
+	forgotPassword: {
+    	alignSelf: 'flex-end',
+		marginBottom: 50,
 	}
 });
 
