@@ -43,7 +43,7 @@ export default class Login extends React.Component {
                         textContentType='password'
                         onChangeText={text => this.setState({password: text})}
                     />
-                    <TouchableOpacity style={styles.forgotPassword}>
+                    <TouchableOpacity style={styles.forgotPassword} onPress={() => this.props.navigation.navigate('PasswordRestore')}>
 	                    <Text style={{color: '#0645AD'}}>
 		                    Esqueci minha senha
 	                    </Text>

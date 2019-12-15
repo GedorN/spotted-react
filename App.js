@@ -3,10 +3,12 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import MainScreen from './android/app/src/components/MainScreen';
 import SignUp from "./android/app/src/components/SignUp";
+import PasswordRestore from "./android/app/src/components/PasswordRestore";
 const RootStack = createStackNavigator(
 	{
 		Home: { screen: MainScreen },
-		SignUp: { screen: SignUp }
+		SignUp: { screen: SignUp },
+		PasswordRestore: { screen: PasswordRestore },
 	},
 	{
 		initialRouteName: 'Home',

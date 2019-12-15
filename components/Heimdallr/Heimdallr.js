@@ -13,6 +13,23 @@ function HeimdallrLib() {
   this.token = null;
 
 
+  this.PasswordRestore = function (params) {
+  	let resseted= false;
+  	return new Promise((resolve) => {
+  		firebase.auth().sendPasswordResetEmail(params.email).then(
+		    (success) => {
+  		        resolve();
+		    },
+		    (fail) => {
+		    	console.error('Falha ao tentar recuperar senha');
+		    },
+	    );
+    }).then(function (resolve) {
+    	resseted = true;
+    	return resseted;
+    });
+  }
+
   this.signOut = function () {
 	  return new Promise((resolve) => {
 		  firebase.auth().signOut().then(
