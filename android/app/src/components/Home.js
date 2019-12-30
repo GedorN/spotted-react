@@ -36,6 +36,7 @@ export default class Home extends React.Component {
   componentDidMount = () => {
   	let result = heimdallr.getCollection(this.state.pulledPosts);
   	result.then( (resolve) => {
+  		console.log('peguei esses caras aqui', resolve);
   		this.setState({ posts: resolve });
   	});
   }
@@ -385,7 +386,7 @@ export default class Home extends React.Component {
               style={{ marginTop: 30 }}
               data = {this.state.posts}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image}/>
+                  <PostViewer text={item._data.text} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
               }
               keyExtractor={item => item._ref.id}
               onEndReachedThreshold={10}

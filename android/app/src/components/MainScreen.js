@@ -106,7 +106,7 @@ export default class MainScreen extends React.Component {
 							</Text>
 						</View>
 						<View>
-							<Home/>
+							<Home navigation={this.props.navigation}/>
 						</View>
 					</Drawer>
 					{/*<MenuDrawer*/}

@@ -151,6 +151,22 @@ function HeimdallrLib() {
     })
   }
 
+  this.getUserInfo = function (userId) {
+	  let user = null;
+	  console.log('procurando pelo...', userId);
+	  return new Promise((resolve) => {
+	  	firebase.firestore()
+		    .collection('user')
+		    .where('uid', '==', userId).get().then((result) => {
+		    	console.log('veio o user: ', result);
+		    	user = result._docs[0]._data;
+		    	resolve();
+	    })
+	  }).then(function (resolve) {
+		  return user;
+	  })
+  }
+
   this.getCollection = function (limit) {
       let docs = null;
       return new Promise((resolve) => {

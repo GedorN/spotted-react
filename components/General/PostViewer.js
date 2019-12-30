@@ -142,6 +142,14 @@ export default class PostViewer extends React.Component {
       console.log(prop);
   }
 
+  goToUserProfile = () => {
+  	// console.warn(this.props.uid);
+	  console.warn('passing: ', this.props.uid);
+  	this.props.navigation.navigate('PresentationProfile', {
+  		userId: this.props.uid,
+    });
+  }
+
 
   render () {
     return (
@@ -154,11 +162,13 @@ export default class PostViewer extends React.Component {
               <ReportModal emitClose={this.disableModal}/>
           </Modal>
           <View style={{marginTop: 5}}>
-              <UserImgProfile circular height={55} width={55} uri={this.props.userImage}/>
+	          <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+		          <UserImgProfile circular height={55} width={55} uri={this.props.userImage}/>
+	          </TouchableOpacity>
           </View>
           <View style={styles.body}>
               <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
                       <Text
                           style={{marginLeft: 16}}
                       >
