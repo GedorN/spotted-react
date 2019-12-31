@@ -150,6 +150,12 @@ export default class PostViewer extends React.Component {
     });
   }
 
+  goToComments = () => {
+  	this.props.navigation.navigate('PostDetails', {
+  		pid: this.props.pid,
+    });
+  }
+
 
   render () {
     return (
@@ -193,6 +199,7 @@ export default class PostViewer extends React.Component {
                   </View>
               </View>
               <TouchableOpacity
+	              onPress={this.goToComments.bind(this)}
                   style={{alignSelf: 'flex-end', marginRight: 25, marginTop: 8}}
               >
                   <Image

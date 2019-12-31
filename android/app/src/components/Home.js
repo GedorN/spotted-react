@@ -18,6 +18,7 @@ import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
 import Modal from "react-native-modal";
+import UUIDGenerator from 'react-native-uuid-generator';
 const width = Dimensions.get('screen').width;
 
 export default class Home extends React.Component {
@@ -34,7 +35,7 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
-  	let result = heimdallr.getCollection(this.state.pulledPosts);
+  	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);
   		this.setState({ posts: resolve });
@@ -50,7 +51,7 @@ export default class Home extends React.Component {
   		let n = this.state.pulledPosts;
   		n = 5 + n;
   		console.log('puxando: ', n);
-  		let result = heimdallr.getCollection(n);
+  		let result = heimdallr.getCollection('post', n);
   		result.then(function(resolve) {
   			self.setState({posts: resolve});
   			self.setState({pulledPosts: n});
@@ -116,24 +117,28 @@ export default class Home extends React.Component {
      * Espera até que todas as fotos tenham sido enviadas para continuar
      * */
     if (sendedImages >= 1) {
-      let self = this;
-      const params = {};
-      params.active = 1;
-      params.date = new Date();
-      params.text = this.state.postText;
-      params.uid = heimdallr.user_id;
-      params.images = this.state.postImages;
-      params.user_name = heimdallr.user_name;
-      params.user_image = heimdallr.user_image;
-      let result = heimdallr.saveCollection('post', params);
-      result.then(function(resolve) {
-        console.log('result: ', resolve);
-        self.postTextInput.clear();
-        self.setState({postImages: []});
-        self.setState({showModal: false});
-      });
+	    let self = this;
+    	const params = {};
+    	params.active = 1;
+    	params.date = new Date();
+    	params.text = this.state.postText;
+    	params.uid = heimdallr.user_id;
+    	params.images = this.state.postImages;
+    	params.user_name = heimdallr.user_name;
+    	params.user_image = heimdallr.user_image;
+    	params.comments = 0;
+    	heimdallr.getUID().then((uuid) => {
+    		params.pid = uuid;
+    	    let result = heimdallr.saveCollection('post', params);
+	        result.then((resolve) => {
+	            console.log('result: ', resolve);
+	            self.postTextInput.clear();
+	            self.setState({postImages: []});
+	            self.setState({showModal: false});
+	        });
+	    })
     } else {
-      console.log(sendedImages, ' has already sended...');
+    	console.log(sendedImages, ' has already sended...');
     }
   }
 
@@ -386,7 +391,7 @@ export default class Home extends React.Component {
               style={{ marginTop: 30 }}
               data = {this.state.posts}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
+                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
               }
               keyExtractor={item => item._ref.id}
               onEndReachedThreshold={10}

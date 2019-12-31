@@ -49,17 +49,48 @@ const collections = {
 	            required: true,
             }
         ],
+		comment: [
+			{
+				desc: 'pid',
+				type: 'string',
+				required: true,
+			},
+			{
+				desc: 'cid',
+				type: 'string',
+				required: true,
+			},
+			{
+				desc: 'comment',
+				type : 'string',
+				required: true,
+			},
+			{
+				desc: 'date',
+				type: 'object',
+				required: true,
+			}
+		],
         post: [
             {
                 desc: 'user_name',
                 type: 'string',
                 require: true,
             },
+	        {
+	        	desc: 'pid',
+		        type: 'string',
+		        required: true,
+	        },
             {
                 desc: 'user_image',
                 type: 'string',
                 require: true,
             },
+	        {
+	        	desc: 'comments',
+		        type: 'number',
+	        },
             {
                 desc: 'uid',
                 type: 'string',

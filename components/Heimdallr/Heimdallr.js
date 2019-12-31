@@ -6,13 +6,29 @@
 
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
+import UUIDGenerator from 'react-native-uuid-generator';
+
 function HeimdallrLib() {
   this.user_id = /*'Yt5eZ0SGpy1U9QPTmIbI'*/ null;
   this.user_image ='https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
   this.user_name = 'Admin';
   this.token = null;
-
-
+  
+  this.getUID = function () {
+  	let UID = null;
+  	return new Promise((resolve) => {
+  		UUIDGenerator.getRandomUUID((uuid) => {
+  			UID = uuid;
+  			resolve();
+	    })
+    }).then(function (resolve) {
+    	if (!UID) {
+    		console.warn('Problema ao gerar chave única');
+	    }
+    	return UID;
+    })
+  }
+  
   this.PasswordRestore = function (params) {
   	let resseted= false;
   	return new Promise((resolve) => {
@@ -167,13 +183,13 @@ function HeimdallrLib() {
 	  })
   }
 
-  this.getCollection = function (limit) {
+  this.getCollection = function (collection, limit) {
       let docs = null;
       return new Promise((resolve) => {
           if (limit) {
             console.log('indo pegar com limite...');
             const post = firebase.firestore()
-              .collection('post')
+              .collection(collection)
                 .orderBy('date', 'desc')
                 .limit(limit)
               .get().then((result) => {
@@ -205,6 +221,27 @@ function HeimdallrLib() {
       })
   }
 
+	this.querycolletion = function (collection, param, condition) {
+		let docs = null;
+		return new Promise((resolve) => {
+			console.log('indo pegar com condição...');
+			const post = firebase.firestore()
+				.collection(collection)
+				.where(param, '==', condition)
+				.get().then((result) => {
+					console.log('chegou');
+					let orderByDesc = [];
+					docs = result.docs;
+					resolve();
+				}).catch ((e) => {
+					console.log('que caca: ', e);
+				});
+
+		}).then(function (resolve) {
+			return docs;
+		})
+	}
+
   this.saveCollection = function (collection, params) {
     let returnValue = null;
     return new Promise((resolve) => {
@@ -226,6 +263,7 @@ function HeimdallrLib() {
         const base = firebase.firestore().collection(collection);
         base.add(params).then(
           (docRef) => {
+          	console.warn(`Documento ${docRef.id}`);
             console.log(`Documento ${docRef.id}`);
             returnValue = docRef.id;
             resolve();
@@ -242,6 +280,7 @@ function HeimdallrLib() {
       return returnValue;
     })
   }
+
 
   this.uploadImage = function (image) {
     const rand = 'img' + new Date().getTime().toString();
