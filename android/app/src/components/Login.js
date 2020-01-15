@@ -7,8 +7,12 @@ import {
     Button,
     Text,
 	TouchableOpacity,
+	Image,
 } from 'react-native';
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
+import theme from "../../../../components/General/Theme";
+import FatBottomedButton from "./buttons/FatBottomedButton";
+import RUMineTextInput from "./Inputs/RUMineTextInput";
 const width = Dimensions.get('screen').width;
 
 export default class Login extends React.Component {
@@ -17,49 +21,68 @@ export default class Login extends React.Component {
         this.state= {
             user: null,
             password: null,
+	        showAttemptFail: false,
         };
     }
+
+    doLogin = () => {
+	    let result = this.props.login({ user: this.state.user, password: this.state.password });
+	    if (!result) {
+	    	this.setState({ showAttemptFail: true });
+	    	console.warn('caca: ', { user: this.state.user, password: this.state.password });
+	    }
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>
-                    Spotted
-                </Text>
+                <Image
+	                style={{width: 300, height: 250, padding: 0}}
+	                source={require('../../../../assets/images/logo-full.jpg')}
+                />
+	            {
+	            	this.state.showAttemptFail ?
+			            <Text style={{color: 'red'}}> *Login or password incorrect  </Text> :
+			            null
+	            }
                 <View style={styles.form}>
-                    <TextInput
-                        autoCapitalize='none'
-                        style={styles.input}
-                        placeholder='User...'
-                        autoCompleteType='email'
-                        keyboardType='email-address'
-                        textContentType='emailAddress'
-                        onChangeText={text => this.setState({user: text})}
+                    <RUMineTextInput
+	                    placeholder='User...'
+	                    autoCompleteType='email'
+	                    keyboardType='email-address'
+	                    textContentType='emailAddress'
+	                    onChangeText={text => this.setState({user: text})}
                     />
-                    <TextInput
-                        secureTextEntry={true}
-                        style={styles.input}
-                        placeholder='Password...'
-                        autoCompleteType='password'
-                        textContentType='password'
-                        onChangeText={text => this.setState({password: text})}
+                    <RUMineTextInput
+	                    secureTextEntry={true}
+	                    placeholder='Password...'
+	                    autoCompleteType='password'
+	                    textContentType='password'
+	                    onChangeText={text => this.setState({password: text})}
                     />
                     <TouchableOpacity style={styles.forgotPassword} onPress={() => this.props.navigation.navigate('PasswordRestore')}>
-	                    <Text style={{color: '#0645AD'}}>
+	                    <Text style={{color: theme.primary, textDecorationLine: 'underline'}}>
 		                    Esqueci minha senha
 	                    </Text>
                     </TouchableOpacity>
-                    <Button
-                        style={styles.loginButton}
-                        title='Login'
-                        onPress={() => this.props.login({ user: this.state.user, password: this.state.password })}
-                    />
-                    <View style={{marginTop: 20}}>
-		                <Button
-			                style={styles.signUpButtom}
-			                title='Registrar-se'
-			                onPress={() => this.props.navigation.navigate('SignUp')}
-		                />
-                    </View>
+	                <View style={{marginBottom: 10}}>
+		                <FatBottomedButton text={'Login'} onTap={this.doLogin.bind(this)} />
+	                </View>
+	                <View>
+		                <FatBottomedButton text={'Create account'} />
+	                </View>
+                    {/*<Button*/}
+                    {/*    style={styles.loginButton}*/}
+                    {/*    title='Login'*/}
+                    {/*    onPress={() => this.props.login({ user: this.state.user, password: this.state.password })}*/}
+                    {/*/>*/}
+                    {/*<View style={{marginTop: 20}}>*/}
+		            {/*    <Button*/}
+			        {/*        style={styles.signUpButtom}*/}
+			        {/*        title='Registrar-se'*/}
+			        {/*        onPress={() => this.props.navigation.navigate('SignUp')}*/}
+		            {/*    />*/}
+                    {/*</View>*/}
                 </View>
             </View>
         );
@@ -75,23 +98,6 @@ const styles = StyleSheet.create({
     form: {
         width: width * 0.8,
     },
-    input: {
-        height: 40,
-        borderBottomWidth: 1,
-        borderBottomColor: 'blue',
-        marginBottom: 5,
-    },
-    loginButton: {
-        marginTop: 20,
-	    marginBottom: 20,
-    },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 26,
-    },
-	signUpButtom: {
-		marginTop: 60,
-	},
 	forgotPassword: {
     	alignSelf: 'flex-end',
 		marginBottom: 50,

@@ -48,11 +48,16 @@ export default class MainScreen extends React.Component {
 	};
 
 	signUp = (data) => {
+		if (!data.user || data.user === '' || !data.password || data.password === '') {
+			return false;
+		}
 		let user = heimdallr.signIn(data);
 		user.then((resolve) => {
 			console.log('resolve asdasdasD:', resolve);
 			if (resolve.user) {
 				this.setState({isLogged: true});
+			} else {
+				return false;
 			}
 		});
 	}
