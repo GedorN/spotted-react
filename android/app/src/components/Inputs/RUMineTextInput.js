@@ -28,11 +28,15 @@ export default class RUMineTextInput extends React.Component {
 				keyboardType= { this.props.keyboardType ? this.props.keyboardType : 'default' }
 				textContentType = { this.props.textContentType ? this.props.textContentType : 'none'}
 				secureTextEntry={ this.props.secureTextEntry ? this.props.secureTextEntry : false }
+				onFocus={ this.props.onFocus }
 				style={{
 					height: this.props.height ? this.props.height : 40,
 					borderBottomWidth: this.props.borderBottomWidth ? this.props.borderBottomWidth : 1,
 					borderBottomColor: this.props.borderBottomColor ? this.props.borderBottomColor : theme.primary,
-					marginBottom: this.props.marginBottom ? this.props.marginBottom : 10
+					marginBottom: this.props.marginBottom ? this.props.marginBottom : 10,
+					marginRight: this.props.marginRight ? this.props.marginRight : 0,
+					marginLeft: this.props.marginLeft ? this.props.marginLeft : 0,
+					flex: this.props.flex ? this.props.flex : null
 				}}
 			/>
 		);

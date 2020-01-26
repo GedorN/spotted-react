@@ -14,6 +14,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
+import RUMineTextInput from "./Inputs/RUMineTextInput";
+import FatBottomedButton from "./buttons/FatBottomedButton";
+import theme from "../../../../components/General/Theme";
 export default  class SignUp extends React.Component {
 	constructor (props) {
 		super(props);
@@ -159,8 +162,7 @@ export default  class SignUp extends React.Component {
 					<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
 				</TouchableOpacity>
 				<View style={styles.form}>
-					<TextInput
-						style={styles.input}
+					<RUMineTextInput
 						onChangeText={ text => this.setState({ email: text }) }
 						autoCapitalize='none'
 						placeholder='Email'
@@ -169,54 +171,46 @@ export default  class SignUp extends React.Component {
 					/>
 				</View>
 				<View style={{width: width * 0.8, flexDirection: 'row'}}>
-					<TextInput
-						style={styles.inputLeft}
+					<RUMineTextInput
 						onChangeText={ text => this.setState({ name: text }) }
 						autoCapitalize='words'
 						placeholder='Nome'
 						textContentType='name'
+						marginRight={4}
+						flex={1}
 					/>
-					<TextInput
-						style={styles.inputRight}
+					<RUMineTextInput
 						onFocus={ focus => this.setState({showDatePicker: true}) }
 						// onChangeText={ focus => this.setState({showDatePicker: true}) }
 						autoCapitalize='none'
 						ref={input => (this.postTextInput = input)}
 						placeholder='Nascimento'
+						marginRight={4}
+						flex={1}
 					/>
 				</View>
 				<View style={styles.form}>
-					<TextInput
-						style={styles.input}
+					<RUMineTextInput
 						onChangeText={ text => this.setState({ password: text }) }
 						autoCapitalize='none'
 						placeholder='Password'
 						textContentType='password'
 					/>
-				</View>
-				<View style={styles.form}>
-					<TextInput
-						style={styles.input}
+					<RUMineTextInput
 						onChangeText={ text => this.setState({ confirmPassword: text }) }
 						autoCapitalize='none'
 						placeholder='Confirm password'
 						keyboardType='email-address'
 						textContentType='emailAddress'
 					/>
-				</View>
-				<View style={{marginBottom: 6, width: 100}}>
-					<Button
-						title='Sign Up'
-						color='blue'
-						onPress={this.register.bind(this)}
-					/>
-				</View>
-				<View style={{width: 100}}>
-					<Button
-						title='Cancelar'
-						color='red'
-						onPress={() => this.props.navigation.goBack()}
-					/>
+					<View style={{marginBottom: 10}}>
+						<FatBottomedButton text='Sign Up' backgroundColor={theme.primary} color={'white'} onPress={this.register.bind(this)}
+						/>
+					</View>
+					<View>
+						<FatBottomedButton text='Cancelar' backgroundColor={theme.primary} color={'white'} onPress={() => this.props.navigation.goBack()}
+						/>
+					</View>
 				</View>
 				{this.getDatePicker()}
 			</View>

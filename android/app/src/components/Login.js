@@ -14,6 +14,7 @@ import theme from "../../../../components/General/Theme";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
 const width = Dimensions.get('screen').width;
+const height = Dimensions.get('screen').height;
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -37,8 +38,8 @@ export default class Login extends React.Component {
         return (
             <View style={styles.container}>
                 <Image
-	                style={{width: 300, height: 250, padding: 0}}
-	                source={require('../../../../assets/images/logo-full.jpg')}
+	                style={{width: width, height: height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.7}}
+	                source={require('../../../../assets/images/simbol.png')}
                 />
 	            {
 	            	this.state.showAttemptFail ?
@@ -66,10 +67,10 @@ export default class Login extends React.Component {
 	                    </Text>
                     </TouchableOpacity>
 	                <View style={{marginBottom: 10}}>
-		                <FatBottomedButton text={'Login'} onTap={this.doLogin.bind(this)} />
+		                <FatBottomedButton backgroundColor={theme.primary} color={'white'} text={'Login'} onTap={this.doLogin.bind(this)} />
 	                </View>
 	                <View>
-		                <FatBottomedButton text={'Create account'} />
+		                <FatBottomedButton backgroundColor={theme.primary} color={'white'} text={'Create account'} onTap={() => this.props.navigation.navigate('SignUp')}/>
 	                </View>
                     {/*<Button*/}
                     {/*    style={styles.loginButton}*/}

@@ -43,6 +43,7 @@ export default class FatBottomedButton extends React.Component {
 					style={{
 						justifyContent: 'center',
 						alignItems: 'center',
+						backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : '',
 						borderColor: this.props.borderColor ? this.props.borderColor : theme.primary,
 						borderWidth: this.props.borderWidth ? this.props.borderWidth : 1.2,
 						height: this.props.height ? this.props.height : 32,
