@@ -11,7 +11,6 @@ import {
 	Image,
 } from 'react-native';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
@@ -19,7 +18,7 @@ import RUMineTextInput from "./Inputs/RUMineTextInput";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 import theme from "../../../../components/General/Theme";
 import GirlsJustWannaDatePicker from "./Inputs/GirlsJustWannaDatePicker";
-import DatePickerAndroid from "@react-native-community/datetimepicker/src/datepicker.android";
+import ImageResizer from "react-native-image-resizer";
 
 export default  class SignUp extends React.Component {
 	constructor (props) {
@@ -32,7 +31,12 @@ export default  class SignUp extends React.Component {
 			confirmPassword: null,
 			showDatePicker: false,
 			profileImage: null,
+			imageCompressed: null,
 		};
+	}
+
+	componentDidMount(): void {
+		console.log(this.props);
 	}
 
 	register = () => {
@@ -45,12 +49,13 @@ export default  class SignUp extends React.Component {
 		result.then( (resolve) => {
 			console.log('voltou>: ', resolve);
 			this.saveUser(resolve);
+			this.props.navigation.goBack();
 		});
 	}
 
 	saveUser = (user) => {
 		if (this.state.profileImage) {
-			let result = heimdallr.uploadImage(this.state.profileImage);
+			let result = heimdallr.uploadImage(this.state.imageCompressed);
 			result.then((resolve) => {
 				console.log('saving user with image...', user);
 				const params = {};
@@ -124,7 +129,20 @@ export default  class SignUp extends React.Component {
 						console.log('User tapped custom button: ', response.customButton);
 					} else {
 						console.log('Imagem escolhida');
+						console.log(response);
 						let image = 'file://' + response.path;
+						console.log('path: ', image);
+						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / 5, 'JPEG', 60).then(
+							(resolve) => {
+								console.log('resolve: ', resolve);
+								this.setState({imageCompressed: resolve.uri});
+
+							},
+							(error) => {
+								console.log('Image resize error: ', error);
+							}).catch((err) => {
+								console.log(err);
+						})
 						this.setState({profileImage: image});
 						console.log('Imagem: ', this.state.postImages);
 					}

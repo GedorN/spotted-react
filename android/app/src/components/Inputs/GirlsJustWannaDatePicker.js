@@ -32,8 +32,8 @@ export default class GirlsJustWannaDatePicker extends React.Component {
 		let dt = date.toString();
 		let m = mounth.indexOf(dt.substring(4, 7)) + 1;
 		let formatedDate = `${dt.substring(8, 10)}/${m < 10 ? '0' + m : m}/${dt.substring(11, 15)}`;
-		console.log('dddd: ', formatedDate);
 		this.setState({text: formatedDate});
+		this.setState({showDatePicker: false});
 		this.props.onChange(event, date);
 	}
 
