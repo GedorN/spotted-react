@@ -6,10 +6,11 @@ import {
 	StyleSheet,
 	Dimensions,
 	TextInput,
-	TouchableOpacity, PermissionsAndroid,
+	TouchableOpacity,
+	PermissionsAndroid,
+	Image,
 } from 'react-native';
 
-const width = Dimensions.get('screen').width;
 import DateTimePicker from '@react-native-community/datetimepicker';
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -17,6 +18,9 @@ import ImagePicker from "react-native-image-picker";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 import theme from "../../../../components/General/Theme";
+import GirlsJustWannaDatePicker from "./Inputs/GirlsJustWannaDatePicker";
+import DatePickerAndroid from "@react-native-community/datetimepicker/src/datepicker.android";
+
 export default  class SignUp extends React.Component {
 	constructor (props) {
 		super(props);
@@ -24,7 +28,7 @@ export default  class SignUp extends React.Component {
 			email: null,
 			name: null,
 			password: null,
-			birth: null,
+			birth: 'Nascimento',
 			confirmPassword: null,
 			showDatePicker: false,
 			profileImage: null,
@@ -133,33 +137,25 @@ export default  class SignUp extends React.Component {
 		}
 	}
 
-	setDate = (date) => {
+	setDate = (event, date) => {
+		console.log('setDate');
 		this.setState({showDatePicker: false});
-		console.log('date', new Date(date.nativeEvent.timestamp));
-		this.setState({birth: new Date(date.nativeEvent.timestamp)});
-		console.log('te text is: ', this.state.birth.toString());
-		this.postTextInput.setNativeProps({text: `${this.state.birth.getDate().toString()}/${this.state.birth.getMonth().toString()}/${this.state.birth.getFullYear().toString()}`});
+		console.log('date: ', date);
+		this.setState({birth: date});
 	}
 
-	getDatePicker = () => {
-		console.warn('selected');
-		if (this.state.showDatePicker) {
-			return (
-				<DateTimePicker value={new Date()}
-				                mode={'date'}
-				                is24Hour={true}
-				                display="default"
-				                onChange={this.setDate.bind(this)}
-				/>
-			);
-		}
-	}
 
 	render(){
 		return (
 			<View style={styles.container}>
+				<Image
+					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.7}}
+					source={require('../../../../assets/images/simbol.png')}
+				/>
 				<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
-					<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
+					<View style={{borderWidth: this.state.profileImage ? 0 : 1, borderColor: theme.primary, borderRadius: 100, padding: 10}}>
+						<UserImgProfile circular height={80} width={80} uri={this.state.profileImage} />
+					</View>
 				</TouchableOpacity>
 				<View style={styles.form}>
 					<RUMineTextInput
@@ -170,7 +166,7 @@ export default  class SignUp extends React.Component {
 						textContentType='emailAddress'
 					/>
 				</View>
-				<View style={{width: width * 0.8, flexDirection: 'row'}}>
+				<View style={{width: theme.width * 0.8, flexDirection: 'row'}}>
 					<RUMineTextInput
 						onChangeText={ text => this.setState({ name: text }) }
 						autoCapitalize='words'
@@ -179,15 +175,7 @@ export default  class SignUp extends React.Component {
 						marginRight={4}
 						flex={1}
 					/>
-					<RUMineTextInput
-						onFocus={ focus => this.setState({showDatePicker: true}) }
-						// onChangeText={ focus => this.setState({showDatePicker: true}) }
-						autoCapitalize='none'
-						ref={input => (this.postTextInput = input)}
-						placeholder='Nascimento'
-						marginRight={4}
-						flex={1}
-					/>
+					<GirlsJustWannaDatePicker text={'Nascimento'} textDecorationLine={'underline'} onChange={this.setDate.bind(this)}/>
 				</View>
 				<View style={styles.form}>
 					<RUMineTextInput
@@ -204,15 +192,14 @@ export default  class SignUp extends React.Component {
 						textContentType='emailAddress'
 					/>
 					<View style={{marginBottom: 10}}>
-						<FatBottomedButton text='Sign Up' backgroundColor={theme.primary} color={'white'} onPress={this.register.bind(this)}
+						<FatBottomedButton text='Sign Up' backgroundColor={theme.primary} color={'white'} onTap={this.register.bind(this)}
 						/>
 					</View>
 					<View>
-						<FatBottomedButton text='Cancelar' backgroundColor={theme.primary} color={'white'} onPress={() => this.props.navigation.goBack()}
+						<FatBottomedButton text='Cancelar' backgroundColor={theme.primary} color={'white'} onTap={() => this.props.navigation.goBack()}
 						/>
 					</View>
 				</View>
-				{this.getDatePicker()}
 			</View>
 		);
 	}
@@ -224,12 +211,15 @@ const styles= StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
+	datePicker: {
+		color: 'red'
+	},
 	formContainer: {
 		flex: 1,
 		flexDirection: 'row'
 	},
 	form: {
-		width: width * 0.8,
+		width: theme.width * 0.8,
 	},
 	input: {
 		height: 40,

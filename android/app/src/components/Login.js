@@ -70,7 +70,7 @@ export default class Login extends React.Component {
 		                <FatBottomedButton backgroundColor={theme.primary} color={'white'} text={'Login'} onTap={this.doLogin.bind(this)} />
 	                </View>
 	                <View>
-		                <FatBottomedButton backgroundColor={theme.primary} color={'white'} text={'Create account'} onTap={() => this.props.navigation.navigate('SignUp')}/>
+		                <FatBottomedButton backgroundColor={theme.primary} color={'white'} text={'Create account'} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
 	                </View>
                     {/*<Button*/}
                     {/*    style={styles.loginButton}*/}
