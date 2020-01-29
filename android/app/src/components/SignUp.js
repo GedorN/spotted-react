@@ -32,6 +32,10 @@ export default  class SignUp extends React.Component {
 			showDatePicker: false,
 			profileImage: null,
 			imageCompressed: null,
+			showErrorMessage: false,
+			showNameErrorMessage: false,
+			showErrorDifferentPasswords: false,
+			showErrorPasswordLength: false,
 		};
 	}
 
@@ -39,7 +43,36 @@ export default  class SignUp extends React.Component {
 		console.log(this.props);
 	}
 
+
+	signUpFieldsVerification = () => {
+		console.log('vou verificar');
+		if (!this.state.email || !this.state.name || !this.state.birth || !this.state.password || !this.state.confirmPassword) {
+			this.setState({showErrorMessage: true});
+			return false;
+		}
+		if (this.state.name.split(' ').length < 2) {
+			this.setState({showNameErrorMessage: true});
+			return false;
+		}
+
+		if (this.state.password !== this.state.confirmPassword) {
+			this.setState({showErrorDifferentPasswords: true});
+			return false;
+		}
+
+		if (this.state.password.length < 6) {
+			this.setState({showErrorPasswordLength: true});
+			return false;
+		}
+	}
+
 	register = () => {
+		console.log('chegou');
+		let fieldsOK = this.signUpFieldsVerification();
+		if (!fieldsOK) {
+			return ;
+		}
+		console.log('passou');
 		console.warn('recebido');
 		const params = {};
 		params.email = this.state.email;
@@ -175,6 +208,11 @@ export default  class SignUp extends React.Component {
 						<UserImgProfile circular height={80} width={80} uri={this.state.profileImage} />
 					</View>
 				</TouchableOpacity>
+				{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
+				{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
+				{this.state.showErrorDifferentPasswords && <Text style={{color: 'red'}}> * As senhas digitadas não são iguais </Text>}
+				{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
+
 				<View style={styles.form}>
 					<RUMineTextInput
 						onChangeText={ text => this.setState({ email: text }) }
