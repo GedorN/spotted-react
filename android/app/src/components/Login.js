@@ -38,7 +38,7 @@ export default class Login extends React.Component {
         return (
             <View style={styles.container}>
                 <Image
-	                style={{width: width, height: height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.7}}
+	                style={{width: 210, height: 258, padding: 0,  zIndex: -1}}
 	                source={require('../../../../assets/images/simbol.png')}
                 />
 	            {
@@ -67,24 +67,27 @@ export default class Login extends React.Component {
 	                    </Text>
                     </TouchableOpacity>
 	                <View style={{marginBottom: 10}}>
-		                <FatBottomedButton backgroundColor={theme.primary} color={'white'} text={'Login'} onTap={this.doLogin.bind(this)} />
+		                <FatBottomedButton color={theme.primary} text={'Login'} onTap={this.doLogin.bind(this)} />
 	                </View>
 	                <View>
-		                <FatBottomedButton backgroundColor={theme.primary} color={'white'} text={'Create account'} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
+		                <FatBottomedButton color={theme.primary} text={'Create account'} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
 	                </View>
                     {/*<Button*/}
-                    {/*    style={styles.loginButton}*/}
-                    {/*    title='Login'*/}
-                    {/*    onPress={() => this.props.login({ user: this.state.user, password: this.state.password })}*/}
-                    {/*/>*/}
-                    {/*<View style={{marginTop: 20}}>*/}
-		            {/*    <Button*/}
-			        {/*        style={styles.signUpButtom}*/}
-			        {/*        title='Registrar-se'*/}
-			        {/*        onPress={() => this.props.navigation.navigate('SignUp')}*/}
-		            {/*    />*/}
-                    {/*</View>*/}
+	                {/*    style={styles.loginButton}*/}
+	                {/*    title='Login'*/}
+	                {/*    onPress={() => this.props.login({ user: this.state.user, password: this.state.password })}*/}
+	                {/*/>*/}
+	                {/*<View style={{marginTop: 20}}>*/}
+	                {/*    <Button*/}
+	                {/*        style={styles.signUpButtom}*/}
+	                {/*        title='Registrar-se'*/}
+	                {/*        onPress={() => this.props.navigation.navigate('SignUp')}*/}
+	                {/*    />*/}
+	                {/*</View>*/}
                 </View>
+	            <View style={{position: 'absolute', bottom: 15}}>
+		            <Text style={{color: theme.primary, textDecorationLine: 'underline'}}>Entrar como anônimo</Text>
+	            </View>
             </View>
         );
     }
@@ -93,11 +96,11 @@ export default class Login extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+	    padding: 20
     },
     form: {
         width: width * 0.8,
+	    marginTop: 20,
     },
 	forgotPassword: {
     	alignSelf: 'flex-end',

@@ -16,12 +16,12 @@ export default class UserImgProfile extends React.Component {
     if (this.props.uri) {
       return (
         <Image
-          source={{uri: this.props.uri}}
-          style={{width: this.props.width ? this.props.width : 60,
-            height: this.props.height ? this.props.height : 60,
-            borderRadius: this.props.circular ? 100 : 0,
-            borderWidth: this.props.borderWidth ? this.props.borderWidth : 0,
-            borderColor: this.props.borderColor ? this.props.borderColor : null}}
+	        source={{uri: this.props.uri}}
+	        style={{width: this.props.width ? this.props.width : 60,
+		        height: this.props.height ? this.props.height : 60,
+		        borderRadius: this.props.circular ? 100 : 0,
+		        borderWidth: this.props.borderWidth ? this.props.borderWidth : 0,
+		        borderColor: this.props.borderColor ? this.props.borderColor : null}}
         />
       );
     } else {

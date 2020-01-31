@@ -200,14 +200,16 @@ export default  class SignUp extends React.Component {
 		return (
 			<View style={styles.container}>
 				<Image
-					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.7}}
+					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
 					source={require('../../../../assets/images/simbol.png')}
 				/>
-				<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
-					<View style={{borderWidth: this.state.profileImage ? 0 : 1, borderColor: theme.primary, borderRadius: 100, padding: 10}}>
-						<UserImgProfile circular height={80} width={80} uri={this.state.profileImage} />
-					</View>
-				</TouchableOpacity>
+				<View style={{justifyContent: 'center', alignContent: 'center'}}>
+					<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+						<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderWidth: this.state.profileImage ? 0 : 1, borderColor: theme.primary, borderRadius: 100}}>
+							<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
+						</View>
+					</TouchableOpacity>
+				</View>
 				{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
 				{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
 				{this.state.showErrorDifferentPasswords && <Text style={{color: 'red'}}> * As senhas digitadas não são iguais </Text>}
@@ -222,7 +224,7 @@ export default  class SignUp extends React.Component {
 						textContentType='emailAddress'
 					/>
 				</View>
-				<View style={{width: theme.width * 0.8, flexDirection: 'row'}}>
+				<View style={{flexDirection: 'row', marginTop: 30}}>
 					<RUMineTextInput
 						onChangeText={ text => this.setState({ name: text }) }
 						autoCapitalize='words'
@@ -240,6 +242,8 @@ export default  class SignUp extends React.Component {
 						placeholder='Password'
 						textContentType='password'
 					/>
+				</View>
+				<View style={styles.form}>
 					<RUMineTextInput
 						onChangeText={ text => this.setState({ confirmPassword: text }) }
 						autoCapitalize='none'
@@ -247,6 +251,8 @@ export default  class SignUp extends React.Component {
 						keyboardType='email-address'
 						textContentType='emailAddress'
 					/>
+				</View>
+				<View style={styles.form}>
 					<View style={{marginBottom: 10}}>
 						<FatBottomedButton text='Sign Up' backgroundColor={theme.primary} color={'white'} onTap={this.register.bind(this)}
 						/>
@@ -264,8 +270,8 @@ export default  class SignUp extends React.Component {
 const styles= StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
+		padding: 20,
+		paddingTop: 50
 	},
 	datePicker: {
 		color: 'red'
@@ -275,7 +281,7 @@ const styles= StyleSheet.create({
 		flexDirection: 'row'
 	},
 	form: {
-		width: theme.width * 0.8,
+		marginTop: 25,
 	},
 	input: {
 		height: 40,

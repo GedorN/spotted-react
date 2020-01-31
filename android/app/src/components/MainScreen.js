@@ -7,7 +7,7 @@ import {
 	TouchableOpacity,
 	Image,
 	Button,
-
+	StatusBar
 } from 'react-native';
 
 
@@ -33,6 +33,8 @@ export default class MainScreen extends React.Component {
 	}
 
 	componentDidMount(): void {
+		StatusBar.setBackgroundColor('white');
+		StatusBar.setBarStyle('dark-content', true);
 		let login = heimdallr.checkUser();
 		login.then((resolve) => {
 			console.log('checkado: ', resolve);
@@ -64,6 +66,7 @@ export default class MainScreen extends React.Component {
 
 	openModal = () => {
 		heimdallr.signOut();
+		this.forceUpdate();
 		// this.setState({open: true});
 		// this._drawer.open();
 	}
