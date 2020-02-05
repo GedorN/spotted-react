@@ -1,3 +1,15 @@
+/**
+ * GirlsJustWannaDatePicker
+ * Date picker component
+ *
+ * @params
+ * text: label text to field
+ * onChange: function callback to date result
+ * color: label color text
+ * textDecorationLine: ['underline'] to have underline in field
+ */
+
+
 import React from 'react';
 import {
 	TouchableOpacity,
@@ -20,6 +32,9 @@ export default class GirlsJustWannaDatePicker extends React.Component {
 	}
 
 	componentDidMount(): void {
+		if (!this.props.onChange) {
+			console.log('GirlJustWannaDatePicker: onChange() method is necessary');
+		}
 		this.props.text ? this.setState({text: this.props.text}) : null;
 	}
 
@@ -28,7 +43,6 @@ export default class GirlsJustWannaDatePicker extends React.Component {
 	}
 
 	dateChange = (event, date) => {
-		console.log('dateChange');
 		let dt = date.toString();
 		let m = mounth.indexOf(dt.substring(4, 7)) + 1;
 		let formatedDate = `${dt.substring(8, 10)}/${m < 10 ? '0' + m : m}/${dt.substring(11, 15)}`;

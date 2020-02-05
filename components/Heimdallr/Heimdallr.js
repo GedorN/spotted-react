@@ -40,7 +40,7 @@ function HeimdallrLib() {
   		        resolve();
 		    },
 		    (fail) => {
-		    	console.error('Falha ao tentar recuperar senha');
+		    	resolve();
 		    },
 	    );
     }).then(function (resolve) {

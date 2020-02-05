@@ -5,16 +5,22 @@ import {
 	TextInput,
 	Button,
 	Dimensions,
+	Image,
+	Text,
 } from 'react-native';
 
 const width = Dimensions.get('screen').width;
+import theme from "../../../../components/General/Theme";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
+import RUMineTextInput from "./Inputs/RUMineTextInput";
+import FatBottomedButton from "./buttons/FatBottomedButton";
 
 export default class PasswordRestore extends React.Component{
 	constructor (props) {
 		super(props);
 		this.state = {
 			user: null,
+			emailSent: false,
 		};
 	}
 
@@ -24,32 +30,60 @@ export default class PasswordRestore extends React.Component{
 		let recovery = heimdallr.PasswordRestore(params);
 		recovery.then((resolve) => {
 			console.log('resolve: ', resolve);
-			console.warn('Verifique seu email');
+			this.setState( {emailSent: true} );
 		});
+	}
+
+	cancel = () => {
+		this.props.navigation.goBack();
 	}
 
 
 	render() {
 		return (
 			<View style={styles.container}>
-				<View style={styles.form}>
-					<TextInput
-						autoCapitalize='none'
-						style={styles.input}
-						placeholder='E-mail...'
-						autoCompleteType='email'
-						keyboardType='email-address'
-						textContentType='emailAddress'
-						onChangeText={text => this.setState({ user: text })}
-					/>
-				</View>
-				<View style={{marginTop: 20}}>
-					<Button
-						style={styles.signUpButtom}
-						title='Recuperar'
-						onPress={this.recover.bind(this)}
-					/>
-				</View>
+				{/*<Image*/}
+				{/*	style={{width: 210, height: 258, padding: 0,  zIndex: -1}}*/}
+				{/*	source={require('../../../../assets/images/simbol.png')}*/}
+				{/*/>*/}
+				{ !this.state.emailSent &&
+					<View>
+						<Text style={{fontWeight: 'bold', marginTop: 30, fontSize: 16}}>
+							Esqueceu sua senha?
+						</Text>
+						<Text style={{fontWeight: 'bold', marginBottom: 30, fontSize: 16}}>
+							Não tem problema. Diga-nos o seu email para que a nossa equipe possa te ajudar
+						</Text>
+						<View style={styles.form}>
+							<RUMineTextInput
+								autoCapitalize='none'
+								placeholder='E-mail...'
+								autoCompleteType='email'
+								keyboardType='email-address'
+								textContentType='emailAddress'
+								onChangeText={text => this.setState({ user: text })}
+							/>
+							<View style={{marginTop: 20}}>
+								<FatBottomedButton color={theme.primary} text={'Recuperar'} onTap={this.recover.bind(this)}/>
+							</View>
+							<View style={{marginTop: 20}}>
+								<FatBottomedButton color={theme.primary} text={'Cancelar'} onTap={this.cancel.bind(this)}/>
+							</View>
+						</View>
+					</View>
+				}
+				{ this.state.emailSent &&
+					<View>
+						<View style={styles.form}>
+							<Text style={{fontWeight: 'bold', marginBottom: 30, fontSize: 16}}>
+								Tudo certo!!! Em breve você receberá um email da nossa equipe
+							</Text>
+							<View style={{marginTop: 20}}>
+								<FatBottomedButton color={theme.primary} text={'Voltar'} onTap={this.cancel.bind(this)}/>
+							</View>
+						</View>
+					</View>
+				}
 			</View>
 		);
 	}
@@ -58,19 +92,9 @@ export default class PasswordRestore extends React.Component{
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	input: {
-		height: 40,
-		borderBottomWidth: 1,
-		borderBottomColor: 'blue',
-		marginBottom: 5,
+		padding: 30
 	},
 	form: {
 		width: width * 0.8,
-	},
-	signUpButtom: {
-		marginTop: 60,
 	},
 });

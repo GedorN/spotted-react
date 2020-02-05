@@ -1,3 +1,18 @@
+/**
+ * RUMineTextInput
+ * Text input component
+ *
+ * @params
+ * onChangeText: callback method when text is changed
+ * autoCapitalize: capitalization type
+ * placeholder: placehold text
+ * autoCompleteType: auto complete that was sugested by android keyboard
+ * keyboardType: input type
+ * textContentType: Text content to  help android in auto complete
+ * secureTextEntry: if is password or not
+ * onFocus: enable auto focus in field
+ */
+
 import React from 'react';
 import {
 	TextInput,
