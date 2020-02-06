@@ -28,9 +28,9 @@ export default class PasswordRestore extends React.Component{
 		const params = {};
 		params.email = this.state.user;
 		let recovery = heimdallr.PasswordRestore(params);
+		this.setState( {emailSent: true} );
 		recovery.then((resolve) => {
 			console.log('resolve: ', resolve);
-			this.setState( {emailSent: true} );
 		});
 	}
 
