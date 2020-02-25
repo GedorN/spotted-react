@@ -4,9 +4,11 @@ import {
     View,
     Text,
     TouchableOpacity,
+	Image,
 } from 'react-native';
 
 import UserImgProfile from "./UserImgProfile";
+import theme from "./Theme";
 import heimdallr from "../Heimdallr/Heimdallr";
 
 export default class SideDrawer extends React.Component {
@@ -31,16 +33,26 @@ export default class SideDrawer extends React.Component {
                 </View>
                 <View style={styles.content}>
                     <TouchableOpacity>
-                        <Text> Home </Text>
+	                    <View style={styles.item}>
+		                    <Image source={require('../../assets/images/user-solid.png')}
+		                        style={styles.portraitIcon}
+		                    />
+	                        <Text> Perfil </Text>
+	                    </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Text> Configurações </Text>
+                    <TouchableOpacity onPress={() => {console.warn("configs")}}>
+	                    <View style={styles.item}>
+		                    <Image source={require('../../assets/images/user-cog-solid.png')}
+		                        style={styles.landscapeIcon}
+		                    />
+		                    <Text> Configurações </Text>
+	                    </View>
                     </TouchableOpacity>
-	                <TouchableOpacity onPress={() => {console.warn("hue")}}
-	                                  style={{marginTop: 50, backgroundColor: 'green'}}
-	                >
-		                <Text> Sair </Text>
-	                </TouchableOpacity>
+	                {/*<TouchableOpacity onPress={() => {console.warn("hue")}}*/}
+	                {/*                  style={{marginTop: 50, backgroundColor: 'green'}}*/}
+	                {/*>*/}
+		            {/*    <Text> Sair </Text>*/}
+	                {/*</TouchableOpacity>*/}
                 </View>
             </View>
         );
@@ -52,29 +64,63 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: 'red',
+        backgroundColor: 'white',
         alignItems: 'center',
-        padding: 10
+        padding: 10,
+	    shadowColor: "#000",
+	    shadowOffset: {
+		    width: 0,
+		    height: 2,
+	    },
+	    shadowOpacity: 0.23,
+	    shadowRadius: 2.62,
+
+	    elevation: 4,
     },
+	item: {
+    	padding: 2,
+		fontSize: 18,
+		color: theme.primary,
+    	flexDirection: 'row',
+		justifyContent: 'flex-start',
+		alignItems: 'center',
+		height: 60,
+		width: '100%',
+		marginBottom: 21,
+	},
     drawerHeader: {
         flex: 1,
         flexDirection: 'column',
         width: 200,
         alignItems: 'center',
-        backgroundColor: 'blue',
         marginTop: 25,
     },
     userName: {
-        color: 'white',
+        color: theme.primary,
+	    fontSize: 21,
         marginTop: 15,
     },
     content: {
         flex: 2,
+	    paddingTop: 8,
         flexDirection: 'column',
-        // width: 200,
-        alignItems: 'center',
-        backgroundColor: 'yellow',
+        // width: 200,,
+	    width: '100%',
+        alignItems: 'flex-start',
+	    paddingLeft: 21,
     },
+	landscapeIcon: {
+		tintColor: theme.primary,
+    	width: 40,
+		height: 32,
+		marginRight: 13,
+	},
+	portraitIcon: {
+    	tintColor: theme.primary,
+		width: 32,
+		height: 36,
+		marginRight: 21,
+	},
     userImage: {
 
     }

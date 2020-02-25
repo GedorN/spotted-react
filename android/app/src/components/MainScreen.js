@@ -65,10 +65,9 @@ export default class MainScreen extends React.Component {
 	}
 
 	openModal = () => {
-		heimdallr.signOut();
-		this.forceUpdate();
-		// this.setState({open: true});
-		// this._drawer.open();
+		// heimdallr.signOut();
+		// this.forceUpdate();
+		this._drawer.open();
 	}
 
 	closeModal = () => {
@@ -99,10 +98,17 @@ export default class MainScreen extends React.Component {
 						type='overlay'
 						captureGestures={true}
 						tweenDuration={250}
+						openDrawerOffset={0.2} // 20% gap on the right side of drawer
+						panCloseMask={0.2}
+						closedDrawerOffset={-3}
+						tapToClose={true}
+						tweenHandler={(ratio) => ({
+							main: { opacity: !ratio ? 1 : 0.2, backgroundColor: !ratio ? null : 'black' }
+						})}
 						acceptPan={true}
 						negotiatePan={true}
 						panThreshold={0.1}
-						panOpenMask={0.7}
+						panOpenMask={0.5}
 					>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.openModal.bind(this)}>
