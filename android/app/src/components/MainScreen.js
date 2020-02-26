@@ -37,7 +37,10 @@ export default class MainScreen extends React.Component {
 			isLogged: false,
 			index: 0,
 			routes: [
-				{ key: 'home', title: 'Home', icon: require('../../../../assets/images/home-solid.png') },
+				{ key: 'home', title: '', icon: require('../../../../assets/images/home-solid.png') },
+				{ key: 'search', title: '', icon: require('../../../../assets/images/search-solid.png') },
+				{ key: 'post', title: '', icon: require('../../../../assets/images/plus-square.png') },
+				{ key: 'user', title: '', icon: require('../../../../assets/images/user-solid.png') },
 			],
 		};
 	}
@@ -47,6 +50,8 @@ export default class MainScreen extends React.Component {
 	renderScene = ({ route, jumpTo }) => {
 		switch (route.key) {
 			case 'home':
+				return <Home navigation={this.props.navigation}/>;
+			case 'post':
 				return <Home navigation={this.props.navigation}/>;
 			default:
 				return <Home navigation={this.props.navigation}/>;
@@ -151,6 +156,9 @@ export default class MainScreen extends React.Component {
 							navigationState={this.state}
 							onIndexChange={this._handleIndexChange}
 							renderScene={this.renderScene}
+							barStyle={styles.bottomBar}
+							activeColor={theme.primary}
+							inactiveColor={'black'}
 						/>
 					</Drawer>
 					{/*<MenuDrawer*/}
@@ -210,6 +218,11 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: '#F04812'
+	},
+	bottomBar: {
+		backgroundColor: 'white',
+		borderTopWidth: 1,
+		borderColor: theme.primary,
 	},
 	headerImage: {
 		width: 120,
