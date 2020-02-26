@@ -11,12 +11,18 @@ import {
 } from 'react-native';
 
 
+import {
+	BottomNavigation,
+} from 'react-native-paper'
+const HomeS = () => <Home navigation={props.navigation}/>;
+
 import Home from './Home';
 import Login from "./Login";
 import MenuDrawer from "react-native-side-drawer";
 import Drawer from "react-native-drawer";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import SideDrawer from "../../../../components/General/SideDrawer";
+import theme from "../../../../components/General/Theme";
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
 const width = Dimensions.get('screen').width;
@@ -29,7 +35,22 @@ export default class MainScreen extends React.Component {
 			postImages: [],
 			open: false,
 			isLogged: false,
+			index: 0,
+			routes: [
+				{ key: 'home', title: 'Home', icon: require('../../../../assets/images/home-solid.png') },
+			],
 		};
+	}
+
+	_handleIndexChange = index => this.setState({ index });
+
+	renderScene = ({ route, jumpTo }) => {
+		switch (route.key) {
+			case 'home':
+				return <Home navigation={this.props.navigation}/>;
+			default:
+				return <Home navigation={this.props.navigation}/>;
+		}
 	}
 
 	componentDidMount(): void {
@@ -113,15 +134,24 @@ export default class MainScreen extends React.Component {
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.openModal.bind(this)}>
 								<Image source={require('../../../../assets/images/bars-solid.png')}
-								       style={{width: 30, height: 30, tintColor: 'white'}}/>
+								       style={{width: 30, height: 30, tintColor: theme.primary}}/>
 							</TouchableOpacity>
-							<Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>
-								Spotted
-							</Text>
+							{/*<Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>*/}
+							{/*	Spotted*/}
+							{/*</Text>*/}
+							<Image
+								style={styles.headerImage}
+								source={require('../../../../assets/images/name.png')}
+							/>
 						</View>
-						<View>
-							<Home navigation={this.props.navigation}/>
-						</View>
+						{/*<View>*/}
+						{/*	<Home navigation={this.props.navigation}/>*/}
+						{/*</View>*/}
+						<BottomNavigation
+							navigationState={this.state}
+							onIndexChange={this._handleIndexChange}
+							renderScene={this.renderScene}
+						/>
 					</Drawer>
 					{/*<MenuDrawer*/}
 					{/*    open={this.state.open}*/}
@@ -159,8 +189,9 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		width: width,
-		height: 40,
-		backgroundColor: 'red',
+		borderBottomWidth: 1,
+		borderColor: theme.primary,
+		height: 55,
 		color: 'white',
 		// justifyContent: 'center',
 		// alignItems: 'center',
@@ -179,5 +210,11 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: '#F04812'
-	}
+	},
+	headerImage: {
+		width: 120,
+		height: 40,
+		alignSelf: 'center',
+		marginLeft: 90
+	},
 });
