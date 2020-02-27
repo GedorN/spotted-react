@@ -18,6 +18,7 @@ const HomeS = () => <Home navigation={props.navigation}/>;
 
 import Home from './Home';
 import Login from "./Login";
+import PostWrite from "./Inputs/PostWrite";
 import MenuDrawer from "react-native-side-drawer";
 import Drawer from "react-native-drawer";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -37,26 +38,31 @@ export default class MainScreen extends React.Component {
 			isLogged: false,
 			index: 0,
 			routes: [
-				{ key: 'home', title: '', icon: require('../../../../assets/images/home-solid.png') },
-				{ key: 'search', title: '', icon: require('../../../../assets/images/search-solid.png') },
-				{ key: 'post', title: '', icon: require('../../../../assets/images/plus-square.png') },
-				{ key: 'user', title: '', icon: require('../../../../assets/images/user-solid.png') },
+				{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
+				{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
+				{ key: 'post', icon: require('../../../../assets/images/plus-square.png')},
+				{ key: 'user', icon: require('../../../../assets/images/user-solid.png') },
 			],
 		};
 	}
+	getHome = () => {return<Home navigation={this.props.navigation}/>};
 
 	_handleIndexChange = index => this.setState({ index });
 
-	renderScene = ({ route, jumpTo }) => {
-		switch (route.key) {
-			case 'home':
-				return <Home navigation={this.props.navigation}/>;
-			case 'post':
-				return <Home navigation={this.props.navigation}/>;
-			default:
-				return <Home navigation={this.props.navigation}/>;
-		}
-	}
+	// renderScene = ({ route, jumpTo }) => {
+	// 	switch (route.key) {
+	// 		case 'home':
+	// 			return <Home navigation={this.props.navigation}/>;
+	// 		case 'post':
+	// 			return <PostWrite />;
+	// 		default:
+	// 			return <Home navigation={this.props.navigation}/>;
+	// 	}
+	// }
+	renderScene = BottomNavigation.SceneMap({
+		home: this.getHome,
+		post: PostWrite,
+	});
 
 	componentDidMount(): void {
 		StatusBar.setBackgroundColor('white');
@@ -125,7 +131,7 @@ export default class MainScreen extends React.Component {
 						captureGestures={true}
 						tweenDuration={250}
 						openDrawerOffset={0.2} // 20% gap on the right side of drawer
-						panCloseMask={0.2}
+						panCloseMask={0.9}
 						closedDrawerOffset={-3}
 						tapToClose={true}
 						tweenHandler={(ratio) => ({
@@ -158,7 +164,10 @@ export default class MainScreen extends React.Component {
 							renderScene={this.renderScene}
 							barStyle={styles.bottomBar}
 							activeColor={theme.primary}
-							inactiveColor={'black'}
+							// inactiveColor={'black'}
+							sceneAnimationEnabled={false}
+							shifting={false}
+							labeled={false}
 						/>
 					</Drawer>
 					{/*<MenuDrawer*/}
