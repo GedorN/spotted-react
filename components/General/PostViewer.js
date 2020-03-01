@@ -14,6 +14,7 @@ import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
 import ReportModal from "./ReportModal";
 import Modal from "react-native-modal";
+import theme from "./Theme";
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
@@ -167,46 +168,57 @@ export default class PostViewer extends React.Component {
           >
               <ReportModal emitClose={this.disableModal}/>
           </Modal>
-          <View style={{marginTop: 5}}>
-	          <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-		          <UserImgProfile circular height={55} width={55} uri={this.props.userImage}/>
-	          </TouchableOpacity>
+          <View style={styles.postHeaderUserImage}>
+              <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+                  <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>
+              </TouchableOpacity>
           </View>
-          <View style={styles.body}>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{flexDirection: 'column'}}>
+              <View style={styles.postHeader}>
+                  {/*<View style={styles.postHeaderUserImage}>*/}
+                  {/*    <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>*/}
+                  {/*        <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>*/}
+                  {/*    </TouchableOpacity>*/}
+                  {/*</View>*/}
                   <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
                       <Text
-                          style={{marginLeft: 16}}
+                          style={{marginLeft: 16, fontWeight: 'bold'}}
                       >
                           {heimdallr.user_name}
                       </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                      style={{alignSelf: 'flex-end', marginRight: 10}}
-                  >
-                      <OptionsMenu
-                          button={require('../../assets/images/ellipsis-h-solid.png') }
-                          buttonStyle={{ width: 20, height: 20 }}
-                          options={['Denunciar']}
-                          actions={[this.toggleModal.bind(this)]}
-                      />
-                  </TouchableOpacity>
-              </View>
-              <View style={styles.post}>
-                  <Text style={{color: 'white'}}> { this.props.text } </Text>
-                  <View>
-                      {/*{this.getModalImagesLayout()}*/}
+                  <View style={{left: width * 0.55}}>
+                      <TouchableOpacity
+                      >
+                          <OptionsMenu
+                              button={require('../../assets/images/ellipsis-h-solid.png') }
+                              buttonStyle={{ width: 20, height: 20}}
+                              options={['Denunciar']}
+                              actions={[this.toggleModal.bind(this)]}
+                          />
+                      </TouchableOpacity>
                   </View>
               </View>
-              <TouchableOpacity
-	              onPress={this.goToComments.bind(this)}
-                  style={{alignSelf: 'flex-end', marginRight: 25, marginTop: 8}}
-              >
-                  <Image
-                      style={{width: 20, height: 20}}
-                      source={require('../../assets/images/comment-regular.png') }
-                  />
-              </TouchableOpacity>
+              <View style={styles.body}>
+                  <View style={styles.post}>
+                      <Text> { this.props.text } </Text>
+                      <View>
+                          {this.getModalImagesLayout()}
+                      </View>
+                  </View>
+              </View>
+              <View style={styles.postFooter}>
+                  <View style={{ left: width * 0.7}}>
+                      <TouchableOpacity
+                          onPress={this.goToComments.bind(this)}
+                      >
+                          <Image
+                              style={{width: 20, height: 20}}
+                              source={require('../../assets/images/comment-regular.png') }
+                          />
+                      </TouchableOpacity>
+                  </View>
+              </View>
           </View>
       </View>
     );
@@ -217,18 +229,41 @@ export default class PostViewer extends React.Component {
       container: {
           flexDirection: 'row',
           alignItems: 'flex-start',
-          marginTop: 10,
           padding: 10,
+          borderTopWidth: 0.2,
+          borderColor: theme.primary,
       },
       body: {
           flexDirection: 'column',
       },
+      postHeader: {
+          flexDirection: 'row',
+          height: 15,
+          fontWeight: 'bold',
+          alignItems: 'center',
+          alignContent: 'center',
+          width: width * 0.95,
+      },
+      postFooter: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          alignContent: 'center',
+          width: width * 0.95,
+          height: 30,
+      },
+      postHeaderUserImage: {
+          justifyContent: "flex-start",
+          alignContent: 'flex-start',
+          padding: 0,
+          alignItems: 'flex-start',
+          height: 30
+      },
       post: {
-          backgroundColor: 'green',
-          alignSelf: 'center',
+          alignSelf: 'flex-start',
           width: width * 0.7,
-          padding: 10,
+          padding: 2,
           marginLeft: 10,
-          borderRadius: 8
+          borderRadius: 8,
+          color: 'black',
       }
   });
