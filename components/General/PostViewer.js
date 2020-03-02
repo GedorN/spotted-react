@@ -42,12 +42,12 @@ export default class PostViewer extends React.Component {
 
         if (this.props.images.length === 1) {
           return (
-            <View>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
-                <View style={{width: 317, height: 350}}>
+                <View style={{width: 280, height: 200}}>
                   <Image
                     source={{uri: this.props.images[0]}}
-                    style={{width: 317, height: 350}}
+                    style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
               </View>
@@ -55,18 +55,18 @@ export default class PostViewer extends React.Component {
           )
         } else if (this.props.images.length === 2) {
           return (
-            <View>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row', marginBottom: 5}}>
-                <View style={{width: 160, height: 250, backgroundColor: 'yellow'}}>
+                <View style={{width: 140, height: 200}}>
                   <Image
                     source={{uri: this.props.images[0]}}
-                    style={{width: 160, height: 250}}
+                    style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
-                <View style={{width: 160, height: 250, backgroundColor: 'purple'}}>
+                <View style={{width: 140, height: 200}}>
                   <Image
                     source={{uri: this.props.images[1]}}
-                    style={{width: 160, height: 250}}
+                    style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
               </View>
@@ -74,26 +74,26 @@ export default class PostViewer extends React.Component {
           )
         } else if (this.props.images.length === 3) {
           return (
-            <View>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
-                <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
+                <View style={{width: 140, height: 200}}>
                   <Image
                     source={{uri: this.props.images[0]}}
-                    style={{width: 160, height: 100}}
+                    style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
-                <View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
+                <View style={{width: 140, height: 100}}>
                   <Image
                     source={{uri: this.props.images[1]}}
-                    style={{width: 160, height: 100}}
+                    style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
               </View>
               <View style={{ flexDirection: 'row',  marginBottom: 5}}>
-                <View style={{width: 320, height: 100, backgroundColor: 'pink'}}>
+                <View style={{width: 140, height: 99}}>
                   <Image
                     source={{uri: this.props.images[2]}}
-                    style={{width: 320, height: 100}}
+                    style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
               </View>
@@ -101,32 +101,32 @@ export default class PostViewer extends React.Component {
           )
         } else if (this.props.images.length === 4) {
           return (
-            <View>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
-                <View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
+                <View style={{width: 140, height: 100}}>
                   <Image
                     source={{uri: this.props.images[1]}}
-                    style={{width: 160, height: 100}}
+                    style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
-                <View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
+                <View style={{width: 140, height: 100}}>
                   <Image
                     source={{uri: this.props.images[1]}}
-                    style={{width: 160, height: 100}}
+                    style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
               </View>
               <View style={{ flexDirection: 'row',  marginBottom: 5}}>
-                <View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
+                <View style={{width: 140, height: 100}}>
                   <Image
                     source={{uri: this.props.images[2]}}
-                    style={{width: 160, height: 100}}
+                    style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
-                <View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
+                <View style={{width: 140, height: 100}}>
                   <Image
                     source={{uri: this.props.images[3]}}
-                    style={{width: 160, height: 100}}
+                    style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
               </View>
@@ -231,7 +231,7 @@ export default class PostViewer extends React.Component {
           alignItems: 'flex-start',
           padding: 10,
           borderTopWidth: 0.2,
-          borderColor: theme.primary,
+          borderColor: 'rgba(59, 56, 50, 0.2)',
       },
       body: {
           flexDirection: 'column',

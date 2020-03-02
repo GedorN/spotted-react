@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
 		// backgroundColor:'blue'
 	},
 	header: {
-		width: width,
+		width: width + 10,
 		borderBottomWidth: 1,
 		borderColor: theme.primary,
 		height: 55,

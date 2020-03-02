@@ -75,7 +75,6 @@ export default class Home extends React.Component {
     return (
       <View style={{}}>
           <FlatList
-              style={{ marginTop: 30 }}
               data = {this.state.posts}
               renderItem={ ({item}) =>
                   <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
