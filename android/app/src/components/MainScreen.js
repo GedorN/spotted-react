@@ -7,12 +7,14 @@ import {
 	TouchableOpacity,
 	Image,
 	Button,
-	StatusBar
+	StatusBar,
+	KeyboardAvoidingView,
 } from 'react-native';
 
 
 import {
 	BottomNavigation,
+	Modal,
 } from 'react-native-paper'
 const HomeS = () => <Home navigation={props.navigation}/>;
 
@@ -27,6 +29,7 @@ import theme from "../../../../components/General/Theme";
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
 const width = Dimensions.get('screen').width;
+const height = Dimensions.get('screen').height;
 
 export default class MainScreen extends React.Component {
 	constructor() {
@@ -37,6 +40,7 @@ export default class MainScreen extends React.Component {
 			open: false,
 			isLogged: false,
 			index: 0,
+			showModal: false,
 			routes: [
 				{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 				{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
@@ -47,7 +51,14 @@ export default class MainScreen extends React.Component {
 	}
 	getHome = () => {return<Home navigation={this.props.navigation}/>};
 
-	_handleIndexChange = index => this.setState({ index });
+	_handleIndexChange = (index) => {
+		if (index === 2) {
+			this.setState({ showModal: true });
+			this.setState({ index: 0 });
+		} else {
+			this.setState({ index })
+		}
+	};
 
 	// renderScene = ({ route, jumpTo }) => {
 	// 	switch (route.key) {
@@ -63,6 +74,8 @@ export default class MainScreen extends React.Component {
 		home: this.getHome,
 		post: PostWrite,
 	});
+
+	_hideModal = () => this.setState({ showModal: false });
 
 	componentDidMount(): void {
 		StatusBar.setBackgroundColor('white');
@@ -169,6 +182,13 @@ export default class MainScreen extends React.Component {
 							shifting={false}
 							labeled={false}
 						/>
+						<Modal
+							visible={this.state.showModal}
+							onDismiss={this._hideModal}
+							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+						>
+							<PostWrite close={this._hideModal.bind(this)}/>
+						</Modal>
 					</Drawer>
 					{/*<MenuDrawer*/}
 					{/*    open={this.state.open}*/}

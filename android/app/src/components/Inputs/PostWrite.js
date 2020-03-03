@@ -4,18 +4,26 @@ import {
 	View,
 	TextInput,
 	TouchableOpacity,
-	Image, PermissionsAndroid
+	Image,
+	PermissionsAndroid,
+	KeyboardAvoidingView,
+	Dimensions,
 } from 'react-native';
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
+import theme from "../../../../../components/General/Theme";
+import FatBottomedButton from "../buttons/FatBottomedButton";
+import {Text} from "react-native-paper";
+const width = Dimensions.get('screen').width;
+const height = Dimensions.get('screen').height;
 
 export default class PostWrite extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			postText: '',
-			postImages: ''.fontcolor()
+			postText: [],
+			postImages: [],
 		};
 	}
 
@@ -30,7 +38,7 @@ export default class PostWrite extends React.Component {
 		}this.setState({postImages: newImg});
 	}
 
-	doPost() {
+	doPost = () => {
 		if (this.state.postText == '' && this.state.postImages.length == 0 ) {
 			console.log('nothing to do...');
 			return ;
@@ -151,10 +159,10 @@ export default class PostWrite extends React.Component {
 			return (
 				<View>
 					<View style={{ flexDirection: 'row'}}>
-						<View style={{width: 317, height: 350}}>
+						<View style={{width: 280, height: 200}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[0]}}
-								style={{width: 317, height: 350}}
+								style={{width: 280, height: 200}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
@@ -276,48 +284,98 @@ export default class PostWrite extends React.Component {
 
 	render() {
 		return (
-			<View>
-
+			<View style={styles.container}>
 				<View>
-					<View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, padding: 5}}>
-						<UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>
-						<TextInput
-							style={{height: 75, width: 240,  borderColor: 'gray', borderWidth: 1, marginLeft: 12, borderRadius: 12}}
-							onChangeText={text => this.setState({postText: text})}
-							autoCapitalize="sentences"
-							multiline
-							textAlignVertical="top"
-							placeholder="O que você está pensando?"
-							ref={input => (this.postTextInput = input)}
-						/>
-					</View>
-					<View style={{flexDirection: 'row-reverse', marginTop: 2}}>
-						<TouchableOpacity onPress={this.doPost.bind(this)}
-						                  style={{marginRight: 20}}
-						>
-							<Image
-								style={{width: 30, height: 30}}
-								source={require('../../../../../assets/images/send.png')}
+					<View>
+						<View style={styles.header}>
+							<TouchableOpacity onPress={this.props.close}>
+								<Image
+									source={require('../../../../../assets/images/times-solid.png')}
+									style={{width: 20, height: 20}}
+								/>
+							</TouchableOpacity>
+						</View>
+						{/*<UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>*/}
+						<View>
+							<TextInput
+								style={styles.postWriter}
+								onChangeText={text => this.setState({postText: text})}
+								autoCapitalize="sentences"
+								multiline
+								textAlignVertical="top"
+								placeholder="O que você está pensando?"
+								ref={input => (this.postTextInput = input)}
 							/>
+						</View>
+						{this.getModalImagesLayout()}
+						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+							<View style={styles.imageButtonSelect}>
+								<Image
+									source={require('../../../../../assets/images/images.png')}
+									style={{width: 50, height: 40}}
+								/>
+								<Text> Adicionar imagem... </Text>
+							</View>
 						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={this.sendImagePropt.bind(this)}
-							style={{marginRight: 20}}
-						>
-							<Image
-								style={{width: 30, height: 30}}
-								source={require('../../../../../assets/images/camera-icon.png')}
-							/>
-						</TouchableOpacity>
+						<View style={{marginTop: 15, width: width * 0.9, marginLeft: 25}}>
+							<FatBottomedButton color={theme.primary} text={'Postar'} onTap={this.doPost.bind(this)}/>
+						</View>
 					</View>
+					{/*<View style={{flexDirection: 'row-reverse', marginTop: 2}}>*/}
+					{/*	<TouchableOpacity onPress={this.doPost.bind(this)}*/}
+					{/*	                  style={{marginRight: 20}}*/}
+					{/*	>*/}
+					{/*		<Image*/}
+					{/*			style={{width: 30, height: 30}}*/}
+					{/*			source={require('../../../../../assets/images/send.png')}*/}
+					{/*		/>*/}
+					{/*	</TouchableOpacity>*/}
+					{/*	<TouchableOpacity*/}
+					{/*		onPress={this.sendImagePropt.bind(this)}*/}
+					{/*		style={{marginRight: 20}}*/}
+					{/*	>*/}
+					{/*		<Image*/}
+					{/*			style={{width: 30, height: 30}}*/}
+					{/*			source={require('../../../../../assets/images/camera-icon.png')}*/}
+					{/*		/>*/}
+					{/*	</TouchableOpacity>*/}
+					{/*</View>*/}
 				</View>
-				{this.getModalImagesLayout()}
 			</View>
 		);
 	}
 }
 
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		alignItems: 'center',
+		alignContent: 'center',
+		position: 'absolute',
+	},
+	header: {
+		width: width,
+		height: 20,
+		justifyContent: 'flex-end',
+		alignItems: 'flex-end',
+		alignContent: 'center',
+		padding: 4,
+	},
+	postWriter: {
+		width: width + 10,
+		borderBottomWidth: 1,
+		borderColor: theme.primary,
+		height: 500,
+	},
+	imageButtonSelect: {
+		height: height * 0.1,
+		width: width + 10,
+		marginTop: 2,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignContent: 'center',
+		backgroundColor: 'rgba(99, 96, 96, 0.2)',
+	},
 	deleteImgIcon: {
 		width: 20,
 		height: 20,
