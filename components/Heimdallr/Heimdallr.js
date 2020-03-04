@@ -185,7 +185,24 @@ function HeimdallrLib() {
 		  return user;
 	  })
   }
-
+  
+  this.getUserColletion = function (collection, limit, uid) {
+  	let docs = null;
+  	console.log('collection: ', collection, 'liimit: ', limit, 'uid: ', uid);
+  	return new Promise((resolve) => {
+        const post = firebase.firestore()
+		    .collection(collection)
+		    .orderBy('date', 'desc')
+		    .limit(limit)
+		    .get().then((result) => {
+		    	docs = result.docs;
+		        resolve(result.docs.filter((snap) => snap._data.uid === uid));
+	        }).catch ((e) => {
+	            console.log('que caca: ', e);
+            });
+    })
+	  
+  }
   this.getCollection = function (collection, limit) {
       let docs = null;
       return new Promise((resolve) => {

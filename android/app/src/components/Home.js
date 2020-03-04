@@ -29,6 +29,7 @@ export default class Home extends React.Component {
         pulledPosts: 10,
         loading: false,
 	    pulling: false,
+	    endPulling: false,
     };
   }
 
@@ -41,31 +42,41 @@ export default class Home extends React.Component {
   }
 
   pullMorePosts = (distanceFromEnd) => {
-  	console.log('interval?', distanceFromEnd);
-  	console.log('state before: ', this.state);
-  	if (!this.state.pulling) {
-  		console.log('int pullling');
-  		this.setState({ pulling: true });
-	    console.log('chegou');
-	    let n = this.state.pulledPosts;
-	    n = 5 + n;
-	    console.log('puxando: ', n);
-	    let result = heimdallr.getCollection('post', n);
-	    result.then((resolve) => {
-	        this.setState({posts: resolve});
-	        this.setState({pulledPosts: n});
-		    this.setState({ pulling: false });
-		    console.log()
-	    });
+  	if (!this.state.endPulling) {
+	    console.log('interval?', distanceFromEnd);
+	    console.log('state before: ', this.state);
+	    if (!this.state.pulling) {
+	        console.log('int pullling');
+	        this.setState({ pulling: true });
+		    console.log('chegou');
+		    let n = this.state.pulledPosts;
+		    n = 5 + n;
+		    console.log('puxando: ', n);
+		    let result = heimdallr.getCollection('post', n);
+		    result.then((resolve) => {
+			    if (resolve.length === this.state.posts.length) {
+				    this.setState({ endPulling: true });
+			    }
+		        this.setState({posts: resolve});
+		        this.setState({pulledPosts: n});
+			    this.setState({ pulling: false });
+			    console.log()
+		    });
+	    }
     }
   }
 
   renderFooter = () =>  {
-  	return (
-  		<View>
-		    <ActivityIndicator />
-  		</View>
-    );
+	  if (!this.state.endPulling) {
+		  return (
+			  <View style={{marginBottom: 70}}>
+				  <ActivityIndicator size="large" color="#0000ff" />
+			  </View>
+		  );
+	  }
+	  return (
+		  <Text>Fim da linha</Text>
+	  )
   };
 
 
@@ -84,11 +95,7 @@ export default class Home extends React.Component {
               onEndReached={({ distanceFromEnd }) => {
                   this.pullMorePosts(distanceFromEnd);
               }}
-              ListFooterComponent={ ({item}) =>
-	              <View style={{marginBottom: 70}}>
-                      <ActivityIndicator size="large" color="#0000ff" />
-                  </View>
-              }
+              ListFooterComponent={ this.renderFooter.bind(this)}
 
           />
       </View>

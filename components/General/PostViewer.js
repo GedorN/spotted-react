@@ -82,19 +82,19 @@ export default class PostViewer extends React.Component {
                     style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
                   />
                 </View>
-                <View style={{width: 140, height: 100}}>
-                  <Image
-                    source={{uri: this.props.images[1]}}
-                    style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-                  />
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row',  marginBottom: 5}}>
-                <View style={{width: 140, height: 99}}>
-                  <Image
-                    source={{uri: this.props.images[2]}}
-                    style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+                <View style={{flexDirection: 'column'}}>
+	                <View style={{width: 140, height: 100}}>
+	                  <Image
+	                    source={{uri: this.props.images[1]}}
+	                    style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                  />
+	                </View>
+	                <View style={{width: 140, height: 99}}>
+	                  <Image
+	                    source={{uri: this.props.images[2]}}
+	                    style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                  />
+	                </View>
                 </View>
               </View>
             </View>

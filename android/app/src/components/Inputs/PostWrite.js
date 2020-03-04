@@ -94,6 +94,7 @@ export default class PostWrite extends React.Component {
 					self.postTextInput.clear();
 					self.setState({postImages: []});
 					self.setState({showModal: false});
+					this.props.close();
 				});
 			})
 		} else {
@@ -157,12 +158,12 @@ export default class PostWrite extends React.Component {
 		* */
 		if (this.state.postImages.length === 1) {
 			return (
-				<View>
+				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 					<View style={{ flexDirection: 'row'}}>
 						<View style={{width: 280, height: 200}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[0]}}
-								style={{width: 280, height: 200}}
+								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
@@ -173,21 +174,21 @@ export default class PostWrite extends React.Component {
 			)
 		} else if (this.state.postImages.length === 2) {
 			return (
-				<View>
+				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 					<View style={{ flexDirection: 'row', marginBottom: 5}}>
-						<View style={{width: 160, height: 250, backgroundColor: 'yellow'}}>
+						<View style={{width: 140, height: 200, backgroundColor: 'yellow'}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[0]}}
-								style={{width: 160, height: 250}}
+								style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
-						<View style={{width: 160, height: 250, backgroundColor: 'purple'}}>
+						<View style={{width: 140, height: 200}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[1]}}
-								style={{width: 160, height: 250}}
+								style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
@@ -198,77 +199,77 @@ export default class PostWrite extends React.Component {
 			)
 		} else if (this.state.postImages.length === 3) {
 			return (
-				<View>
+				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 					<View style={{ flexDirection: 'row'}}>
-						<View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
+						<View style={{width: 140, height: 200}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[0]}}
-								style={{width: 160, height: 100}}
+								style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
-						<View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
-							<Image
-								source={{uri: 'file://' + this.state.postImages[1]}}
-								style={{width: 160, height: 100}}
-							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
-								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
-							</TouchableOpacity>
-						</View>
-					</View>
-					<View style={{ flexDirection: 'row',  marginBottom: 5}}>
-						<View style={{width: 320, height: 100, backgroundColor: 'pink'}}>
-							<Image
-								source={{uri: 'file://' + this.state.postImages[2]}}
-								style={{width: 320, height: 100}}
-							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
-								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
-							</TouchableOpacity>
+						<View style={{flexDirection: 'column'}}>
+							<View style={{width: 140, height: 100}}>
+								<Image
+									source={{uri: 'file://' + this.state.postImages[1]}}
+									style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+								/>
+								<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
+									<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
+								</TouchableOpacity>
+							</View>
+							<View style={{width: 140, height: 99}}>
+								<Image
+									source={{uri: 'file://' + this.state.postImages[2]}}
+									style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+								/>
+								<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
+									<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
+								</TouchableOpacity>
+							</View>
 						</View>
 					</View>
 				</View>
 			)
 		} else if (this.state.postImages.length === 4) {
 			return (
-				<View>
-					<View style={{ flexDirection: 'row'}}>
-						<View style={{width: 160, height: 100, backgroundColor: 'yellow'}}>
+				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10, flexDirection: 'row'}}>
+					<View style={{ flexDirection: 'column'}}>
+						<View style={{width: 140, height: 100}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[1]}}
-								style={{width: 160, height: 100}}
+								style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
-						<View style={{width: 160, height: 100, backgroundColor: 'purple'}}>
+						<View style={{width: 140, height: 100}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[1]}}
-								style={{width: 160, height: 100}}
+								style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
 					</View>
-					<View style={{ flexDirection: 'row',  marginBottom: 5}}>
-						<View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
+					<View style={{ flexDirection: 'column',  marginBottom: 5}}>
+						<View style={{width: 140, height: 100}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[2]}}
-								style={{width: 160, height: 100}}
+								style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
-						<View style={{width: 160, height: 100, backgroundColor: 'pink'}}>
+						<View style={{width: 140, height: 100}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[3]}}
-								style={{width: 160, height: 100}}
+								style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 3)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
@@ -298,7 +299,11 @@ export default class PostWrite extends React.Component {
 						{/*<UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>*/}
 						<View>
 							<TextInput
-								style={styles.postWriter}
+								style={{width: width + 10,
+									borderBottomWidth: 1,
+									borderColor: theme.primary,
+									height: this.state.postImages.length > 0 ? 300 : 500,
+								}}
 								onChangeText={text => this.setState({postText: text})}
 								autoCapitalize="sentences"
 								multiline
@@ -307,7 +312,9 @@ export default class PostWrite extends React.Component {
 								ref={input => (this.postTextInput = input)}
 							/>
 						</View>
-						{this.getModalImagesLayout()}
+						<View style={{paddingLeft: 50}}>
+							{this.getModalImagesLayout()}
+						</View>
 						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
 							<View style={styles.imageButtonSelect}>
 								<Image
@@ -362,10 +369,10 @@ const styles = StyleSheet.create({
 		padding: 4,
 	},
 	postWriter: {
-		width: width + 10,
-		borderBottomWidth: 1,
-		borderColor: theme.primary,
-		height: 500,
+		// width: width + 10,
+		// borderBottomWidth: 1,
+		// borderColor: theme.primary,
+		// height: this.state.postImages.length > 0 ? 300 : 500,
 	},
 	imageButtonSelect: {
 		height: height * 0.1,

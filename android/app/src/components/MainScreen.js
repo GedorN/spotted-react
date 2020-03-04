@@ -16,10 +16,10 @@ import {
 	BottomNavigation,
 	Modal,
 } from 'react-native-paper'
-const HomeS = () => <Home navigation={props.navigation}/>;
 
 import Home from './Home';
 import Login from "./Login";
+import UserProfile from "./UserProfile";
 import PostWrite from "./Inputs/PostWrite";
 import MenuDrawer from "react-native-side-drawer";
 import Drawer from "react-native-drawer";
@@ -50,6 +50,7 @@ export default class MainScreen extends React.Component {
 		};
 	}
 	getHome = () => {return<Home navigation={this.props.navigation}/>};
+	getUserProfile = () => {return<UserProfile navigation={this.props.navigation} user={heimdallr.user_id}/>}
 
 	_handleIndexChange = (index) => {
 		if (index === 2) {
@@ -73,6 +74,7 @@ export default class MainScreen extends React.Component {
 	renderScene = BottomNavigation.SceneMap({
 		home: this.getHome,
 		post: PostWrite,
+		user: this.getUserProfile,
 	});
 
 	_hideModal = () => this.setState({ showModal: false });
