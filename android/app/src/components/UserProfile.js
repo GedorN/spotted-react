@@ -19,6 +19,7 @@ import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
 import Modal from "react-native-modal";
 import UUIDGenerator from 'react-native-uuid-generator';
+import theme from "../../../../components/General/Theme";
 const width = Dimensions.get('screen').width;
 
 export default class UserProfile extends React.Component {
@@ -34,6 +35,7 @@ export default class UserProfile extends React.Component {
 	}
 
 	componentDidMount = () => {
+		heimdallr.getSimilarUser();
 		console.log('token: ', this.props.user);
 		let result = heimdallr.getUserColletion('post', this.state.pulledPosts, heimdallr.user_id);
 		result.then( (resolve) => {
@@ -89,7 +91,15 @@ export default class UserProfile extends React.Component {
 				<FlatList
 					data = {this.state.posts}
 					renderItem={ ({item}) =>
-						<PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
+							<PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
+					}
+					ListHeaderComponent={() =>
+						<View style={styles.profileHeader}>
+							<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={heimdallr.user_image}/>
+							<View style={styles.headerText}>
+								<Text>{heimdallr.user_name}</Text>
+							</View>
+						</View>
 					}
 					keyExtractor={item => item._ref.id}
 					onEndReachedThreshold={0.3}
@@ -107,5 +117,18 @@ export default class UserProfile extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		marginTop: 20,
+	},
+	profileHeader: {
+		flexDirection: 'row',
+		borderBottomWidth: 1,
+		borderColor: theme.primary,
+		height: 100,
+		padding: 10,
+	},
+	headerText: {
+		alignItems: 'center',
+		alignContent: 'center',
+		justifyContent: 'center',
+		marginLeft: 20,
 	},
 });

@@ -105,6 +105,7 @@ export default class MainScreen extends React.Component {
 			console.log('resolve asdasdasD:', resolve);
 			if (resolve.user) {
 				this.setState({isLogged: true});
+				return true;
 			} else {
 				return false;
 			}
