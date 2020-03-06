@@ -21,6 +21,7 @@ import Home from './Home';
 import Login from "./Login";
 import UserProfile from "./UserProfile";
 import PostWrite from "./Inputs/PostWrite";
+import UsersSearch from "./UsersSearch";
 import MenuDrawer from "react-native-side-drawer";
 import Drawer from "react-native-drawer";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -75,6 +76,7 @@ export default class MainScreen extends React.Component {
 		home: this.getHome,
 		post: PostWrite,
 		user: this.getUserProfile,
+		search: UsersSearch,
 	});
 
 	_hideModal = () => this.setState({ showModal: false });
@@ -84,9 +86,7 @@ export default class MainScreen extends React.Component {
 		StatusBar.setBarStyle('dark-content', true);
 		let login = heimdallr.checkUser();
 		login.then((resolve) => {
-			console.log('checkado: ', resolve);
 			if (heimdallr.user_id) {
-				console.log('%c LOGGED', 'color: green');
 				this.setState({isLogged: true});
 			}
 		})
@@ -96,13 +96,13 @@ export default class MainScreen extends React.Component {
 		this.setState({open: !this.state.open});
 	};
 
-	signUp = (data) => {
+	signUp = async (data) => {
 		if (!data.user || data.user === '' || !data.password || data.password === '') {
 			return false;
 		}
+		let loggedState = false;
 		let user = heimdallr.signIn(data);
-		user.then((resolve) => {
-			console.log('resolve asdasdasD:', resolve);
+		await user.then((resolve) => {
 			if (resolve.user) {
 				this.setState({isLogged: true});
 				return true;
@@ -110,6 +110,7 @@ export default class MainScreen extends React.Component {
 				return false;
 			}
 		});
+
 	}
 
 	openModal = () => {

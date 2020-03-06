@@ -26,8 +26,9 @@ export default class Login extends React.Component {
         };
     }
 
-    doLogin = () => {
-	    let result = this.props.login({ user: this.state.user, password: this.state.password });
+    doLogin = async () => {
+	    let result = await this.props.login({ user: this.state.user, password: this.state.password });
+	    console.log('resultado do login: ', result);
 	    if (!result) {
 	    	this.setState({ showAttemptFail: true });
 	    	console.warn('caca: ', { user: this.state.user, password: this.state.password });
