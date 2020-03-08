@@ -27,6 +27,7 @@ import Drawer from "react-native-drawer";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import SideDrawer from "../../../../components/General/SideDrawer";
 import theme from "../../../../components/General/Theme";
+import Settings from "./Settings";
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
 const width = Dimensions.get('screen').width;
@@ -42,6 +43,7 @@ export default class MainScreen extends React.Component {
 			isLogged: false,
 			index: 0,
 			showModal: false,
+			showSettingsModal: false,
 			routes: [
 				{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 				{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
@@ -80,6 +82,8 @@ export default class MainScreen extends React.Component {
 	});
 
 	_hideModal = () => this.setState({ showModal: false });
+
+	_hideSettingsModal = () => this.setState({ showSettingsModal: false });
 
 	componentDidMount(): void {
 		StatusBar.setBackgroundColor('white');
@@ -123,9 +127,15 @@ export default class MainScreen extends React.Component {
 		this.setState({open: false});
 	}
 
+	setAction = (action) => {
+		this.setState({ showSettingsModal: true });
+		this._drawer.close();
+		console.warn('pressed: ', action);
+	}
+
 	drawerContent = () => {
 		return (
-			<SideDrawer/>
+			<SideDrawer actionPressed={this.setAction}/>
 		);
 		//TODO tirar margem do topo
 	};
@@ -148,7 +158,7 @@ export default class MainScreen extends React.Component {
 						captureGestures={true}
 						tweenDuration={250}
 						openDrawerOffset={0.2} // 20% gap on the right side of drawer
-						panCloseMask={0.9}
+						// panCloseMask={0.9}
 						closedDrawerOffset={-3}
 						tapToClose={true}
 						tweenHandler={(ratio) => ({
@@ -192,6 +202,13 @@ export default class MainScreen extends React.Component {
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
 							<PostWrite close={this._hideModal.bind(this)}/>
+						</Modal>
+						<Modal
+							visible={this.state.showSettingsModal}
+							onDismiss={this._hideSettingsModal}
+							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+						>
+							<Settings />
 						</Modal>
 					</Drawer>
 					{/*<MenuDrawer*/}

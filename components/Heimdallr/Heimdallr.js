@@ -49,6 +49,21 @@ function HeimdallrLib() {
     });
   }
 
+  this.getSimilarUser = function () {
+  	return new Promise((resolve) => {
+	    firebase.firestore()
+		    .collection('user')
+		    .orderBy('name')
+		    .startAt('Triade')
+		    .endAt('Tria'+"\uf8ff").once("name").get().then(
+		    (result) => {
+		    	console.log('Similares: ', result);
+		    }
+	    )
+
+    })
+  }
+
   this.signOut = function () {
 	  return new Promise((resolve) => {
 		  firebase.auth().signOut().then(
@@ -223,13 +238,12 @@ function HeimdallrLib() {
           } else {
               console.log('indo pegar sem limite...');
               const post = firebase.firestore()
-                  .collection('post')
+                  .collection(collection)
                   .get().then((result) => {
-                      console.log('chegou');
                       docs = result.docs;
-                      result.docs.forEach(e => {
-                          console.log(e);
-                      });
+                      // result.docs.forEach(e => {
+                      //     console.log(e);
+                      // });
                       resolve();
                   }).catch ((e) => {
                       console.log('que caca: ', e);

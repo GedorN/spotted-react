@@ -40,7 +40,7 @@ export default class SideDrawer extends React.Component {
 	                        <Text> Perfil </Text>
 	                    </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {console.warn("configs")}}>
+                    <TouchableOpacity onPress={() => {this.props.actionPressed('settings')}}>
 	                    <View style={styles.item}>
 		                    <Image source={require('../../assets/images/user-cog-solid.png')}
 		                        style={styles.landscapeIcon}
