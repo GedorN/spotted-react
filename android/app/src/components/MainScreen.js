@@ -208,7 +208,7 @@ export default class MainScreen extends React.Component {
 							onDismiss={this._hideSettingsModal}
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
-							<Settings />
+							<Settings close={this._hideSettingsModal}/>
 						</Modal>
 					</Drawer>
 					{/*<MenuDrawer*/}

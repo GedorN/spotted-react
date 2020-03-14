@@ -154,6 +154,7 @@ export default class PostViewer extends React.Component {
   goToComments = () => {
   	this.props.navigation.navigate('PostDetails', {
   		pid: this.props.pid,
+	    userImage: this.props.userImage,
     });
   }
 

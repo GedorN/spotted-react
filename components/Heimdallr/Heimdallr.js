@@ -13,6 +13,7 @@ function HeimdallrLib() {
   this.user_id = /*'Yt5eZ0SGpy1U9QPTmIbI'*/ null;
   this.user_image ='https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
   this.user_name = 'Admin';
+  this.email = null;
   this.token = null;
 
 
@@ -126,6 +127,7 @@ function HeimdallrLib() {
                       this.user_id = user._user.uid;
                       this.user_image = user._user.photoURL;
                       this.user_name = user._user.displayName;
+                      this.email = user._user.email;
                       console.log('this.token', this.user_id);
                       u = user;
                   } else {
