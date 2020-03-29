@@ -66,8 +66,18 @@ const collections = {
 				required: true,
 			},
 			{
+				desc: 'user_name',
+				type: 'string',
+				required: true,
+			},
+			{
 				desc: 'date',
 				type: 'object',
+				required: true,
+			},
+			{
+				desc: 'user_image',
+				type: 'string',
 				required: true,
 			}
 		],

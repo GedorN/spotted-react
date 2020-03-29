@@ -33,7 +33,8 @@ export default class UserImgProfile extends React.Component {
             height: this.props.height ? this.props.height : 60,
             borderRadius: this.props.circular ? 100 : 0,
             borderWidth: this.props.borderWidth ? this.props.borderWidth : 0,
-            borderColor: this.props.borderColor ? this.props.borderColor : null}}
+            borderColor: this.props.borderColor ? this.props.borderColor : null,
+            marginBottom: this.props.marginBottom ? this.props.marginBottom: null}}
         />
       );
     }

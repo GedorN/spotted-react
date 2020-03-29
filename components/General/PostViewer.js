@@ -161,67 +161,69 @@ export default class PostViewer extends React.Component {
 
   render () {
     return (
-      <View style={styles.container}>
-          <Modal isVisible={this.state.showModal}
-                 onBackButtonPress={this.disableModal.bind(this)}
-                 onBackdropPress={this.disableModal.bind(this)}
-                 hideModalContentWhileAnimating={true}
-          >
-              <ReportModal emitClose={this.disableModal}/>
-          </Modal>
-          <View style={styles.postHeaderUserImage}>
-              <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-                  <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>
-              </TouchableOpacity>
-          </View>
-          <View style={{flexDirection: 'column'}}>
-              <View style={styles.postHeader}>
-                  {/*<View style={styles.postHeaderUserImage}>*/}
-                  {/*    <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>*/}
-                  {/*        <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>*/}
-                  {/*    </TouchableOpacity>*/}
-                  {/*</View>*/}
-                  <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-                      <Text
-                          style={{marginLeft: 16, fontWeight: 'bold'}}
-                      >
-                          {heimdallr.user_name}
-                      </Text>
-                  </TouchableOpacity>
-                  <View style={{left: width * 0.55}}>
-                      <TouchableOpacity
-                      >
-                          <OptionsMenu
-                              button={require('../../assets/images/ellipsis-h-solid.png') }
-                              buttonStyle={{ width: 20, height: 20}}
-                              options={['Denunciar']}
-                              actions={[this.toggleModal.bind(this)]}
-                          />
-                      </TouchableOpacity>
-                  </View>
-              </View>
-              <View style={styles.body}>
-                  <View style={styles.post}>
-                      <Text> { this.props.text } </Text>
-                      <View>
-                          {this.getModalImagesLayout()}
-                      </View>
-                  </View>
-              </View>
-              <View style={styles.postFooter}>
-                  <View style={{ left: width * 0.7}}>
-                      <TouchableOpacity
-                          onPress={this.goToComments.bind(this)}
-                      >
-                          <Image
-                              style={{width: 20, height: 20}}
-                              source={require('../../assets/images/comment-regular.png') }
-                          />
-                      </TouchableOpacity>
-                  </View>
-              </View>
-          </View>
-      </View>
+	    <TouchableOpacity onPress={this.goToComments.bind(this)}>
+			<View style={styles.container}>
+			  <Modal isVisible={this.state.showModal}
+			         onBackButtonPress={this.disableModal.bind(this)}
+			         onBackdropPress={this.disableModal.bind(this)}
+			         hideModalContentWhileAnimating={true}
+			  >
+			      <ReportModal emitClose={this.disableModal}/>
+			  </Modal>
+			  <View style={styles.postHeaderUserImage}>
+			      <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+			          <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>
+			      </TouchableOpacity>
+			  </View>
+			  <View style={{flexDirection: 'column'}}>
+			      <View style={styles.postHeader}>
+			          {/*<View style={styles.postHeaderUserImage}>*/}
+			          {/*    <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>*/}
+			          {/*        <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>*/}
+			          {/*    </TouchableOpacity>*/}
+			          {/*</View>*/}
+			          <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+			              <Text
+			                  style={{marginLeft: 16, fontWeight: 'bold'}}
+			              >
+			                  {heimdallr.user_name}
+			              </Text>
+			          </TouchableOpacity>
+			          <View style={{left: width * 0.55}}>
+			              <TouchableOpacity
+			              >
+			                  <OptionsMenu
+			                      button={require('../../assets/images/ellipsis-h-solid.png') }
+			                      buttonStyle={{ width: 20, height: 20}}
+			                      options={['Denunciar']}
+			                      actions={[this.toggleModal.bind(this)]}
+			                  />
+			              </TouchableOpacity>
+			          </View>
+			      </View>
+			      <View style={styles.body}>
+			          <View style={styles.post}>
+			              <Text> { this.props.text } </Text>
+			              <View>
+			                  {this.getModalImagesLayout()}
+			              </View>
+			          </View>
+			      </View>
+			      <View style={styles.postFooter}>
+			          <View style={{ left: width * 0.7}}>
+			              <TouchableOpacity
+			                  onPress={this.goToComments.bind(this)}
+			              >
+			                  <Image
+			                      style={{width: 20, height: 20}}
+			                      source={require('../../assets/images/comment-regular.png') }
+			                  />
+			              </TouchableOpacity>
+			          </View>
+			      </View>
+			  </View>
+			</View>
+	    </TouchableOpacity>
     );
   }
 }

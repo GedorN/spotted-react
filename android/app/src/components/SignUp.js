@@ -9,6 +9,7 @@ import {
 	TouchableOpacity,
 	PermissionsAndroid,
 	Image,
+	KeyboardAvoidingView,
 } from 'react-native';
 
 import UserImgProfile from "../../../../components/General/UserImgProfile";
@@ -64,6 +65,7 @@ export default  class SignUp extends React.Component {
 			this.setState({showErrorPasswordLength: true});
 			return false;
 		}
+		return true;
 	}
 
 	register = () => {
@@ -72,8 +74,6 @@ export default  class SignUp extends React.Component {
 		if (!fieldsOK) {
 			return ;
 		}
-		console.log('passou');
-		console.warn('recebido');
 		const params = {};
 		params.email = this.state.email;
 		params.password = this.state.password;
@@ -198,71 +198,73 @@ export default  class SignUp extends React.Component {
 
 	render(){
 		return (
-			<View style={styles.container}>
-				<Image
-					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
-					source={require('../../../../assets/images/simbol.png')}
-				/>
-				<View style={{justifyContent: 'center', alignContent: 'center'}}>
-					<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
-						<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderWidth: this.state.profileImage ? 0 : 1, borderColor: theme.primary, borderRadius: 100}}>
-							<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
-						</View>
-					</TouchableOpacity>
-				</View>
-				{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
-				{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
-				{this.state.showErrorDifferentPasswords && <Text style={{color: 'red'}}> * As senhas digitadas não são iguais </Text>}
-				{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
+			<KeyboardAvoidingView behavior={'padding'} style={{flex: 1}}>
+				<View style={styles.container}>
+					<Image
+						style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
+						source={require('../../../../assets/images/simbol.png')}
+					/>
+					<View style={{justifyContent: 'center', alignContent: 'center'}}>
+						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+							<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderWidth: this.state.profileImage ? 0 : 1, borderColor: theme.primary, borderRadius: 100}}>
+								<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
+							</View>
+						</TouchableOpacity>
+					</View>
+					{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
+					{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
+					{this.state.showErrorDifferentPasswords && <Text style={{color: 'red'}}> * As senhas digitadas não são iguais </Text>}
+					{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
 
-				<View style={styles.form}>
-					<RUMineTextInput
-						onChangeText={ text => this.setState({ email: text }) }
-						autoCapitalize='none'
-						placeholder='Email'
-						keyboardType='email-address'
-						textContentType='emailAddress'
-					/>
-				</View>
-				<View style={{flexDirection: 'row', marginTop: 30}}>
-					<RUMineTextInput
-						onChangeText={ text => this.setState({ name: text }) }
-						autoCapitalize='words'
-						placeholder='Nome'
-						textContentType='name'
-						marginRight={4}
-						flex={1}
-					/>
-					<GirlsJustWannaDatePicker text={'Nascimento'} textDecorationLine={'underline'} onChange={this.setDate.bind(this)}/>
-				</View>
-				<View style={styles.form}>
-					<RUMineTextInput
-						onChangeText={ text => this.setState({ password: text }) }
-						autoCapitalize='none'
-						placeholder='Password'
-						textContentType='password'
-					/>
-				</View>
-				<View style={styles.form}>
-					<RUMineTextInput
-						onChangeText={ text => this.setState({ confirmPassword: text }) }
-						autoCapitalize='none'
-						placeholder='Confirm password'
-						keyboardType='email-address'
-						textContentType='emailAddress'
-					/>
-				</View>
-				<View style={styles.form}>
-					<View style={{marginBottom: 10}}>
-						<FatBottomedButton text='Sign Up' backgroundColor={theme.primary} color={'white'} onTap={this.register.bind(this)}
+					<View style={styles.form}>
+						<RUMineTextInput
+							onChangeText={ text => this.setState({ email: text }) }
+							autoCapitalize='none'
+							placeholder='Email'
+							keyboardType='email-address'
+							textContentType='emailAddress'
 						/>
 					</View>
-					<View>
-						<FatBottomedButton text='Cancelar' backgroundColor={theme.primary} color={'white'} onTap={() => this.props.navigation.goBack()}
+					<View style={{flexDirection: 'row', marginTop: 30}}>
+						<RUMineTextInput
+							onChangeText={ text => this.setState({ name: text }) }
+							autoCapitalize='words'
+							placeholder='Nome'
+							textContentType='name'
+							marginRight={4}
+							flex={1}
+						/>
+						<GirlsJustWannaDatePicker text={'Nascimento'} textDecorationLine={'underline'} onChange={this.setDate.bind(this)}/>
+					</View>
+					<View style={styles.form}>
+						<RUMineTextInput
+							onChangeText={ text => this.setState({ password: text }) }
+							autoCapitalize='none'
+							placeholder='Password'
+							textContentType='password'
 						/>
 					</View>
+					<View style={styles.form}>
+						<RUMineTextInput
+							onChangeText={ text => this.setState({ confirmPassword: text }) }
+							autoCapitalize='none'
+							placeholder='Confirm password'
+							keyboardType='email-address'
+							textContentType='emailAddress'
+						/>
+					</View>
+					<View style={styles.form}>
+						<View style={{marginBottom: 10}}>
+							<FatBottomedButton text='Sign Up' backgroundColor={theme.primary} color={'white'} onTap={this.register.bind(this)}
+							/>
+						</View>
+						<View>
+							<FatBottomedButton text='Cancelar' backgroundColor={theme.primary} color={'white'} onTap={() => this.props.navigation.goBack()}
+							/>
+						</View>
+					</View>
 				</View>
-			</View>
+			</KeyboardAvoidingView>
 		);
 	}
 }

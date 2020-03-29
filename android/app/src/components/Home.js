@@ -34,7 +34,6 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
-  	console.warn(this.props);
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);

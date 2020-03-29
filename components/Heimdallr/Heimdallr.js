@@ -299,8 +299,8 @@ function HeimdallrLib() {
         const base = firebase.firestore().collection(collection);
         base.add(params).then(
           (docRef) => {
-          	console.warn(`Documento ${docRef.id}`);
-            console.log(`Documento ${docRef.id}`);
+          	// console.warn(`Documento ${docRef.id}`);
+            // console.log(`Documento ${docRef.id}`);
             returnValue = docRef.id;
             resolve();
           },
