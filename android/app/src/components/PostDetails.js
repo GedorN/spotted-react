@@ -54,7 +54,7 @@ export default class PostDetails extends React.Component {
 			this.setState({ pulling: false });
 		});
 
-		let res = heimdallr.querycolletion('comment', 'pid', this.props.navigation.getParam('pid'));
+		let res = heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments);
 		res.then((resolve) => {
 			this.setState({ comments: resolve });
 			console.log('comentarios ativos: ', this.state.comments);
@@ -184,7 +184,7 @@ export default class PostDetails extends React.Component {
 				this.setState({ pulling: true });
 				let n = this.state.pulledComments;
 				n = n + 5;
-				let result = heimdallr.querycolletion('comment', 'pid', this.props.navigation.getParam('pid'));
+				let result = heimdallr.getComments(this.props.navigation.getParam('pid'), n);
 				result.then((resolve) => {
 					console.log('buscou: ', resolve);
 					if (resolve.length === this.state.comments.length) {

@@ -16,6 +16,7 @@ import UserImgProfile from "../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
+import EyeOfThePassword from "./Inputs/EyeOfThePassword";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 import theme from "../../../../components/General/Theme";
 import GirlsJustWannaDatePicker from "./Inputs/GirlsJustWannaDatePicker";
@@ -35,13 +36,18 @@ export default  class SignUp extends React.Component {
 			imageCompressed: null,
 			showErrorMessage: false,
 			showNameErrorMessage: false,
-			showErrorDifferentPasswords: false,
 			showErrorPasswordLength: false,
+			showEmailAlreadyInUse: false,
+			securePassword: true,
 		};
 	}
 
 	componentDidMount(): void {
 		console.log(this.props);
+	}
+
+	toggleSecureEntry = () => {
+		this.setState({ securePassword: !this.state.securePassword });
 	}
 
 
@@ -56,11 +62,6 @@ export default  class SignUp extends React.Component {
 			return false;
 		}
 
-		if (this.state.password !== this.state.confirmPassword) {
-			this.setState({showErrorDifferentPasswords: true});
-			return false;
-		}
-
 		if (this.state.password.length < 6) {
 			this.setState({showErrorPasswordLength: true});
 			return false;
@@ -69,7 +70,7 @@ export default  class SignUp extends React.Component {
 	}
 
 	register = () => {
-		console.log('chegou');
+		console.log('chegou o carai');
 		let fieldsOK = this.signUpFieldsVerification();
 		if (!fieldsOK) {
 			return ;
@@ -79,11 +80,19 @@ export default  class SignUp extends React.Component {
 		params.password = this.state.password;
 		console.log('params: ', params);
 		let result = heimdallr.signUp(params);
-		result.then( (resolve) => {
-			console.log('voltou>: ', resolve);
-			this.saveUser(resolve);
-			this.props.navigation.goBack();
-		});
+		console.log('tá salvando?');
+		result.then(
+			(resolve) => {
+				console.log('voltou>: ', resolve);
+				this.saveUser(resolve);
+				this.props.navigation.goBack();
+			},
+			(reject) => {
+				if (reject.message ==  "The email address is already in use by another account.") {
+					this.setState({ showEmailAlreadyInUse: true });
+				}
+			}
+		);
 	}
 
 	saveUser = (user) => {
@@ -213,8 +222,11 @@ export default  class SignUp extends React.Component {
 					</View>
 					{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
 					{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
-					{this.state.showErrorDifferentPasswords && <Text style={{color: 'red'}}> * As senhas digitadas não são iguais </Text>}
 					{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
+					{this.state.showEmailAlreadyInUse && <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+															<Text> Parece que esse email já está cadastrado.</Text><TouchableOpacity onPress={() => {this.props.navigation.navigate('PasswordRestore')}}><Text style={{color: 'red'}}> Clique aqui </Text></TouchableOpacity>
+															<Text> para recuperar a senha</Text>
+														</View>}
 
 					<View style={styles.form}>
 						<RUMineTextInput
@@ -237,20 +249,13 @@ export default  class SignUp extends React.Component {
 						<GirlsJustWannaDatePicker text={'Nascimento'} textDecorationLine={'underline'} onChange={this.setDate.bind(this)}/>
 					</View>
 					<View style={styles.form}>
-						<RUMineTextInput
+						<EyeOfThePassword
 							onChangeText={ text => this.setState({ password: text }) }
 							autoCapitalize='none'
+							toggleSecureEntry={this.toggleSecureEntry.bind(this)}
+							secureTextEntry={this.state.securePassword}
 							placeholder='Password'
 							textContentType='password'
-						/>
-					</View>
-					<View style={styles.form}>
-						<RUMineTextInput
-							onChangeText={ text => this.setState({ confirmPassword: text }) }
-							autoCapitalize='none'
-							placeholder='Confirm password'
-							keyboardType='email-address'
-							textContentType='emailAddress'
 						/>
 					</View>
 					<View style={styles.form}>

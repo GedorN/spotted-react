@@ -24,7 +24,7 @@ export default class PostViewer extends React.Component {
   }
 
   componentDidMount =() =>  {
-      console.log('haha: ', this.props);
+      // console.log('haha: ', this.props);
   }
 
     toggleModal () {
@@ -37,7 +37,7 @@ export default class PostViewer extends React.Component {
     }
 
     getModalImagesLayout = () => {
-      console.log('%c calculando...', 'color: green');
+      // console.log('%c calculando...', 'color: green');
     if (this.props.images) {
 
         if (this.props.images.length === 1) {
@@ -177,16 +177,11 @@ export default class PostViewer extends React.Component {
 			  </View>
 			  <View style={{flexDirection: 'column'}}>
 			      <View style={styles.postHeader}>
-			          {/*<View style={styles.postHeaderUserImage}>*/}
-			          {/*    <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>*/}
-			          {/*        <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>*/}
-			          {/*    </TouchableOpacity>*/}
-			          {/*</View>*/}
 			          <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
 			              <Text
 			                  style={{marginLeft: 16, fontWeight: 'bold'}}
 			              >
-			                  {heimdallr.user_name}
+			                  {this.props.user}
 			              </Text>
 			          </TouchableOpacity>
 			          <View style={{left: width * 0.55}}>

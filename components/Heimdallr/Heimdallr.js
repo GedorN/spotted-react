@@ -170,7 +170,7 @@ function HeimdallrLib() {
 
   this.signUp = function (params) {
   	let newUser = null;
-  	return new Promise((resolve) => {
+  	return new Promise((resolve, reject) => {
 	    firebase.auth().createUserWithEmailAndPassword(params.email, params.password).then(
 		    (success) => {
 		    	console.log('sucessso: ', success);
@@ -179,6 +179,7 @@ function HeimdallrLib() {
 		    },
 		    (error) => {
 		    	console.log('deu ruim: ',error);
+		    	reject(error);
 		    }
 	    )
 
@@ -220,6 +221,29 @@ function HeimdallrLib() {
     })
 	  
   }
+
+	this.getComments = (pid, limit) => {
+		let docs = null;
+		return new Promise((resolve) => {
+			const post = firebase.firestore()
+				.collection('comment')
+				.where('pid', '==', pid)
+				.get().then((result) => {
+					docs = result.docs;
+					docs.sort((a, b) => {
+						return (b._data.date.seconds) - (a._data.date.seconds)
+					});
+					docs = docs.slice(0, limit);
+					resolve();
+				}).catch ((e) => {
+					console.log('Erro: ', e);
+				});
+
+		}).then(function (resolve) {
+			return docs;
+		})
+	}
+
   this.getCollection = function (collection, limit) {
       let docs = null;
       return new Promise((resolve) => {
@@ -277,7 +301,6 @@ function HeimdallrLib() {
 			return docs;
 		})
 	}
-
   this.saveCollection = function (collection, params) {
     let returnValue = null;
     return new Promise((resolve) => {

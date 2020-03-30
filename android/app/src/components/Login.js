@@ -13,6 +13,7 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
+import EyeOfThePassword from "./Inputs/EyeOfThePassword";
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
@@ -23,7 +24,12 @@ export default class Login extends React.Component {
             user: null,
             password: null,
 	        showAttemptFail: false,
+	        securePassword: true,
         };
+    }
+
+    toggleSecureEntry = () => {
+    	this.setState({ securePassword: !this.state.securePassword });
     }
 
     doLogin = async () => {
@@ -31,7 +37,6 @@ export default class Login extends React.Component {
 	    console.log('resultado do login: ', result);
 	    if (!result) {
 	    	this.setState({ showAttemptFail: true });
-	    	console.warn('caca: ', { user: this.state.user, password: this.state.password });
 	    }
     }
 
@@ -55,8 +60,9 @@ export default class Login extends React.Component {
 	                    textContentType='emailAddress'
 	                    onChangeText={text => this.setState({user: text})}
                     />
-                    <RUMineTextInput
-	                    secureTextEntry={true}
+                    <EyeOfThePassword
+	                    secureTextEntry={this.state.securePassword}
+	                    toggleSecureEntry={this.toggleSecureEntry.bind(this)}
 	                    placeholder='Password...'
 	                    autoCompleteType='password'
 	                    textContentType='password'
@@ -86,8 +92,8 @@ export default class Login extends React.Component {
 	                {/*    />*/}
 	                {/*</View>*/}
                 </View>
-	            <View style={{position: 'absolute', bottom: 15}}>
-		            <Text style={{color: theme.primary, textDecorationLine: 'underline'}}>Entrar como anônimo</Text>
+	            <View style={{position: 'absolute', bottom: 15, width: width, alignItems: 'flex-start'}}>
+		            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
 	            </View>
             </View>
         );
@@ -96,6 +102,7 @@ export default class Login extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
+    	alignItems: 'center',
         flex: 1,
 	    padding: 20
     },
