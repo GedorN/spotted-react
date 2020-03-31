@@ -78,7 +78,7 @@ const collections = {
 			{
 				desc: 'user_image',
 				type: 'string',
-				required: true,
+				required: false,
 			}
 		],
         post: [

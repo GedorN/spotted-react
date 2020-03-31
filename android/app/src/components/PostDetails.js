@@ -49,7 +49,7 @@ export default class PostDetails extends React.Component {
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
 			this.setState( { post: resolve[0]._data });
-			console.log('Postado: ', this.state.post);
+			console.log('Postado: ', this.state.post.user_name);
 			this.forceUpdate();
 			this.setState({ pulling: false });
 		});
@@ -228,6 +228,7 @@ export default class PostDetails extends React.Component {
 		heimdallr.getUID().then((uuid) => {
 			params.cid = uuid;
 			console.log('here loko');
+			console.log('vou salbar');
 			let result = heimdallr.saveCollection('comment', params);
 			result.then((resolve) => {
 				console.log('entrou aqui pelo menos', resolve);
@@ -280,7 +281,7 @@ export default class PostDetails extends React.Component {
 								<View style={styles.rowContainer}>
 									<View style={styles.postHeaderUserImage}>
 										<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-											<UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>
+											<UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.state.post? this.state.post.user_image : null}/>
 										</TouchableOpacity>
 									</View>
 									<View style={{flexDirection: 'column'}}>
@@ -294,7 +295,7 @@ export default class PostDetails extends React.Component {
 												<Text
 													style={{marginLeft: 16, fontWeight: 'bold'}}
 												>
-													{heimdallr.user_name}
+													{this.state.post ? this.state.post.user_name: null}
 												</Text>
 											</TouchableOpacity>
 											<View style={{left: width * 0.55}}>
