@@ -377,6 +377,7 @@ const styles = StyleSheet.create({
 		alignItems: 'flex-end',
 		alignContent: 'center',
 		padding: 4,
+		marginTop: 5,
 	},
 	postWriter: {
 		// width: width + 10,

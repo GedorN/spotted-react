@@ -9,12 +9,12 @@ import {
 	Button,
 	StatusBar,
 	KeyboardAvoidingView,
+	Modal,
 } from 'react-native';
 
 
 import {
 	BottomNavigation,
-	Modal,
 } from 'react-native-paper'
 
 import Home from './Home';
@@ -197,6 +197,9 @@ export default class MainScreen extends React.Component {
 							labeled={false}
 						/>
 						<Modal
+							statusBarTranslucent={true}
+							hardwareAccelerated={true}
+							animationType='fade'
 							visible={this.state.showModal}
 							onDismiss={this._hideModal}
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
