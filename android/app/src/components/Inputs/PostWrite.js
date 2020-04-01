@@ -14,6 +14,7 @@ import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
+import ImageResizer from "react-native-image-resizer";
 import {Text} from "react-native-paper";
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -51,18 +52,27 @@ export default class PostWrite extends React.Component {
 			let urlArray = [];
 			let self = this;
 			let checkedImages = 0;
+			this.props.close();
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
 				console.log('before: ', this.state.postImages);
-				let link = heimdallr.uploadImage(img);
-				link.then(function (resolve) {
-					checkedImages ++;
-					console.log('URL resolve: ', resolve);
-					urlArray.push(resolve);
-					self.state.postImages = urlArray;
-					/* Save the post*/
-					self.savePost(checkedImages / posImagesLenght);
-				})
+				ImageResizer.createResizedImage(img.path, img.width /5, img.height / 5, 'JPEG', 60 ).then(
+					(resolve) => {
+						let link = heimdallr.uploadImage(resolve.uri);
+						link.then(function (resolve) {
+							checkedImages ++;
+							console.log('URL resolve: ', resolve);
+							urlArray.push(resolve);
+							self.state.postImages = urlArray;
+							/* Save the post*/
+							self.savePost(checkedImages / posImagesLenght);
+						})
+
+					},
+					(reject) => {
+						console.warn('Deu merdinha');
+					}
+				)
 			})
 		} else {
 			// caso a postagem não contenha imagem
@@ -94,7 +104,6 @@ export default class PostWrite extends React.Component {
 					self.postTextInput.clear();
 					self.setState({postImages: []});
 					self.setState({showModal: false});
-					this.props.close();
 				});
 			})
 		} else {
@@ -138,7 +147,7 @@ export default class PostWrite extends React.Component {
 					} else {
 						console.log('Imagem escolhida');
 						let images = this.state.postImages;
-						images.push('file://' + response.path);
+						images.push(response);
 						this.setState({postImages: images});
 						console.log('Imagem: ', this.state.postImages);
 						this.setState({showModal: true});
@@ -162,7 +171,7 @@ export default class PostWrite extends React.Component {
 					<View style={{ flexDirection: 'row'}}>
 						<View style={{width: 280, height: 200}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[0]}}
+								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
@@ -178,7 +187,7 @@ export default class PostWrite extends React.Component {
 					<View style={{ flexDirection: 'row', marginBottom: 5}}>
 						<View style={{width: 140, height: 200, backgroundColor: 'yellow'}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[0]}}
+								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
@@ -187,7 +196,7 @@ export default class PostWrite extends React.Component {
 						</View>
 						<View style={{width: 140, height: 200}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[1]}}
+								source={{uri: 'file://' + this.state.postImages[1].path}}
 								style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
@@ -203,7 +212,7 @@ export default class PostWrite extends React.Component {
 					<View style={{ flexDirection: 'row'}}>
 						<View style={{width: 140, height: 200}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[0]}}
+								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
@@ -213,7 +222,7 @@ export default class PostWrite extends React.Component {
 						<View style={{flexDirection: 'column'}}>
 							<View style={{width: 140, height: 100}}>
 								<Image
-									source={{uri: 'file://' + this.state.postImages[1]}}
+									source={{uri: 'file://' + this.state.postImages[1].path}}
 									style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 								<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
@@ -222,7 +231,7 @@ export default class PostWrite extends React.Component {
 							</View>
 							<View style={{width: 140, height: 99}}>
 								<Image
-									source={{uri: 'file://' + this.state.postImages[2]}}
+									source={{uri: 'file://' + this.state.postImages[2].path}}
 									style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 								<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
@@ -239,7 +248,7 @@ export default class PostWrite extends React.Component {
 					<View style={{ flexDirection: 'column'}}>
 						<View style={{width: 140, height: 100}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[1]}}
+								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
@@ -248,7 +257,7 @@ export default class PostWrite extends React.Component {
 						</View>
 						<View style={{width: 140, height: 100}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[1]}}
+								source={{uri: 'file://' + this.state.postImages[1].path}}
 								style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
@@ -259,7 +268,7 @@ export default class PostWrite extends React.Component {
 					<View style={{ flexDirection: 'column',  marginBottom: 5}}>
 						<View style={{width: 140, height: 100}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[2]}}
+								source={{uri: 'file://' + this.state.postImages[2].path}}
 								style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
@@ -268,7 +277,7 @@ export default class PostWrite extends React.Component {
 						</View>
 						<View style={{width: 140, height: 100}}>
 							<Image
-								source={{uri: 'file://' + this.state.postImages[3]}}
+								source={{uri: 'file://' + this.state.postImages[3].path}}
 								style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 3)}>

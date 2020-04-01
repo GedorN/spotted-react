@@ -1,0 +1,5 @@
+<p>Não tem problema, %FIRST_NAME%! Estamos aqui para ajudar ;)</p>
+<img src="https://gph.is/WArRsu" />
+<p>Para recuperar a sua senha, é só seguir  <a href='%LINK%'> esse link.</a></p>
+<p>Se você não pediu redefinição de senha, pedimos que ignore esse email.</p>
+<p>Equipe %APP_NAME%</p>
