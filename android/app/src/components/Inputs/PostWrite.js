@@ -56,7 +56,7 @@ export default class PostWrite extends React.Component {
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
 				console.log('before: ', this.state.postImages);
-				ImageResizer.createResizedImage(img.path, img.width /5, img.height / 5, 'JPEG', 60 ).then(
+				ImageResizer.createResizedImage(img.path, img.width /5, img.height / 5, 'JPEG', 70 ).then(
 					(resolve) => {
 						let link = heimdallr.uploadImage(resolve.uri);
 						link.then(function (resolve) {
@@ -76,6 +76,7 @@ export default class PostWrite extends React.Component {
 			})
 		} else {
 			// caso a postagem não contenha imagem
+			this.props.close();
 			this.savePost(1);
 		}
 	}

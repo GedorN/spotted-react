@@ -9,7 +9,7 @@ import {
 	TouchableOpacity,
 	FlatList,
 	ActivityIndicator,
-	KeyboardAvoidingView,
+	KeyboardAvoidingView, RefreshControl,
 } from 'react-native';
 
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -31,6 +31,7 @@ export default class PostDetails extends React.Component {
 			endPulling: false,
 			pulling: false,
 			pulledComments: 10,
+			isRefreshing: false,
 		};
 	}
 
@@ -70,6 +71,15 @@ export default class PostDetails extends React.Component {
 		// console.warn(this.props.uid);
 		this.props.navigation.navigate('PresentationProfile', {
 			userId: this.props.uid,
+		});
+	}
+
+	onRefresh = () => {
+		this.setState({ isRefreshing: true });
+		let result = heimdallr.getCollection('post', 10);
+		result.then( (resolve) => {
+			this.setState({ posts: resolve });
+			this.setState({ isRefreshing: false });
 		});
 	}
 
@@ -320,6 +330,12 @@ export default class PostDetails extends React.Component {
 										</View>
 									</View>
 								</View>
+							}
+							refreshControl={
+								<RefreshControl
+									refreshing={this.state.isRefreshing}
+									onRefresh={this.onRefresh.bind(this)}
+								/>
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>

@@ -9,7 +9,7 @@ import {
 	TouchableOpacity,
 	PermissionsAndroid,
 	FlatList,
-	ActivityIndicator,
+	ActivityIndicator, RefreshControl,
 } from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -31,6 +31,7 @@ export default class UserProfile extends React.Component {
 			loading: false,
 			pulling: false,
 			endPulling: false,
+			isRefreshing: false,
 		};
 	}
 
@@ -82,7 +83,14 @@ export default class UserProfile extends React.Component {
 		)
 	};
 
-
+	onRefresh = () => {
+		this.setState({ isRefreshing: true });
+		let result = heimdallr.getCollection('post', 10);
+		result.then( (resolve) => {
+			this.setState({ posts: resolve });
+			this.setState({ isRefreshing: false });
+		});
+	}
 
 
 	render() {
@@ -100,6 +108,12 @@ export default class UserProfile extends React.Component {
 								<Text>{heimdallr.user_name}</Text>
 							</View>
 						</View>
+					}
+					refreshControl={
+						<RefreshControl
+							refreshing={this.state.isRefreshing}
+							onRefresh={this.onRefresh.bind(this)}
+						/>
 					}
 					keyExtractor={item => item._ref.id}
 					onEndReachedThreshold={0.3}

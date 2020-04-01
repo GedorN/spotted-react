@@ -10,6 +10,7 @@ import {
     PermissionsAndroid,
     FlatList,
     ActivityIndicator,
+	RefreshControl
 } from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -30,6 +31,7 @@ export default class Home extends React.Component {
         loading: false,
 	    pulling: false,
 	    endPulling: false,
+	    isRefreshing: false,
     };
   }
 
@@ -66,6 +68,16 @@ export default class Home extends React.Component {
     }
   }
 
+
+  onRefresh = () => {
+	  this.setState({ isRefreshing: true });
+	  let result = heimdallr.getCollection('post', 10);
+	  result.then( (resolve) => {
+		  this.setState({ posts: resolve });
+		  this.setState({ isRefreshing: false });
+	  });
+  }
+
   renderFooter = () =>  {
 	  if (!this.state.endPulling) {
 		  return (
@@ -89,6 +101,12 @@ export default class Home extends React.Component {
               data = {this.state.posts}
               renderItem={ ({item}) =>
                   <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
+              }
+              refreshControl={
+	              <RefreshControl
+		              refreshing={this.state.isRefreshing}
+		              onRefresh={this.onRefresh.bind(this)}
+	              />
               }
               keyExtractor={item => item._ref.id}
               onEndReachedThreshold={0.3}
