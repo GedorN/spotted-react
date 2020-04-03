@@ -9,7 +9,9 @@ import {
 	TouchableOpacity,
 	PermissionsAndroid,
 	FlatList,
-	ActivityIndicator, RefreshControl,
+	ActivityIndicator,
+	RefreshControl,
+	Modal,
 } from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -17,9 +19,9 @@ import ImagePicker from 'react-native-image-picker';
 import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
-import Modal from "react-native-modal";
 import UUIDGenerator from 'react-native-uuid-generator';
 import theme from "../../../../components/General/Theme";
+import ImageViewer from "react-native-image-zoom-viewer";
 const width = Dimensions.get('screen').width;
 
 export default class UserProfile extends React.Component {
@@ -32,12 +34,15 @@ export default class UserProfile extends React.Component {
 			pulling: false,
 			endPulling: false,
 			isRefreshing: false,
+			showImage: false,
+			userImage: [],
 		};
 	}
 
 	componentDidMount = () => {
 		heimdallr.getSimilarUser();
 		console.log('token: ', this.props.user);
+		this.setState({ userImage: [{url: heimdallr.user_image}] });
 		let result = heimdallr.getUserColletion('post', this.state.pulledPosts, heimdallr.user_id);
 		result.then( (resolve) => {
 			console.log('peguei esses caras aqui', resolve);
@@ -96,6 +101,14 @@ export default class UserProfile extends React.Component {
 	render() {
 		return (
 			<View style={{}}>
+				<Modal visible={this.state.showImage} transparent={true}>
+					<ImageViewer
+						imageUrls={this.state.userImage}
+						swipeDownThreshold={0.5}
+						enableSwipeDown={true}
+						onSwipeDown={() => {this.setState({ showImage: false })}}
+					/>
+				</Modal>
 				<FlatList
 					data = {this.state.posts}
 					renderItem={ ({item}) =>
@@ -103,7 +116,9 @@ export default class UserProfile extends React.Component {
 					}
 					ListHeaderComponent={() =>
 						<View style={styles.profileHeader}>
-							<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={heimdallr.user_image}/>
+							<TouchableOpacity onPress={() => {this.setState({ showImage: true })}}>
+								<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={heimdallr.user_image}/>
+							</TouchableOpacity>
 							<View style={styles.headerText}>
 								<Text>{heimdallr.user_name}</Text>
 							</View>

@@ -5,7 +5,8 @@ import {
     View,
     Text,
     StyleSheet,
-    Dimensions
+    Dimensions,
+	Modal,
 } from "react-native";
 
 const width = Dimensions.get('screen').width;
@@ -13,18 +14,29 @@ import UserImgProfile from "./UserImgProfile";
 import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
 import ReportModal from "./ReportModal";
-import Modal from "react-native-modal";
+import ImageViewer from 'react-native-image-zoom-viewer';
+
 import theme from "./Theme";
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
     this.state = {
         showModal: false,
+	    showImages: false,
+	    galleryObj: [],
+	    indexImage: 0,
     };
   }
 
   componentDidMount =() =>  {
       // console.log('haha: ', this.props);
+	  if (this.props.images) {
+	  	this.props.images.forEach((img) => {
+            let images = this.state.galleryObj;
+	  		images.push({url: img});
+	  		this.setState({ galleryObj: images });
+	    })
+	  }
   }
 
     toggleModal () {
@@ -45,10 +57,12 @@ export default class PostViewer extends React.Component {
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: 280, height: 200}}>
-                  <Image
-                    source={{uri: this.props.images[0]}}
-                    style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+	                  <Image
+	                    source={{uri: this.props.images[0]}}
+	                    style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+	                  />
+	                </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -58,16 +72,20 @@ export default class PostViewer extends React.Component {
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row', marginBottom: 5}}>
                 <View style={{width: 140, height: 200}}>
-                  <Image
-                    source={{uri: this.props.images[0]}}
-                    style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+		                <Image
+	                        source={{uri: this.props.images[0]}}
+	                        style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+	                    />
+	                </TouchableOpacity>
                 </View>
                 <View style={{width: 140, height: 200}}>
-                  <Image
-                    source={{uri: this.props.images[1]}}
-                    style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+		                <Image
+	                        source={{uri: this.props.images[1]}}
+	                        style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                    />
+	                </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -77,23 +95,29 @@ export default class PostViewer extends React.Component {
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: 140, height: 200}}>
-                  <Image
-                    source={{uri: this.props.images[0]}}
-                    style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+		                <Image
+		                    source={{uri: this.props.images[0]}}
+		                    style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+	                    />
+	                </TouchableOpacity>
                 </View>
                 <View style={{flexDirection: 'column'}}>
 	                <View style={{width: 140, height: 100}}>
-	                  <Image
-	                    source={{uri: this.props.images[1]}}
-	                    style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-	                  />
+		                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+			                <Image
+		                        source={{uri: this.props.images[1]}}
+		                        style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+		                    />
+		                </TouchableOpacity>
 	                </View>
 	                <View style={{width: 140, height: 99}}>
-	                  <Image
-	                    source={{uri: this.props.images[2]}}
-	                    style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
-	                  />
+		                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+			                <Image
+		                        source={{uri: this.props.images[2]}}
+		                        style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+		                    />
+		                </TouchableOpacity>
 	                </View>
                 </View>
               </View>
@@ -104,30 +128,38 @@ export default class PostViewer extends React.Component {
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: 140, height: 100}}>
-                  <Image
-                    source={{uri: this.props.images[1]}}
-                    style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+		                <Image
+	                        source={{uri: this.props.images[1]}}
+	                        style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+	                    />
+	                </TouchableOpacity>
                 </View>
                 <View style={{width: 140, height: 100}}>
-                  <Image
-                    source={{uri: this.props.images[1]}}
-                    style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+		                <Image
+	                        source={{uri: this.props.images[1]}}
+	                        style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                    />
+	                </TouchableOpacity>
                 </View>
               </View>
               <View style={{ flexDirection: 'row',  marginBottom: 5}}>
                 <View style={{width: 140, height: 100}}>
-                  <Image
-                    source={{uri: this.props.images[2]}}
-                    style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+		                <Image
+	                        source={{uri: this.props.images[2]}}
+	                        style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                    />
+	                </TouchableOpacity>
                 </View>
                 <View style={{width: 140, height: 100}}>
-                  <Image
-                    source={{uri: this.props.images[3]}}
-                    style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
-                  />
+	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
+		                <Image
+	                        source={{uri: this.props.images[3]}}
+	                        style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                    />
+	                </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -161,15 +193,25 @@ export default class PostViewer extends React.Component {
 
   render () {
     return (
-	    <TouchableOpacity onPress={this.goToComments.bind(this)}>
+	    <TouchableOpacity delayPressIn={65} onPress={this.goToComments.bind(this)}>
 			<View style={styles.container}>
-			  <Modal isVisible={this.state.showModal}
-			         onBackButtonPress={this.disableModal.bind(this)}
-			         onBackdropPress={this.disableModal.bind(this)}
-			         hideModalContentWhileAnimating={true}
-			  >
-			      <ReportModal emitClose={this.disableModal}/>
-			  </Modal>
+				  <Modal visible={this.state.showImages} transparent={true}>
+					  <ImageViewer
+						  imageUrls={this.state.galleryObj}
+						  index={this.state.indexImage}
+						  swipeDownThreshold={0.5}
+						  enableSwipeDown={true}
+						  onSwipeDown={() => {this.setState({ showImages: false })}}
+					  />
+				  </Modal>
+				  <Modal
+					  visible={this.state.showModal}
+					  onBackButtonPress={this.disableModal.bind(this)}
+				         onBackdropPress={this.disableModal.bind(this)}
+				         hideModalContentWhileAnimating={true}
+				  >
+				      <ReportModal emitClose={this.disableModal}/>
+				  </Modal>
 			  <View style={styles.postHeaderUserImage}>
 			      <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
 			          <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>
