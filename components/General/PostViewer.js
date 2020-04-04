@@ -25,6 +25,8 @@ export default class PostViewer extends React.Component {
 	    showImages: false,
 	    galleryObj: [],
 	    indexImage: 0,
+	    opacityValue: 0.7,
+	    opacityValueScrolling: 1,
     };
   }
 
@@ -54,10 +56,10 @@ export default class PostViewer extends React.Component {
 
         if (this.props.images.length === 1) {
           return (
-            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10, zIndex: 2}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: 280, height: 200}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
 	                  <Image
 	                    source={{uri: this.props.images[0]}}
 	                    style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
@@ -72,7 +74,7 @@ export default class PostViewer extends React.Component {
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row', marginBottom: 5}}>
                 <View style={{width: 140, height: 200}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
 		                <Image
 	                        source={{uri: this.props.images[0]}}
 	                        style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
@@ -80,7 +82,7 @@ export default class PostViewer extends React.Component {
 	                </TouchableOpacity>
                 </View>
                 <View style={{width: 140, height: 200}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
 		                <Image
 	                        source={{uri: this.props.images[1]}}
 	                        style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
@@ -95,7 +97,7 @@ export default class PostViewer extends React.Component {
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: 140, height: 200}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
 		                <Image
 		                    source={{uri: this.props.images[0]}}
 		                    style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
@@ -104,7 +106,7 @@ export default class PostViewer extends React.Component {
                 </View>
                 <View style={{flexDirection: 'column'}}>
 	                <View style={{width: 140, height: 100}}>
-		                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+		                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
 			                <Image
 		                        source={{uri: this.props.images[1]}}
 		                        style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
@@ -112,7 +114,7 @@ export default class PostViewer extends React.Component {
 		                </TouchableOpacity>
 	                </View>
 	                <View style={{width: 140, height: 99}}>
-		                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+		                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
 			                <Image
 		                        source={{uri: this.props.images[2]}}
 		                        style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
@@ -128,7 +130,7 @@ export default class PostViewer extends React.Component {
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: 140, height: 100}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
 		                <Image
 	                        source={{uri: this.props.images[1]}}
 	                        style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
@@ -136,7 +138,7 @@ export default class PostViewer extends React.Component {
 	                </TouchableOpacity>
                 </View>
                 <View style={{width: 140, height: 100}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
 		                <Image
 	                        source={{uri: this.props.images[1]}}
 	                        style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
@@ -146,7 +148,7 @@ export default class PostViewer extends React.Component {
               </View>
               <View style={{ flexDirection: 'row',  marginBottom: 5}}>
                 <View style={{width: 140, height: 100}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
 		                <Image
 	                        source={{uri: this.props.images[2]}}
 	                        style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
@@ -154,7 +156,7 @@ export default class PostViewer extends React.Component {
 	                </TouchableOpacity>
                 </View>
                 <View style={{width: 140, height: 100}}>
-	                <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
+	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
 		                <Image
 	                        source={{uri: this.props.images[3]}}
 	                        style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
@@ -193,7 +195,7 @@ export default class PostViewer extends React.Component {
 
   render () {
     return (
-	    <TouchableOpacity delayPressIn={65} onPress={this.goToComments.bind(this)}>
+	    <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToComments.bind(this)}>
 			<View style={styles.container}>
 				  <Modal visible={this.state.showImages} transparent={true}>
 					  <ImageViewer
@@ -213,13 +215,13 @@ export default class PostViewer extends React.Component {
 				      <ReportModal emitClose={this.disableModal}/>
 				  </Modal>
 			  <View style={styles.postHeaderUserImage}>
-			      <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+			      <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
 			          <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>
 			      </TouchableOpacity>
 			  </View>
 			  <View style={{flexDirection: 'column'}}>
 			      <View style={styles.postHeader}>
-			          <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+			          <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
 			              <Text
 			                  style={{marginLeft: 16, fontWeight: 'bold'}}
 			              >

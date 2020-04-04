@@ -36,6 +36,7 @@ export default class UserProfile extends React.Component {
 			isRefreshing: false,
 			showImage: false,
 			userImage: [],
+			scrolling: false,
 		};
 	}
 
@@ -111,8 +112,10 @@ export default class UserProfile extends React.Component {
 				</Modal>
 				<FlatList
 					data = {this.state.posts}
+					onScrollEndDrag={() => this.setState({ scrolling: false })}
+					onScrollBeginDrag={() => this.setState({ scrolling: true })}
 					renderItem={ ({item}) =>
-							<PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
+							<PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
 					}
 					ListHeaderComponent={() =>
 						<View style={styles.profileHeader}>

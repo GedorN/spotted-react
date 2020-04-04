@@ -10,15 +10,28 @@ import {
     PermissionsAndroid,
     FlatList,
     ActivityIndicator,
-	RefreshControl
+	RefreshControl,
 } from 'react-native';
+
+const images = [{
+	// Simplest usage.
+	url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460',
+
+	// width: number
+	// height: number
+	// Optional, if you know the image size, you can set the optimization performance
+
+	// You can pass props to <Image />.
+	props: {
+		// headers: ...
+	}
+}]
 
 import CameraRoll from '@react-native-community/cameraroll';
 import ImagePicker from 'react-native-image-picker';
 import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
-import Modal from "react-native-modal";
 import UUIDGenerator from 'react-native-uuid-generator';
 const width = Dimensions.get('screen').width;
 
@@ -32,6 +45,7 @@ export default class Home extends React.Component {
 	    pulling: false,
 	    endPulling: false,
 	    isRefreshing: false,
+	    scrolling: false,
     };
   }
 
@@ -94,13 +108,18 @@ export default class Home extends React.Component {
 
 
 
+
+
+
   render() {
     return (
       <View style={{}}>
           <FlatList
               data = {this.state.posts}
+              onScrollEndDrag={() => this.setState({ scrolling: false })}
+              onScrollBeginDrag={() => this.setState({ scrolling: true })}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation}/>
+                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
               }
               refreshControl={
 	              <RefreshControl
