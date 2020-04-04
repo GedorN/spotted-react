@@ -52,7 +52,7 @@ export default class MainScreen extends React.Component {
 			],
 		};
 	}
-	getHome = () => {return<Home navigation={this.props.navigation}/>};
+	getHome = () => {return<Home ref={homeScreen => {this.homeScreen = homeScreen}} navigation={this.props.navigation}/>};
 	getUserProfile = () => {return<UserProfile navigation={this.props.navigation} user={heimdallr.user_id}/>}
 
 	_handleIndexChange = (index) => {
@@ -81,7 +81,13 @@ export default class MainScreen extends React.Component {
 		search: UsersSearch,
 	});
 
-	_hideModal = () => this.setState({ showModal: false });
+	postCall = () => {
+		this.homeScreen.onRefresh();
+	}
+
+	_hideModal = () => {
+		this.setState({ showModal: false })
+	};
 
 	_hideSettingsModal = () => this.setState({ showSettingsModal: false });
 
@@ -204,7 +210,7 @@ export default class MainScreen extends React.Component {
 							onDismiss={this._hideModal}
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
-							<PostWrite close={this._hideModal.bind(this)}/>
+							<PostWrite close={this._hideModal.bind(this)} call={this.postCall.bind(this)} />
 						</Modal>
 						<Modal
 							visible={this.state.showSettingsModal}

@@ -99,6 +99,7 @@ export default class PostWrite extends React.Component {
 			params.comments = 0;
 			heimdallr.getUID().then((uuid) => {
 				params.pid = uuid;
+				this.props.call();
 				let result = heimdallr.saveCollection('post', params);
 				result.then((resolve) => {
 					console.log('result: ', resolve);
