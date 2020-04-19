@@ -33,11 +33,9 @@ export default class Login extends React.Component {
     }
 
     doLogin = async () => {
-	    let result = await this.props.login({ user: this.state.user, password: this.state.password });
-	    console.log('resultado do login: ', result);
-	    if (!result) {
+	    let result = await this.props.login({ user: this.state.user, password: this.state.password }).then().catch((e) => {
 	    	this.setState({ showAttemptFail: true });
-	    }
+	    });
     }
 
     render() {
@@ -49,7 +47,7 @@ export default class Login extends React.Component {
                 />
 	            {
 	            	this.state.showAttemptFail ?
-			            <Text style={{color: 'red'}}> *Login or password incorrect  </Text> :
+			            <Text style={{color: 'red', marginTop: 10}}> *Usuário ou senha incorretos </Text> :
 			            null
 	            }
                 <View style={styles.form}>
