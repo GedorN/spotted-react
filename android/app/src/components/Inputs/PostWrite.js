@@ -56,7 +56,16 @@ export default class PostWrite extends React.Component {
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
 				console.log('before: ', this.state.postImages);
-				ImageResizer.createResizedImage(img.path, img.width /5, img.height / 5, 'JPEG', 70 ).then(
+				let propCo =  600000 / img.fileSize;
+				console.warn(img.fileSize);
+				if (propCo < 1) {
+					console.warn('Ué cusão');
+				} else {
+					console.warn('deu boa não');
+				}
+				let quality = propCo > 1 ? 100 : 100 * propCo;
+				let constant = propCo < 1 ? 1 / propCo : 1;
+				ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
 					(resolve) => {
 						let link = heimdallr.uploadImage(resolve.uri);
 						link.then(function (resolve) {
@@ -151,7 +160,7 @@ export default class PostWrite extends React.Component {
 						let images = this.state.postImages;
 						images.push(response);
 						this.setState({postImages: images});
-						console.log('Imagem: ', this.state.postImages);
+						console.log('Imagem: ', response);
 						this.setState({showModal: true});
 					}
 				});
