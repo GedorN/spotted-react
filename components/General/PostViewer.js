@@ -10,6 +10,8 @@ import {
 } from "react-native";
 
 const width = Dimensions.get('screen').width;
+const height = Dimensions.get('screen').height;
+
 import UserImgProfile from "./UserImgProfile";
 import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
@@ -47,7 +49,8 @@ export default class PostViewer extends React.Component {
     }
 
     disableModal () {
-        this.setState({showModal: false});
+	    this.setState({ showImages: false });
+        this.setState( { showModal: false });
     }
 
     getModalImagesLayout = () => {
@@ -197,7 +200,13 @@ export default class PostViewer extends React.Component {
     return (
 	    <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToComments.bind(this)}>
 			<View style={styles.container}>
-				  <Modal visible={this.state.showImages} transparent={true}>
+				  <Modal
+					  visible={this.state.showImages}
+					  transparent={true}
+					  onRequestClose={() => {
+						  this.disableModal();
+					  }}
+				  >
 					  <ImageViewer
 						  imageUrls={this.state.galleryObj}
 						  index={this.state.indexImage}
@@ -207,12 +216,15 @@ export default class PostViewer extends React.Component {
 					  />
 				  </Modal>
 				  <Modal
-					  visible={this.state.showModal}
-					  onBackButtonPress={this.disableModal.bind(this)}
-				         onBackdropPress={this.disableModal.bind(this)}
-				         hideModalContentWhileAnimating={true}
+					    visible={this.state.showModal}
+					    transparent={true}
+					    hideModalContentWhileAnimating={true}
+					    style={styles.reportModal}
+					    onRequestClose={() => {
+						    this.disableModal();
+					    }}
 				  >
-				      <ReportModal emitClose={this.disableModal}/>
+				      <ReportModal close={this.disableModal.bind(this)}/>
 				  </Modal>
 			  <View style={styles.postHeaderUserImage}>
 			      <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
@@ -228,17 +240,14 @@ export default class PostViewer extends React.Component {
 			                  {this.props.user}
 			              </Text>
 			          </TouchableOpacity>
-			          <View style={{left: width * 0.55}}>
-			              <TouchableOpacity
-			              >
-			                  <OptionsMenu
-			                      button={require('../../assets/images/ellipsis-h-solid.png') }
-			                      buttonStyle={{ width: 20, height: 20}}
-			                      options={['Denunciar']}
-			                      actions={[this.toggleModal.bind(this)]}
-			                  />
-			              </TouchableOpacity>
-			          </View>
+		                <View style={{left: width * 0.55, height: 30, width: 30, zIndex: 999}}>
+		                  <OptionsMenu
+		                      button={require('../../assets/images/ellipsis-h-solid.png') }
+		                      buttonStyle={{ width: 25, height: 25}}
+		                      options={['Denunciar']}
+		                      actions={[this.toggleModal.bind(this)]}
+		                  />
+		                </View>
 			      </View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
@@ -307,5 +316,9 @@ export default class PostViewer extends React.Component {
           marginLeft: 10,
           borderRadius: 8,
           color: 'black',
-      }
+      },
+	  reportModal: {
+      	width: width,
+	    height: height / 4,
+	  }
   });

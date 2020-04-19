@@ -17,7 +17,7 @@ export default class ReportModal extends React.Component {
         };
     }
 
-    makeReport (idReport) {
+    makeReport = (idReport) => {
         console.warn('reporting: ', idReport);
         const params = {};
         params.date = new Date();
@@ -25,36 +25,51 @@ export default class ReportModal extends React.Component {
         params.report_category = idReport;
         params.author = heimdallr.user_id;
         let result = heimdallr.saveCollection('report', params);
-        result.then(function (resolve) {
-            console.warn('report has been done!');
-            // this.props.disableModal();
-        });
+        result.then(
+        	(resolve) => {
+	            console.warn('report has been done!');
+	            this.props.close();
+            },
+	        (reject) => {
+        		console.log('rejecrtado: ', reject);
+	        }
+        );
 
     }
 
     render() {
         return (
-            <View style={{backgroundColor: 'white', height: 200, flexDirection: 'column', justifyContent: 'space-between', padding: 3 }}>
-                <View style={styles.option}>
-                    <TouchableOpacity style={{flex: 1}} onPress={this.makeReport.bind(this, 1)}>
+            <View style={styles.container}>
+	            <View style={{
+		            backgroundColor: 'white',
+		            zIndex: 100,
+		            height: 40,
+		            width: 600,
+		            paddingLeft: 25,
+		            borderBottomWidth: 0.5,
+	            }}>
+	                <Text style={{fontWeight: 'bold'}}>Nos ajude a entender o problema</Text>
+	            </View>
+                <TouchableOpacity onPress={this.makeReport.bind(this, 1)}>
+                    <View style={styles.option}>
                         <Text>Violência</Text>
-                    </TouchableOpacity >
-                </View>
-                <View style={styles.option}>
-                    <TouchableOpacity style={{flex: 1}} onPress={this.makeReport.bind(this, 2)}>
+                    </View>
+                </TouchableOpacity >
+                <TouchableOpacity onPress={this.makeReport.bind(this, 2)}>
+                    <View style={styles.option}>
                         <Text>Nudez</Text>
-                    </TouchableOpacity>
-                </View >
-                <View style={styles.option}>
-                    <TouchableOpacity style={{flex: 1}} onPress={this.makeReport.bind(this, 3)}>
+                    </View >
+                </TouchableOpacity>
+                <TouchableOpacity onPress={this.makeReport.bind(this, 3)}>
+                    <View style={styles.option}>
                         <Text>Ofencivo</Text>
-                    </TouchableOpacity >
-                </View>
-                <View style={styles.option}>
-                    <TouchableOpacity style={{flex: 1}} onPress={this.makeReport.bind(this, 4)}>
+                    </View>
+                </TouchableOpacity >
+                <TouchableOpacity onPress={this.makeReport.bind(this, 4)}>
+                    <View style={styles.option}>
                         <Text>Outros...</Text>
-                    </TouchableOpacity>
-                </View>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -63,9 +78,18 @@ export default class ReportModal extends React.Component {
 
 
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 3,
+		width: 600
+	},
     option: {
-        backgroundColor: 'red',
-        flex: 1,
-        padding: 5
+        backgroundColor: 'white',
+	    zIndex: 100,
+	    height: 20,
+	    width: 600,
+        padding: 25,
     }
 });
