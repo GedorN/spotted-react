@@ -61,6 +61,11 @@ const collections = {
 				required: true,
 			},
 			{
+				desc: 'id_user',
+				type: 'string',
+				required: true,
+			},
+			{
 				desc: 'comment',
 				type : 'string',
 				required: true,

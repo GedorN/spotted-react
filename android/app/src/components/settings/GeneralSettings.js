@@ -22,8 +22,9 @@ export default class GeneralSettings extends  React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userName: null,
-			email: 'heuheu',
+			userName: heimdallr.user_name,
+			email: heimdallr.email,
+			userImage: heimdallr.user_image,
 		};
 	}
 
@@ -32,6 +33,13 @@ export default class GeneralSettings extends  React.Component {
 	}
 
 	saveEdition = () => {
+		console.warn('kk otario');
+		const params = {};
+		params.name = this.state.userName;
+		params.user_image = this.state.userImage;
+		heimdallr.updateProfile(params).then(() => {
+			console.warn('Dados alterados com sucesso');
+		})
 
 	}
 
@@ -88,7 +96,7 @@ export default class GeneralSettings extends  React.Component {
 					<FatBottomedButton text='Alterar senha' color={theme.primary} onTap={this.props.changePassword} />
 				</View>
 				<View style={{marginTop: 20}}>
-					<FatBottomedButton text='Salvar' color={theme.primary} onTap={() => this.saveEdition.bind(this)} />
+					<FatBottomedButton text='Salvar' color={theme.primary} onTap={() => this.saveEdition()} />
 				</View>
 			</View>
 

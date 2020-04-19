@@ -92,12 +92,19 @@ export default class MainScreen extends React.Component {
 	_hideSettingsModal = () => this.setState({ showSettingsModal: false });
 
 	componentDidMount(): void {
+		const anonymousRoutes =  [
+			{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
+			{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
+		];
 		StatusBar.setBackgroundColor('white');
 		StatusBar.setBarStyle('dark-content', true);
 		let login = heimdallr.checkUser();
 		login.then((resolve) => {
 			if (heimdallr.user_id) {
 				this.setState({isLogged: true});
+				if (heimdallr.email === 'spotted@utfpr.com') {
+					this.setState({ routes: anonymousRoutes });
+				}
 			}
 		})
 	}

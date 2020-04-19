@@ -14,6 +14,7 @@ import theme from "../../../../components/General/Theme";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
 import EyeOfThePassword from "./Inputs/EyeOfThePassword";
+import AwesomeAlert from 'react-native-awesome-alerts';
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
@@ -25,8 +26,22 @@ export default class Login extends React.Component {
             password: null,
 	        showAttemptFail: false,
 	        securePassword: true,
+	        showAlert: false,
         };
     }
+
+
+	showAlert = () => {
+		this.setState({
+			showAlert: true
+		});
+	};
+
+	hideAlert = () => {
+		this.setState({
+			showAlert: false
+		});
+	};
 
     toggleSecureEntry = () => {
     	this.setState({ securePassword: !this.state.securePassword });
@@ -36,6 +51,14 @@ export default class Login extends React.Component {
 	    let result = await this.props.login({ user: this.state.user, password: this.state.password }).then().catch((e) => {
 	    	this.setState({ showAttemptFail: true });
 	    });
+    }
+
+	anonymousLogin = async () => {
+    	const params = {};
+    	params.user = 'spotted@utfpr.com';
+    	params.password = 'angeca123';
+    	await this.props.login(params).then();
+		this.setState({ showAlert: false });
     }
 
     render() {
@@ -91,8 +114,29 @@ export default class Login extends React.Component {
 	                {/*</View>*/}
                 </View>
 	            <View style={{position: 'absolute', bottom: 15, width: width, alignItems: 'flex-start'}}>
-		            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
+	                <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>
+			            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
+	                </TouchableOpacity>
 	            </View>
+	            <AwesomeAlert
+		            show={this.state.showAlert}
+		            showProgress={false}
+		            title="Modo anônimo"
+		            message="Usuários anônimos não podem realizar postagens e nem comentários"
+		            closeOnTouchOutside={true}
+		            closeOnHardwareBackPress={false}
+		            showCancelButton={true}
+		            showConfirmButton={true}
+		            cancelText="Cancelar"
+		            confirmText="Continuar"
+		            confirmButtonColor={theme.primary}
+		            onCancelPressed={() => {
+			            this.hideAlert();
+		            }}
+		            onConfirmPressed={() => {
+			            this.anonymousLogin();
+		            }}
+	            />
             </View>
         );
     }

@@ -225,7 +225,6 @@ export default class PostDetails extends React.Component {
 	}
 
 	addCommentary = () => {
-		console.log('escutei');
 		if (!this.state.commentText || this.state.commentText === '') {
 			return ;
 		}
@@ -235,13 +234,11 @@ export default class PostDetails extends React.Component {
 		params.date = new Date();
 		params.user_image = heimdallr.user_image;
 		params.user_name = heimdallr.user_name;
+		params.id_user = heimdallr.user_id;
 		heimdallr.getUID().then((uuid) => {
 			params.cid = uuid;
-			console.log('here loko');
-			console.log('vou salbar');
 			let result = heimdallr.saveCollection('comment', params);
 			result.then((resolve) => {
-				console.log('entrou aqui pelo menos', resolve);
 
 				const _data = {};
 				_data.user_image = heimdallr.user_image;
@@ -252,7 +249,6 @@ export default class PostDetails extends React.Component {
 				let posts = this.state.comments;
 				posts.unshift({_data, _ref});
 				this.setState({ comments: posts });
-				console.log('postado');
 				this.postTextInput.clear();
 
 			});
@@ -349,22 +345,25 @@ export default class PostDetails extends React.Component {
 							ListFooterComponent={ this.renderFooter.bind(this)}
 						/>
 					</View>
-					<View style={styles.commentContainer}>
-						<TextInput
-							style={styles.textInput}
-							capitalize='sentences'
-							placeholder='Comentário...'
-							multiline
-							onChangeText={text => this.setState({commentText: text})}
-							ref={input => (this.postTextInput = input)}
-						/>
-						<TouchableOpacity onPress={this.addCommentary.bind(this)}>
-							<Image
-								style={{width: 30, height: 30, marginLeft: 15}}
-								source={require('../../../../assets/images/send.png')}
+					{
+						heimdallr.email !== 'spotted@utfpr.com' &&
+						<View style={styles.commentContainer}>
+							<TextInput
+								style={styles.textInput}
+								capitalize='sentences'
+								placeholder='Comentário...'
+								multiline
+								onChangeText={text => this.setState({commentText: text})}
+								ref={input => (this.postTextInput = input)}
 							/>
-						</TouchableOpacity>
-					</View>
+							<TouchableOpacity onPress={this.addCommentary.bind(this)}>
+								<Image
+									style={{width: 30, height: 30, marginLeft: 15}}
+									source={require('../../../../assets/images/send.png')}
+								/>
+							</TouchableOpacity>
+						</View>
+					}
 				</View>
 			</KeyboardAvoidingView>
 		);

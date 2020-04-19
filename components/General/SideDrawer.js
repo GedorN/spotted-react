@@ -32,7 +32,7 @@ export default class SideDrawer extends React.Component {
                     </Text>
                 </View>
                 <View style={styles.content}>
-                    <TouchableOpacity>
+                    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}>
 	                    <View style={styles.item}>
 		                    <Image source={require('../../assets/images/user-solid.png')}
 		                        style={styles.portraitIcon}
@@ -40,7 +40,7 @@ export default class SideDrawer extends React.Component {
 	                        <Text> Perfil </Text>
 	                    </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {this.props.actionPressed('settings')}}>
+                    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'} onPress={() => {this.props.actionPressed('settings')}}>
 	                    <View style={styles.item}>
 		                    <Image source={require('../../assets/images/user-cog-solid.png')}
 		                        style={styles.landscapeIcon}
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
 	item: {
     	padding: 2,
 		fontSize: 18,
-		color: theme.primary,
+		color: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
     	flexDirection: 'row',
 		justifyContent: 'flex-start',
 		alignItems: 'center',
@@ -110,13 +110,13 @@ const styles = StyleSheet.create({
 	    paddingLeft: 21,
     },
 	landscapeIcon: {
-		tintColor: theme.primary,
+		tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
     	width: 40,
 		height: 32,
 		marginRight: 13,
 	},
 	portraitIcon: {
-    	tintColor: theme.primary,
+    	tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
 		width: 32,
 		height: 36,
 		marginRight: 21,
