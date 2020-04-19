@@ -325,6 +325,9 @@ function HeimdallrLib() {
           	// console.warn(`Documento ${docRef.id}`);
             // console.log(`Documento ${docRef.id}`);
             returnValue = docRef.id;
+            if (collection === 'post') {
+            	heimdallr.saveCollection('unverified_post', params);
+            }
             resolve();
           },
           () => {

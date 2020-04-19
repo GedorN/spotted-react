@@ -127,6 +127,52 @@ const collections = {
                 required: false,
             }
         ],
+		unverified_post: [
+			{
+				desc: 'user_name',
+				type: 'string',
+				require: true,
+			},
+			{
+				desc: 'pid',
+				type: 'string',
+				required: true,
+			},
+			{
+				desc: 'user_image',
+				type: 'string',
+				require: true,
+			},
+			{
+				desc: 'comments',
+				type: 'number',
+			},
+			{
+				desc: 'uid',
+				type: 'string',
+				require: true,
+			},
+			{
+				desc: 'text',
+				type: 'string',
+				required: true,
+			},
+			{
+				desc: 'active',
+				type: 'number',
+				required: true,
+			},
+			{
+				desc: 'date',
+				type: 'object',
+				required: true,
+			},
+			{
+				desc: 'images',
+				type: 'array',
+				required: false,
+			}
+		],
         answer: [
             {
                 desc: 'id_user',
