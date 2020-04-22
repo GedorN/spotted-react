@@ -22,6 +22,7 @@ import UserImgProfile from '../../../../components/General/UserImgProfile';
 import UUIDGenerator from 'react-native-uuid-generator';
 import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
+import MainScreen from "./MainScreen";
 const width = Dimensions.get('screen').width;
 
 export default class UserProfile extends React.Component {
@@ -29,7 +30,7 @@ export default class UserProfile extends React.Component {
 		super(props);
 		this.state = {
 			userId:'',
-			userName:'',
+			userName: null,
 			posts: null,
 			pulledPosts: 10,
 			loading: false,
@@ -44,27 +45,47 @@ export default class UserProfile extends React.Component {
 	}
 
 	componentDidMount = () => {
-		heimdallr.getSimilarUser();
-		console.log('token: ', this.props.user);
-
-		let user_id = this.props.navigation.getParam('userId');
-		console.warn("user_id",user_id);
-		let userInfo = heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id);
-		userInfo.then((resolve) => {
-			console.warn("user collection",resolve.uid);
-			this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
-			
-		});
-		let result = heimdallr.getUserColletion('post', this.state.pulledPosts,user_id? user_id:heimdallr.user_id);
-		result.then( (resolve) => {
-			if(resolve.length === 0){
-				this.setState({ endPulling: true });
-			}
-			console.log('peguei esses caras aqui', resolve);
-			this.setState({ posts: resolve });
-			this.setState({userId:this.props.navigation.getParam('userId')});
-			console.warn("userId state", this.state.userId);
-		});
+		const user_id = this.props.navigation.getParam('userId');
+		if (user_id) {
+			console.log('navigation: ', this.props);
+			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
+				(resolve) => {
+					this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
+					console.log('prof state? ', this.state);
+					heimdallr.getUserColletion('post', this.state.pulledPosts, this.state.userId).then(
+						(resolve) => {
+							if(resolve.length === 0){
+								this.setState({ endPulling: true });
+							}
+							console.log('peguei esses caras aqui', resolve);
+							this.setState({ posts: resolve });
+							this.setState({userId:this.props.navigation.getParam('userId')});
+							console.warn("userId state", this.state.userId);
+						}
+					);
+				},
+				(reject) => {
+					console.log('Deu ruim: ', reject);
+				});
+		} else {
+			console.log('navigation: ', this.props);
+			this.state.userId = heimdallr.user_id;
+			this.state.userImage = heimdallr.user_image;
+			this.state.userName = heimdallr.user_name;
+			this.state.userImageUrl = [{url: heimdallr.user_image}];
+			console.log('Profile: ', this.state.userId);
+			heimdallr.getUserColletion('post', this.state.pulledPosts, this.state.userId).then(
+				(resolve) => {
+					if(resolve.length === 0){
+						this.setState({ endPulling: true });
+					}
+					console.log('peguei esses caras aqui', resolve);
+					this.setState({ posts: resolve });
+					this.setState({userId:this.props.navigation.getParam('userId')});
+					console.warn("userId state", this.state.userId);
+				}
+			);
+		}
 	}
 
 	pullMorePosts = (distanceFromEnd) => {
@@ -78,7 +99,7 @@ export default class UserProfile extends React.Component {
 				let n = this.state.pulledPosts;
 				n = 5 + n;
 				console.log('puxando: ', n);
-				let result = heimdallr.getUserColletion('post', n, heimdallr.user_id);
+				let result = heimdallr.getUserColletion('post', n, this.state.userId);
 				result.then((resolve) => {
 					if (resolve.length === this.state.posts.length) {
 						this.setState({ endPulling: true });
@@ -124,7 +145,13 @@ export default class UserProfile extends React.Component {
 	render() {
 		return (
 			<View style={{}}>
-				<Modal visible={this.state.showImage} transparent={true}>
+				<Modal
+					visible={this.state.showImage}
+					transparent={true}
+					onRequestClose={() => {
+						this.setState({ showImage: false });
+					}}
+				>
 					<ImageViewer
 						imageUrls={this.state.userImageUrl? this.state.userImageUrl: null}
 						swipeDownThreshold={0.5}
@@ -141,7 +168,7 @@ export default class UserProfile extends React.Component {
 					}
 					ListHeaderComponent={() =>
 						<View style={styles.profileHeader}>
-							<TouchableOpacity onPress={() => {this.setState({ showImage: true })}}>
+							<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
 								<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={this.state.userImage}/>
 							</TouchableOpacity>
 							<View style={styles.headerText}>

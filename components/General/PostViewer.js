@@ -176,20 +176,17 @@ export default class PostViewer extends React.Component {
   }
 
   report = (prop) => {
-      console.log('Ah eu vou denunciar');
       console.log(prop);
   }
 
   goToUserProfile = () => {
-  	// console.warn(this.props.uid);
-	  console.warn('passing: ', this.props.uid);
-  	this.props.navigation.navigate('UserProfile', {
+  	this.props.navigation.push('UserProfile', {
   		userId: this.props.uid,
     });
   }
 
   goToComments = () => {
-  	this.props.navigation.navigate('PostDetails', {
+  	this.props.navigation.push('PostDetails', {
   		pid: this.props.pid,
 	    userImage: this.props.userImage,
     });
