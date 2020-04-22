@@ -25,7 +25,6 @@ export default class UserImgProfile extends React.Component {
         />
       );
     } else {
-      console.log('caiu no else');
       return (
         <Image
           source={require('../../assets/images/mask-solid.png')}

@@ -69,7 +69,7 @@ export default class PostDetails extends React.Component {
 	}
 
 	goToUserProfile = () => {
-		this.props.navigation.navigate('UserProfile', {
+		this.props.navigation.push('UserProfile', {
 			userId: this.state.post.uid,
 		});
 	}
