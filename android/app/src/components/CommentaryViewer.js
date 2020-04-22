@@ -20,10 +20,22 @@ export default class CommentaryViewer extends React.Component {
 		};
 	}
 
-	render () {
+	goToUserProfile = () => {
+		console.warn("props user_id from commentary",this.props.user_id);
+		 this.props.navigation.navigate('UserProfile', {
+			userId: this.props.user_id,
+		}); 
+
+	}
+
+	return = () => {
+		this.props.navigation.goBack();
+	}
+
+	render = () => {
 		return (
 			<View style={styles.container}>
-				<TouchableOpacity>
+				<TouchableOpacity  onPress={this.goToUserProfile.bind(this)}>
 					<UserImgProfile circular marginBottom={5} height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage ? this.props.userImage : null}/>
 				</TouchableOpacity>
 				<View style={styles.body}>

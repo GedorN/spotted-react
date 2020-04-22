@@ -183,7 +183,7 @@ export default class PostViewer extends React.Component {
   goToUserProfile = () => {
   	// console.warn(this.props.uid);
 	  console.warn('passing: ', this.props.uid);
-  	this.props.navigation.navigate('PresentationProfile', {
+  	this.props.navigation.navigate('UserProfile', {
   		userId: this.props.uid,
     });
   }

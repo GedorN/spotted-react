@@ -47,6 +47,7 @@ export default class PostDetails extends React.Component {
 	componentDidMount = () => {
 		console.log('post clicado: ', this.props.navigation.getParam('pid'));
 		this.setState({ pulling: true });
+		console.warn("pulling state", this.state.pulling);
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
 			this.setState( { post: resolve[0]._data });
@@ -68,9 +69,8 @@ export default class PostDetails extends React.Component {
 	}
 
 	goToUserProfile = () => {
-		// console.warn(this.props.uid);
-		this.props.navigation.navigate('PresentationProfile', {
-			userId: this.props.uid,
+		this.props.navigation.navigate('UserProfile', {
+			userId: this.state.post.uid,
 		});
 	}
 
@@ -335,7 +335,7 @@ export default class PostDetails extends React.Component {
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>
-								<CommentaryViewer userImage={item._data.user_image} text={item._data.comment} user_name={item._data.user_name}/>
+								< CommentaryViewer userImage={item._data.user_image} text={item._data.comment} user_name={item._data.user_name} user_id = {item._data.id_user} navigation={this.props.navigation} />
 							}
 							keyExtractor={item => item._ref.id}
 							onEndReachedThreshold={0.3}

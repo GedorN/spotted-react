@@ -60,7 +60,7 @@ export default class UsersSearch extends React.Component {
 					<FlatList
 						data={this.state.users}
 						renderItem={ ({item}) =>
-							<UserBannerView profileImage={item._data.user_image} userName={item._data.name}/>
+							<UserBannerView profileImage={item._data.user_image} userName={item._data.name} userId = {item._data.uid} navigation={this.props.navigation}/>
 						}
 						keyExtractor={item=> item._ref.id}
 					/>

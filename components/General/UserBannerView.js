@@ -3,6 +3,7 @@ import {
 	View,
 	StyleSheet,
 	Text,
+	TouchableOpacity,
 } from 'react-native';
 import UserImgProfile from "./UserImgProfile";
 
@@ -14,16 +15,30 @@ export default class UserBannerView extends React.Component {
 		};
 	}
 
+	goToUserProfile = () => {
+		console.warn("USER ID RECEIVED", this.props.userId);
+	 	this.props.navigation.navigate('UserProfile', {
+		   userId: this.props.userId,
+	   });  
+
+   }
+
+   	return = () => {
+		this.props.navigation.goBack();
+	}
+
 	render() {
 		return (
-			<View style={styles.container}>
-				<UserImgProfile circular height={45} width={45} uri={this.props.profileImage} />
-				<View style={styles.info}>
-					<Text>
-						{this.props.userName}
-					</Text>
+			<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+				<View style={styles.container}>
+					<UserImgProfile circular height={45} width={45} uri={this.props.profileImage} />
+					<View style={styles.info}>
+						<Text>
+							{this.props.userName}
+						</Text>
+					</View>
 				</View>
-			</View>
+			</TouchableOpacity>
 		)
 	}
 }

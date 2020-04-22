@@ -6,6 +6,7 @@ import SignUp from "./android/app/src/components/SignUp";
 import PasswordRestore from "./android/app/src/components/PasswordRestore";
 import PresentationProfile from "./android/app/src/components/PresentationProfile";
 import PostDetails from "./android/app/src/components/PostDetails";
+import UserProfile from "./android/app/src/components/UserProfile";
 const RootStack = createStackNavigator(
 	{
 		Home: { screen: MainScreen },
@@ -13,6 +14,7 @@ const RootStack = createStackNavigator(
 		PasswordRestore: { screen: PasswordRestore },
 		PresentationProfile: { screen: PresentationProfile },
 		PostDetails: { screen: PostDetails },
+		UserProfile: { screen: UserProfile},
 	},
 	{
 		initialRouteName: 'Home',
@@ -29,3 +31,5 @@ export default class App extends React.Component {
 		return <AppContainer />
 	}
 }
+
+//App.js

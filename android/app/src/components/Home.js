@@ -12,7 +12,7 @@ import {
     ActivityIndicator,
 	RefreshControl,
 } from 'react-native';
-
+ // comentary 
 const images = [{
 	// Simplest usage.
 	url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460',

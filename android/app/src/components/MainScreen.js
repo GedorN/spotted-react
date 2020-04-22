@@ -54,7 +54,7 @@ export default class MainScreen extends React.Component {
 	}
 	getHome = () => {return<Home ref={homeScreen => {this.homeScreen = homeScreen}} navigation={this.props.navigation}/>};
 	getUserProfile = () => {return<UserProfile navigation={this.props.navigation} user={heimdallr.user_id}/>}
-
+	getUsersSearch = () => { return <UsersSearch navigation={this.props.navigation}/>}
 	_handleIndexChange = (index) => {
 		if (index === 2) {
 			this.setState({ showModal: true });
@@ -78,7 +78,7 @@ export default class MainScreen extends React.Component {
 		home: this.getHome,
 		post: PostWrite,
 		user: this.getUserProfile,
-		search: UsersSearch,
+		search: this.getUsersSearch,
 	});
 
 	postCall = () => {

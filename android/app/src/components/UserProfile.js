@@ -28,6 +28,8 @@ export default class UserProfile extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			userId:'',
+			userName:'',
 			posts: null,
 			pulledPosts: 10,
 			loading: false,
@@ -35,7 +37,8 @@ export default class UserProfile extends React.Component {
 			endPulling: false,
 			isRefreshing: false,
 			showImage: false,
-			userImage: [],
+			userImage: '',
+			userImageUrl: [],
 			scrolling: false,
 		};
 	}
@@ -43,11 +46,24 @@ export default class UserProfile extends React.Component {
 	componentDidMount = () => {
 		heimdallr.getSimilarUser();
 		console.log('token: ', this.props.user);
-		this.setState({ userImage: [{url: heimdallr.user_image}] });
-		let result = heimdallr.getUserColletion('post', this.state.pulledPosts, heimdallr.user_id);
+
+		let user_id = this.props.navigation.getParam('userId');
+		console.warn("user_id",user_id);
+		let userInfo = heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id);
+		userInfo.then((resolve) => {
+			console.warn("user collection",resolve.uid);
+			this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
+			
+		});
+		let result = heimdallr.getUserColletion('post', this.state.pulledPosts,user_id? user_id:heimdallr.user_id);
 		result.then( (resolve) => {
+			if(resolve.length === 0){
+				this.setState({ endPulling: true });
+			}
 			console.log('peguei esses caras aqui', resolve);
 			this.setState({ posts: resolve });
+			this.setState({userId:this.props.navigation.getParam('userId')});
+			console.warn("userId state", this.state.userId);
 		});
 	}
 
@@ -74,6 +90,12 @@ export default class UserProfile extends React.Component {
 				});
 			}
 		}
+	}
+
+	renderNoPosts = () => {
+		<View>
+			<Text>Sem postagens</Text>
+		</View>
 	}
 
 	renderFooter = () =>  {
@@ -104,7 +126,7 @@ export default class UserProfile extends React.Component {
 			<View style={{}}>
 				<Modal visible={this.state.showImage} transparent={true}>
 					<ImageViewer
-						imageUrls={this.state.userImage}
+						imageUrls={this.state.userImageUrl? this.state.userImageUrl: null}
 						swipeDownThreshold={0.5}
 						enableSwipeDown={true}
 						onSwipeDown={() => {this.setState({ showImage: false })}}
@@ -120,10 +142,10 @@ export default class UserProfile extends React.Component {
 					ListHeaderComponent={() =>
 						<View style={styles.profileHeader}>
 							<TouchableOpacity onPress={() => {this.setState({ showImage: true })}}>
-								<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={heimdallr.user_image}/>
+								<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={this.state.userImage}/>
 							</TouchableOpacity>
 							<View style={styles.headerText}>
-								<Text>{heimdallr.user_name}</Text>
+								<Text>{this.state.userName}</Text>
 							</View>
 						</View>
 					}
