@@ -75,7 +75,7 @@ export default class Login extends React.Component {
 	            }
                 <View style={styles.form}>
                     <RUMineTextInput
-	                    placeholder='User...'
+	                    placeholder='Email'
 	                    autoCompleteType='email'
 	                    keyboardType='email-address'
 	                    textContentType='emailAddress'
@@ -84,7 +84,7 @@ export default class Login extends React.Component {
                     <EyeOfThePassword
 	                    secureTextEntry={this.state.securePassword}
 	                    toggleSecureEntry={this.toggleSecureEntry.bind(this)}
-	                    placeholder='Password...'
+	                    placeholder='Senha'
 	                    autoCompleteType='password'
 	                    textContentType='password'
 	                    onChangeText={text => this.setState({password: text})}
@@ -95,25 +95,13 @@ export default class Login extends React.Component {
 	                    </Text>
                     </TouchableOpacity>
 	                <View style={{marginBottom: 10}}>
-		                <FatBottomedButton color={theme.primary} text={'Login'} onTap={this.doLogin.bind(this)} />
+		                <FatBottomedButton color={'white'} backgroundColor={theme.primary} text={'Entrar'} onTap={this.doLogin.bind(this)} />
 	                </View>
 	                <View>
-		                <FatBottomedButton color={theme.primary} text={'Create account'} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
+		                <FatBottomedButton color={theme.primary} text={'Registrar-se'} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
 	                </View>
-                    {/*<Button*/}
-	                {/*    style={styles.loginButton}*/}
-	                {/*    title='Login'*/}
-	                {/*    onPress={() => this.props.login({ user: this.state.user, password: this.state.password })}*/}
-	                {/*/>*/}
-	                {/*<View style={{marginTop: 20}}>*/}
-	                {/*    <Button*/}
-	                {/*        style={styles.signUpButtom}*/}
-	                {/*        title='Registrar-se'*/}
-	                {/*        onPress={() => this.props.navigation.navigate('SignUp')}*/}
-	                {/*    />*/}
-	                {/*</View>*/}
                 </View>
-	            <View style={{position: 'absolute', bottom: 15, width: width, alignItems: 'flex-start'}}>
+	            <View style={{position: 'absolute', top: height - 55, width: width, alignItems: 'flex-start'}}>
 	                <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>
 			            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
 	                </TouchableOpacity>
@@ -144,7 +132,7 @@ export default class Login extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-    	alignItems: 'center',
+    	alignItems: 'flex-start',
         flex: 1,
 	    padding: 20
     },
