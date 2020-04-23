@@ -30,8 +30,8 @@ const collections = {
 	            required: true,
             },
             {
-                desc: 'birth_date',
-                type: 'object',
+                desc: 'phone',
+                type: 'string',
 	            required: true,
             },
             {

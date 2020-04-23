@@ -19,8 +19,8 @@ import RUMineTextInput from "./Inputs/RUMineTextInput";
 import EyeOfThePassword from "./Inputs/EyeOfThePassword";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 import theme from "../../../../components/General/Theme";
-import GirlsJustWannaDatePicker from "./Inputs/GirlsJustWannaDatePicker";
 import ImageResizer from "react-native-image-resizer";
+import { TextInputMask } from 'react-native-masked-text';
 
 export default  class SignUp extends React.Component {
 	constructor (props) {
@@ -29,8 +29,7 @@ export default  class SignUp extends React.Component {
 			email: null,
 			name: null,
 			password: null,
-			birth: 'Nascimento',
-			confirmPassword: null,
+			phone: null,
 			showDatePicker: false,
 			profileImage: null,
 			imageCompressed: null,
@@ -38,6 +37,7 @@ export default  class SignUp extends React.Component {
 			showNameErrorMessage: false,
 			showErrorPasswordLength: false,
 			showEmailAlreadyInUse: false,
+			showPhoneError: false,
 			securePassword: true,
 		};
 	}
@@ -52,13 +52,18 @@ export default  class SignUp extends React.Component {
 
 
 	signUpFieldsVerification = () => {
-		console.log('vou verificar');
-		if (!this.state.email || !this.state.name || !this.state.birth || !this.state.password || !this.state.confirmPassword) {
+
+		if (!this.state.email || !this.state.name || !this.state.phone || !this.state.password) {
 			this.setState({showErrorMessage: true});
 			return false;
 		}
 		if (this.state.name.split(' ').length < 2) {
 			this.setState({showNameErrorMessage: true});
+			return false;
+		}
+
+		if (this.state.phone.length < 14) {
+			this.setState({ showPhoneError: true });
 			return false;
 		}
 
@@ -70,7 +75,6 @@ export default  class SignUp extends React.Component {
 	}
 
 	register = () => {
-		console.log('chegou o carai');
 		let fieldsOK = this.signUpFieldsVerification();
 		if (!fieldsOK) {
 			return ;
@@ -222,21 +226,13 @@ export default  class SignUp extends React.Component {
 					</View>
 					{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
 					{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
+					{this.state.showPhoneError && <Text style={{color: 'red'}}> * Insira um telefone celular válido </Text>}
 					{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
 					{this.state.showEmailAlreadyInUse && <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
 															<Text> Parece que esse email já está cadastrado.</Text><TouchableOpacity onPress={() => {this.props.navigation.navigate('PasswordRestore')}}><Text style={{color: 'red'}}> Clique aqui </Text></TouchableOpacity>
 															<Text> para recuperar a senha</Text>
 														</View>}
 
-					<View style={styles.form}>
-						<RUMineTextInput
-							onChangeText={ text => this.setState({ email: text }) }
-							autoCapitalize='none'
-							placeholder='Email'
-							keyboardType='email-address'
-							textContentType='emailAddress'
-						/>
-					</View>
 					<View style={{flexDirection: 'row', marginTop: 30}}>
 						<RUMineTextInput
 							onChangeText={ text => this.setState({ name: text }) }
@@ -246,7 +242,40 @@ export default  class SignUp extends React.Component {
 							marginRight={4}
 							flex={1}
 						/>
-						<GirlsJustWannaDatePicker text={'Nascimento'} textDecorationLine={'underline'} onChange={this.setDate.bind(this)}/>
+					</View>
+					<View style={styles.form}>
+						<RUMineTextInput
+							onChangeText={ text => this.setState({ email: text }) }
+							autoCapitalize='none'
+							placeholder='Email'
+							keyboardType='email-address'
+							textContentType='emailAddress'
+						/>
+					</View>
+					<View style={styles.form}>
+						<TextInputMask
+							style={{borderBottomWidth : 1, borderColor: theme.primary}}
+							type={'cel-phone'}
+							options={{
+								maskType: 'BRL',
+								withDDD: true,
+								dddMask: '(99) '
+							}}
+							placeholder={'Celular'}
+							value={this.state.phone}
+							onChangeText={text => {
+								this.setState({
+									phone: text
+								})
+							}}
+						/>
+						{/*<RUMineTextInput*/}
+						{/*	onChangeText={ text => this.setState({ email: text }) }*/}
+						{/*	autoCapitalize='none'*/}
+						{/*	placeholder='Telefone'*/}
+						{/*	keyboardType='numeric'*/}
+						{/*	textContentType='telephoneNumber'*/}
+						{/*/>*/}
 					</View>
 					<View style={styles.form}>
 						<EyeOfThePassword
@@ -260,11 +289,11 @@ export default  class SignUp extends React.Component {
 					</View>
 					<View style={styles.form}>
 						<View style={{marginBottom: 10}}>
-							<FatBottomedButton text='Sign Up' backgroundColor={theme.primary} color={'white'} onTap={this.register.bind(this)}
+							<FatBottomedButton text='Criar' backgroundColor={theme.primary} color={'white'} onTap={this.register.bind(this)}
 							/>
 						</View>
 						<View>
-							<FatBottomedButton text='Cancelar' backgroundColor={theme.primary} color={'white'} onTap={() => this.props.navigation.goBack()}
+							<FatBottomedButton text='Cancelar' color={theme.primary} onTap={() => this.props.navigation.goBack()}
 							/>
 						</View>
 					</View>
