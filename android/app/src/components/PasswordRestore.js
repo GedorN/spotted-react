@@ -46,6 +46,10 @@ export default class PasswordRestore extends React.Component{
 				{/*	style={{width: 210, height: 258, padding: 0,  zIndex: -1}}*/}
 				{/*	source={require('../../../../assets/images/simbol.png')}*/}
 				{/*/>*/}
+				<Image
+					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
+					source={require('../../../../assets/images/simbol.png')}
+				/>
 				{ !this.state.emailSent &&
 					<View>
 						<Text style={{fontWeight: 'bold', marginTop: 30, fontSize: 16}}>
@@ -64,8 +68,8 @@ export default class PasswordRestore extends React.Component{
 								textContentType='emailAddress'
 								onChangeText={text => this.setState({ user: text })}
 							/>
-							<View style={{marginTop: 20}}>
-								<FatBottomedButton color={theme.primary} text={'Recuperar'} onTap={this.recover.bind(this)}/>
+							<View style={{marginTop: 120}}>
+								<FatBottomedButton color={theme.primary} text={'Recuperar'} color={'white'} backgroundColor={theme.primary} onTap={this.recover.bind(this)}/>
 							</View>
 							<View style={{marginTop: 20}}>
 								<FatBottomedButton color={theme.primary} text={'Cancelar'} onTap={this.cancel.bind(this)}/>
