@@ -52,7 +52,6 @@ export default class UserProfile extends React.Component {
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
 					this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
-					console.log('prof state? ', this.state);
 					heimdallr.getUserColletion('post', this.state.pulledPosts, this.state.userId).then(
 						(resolve) => {
 							if(resolve.length === 0){
@@ -60,9 +59,6 @@ export default class UserProfile extends React.Component {
 							}
 							resolve.forEach((doc) => {
 								if (!doc.elapsed_time) {
-									console.log('moment: ', moment());
-									console.log('time: ', (doc.data().date));
-									console.log('doc: ', moment(doc.data().date).fromNow());
 									const time = moment(doc.data().date).fromNow();
 									if (time ===  'a few seconds ago') {
 										doc._data.elapsed_time = '1 min';
@@ -145,8 +141,6 @@ export default class UserProfile extends React.Component {
 					});
 					console.log('peguei esses caras aqui', resolve);
 					this.setState({ posts: resolve });
-					this.setState({userId:this.props.navigation.getParam('userId')});
-					console.warn("userId state", this.state.userId);
 				}
 			);
 		}
@@ -159,7 +153,7 @@ export default class UserProfile extends React.Component {
 				this.setState({ pulling: true });
 				let n = this.state.pulledPosts;
 				n = 5 + n;
-				console.log('puxando: ', n);
+				console.warn('puxando: ', this.state.userId);
 				let result = heimdallr.getUserColletion('post', n, this.state.userId);
 				result.then((resolve) => {
 					if (resolve.length === this.state.posts.length) {
