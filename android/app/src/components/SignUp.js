@@ -293,7 +293,7 @@ export default  class SignUp extends React.Component {
 							/>
 						</View>
 						<View>
-							<FatBottomedButton text='Cancelar' color={theme.primary} onTap={() => this.props.navigation.goBack()}
+							<FatBottomedButton text='Cancelar' color={theme.primary} onTap={() => this.props.navigation.push('Home')}
 							/>
 						</View>
 					</View>
