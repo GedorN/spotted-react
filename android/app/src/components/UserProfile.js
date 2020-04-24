@@ -94,7 +94,6 @@ export default class UserProfile extends React.Component {
 							console.log('peguei esses caras aqui', resolve);
 							this.setState({ posts: resolve });
 							this.setState({userId:this.props.navigation.getParam('userId')});
-							console.warn("userId state", this.state.userId);
 						}
 					);
 				},
@@ -153,7 +152,6 @@ export default class UserProfile extends React.Component {
 				this.setState({ pulling: true });
 				let n = this.state.pulledPosts;
 				n = 5 + n;
-				console.warn('puxando: ', this.state.userId);
 				let result = heimdallr.getUserColletion('post', n, this.state.userId);
 				result.then((resolve) => {
 					if (resolve.length === this.state.posts.length) {
