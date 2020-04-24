@@ -313,6 +313,9 @@ function HeimdallrLib() {
         if (e.required === true) {
           if (!params[e.desc] || e.type != typeof(params[e.desc])) {
             console.log('ERRO: parâmetro ', e.desc, ' incorreto');
+            if (e.type != typeof(params[e.desc])) {
+            	console.log(`Parametro esperado: ${e.type} porém recebido um ${typeof(params[e.desc])}`);
+            }
             parametersOK = false;
           }
         }

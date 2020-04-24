@@ -33,6 +33,7 @@ import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
 import UUIDGenerator from 'react-native-uuid-generator';
+import moment from "moment";
 const width = Dimensions.get('screen').width;
 
 export default class Home extends React.Component {
@@ -53,6 +54,31 @@ export default class Home extends React.Component {
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);
+  		resolve.forEach((doc) => {
+		    const time = moment(doc.data().date).fromNow();
+		    if (time ===  'a few seconds ago') {
+		    	doc._data.elapsed_time = '1 min';
+		    } else if (time.split(' ')[1] === 'minute') {
+			    doc._data.elapsed_time = `1min`;
+		    } else if (time.split(' ')[1] === 'minutes') {
+			    doc._data.elapsed_time = `${time.split(' ')[0]}min`;
+		    } else if (time.split(' ')[1] === 'hour') {
+			    doc._data.elapsed_time = `1h`;
+		    } else if (time.split(' ')[1] === 'hours') {
+			    doc._data.elapsed_time = `${time.split(' ')[0]}h`;
+		    } else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
+			    doc._data.elapsed_time = `${time.split(' ')[0]}d`;
+		    } else if (time.split(' ')[1] === 'month') {
+			    doc._data.elapsed_time = `1mo`;
+		    } else if (time.split(' ')[1] === 'months') {
+			    doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
+		    } else if (time.split(' ')[1] === 'year') {
+			    doc._data.elapsed_time = `1y`;
+		    } else if (time.split(' ')[1] === 'years') {
+			    doc._data.elapsed_time = `${time.split(' ')[0]}y`;
+		    }
+	    })
+
   		this.setState({ posts: resolve });
   	});
   }
@@ -70,6 +96,32 @@ export default class Home extends React.Component {
 		    console.log('puxando: ', n);
 		    let result = heimdallr.getCollection('post', n);
 		    result.then((resolve) => {
+			    resolve.forEach((doc) => {
+			    	if (!doc.elapsed_time) {
+					    const time = moment(doc.data().date).fromNow();
+					    if (time ===  'a few seconds ago') {
+						    doc._data.elapsed_time = '1 min';
+					    } else if (time.split(' ')[1] === 'minute') {
+						    doc._data.elapsed_time = `1min`;
+					    } else if (time.split(' ')[1] === 'minutes') {
+						    doc._data.elapsed_time = `${time.split(' ')[0]}min`;
+					    } else if (time.split(' ')[1] === 'hour') {
+						    doc._data.elapsed_time = `1h`;
+					    } else if (time.split(' ')[1] === 'hours') {
+						    doc._data.elapsed_time = `${time.split(' ')[0]}h`;
+					    } else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
+						    doc._data.elapsed_time = `${time.split(' ')[0]}d`;
+					    } else if (time.split(' ')[1] === 'month') {
+						    doc._data.elapsed_time = `1mo`;
+					    } else if (time.split(' ')[1] === 'months') {
+						    doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
+					    } else if (time.split(' ')[1] === 'year') {
+						    doc._data.elapsed_time = `1y`;
+					    } else if (time.split(' ')[1] === 'years') {
+						    doc._data.elapsed_time = `${time.split(' ')[0]}y`;
+					    }
+				    }
+			    });
 			    if (resolve.length === this.state.posts.length) {
 				    this.setState({ endPulling: true });
 			    }
@@ -119,7 +171,7 @@ export default class Home extends React.Component {
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling} />
               }
               refreshControl={
 	              <RefreshControl
