@@ -141,9 +141,15 @@ export default class MainScreen extends React.Component {
 	}
 
 	setAction = (action) => {
-		this.setState({ showSettingsModal: true });
-		this._drawer.close();
-		console.warn('pressed: ', action);
+		switch (action) {
+			case 'settings':
+				this.setState({ showSettingsModal: true });
+				this._drawer.close();
+				break;
+			case 'signIn':
+				heimdallr.signOut();
+				this.props.navigation.navigate('SignUp', {navigation: this.props.navigation});				break;
+		}
 	}
 
 	drawerContent = () => {

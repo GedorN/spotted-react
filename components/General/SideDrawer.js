@@ -18,41 +18,56 @@ export default class SideDrawer extends React.Component {
     }
 
 
-
-
     render () {
         return (
             <View style={styles.container}>
                 <View style={styles.drawerHeader}>
-                    <UserImgProfile circular height={100} width={100} uri={heimdallr.user_image} style={styles.userImage} />
-                    <Text
-                        style={styles.userName}
-                    >
-                        {heimdallr.user_name}
-                    </Text>
+	                <View style={{flexDirection: 'column', alignItems: 'center', flex: 1}}>
+	                    <UserImgProfile circular height={100} width={100} uri={heimdallr.user_image} style={styles.userImage} />
+	                    <Text
+	                        style={styles.userName}
+	                    >
+	                        {heimdallr.user_name}
+	                    </Text>
+	                </View>
                 </View>
                 <View style={styles.content}>
-                    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}>
-	                    <View style={styles.item}>
-		                    <Image source={require('../../assets/images/user-solid.png')}
-		                        style={styles.portraitIcon}
-		                    />
-	                        <Text> Perfil </Text>
-	                    </View>
-                    </TouchableOpacity>
                     <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'} onPress={() => {this.props.actionPressed('settings')}}>
 	                    <View style={styles.item}>
 		                    <Image source={require('../../assets/images/user-cog-solid.png')}
-		                        style={styles.landscapeIcon}
+		                        style={{
+			                        tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
+			                        width: 40,
+			                        height: 32,
+			                        marginRight: 13,
+		                        }}
 		                    />
 		                    <Text> Configurações </Text>
 	                    </View>
                     </TouchableOpacity>
-	                {/*<TouchableOpacity onPress={() => {console.warn("hue")}}*/}
-	                {/*                  style={{marginTop: 50, backgroundColor: 'green'}}*/}
-	                {/*>*/}
-		            {/*    <Text> Sair </Text>*/}
-	                {/*</TouchableOpacity>*/}
+	                {
+		                heimdallr.email === 'spotted@utfpr.com' &&
+		                <TouchableOpacity
+			                style={{position: 'absolute', bottom: 8, paddingLeft: 22}}
+			                onPress={() => {this.props.actionPressed('signIn')}}>
+			                <View style={styles.item}>
+				                <Image source={require('../../assets/images/sign-in-alt-solid.png')}
+				                       style={{
+					                       tintColor: theme.primary,
+					                       width: 40,
+					                       height: 32,
+					                       marginRight: 13,
+				                       }}
+				                />
+				                <Text> Registrar-se </Text>
+			                </View>
+		                </TouchableOpacity>
+	                }
+	                <TouchableOpacity style={{position: 'absolute', bottom: 2, paddingLeft: 22}}>
+		                <View >
+			                <Text> About us </Text>
+		                </View>
+	                </TouchableOpacity>
                 </View>
             </View>
         );
@@ -66,7 +81,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: 'white',
         alignItems: 'center',
-        padding: 10,
 	    shadowColor: "#000",
 	    shadowOffset: {
 		    width: 0,
@@ -78,7 +92,7 @@ const styles = StyleSheet.create({
 	    elevation: 4,
     },
 	item: {
-    	padding: 2,
+    	padding: 12,
 		fontSize: 18,
 		color: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
     	flexDirection: 'row',
@@ -90,10 +104,10 @@ const styles = StyleSheet.create({
 	},
     drawerHeader: {
         flex: 1,
-        flexDirection: 'column',
-        width: 200,
+	    borderBottomWidth: 1,
+	    borderColor: theme.primary,
+        flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 25,
     },
     userName: {
         color: theme.primary,
