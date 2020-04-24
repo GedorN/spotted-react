@@ -225,26 +225,36 @@ export default class PostViewer extends React.Component {
 				  </Modal>
 			  <View style={styles.postHeaderUserImage}>
 			      <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
-			          <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>
+			          <UserImgProfile circular height={45} width={45} uri={this.props.userImage}/>
 			      </TouchableOpacity>
 			  </View>
 			  <View style={{flexDirection: 'column'}}>
 			      <View style={styles.postHeader}>
-			          <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
-			              <Text
-			                  style={{marginLeft: 16, fontWeight: 'bold'}}
-			              >
-			                  {this.props.user}
-			              </Text>
-			          </TouchableOpacity>
-		                <View style={{left: width * 0.55, height: 30, width: 30, zIndex: 999}}>
-		                  <OptionsMenu
-		                      button={require('../../assets/images/ellipsis-h-solid.png') }
-		                      buttonStyle={{ width: 25, height: 25}}
-		                      options={['Denunciar']}
-		                      actions={[this.toggleModal.bind(this)]}
-		                  />
-		                </View>
+				      <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+				          <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
+				              <Text
+				                  style={{marginLeft: 16, fontWeight: 'bold'}}
+				              >
+				                  {this.props.user}
+				              </Text>
+				          </TouchableOpacity>
+					      {this.props.elapsed_time &&
+					          <Image
+						          style={{width: 6, height: 6, marginLeft: 4, marginRight: 4}}
+						          source={require('../../assets/images/circle-solid.png') }
+					          />
+					      }
+				          <Text>
+					          { this.props.elapsed_time }
+				          </Text>
+				      </View>
+	                  <OptionsMenu
+		                  style={{width: 60, height: 60}}
+	                      button={require('../../assets/images/chevron-down-solid.png') }
+	                      buttonStyle={{ width: 20, height: 20, marginTop: 5, opacity: 0.7}}
+	                      options={['Denunciar']}
+	                      actions={[this.toggleModal.bind(this)]}
+	                  />
 			      </View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
@@ -255,7 +265,7 @@ export default class PostViewer extends React.Component {
 			          </View>
 			      </View>
 			      <View style={styles.postFooter}>
-			          <View style={{ left: width * 0.7}}>
+			          <View style={{ left: 20, opacity: 0.7}}>
 			              <TouchableOpacity
 			                  onPress={this.goToComments.bind(this)}
 			              >
@@ -285,12 +295,14 @@ export default class PostViewer extends React.Component {
           flexDirection: 'column',
       },
       postHeader: {
-          flexDirection: 'row',
-          height: 15,
-          fontWeight: 'bold',
-          alignItems: 'center',
-          alignContent: 'center',
-          width: width * 0.95,
+      	flex: 1,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+		height: 15,
+		fontWeight: 'bold',
+		alignItems: 'center',
+		alignContent: 'center',
+		width: width * 0.75,
       },
       postFooter: {
           flexDirection: 'row',

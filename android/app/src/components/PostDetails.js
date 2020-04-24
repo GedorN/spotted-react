@@ -45,13 +45,10 @@ export default class PostDetails extends React.Component {
 	}
 
 	componentDidMount = () => {
-		console.log('post clicado: ', this.props.navigation.getParam('pid'));
 		this.setState({ pulling: true });
-		console.warn("pulling state", this.state.pulling);
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
 			this.setState( { post: resolve[0]._data });
-			console.log('Postado: ', this.state.post.user_name);
 			this.forceUpdate();
 			this.setState({ pulling: false });
 		});
@@ -59,7 +56,6 @@ export default class PostDetails extends React.Component {
 		let res = heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments);
 		res.then((resolve) => {
 			this.setState({ comments: resolve });
-			console.log('comentarios ativos: ', this.state.comments);
 		});
 
 	}
@@ -308,7 +304,7 @@ export default class PostDetails extends React.Component {
 												<TouchableOpacity
 												>
 													<OptionsMenu
-														button={require('../../../../assets/images/ellipsis-h-solid.png') }
+														button={require('../../../../assets/images/chevron-down-solid.png') }
 														buttonStyle={{ width: 20, height: 20}}
 														options={['Denunciar']}
 														actions={[this.toggleModal.bind(this)]}

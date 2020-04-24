@@ -262,17 +262,24 @@ const styles = StyleSheet.create({
 		// backgroundColor:'blue'
 	},
 	header: {
+		backgroundColor: 'white',
 		width: width + 10,
-		borderBottomWidth: 1,
-		borderColor: theme.primary,
 		height: 55,
-		color: 'white',
+		borderBottomWidth: 0.01,
 		// justifyContent: 'center',
 		// alignItems: 'center',
 		flexDirection: 'row',
-		padding: 5,
+		// padding: 5,
 		margin: 0,
 		paddingHorizontal: 10,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 8,
+		},
+		shadowOpacity: 0.44,
+		shadowRadius: 10.32,
+		elevation: 12,
 	},
 	animatedBox: {
 		flex: 1,

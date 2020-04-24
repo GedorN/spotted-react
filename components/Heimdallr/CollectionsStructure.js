@@ -123,8 +123,8 @@ const collections = {
             },
             {
               desc: 'date',
-              type: 'object',
-               required: true,
+              type: 'number',
+	            required: true,
             },
             {
                 desc: 'images',
@@ -169,7 +169,7 @@ const collections = {
 			},
 			{
 				desc: 'date',
-				type: 'object',
+				type: 'number',
 				required: true,
 			},
 			{

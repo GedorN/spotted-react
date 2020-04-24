@@ -23,6 +23,7 @@ import UUIDGenerator from 'react-native-uuid-generator';
 import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
 import MainScreen from "./MainScreen";
+import moment from "moment";
 const width = Dimensions.get('screen').width;
 
 export default class UserProfile extends React.Component {
@@ -57,6 +58,43 @@ export default class UserProfile extends React.Component {
 							if(resolve.length === 0){
 								this.setState({ endPulling: true });
 							}
+							resolve.forEach((doc) => {
+								if (!doc.elapsed_time) {
+									console.log('moment: ', moment());
+									console.log('time: ', (doc.data().date));
+									console.log('doc: ', moment(doc.data().date).fromNow());
+									const time = moment(doc.data().date).fromNow();
+									if (time ===  'a few seconds ago') {
+										doc._data.elapsed_time = '1 min';
+										console.log('convertendo');
+									} else if (time.split(' ')[1] === 'minute') {
+										doc._data.elapsed_time = `1min`;
+									} else if (time.split(' ')[1] === 'minutes') {
+										doc._data.elapsed_time = `${time.split(' ')[0]}min`;
+										console.log('sub: ', time.split(' ')[1]);
+									} else if (time.split(' ')[1] === 'hour') {
+										doc._data.elapsed_time = `1h`;
+									} else if (time.split(' ')[1] === 'hours') {
+										doc._data.elapsed_time = `${time.split(' ')[0]}h`;
+										console.log('sub: ', time.split(' ')[1]);
+									} else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
+										doc._data.elapsed_time = `${time.split(' ')[0]}d`;
+										console.log('sub: ', time.split(' ')[1]);
+									} else if (time.split(' ')[1] === 'month') {
+										doc._data.elapsed_time = `1mo`;
+										console.log('sub: ', time.split(' ')[1]);
+									} else if (time.split(' ')[1] === 'months') {
+										doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
+										console.log('sub: ', time.split(' ')[1]);
+									} else if (time.split(' ')[1] === 'year') {
+										doc._data.elapsed_time = `1y`;
+										console.log('sub: ', time.split(' ')[1]);
+									} else if (time.split(' ')[1] === 'years') {
+										doc._data.elapsed_time = `${time.split(' ')[0]}y`;
+										console.log('sub: ', time.split(' ')[1]);
+									}
+								}
+							});
 							console.log('peguei esses caras aqui', resolve);
 							this.setState({ posts: resolve });
 							this.setState({userId:this.props.navigation.getParam('userId')});
@@ -79,6 +117,32 @@ export default class UserProfile extends React.Component {
 					if(resolve.length === 0){
 						this.setState({ endPulling: true });
 					}
+					resolve.forEach((doc) => {
+						if (!doc.elapsed_time) {
+							const time = moment(doc.data().date).fromNow();
+							if (time ===  'a few seconds ago') {
+								doc._data.elapsed_time = '1 min';
+							} else if (time.split(' ')[1] === 'minute') {
+								doc._data.elapsed_time = `1min`;
+							} else if (time.split(' ')[1] === 'minutes') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}min`;
+							} else if (time.split(' ')[1] === 'hour') {
+								doc._data.elapsed_time = `1h`;
+							} else if (time.split(' ')[1] === 'hours') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}h`;
+							} else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}d`;
+							} else if (time.split(' ')[1] === 'month') {
+								doc._data.elapsed_time = `1mo`;
+							} else if (time.split(' ')[1] === 'months') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
+							} else if (time.split(' ')[1] === 'year') {
+								doc._data.elapsed_time = `1y`;
+							} else if (time.split(' ')[1] === 'years') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}y`;
+							}
+						}
+					});
 					console.log('peguei esses caras aqui', resolve);
 					this.setState({ posts: resolve });
 					this.setState({userId:this.props.navigation.getParam('userId')});
@@ -90,12 +154,9 @@ export default class UserProfile extends React.Component {
 
 	pullMorePosts = (distanceFromEnd) => {
 		if (!this.state.endPulling) {
-			console.log('interval?', distanceFromEnd);
-			console.log('state before: ', this.state);
 			if (!this.state.pulling) {
 				console.log('int pullling');
 				this.setState({ pulling: true });
-				console.log('chegou');
 				let n = this.state.pulledPosts;
 				n = 5 + n;
 				console.log('puxando: ', n);
@@ -104,6 +165,31 @@ export default class UserProfile extends React.Component {
 					if (resolve.length === this.state.posts.length) {
 						this.setState({ endPulling: true });
 					}
+					resolve.forEach((doc) => {
+						if (!doc.elapsed_time) {
+							const time = moment(doc.data().date).fromNow();
+							if (time ===  'a few seconds ago') {
+								doc._data.elapsed_time = '1 min';
+							} else if (time.split(' ')[1] === 'minute') {
+								doc._data.elapsed_time = `1min`;
+							} else if (time.split(' ')[1] === 'minutes') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}min`;
+							} else if (time.split(' ')[1] === 'hour') {
+								doc._data.elapsed_time = `1h`;
+							} else if (time.split(' ')[1] === 'hours') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}h`;
+							} else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}d`;
+							} else if (time.split(' ')[1] === 'month') {
+							} else if (time.split(' ')[1] === 'months') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
+							} else if (time.split(' ')[1] === 'year') {
+								doc._data.elapsed_time = `1y`;
+							} else if (time.split(' ')[1] === 'years') {
+								doc._data.elapsed_time = `${time.split(' ')[0]}y`;
+							}
+						}
+					});
 					console.log(`resolve do carai? `, resolve);
 					this.setState({posts: resolve});
 					this.setState({pulledPosts: n});
@@ -164,7 +250,7 @@ export default class UserProfile extends React.Component {
 					onScrollEndDrag={() => this.setState({ scrolling: false })}
 					onScrollBeginDrag={() => this.setState({ scrolling: true })}
 					renderItem={ ({item}) =>
-							<PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+							<PostViewer text={item._data.text} pid={item._data.pid} elapsed_time={item._data.elapsed_time} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
 					}
 					ListHeaderComponent={() =>
 						<View style={styles.profileHeader}>
