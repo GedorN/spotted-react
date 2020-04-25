@@ -173,6 +173,7 @@ export default class UserProfile extends React.Component {
 							} else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
 								doc._data.elapsed_time = `${time.split(' ')[0]}d`;
 							} else if (time.split(' ')[1] === 'month') {
+								doc._data.elapsed_time = `1mo`;
 							} else if (time.split(' ')[1] === 'months') {
 								doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
 							} else if (time.split(' ')[1] === 'year') {
@@ -246,11 +247,15 @@ export default class UserProfile extends React.Component {
 					}
 					ListHeaderComponent={() =>
 						<View style={styles.profileHeader}>
+							<Image
+								style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
+								source={require('../../../../assets/images/simbol.png')}
+							/>
 							<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
 								<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={this.state.userImage}/>
 							</TouchableOpacity>
-							<View style={styles.headerText}>
-								<Text>{this.state.userName}</Text>
+							<View>
+								<Text style={{marginTop: 5}}>{this.state.userName}</Text>
 							</View>
 						</View>
 					}
@@ -278,10 +283,13 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 	},
 	profileHeader: {
-		flexDirection: 'row',
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'center',
+		justifyContent: 'center',
 		borderBottomWidth: 1,
 		borderColor: theme.primary,
-		height: 100,
+		height: 120,
 		padding: 10,
 	},
 	headerText: {
