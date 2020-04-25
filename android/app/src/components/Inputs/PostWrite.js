@@ -313,7 +313,7 @@ export default class PostWrite extends React.Component {
 							<TouchableOpacity onPress={this.props.close}>
 								<Image
 									source={require('../../../../../assets/images/times-solid.png')}
-									style={{width: 20, height: 20}}
+									style={{width: 20, height: 20,marginRight:5}}
 								/>
 							</TouchableOpacity>
 						</View>
@@ -322,8 +322,8 @@ export default class PostWrite extends React.Component {
 							<TextInput
 								style={{width: width + 10,
 									borderBottomWidth: 1,
-									borderColor: theme.primary,
-									height: this.state.postImages.length > 0 ? 300 : 500,
+									borderColor: 'grey',
+									height: this.state.postImages.length > 0 ? 300 : 525,
 								}}
 								onChangeText={text => this.setState({postText: text})}
 								autoCapitalize="sentences"
@@ -333,20 +333,18 @@ export default class PostWrite extends React.Component {
 								ref={input => (this.postTextInput = input)}
 							/>
 						</View>
-						<View style={{paddingLeft: 50}}>
+						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+							<Image
+								source={require('../../../../../assets/images/camera-icon.png')}
+								style={{width:35,height:28, alignSelf:'flex-end',marginRight:28,
+										marginTop:7}}
+							/>
+						</TouchableOpacity>
+						<View style={{alignSelf:'center'}}>
 							{this.getModalImagesLayout()}
 						</View>
-						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
-							<View style={styles.imageButtonSelect}>
-								<Image
-									source={require('../../../../../assets/images/images.png')}
-									style={{width: 50, height: 40}}
-								/>
-								<Text> Adicionar imagem... </Text>
-							</View>
-						</TouchableOpacity>
-						<View style={{marginTop: 15, width: width * 0.9, marginLeft: 25}}>
-							<FatBottomedButton color={theme.primary} text={'Postar'} onTap={this.doPost.bind(this)}/>
+						<View style={{marginTop: this.state.postImages.length > 0 ? 25 : 15, width: width * 0.9, marginLeft: 25}}>
+							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
 					{/*<View style={{flexDirection: 'row-reverse', marginTop: 2}}>*/}
@@ -388,7 +386,7 @@ const styles = StyleSheet.create({
 		alignItems: 'flex-end',
 		alignContent: 'center',
 		padding: 4,
-		marginTop: 5,
+		marginTop: 10,
 	},
 	postWriter: {
 		// width: width + 10,
