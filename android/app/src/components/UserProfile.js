@@ -252,7 +252,7 @@ export default class UserProfile extends React.Component {
 								source={require('../../../../assets/images/simbol.png')}
 							/>
 							<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
-								<UserImgProfile circular height={70} width={70} borderWidth={2} borderColor={theme.primary} uri={this.state.userImage}/>
+								<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
 							</TouchableOpacity>
 							<View>
 								<Text style={{marginTop: 5}}>{this.state.userName}</Text>

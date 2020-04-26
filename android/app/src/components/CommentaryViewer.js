@@ -36,7 +36,7 @@ export default class CommentaryViewer extends React.Component {
 		return (
 			<View style={styles.container}>
 				<TouchableOpacity  onPress={this.goToUserProfile.bind(this)}>
-					<UserImgProfile circular marginBottom={5} height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage ? this.props.userImage : null}/>
+					<UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.props.userImage ? this.props.userImage : null}/>
 				</TouchableOpacity>
 				<View style={styles.body}>
 					<Text style={styles.userNameText}>
@@ -70,9 +70,11 @@ const styles  = StyleSheet.create({
 	},
 	userNameText: {
 		fontWeight: 'bold',
-		marginLeft: 30,
+		marginLeft: 16,
+		marginTop:22,
 	},
 	commentaryText: {
-		marginLeft: 30,
+		marginLeft: 17,
+		marginTop:10,
 	}
 });

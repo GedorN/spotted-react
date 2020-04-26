@@ -45,13 +45,15 @@ export default class UsersSearch extends React.Component {
 				<View style={styles.headerSearch}>
 					<Image
 						source={require('../../../../assets/images/search-solid.png')}
-						style={{height: 25, width: 25}}
+						style={{height: 30, width: 30, opacity:0.5, marginLeft:20}}
 					/>
 					<View style={styles.search}>
 						<RUMineTextInput
 							onChangeText={ text => this.changeText(text) }
 							placeholder='Usuario'
 							textContentType='name'
+							borderBottomWidth = {0}
+							borderBottomColor='white'
 							flex={1}
 						/>
 					</View>
@@ -78,8 +80,10 @@ const styles = StyleSheet.create({
 	},
 	search: {
 		flexDirection: 'row',
-		width: width - 40,
-		marginLeft: 5,
+		width: width*0.85,
+		marginLeft: 17,
+		marginTop:20,
+		
 	},
 	headerSearch: {
 		flexDirection: 'row',
@@ -88,7 +92,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	usersContainer: {
-		marginTop: 10,
+		marginTop: 2,
 		padding: 5,
 	},
 });

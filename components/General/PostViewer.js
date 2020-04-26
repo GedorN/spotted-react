@@ -59,13 +59,13 @@ export default class PostViewer extends React.Component {
 
         if (this.props.images.length === 1) {
           return (
-            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10, zIndex: 2}}>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: 280, height: 200}}>
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
 	                  <Image
 	                    source={{uri: this.props.images[0]}}
-	                    style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+	                    style={{width: 315, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 	                  />
 	                </TouchableOpacity>
                 </View>
@@ -74,21 +74,21 @@ export default class PostViewer extends React.Component {
           )
         } else if (this.props.images.length === 2) {
           return (
-            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
-              <View style={{ flexDirection: 'row', marginBottom: 5}}>
-                <View style={{width: 140, height: 200}}>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+              <View style={{ flexDirection: 'row'}}>
+                <View style={{width: 157, height: 200}}>
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
 		                <Image
 	                        source={{uri: this.props.images[0]}}
-	                        style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+	                        style={{width: 157, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 	                    />
 	                </TouchableOpacity>
                 </View>
-                <View style={{width: 140, height: 200}}>
+                <View style={{width: 157, height: 200}}>
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
 		                <Image
 	                        source={{uri: this.props.images[1]}}
-	                        style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                        style={{width: 157, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 	                    />
 	                </TouchableOpacity>
                 </View>
@@ -233,33 +233,33 @@ export default class PostViewer extends React.Component {
 				      <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
 				          <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
 				              <Text
-				                  style={{marginLeft: 16, fontWeight: 'bold'}}
+				                  style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
 				              >
 				                  {this.props.user}
 				              </Text>
 				          </TouchableOpacity>
 					      {this.props.elapsed_time &&
 					          <Image
-						          style={{width: 6, height: 6, marginLeft: 4, marginRight: 4}}
+						          style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
 						          source={require('../../assets/images/circle-solid.png') }
 					          />
 					      }
-				          <Text>
+				          <Text style= {{marginTop:35}}>
 					          { this.props.elapsed_time }
 				          </Text>
 				      </View>
 	                  <OptionsMenu
-		                  style={{width: 60, height: 60}}
+		                  style={{width: 50, height: 50}}
 	                      button={require('../../assets/images/chevron-down-solid.png') }
-	                      buttonStyle={{ width: 20, height: 20, marginTop: 5, opacity: 0.7}}
+	                      buttonStyle={{ width: 20, height: 20, marginTop: 30, opacity: 0.7}}
 	                      options={['Denunciar']}
 	                      actions={[this.toggleModal.bind(this)]}
 	                  />
 			      </View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
-			              <Text> { this.props.text } </Text>
-			              <View>
+			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}> { this.props.text } </Text>
+			              <View style = {{ height: this.getModalImagesLayout()? 230:0}}>
 			                  {this.getModalImagesLayout()}
 			              </View>
 			          </View>
@@ -270,7 +270,7 @@ export default class PostViewer extends React.Component {
 			                  onPress={this.goToComments.bind(this)}
 			              >
 			                  <Image
-			                      style={{width: 20, height: 20}}
+			                      style={{width: 17, height: 17, marginTop:10}}
 			                      source={require('../../assets/images/comment-regular.png') }
 			                  />
 			              </TouchableOpacity>
@@ -292,7 +292,8 @@ export default class PostViewer extends React.Component {
           borderColor: 'rgba(59, 56, 50, 0.2)',
       },
       body: {
-          flexDirection: 'column',
+					flexDirection: 'column',
+					marginTop:25,
       },
       postHeader: {
       	flex: 1,
@@ -302,14 +303,15 @@ export default class PostViewer extends React.Component {
 		fontWeight: 'bold',
 		alignItems: 'center',
 		alignContent: 'center',
-		width: width * 0.75,
+		width: width * 0.83,
       },
       postFooter: {
           flexDirection: 'row',
           alignItems: 'center',
           alignContent: 'center',
           width: width * 0.95,
-          height: 30,
+					height: 30,
+					
       },
       postHeaderUserImage: {
           justifyContent: "flex-start",
@@ -322,7 +324,7 @@ export default class PostViewer extends React.Component {
           alignSelf: 'flex-start',
           width: width * 0.7,
           padding: 2,
-          marginLeft: 10,
+					marginLeft: 10,
           borderRadius: 8,
           color: 'black',
       },
