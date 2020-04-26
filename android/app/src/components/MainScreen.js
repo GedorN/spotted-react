@@ -301,13 +301,11 @@ const styles = StyleSheet.create({
 	},
 	bottomBar: {
 		backgroundColor: 'white',
-		borderTopWidth: 1,
-		borderColor: theme.primary,
 	},
 	headerImage: {
 		width: 120,
 		height: 40,
 		alignSelf: 'center',
-		marginLeft: 90
+		marginLeft: 90,
 	},
 });
