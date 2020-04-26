@@ -239,6 +239,7 @@ export default  class SignUp extends React.Component {
 							autoCapitalize='words'
 							placeholder='Nome'
 							textContentType='name'
+							borderBottomWidth={1}
 							marginRight={4}
 							flex={1}
 						/>
@@ -250,6 +251,7 @@ export default  class SignUp extends React.Component {
 							placeholder='Email'
 							keyboardType='email-address'
 							textContentType='emailAddress'
+							borderBottomWidth={1}
 						/>
 					</View>
 					<View style={styles.form}>

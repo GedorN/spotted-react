@@ -17,6 +17,30 @@ function HeimdallrLib() {
   this.token = null;
 
 
+  // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
+  this.test = function (uid, limit) {
+  	let docs = null;
+  	return new Promise((resolve) => {
+	    var antes = Date.now();
+  		console.log('la vou eu')
+	    try {
+	        firebase.functions().httpsCallable('getUserCollectionWithLimit')({ uid: uid, limit: limit }).then(
+			    (result) => {
+			    	docs = result;
+			        resolve();
+			    }
+		    ).then(function (resovle) {
+		        var duracao = Date.now() - antes;
+		        console.log('resultado functions: ', docs);
+		        console.log('e levou ', duracao, 'ms');
+		        return docs;
+		    })
+	    } catch (e) {
+		    console.log('deu ruim: ', e);
+	    }
+    })
+  }
+
   
   this.getUID = function () {
   	let UID = null;
@@ -210,11 +234,14 @@ function HeimdallrLib() {
   	return new Promise((resolve) => {
         const post = firebase.firestore()
 		    .collection(collection)
-		    .orderBy('date', 'desc')
+	        .where('uid', '==', uid)
 		    .limit(limit)
 		    .get().then((result) => {
-		    	docs = result.docs;
-		        resolve(result.docs.filter((snap) => snap._data.uid === uid));
+		    	console.log('ta´certo: ', result.docs[0].data());
+		    	resolve(result.docs.sort((a, b) => {
+		    		console.log('a:', a.data().date );
+		    		return b.data().date - a.data().date;
+			    }));
 	        }).catch ((e) => {
 	            console.log('que caca: ', e);
             });

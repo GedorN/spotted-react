@@ -17,6 +17,7 @@ import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
 import OptionsMenu from "react-native-options-menu";
 import CommentaryViewer from "./CommentaryViewer";
+import moment from "moment";
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
 
@@ -90,10 +91,10 @@ export default class PostDetails extends React.Component {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: 280, height: 200}}>
+							<View style={{width: width * 0.80, height: 235}}>
 								<Image
 									source={{uri: this.state.post.images[0]}}
-									style={{width: 310, height: 230, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 						</View>
@@ -103,16 +104,16 @@ export default class PostDetails extends React.Component {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start'}}>
 						<View style={{ flexDirection: 'row', marginBottom: 5}}>
-							<View style={{width: 155, height: 200}}>
+							<View style={{width: width * 0.40, height: 235}}>
 								<Image
 									source={{uri: this.state.post.images[0]}}
-									style={{width: 155, height: 230, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
-							<View style={{width: 155, height: 200}}>
+							<View style={{width: width * 0.40, height: 235}}>
 								<Image
 									source={{uri: this.state.post.images[1]}}
-									style={{width: 155, height: 230,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.39, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 						</View>
@@ -122,23 +123,23 @@ export default class PostDetails extends React.Component {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: 140, height: 200}}>
+							<View style={{width: width * 0.40, height: 235}}>
 								<Image
 									source={{uri: this.state.post.images[0]}}
-									style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 							<View style={{flexDirection: 'column'}}>
-								<View style={{width: 140, height: 100}}>
+								<View style={{width: width * 0.40, height: 116}}>
 									<Image
 										source={{uri: this.state.post.images[1]}}
-										style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+										style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 									/>
 								</View>
-								<View style={{width: 140, height: 99}}>
+								<View style={{width: width * 0.40, height: 116}}>
 									<Image
 										source={{uri: this.state.post.images[2]}}
-										style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+										style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 									/>
 								</View>
 							</View>
@@ -149,30 +150,30 @@ export default class PostDetails extends React.Component {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: 140, height: 100}}>
+							<View style={{width: width * 0.40, height: 116}}>
 								<Image
 									source={{uri: this.state.post.images[1]}}
-									style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
-							<View style={{width: 140, height: 100}}>
+							<View style={{width: width * 0.40, height: 100}}>
 								<Image
 									source={{uri: this.state.post.images[1]}}
-									style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.39, height: 116, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 						</View>
 						<View style={{ flexDirection: 'row',  marginBottom: 5}}>
-							<View style={{width: 140, height: 100}}>
+							<View style={{width: width * 0.40, height: 116}}>
 								<Image
 									source={{uri: this.state.post.images[2]}}
-									style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
-							<View style={{width: 140, height: 100}}>
+							<View style={{width: width * 0.40, height: 116}}>
 								<Image
 									source={{uri: this.state.post.images[3]}}
-									style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 						</View>
@@ -227,7 +228,7 @@ export default class PostDetails extends React.Component {
 		const params = {};
 		params.pid = this.state.post.pid;
 		params.comment = this.state.commentText;
-		params.date = new Date();
+		params.date = moment.now();
 		params.user_image = heimdallr.user_image;
 		params.user_name = heimdallr.user_name;
 		params.id_user = heimdallr.user_id;
@@ -288,30 +289,22 @@ export default class PostDetails extends React.Component {
 									</View>
 									<View style={{flexDirection: 'column'}}>
 										<View style={styles.postHeader}>
-											{/*<View style={styles.postHeaderUserImage}>*/}
-											{/*    <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>*/}
-											{/*        <UserImgProfile circular height={45} width={45} borderWidth={2} borderColor={theme.primary} uri={this.props.userImage}/>*/}
-											{/*    </TouchableOpacity>*/}
-											{/*</View>*/}
-											<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-												<Text
-													style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
-												>
-													{this.state.post ? this.state.post.user_name: null}
-												</Text>
-											</TouchableOpacity>
-											<View style={{left: width * 0.62}}>
-												<TouchableOpacity
-												>
-													<OptionsMenu
-													    style={{width: 50, height: 50}}
-														button={require('../../../../assets/images/chevron-down-solid.png') }
-														buttonStyle={{ width: 20, height: 20, opacity: 0.7, marginTop:30}}
-														options={['Denunciar']}
-														actions={[this.toggleModal.bind(this)]}
-													/>
+											<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+												<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+													<Text
+														style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+													>
+														{this.state.post ? this.state.post.user_name: null}
+													</Text>
 												</TouchableOpacity>
 											</View>
+											<OptionsMenu
+												style={{width: 50, height: 50}}
+												button={require('../../../../assets/images/chevron-down-solid.png') }
+												buttonStyle={{ width: 20, height: 20, opacity: 0.7, marginTop:30}}
+												options={['Denunciar']}
+												actions={[this.toggleModal.bind(this)]}
+											/>
 										</View>
 										<View style={styles.body}>
 											<View style={styles.post}>
@@ -355,7 +348,7 @@ export default class PostDetails extends React.Component {
 							/>
 							<TouchableOpacity onPress={this.addCommentary.bind(this)}>
 								<Image
-									style={{width: 30, height: 30, marginLeft: 30, marginBottom:5}}
+									style={{width: 30, height: 30, marginLeft: 20, marginBottom:5}}
 									source={require('../../../../assets/images/send.png')}
 								/>
 							</TouchableOpacity>
@@ -406,15 +399,16 @@ const styles = StyleSheet.create({
 		marginBottom:40,
 	},
 	postHeader: {
+		flex: 1,
+		justifyContent: 'space-between',
 		flexDirection: 'row',
 		height: 15,
 		fontWeight: 'bold',
 		alignItems: 'center',
 		alignContent: 'center',
-		width: width * 0.95,
+		width: width * 0.83,
 	},
 	commentContainer: {
-		alignSelf:'center',
 		position: 'absolute',
 		alignItems: 'flex-end',
 		width: width,

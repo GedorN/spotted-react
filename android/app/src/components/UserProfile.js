@@ -101,13 +101,15 @@ export default class UserProfile extends React.Component {
 					console.log('Deu ruim: ', reject);
 				});
 		} else {
+			// const hue = heimdallr.test(heimdallr.user_id, 100);
+			var before = Date.now();
 			console.log('navigation: ', this.props);
 			this.state.userId = heimdallr.user_id;
 			this.state.userImage = heimdallr.user_image;
 			this.state.userName = heimdallr.user_name;
 			this.state.userImageUrl = [{url: heimdallr.user_image}];
 			console.log('Profile: ', this.state.userId);
-			heimdallr.getUserColletion('post', this.state.pulledPosts, this.state.userId).then(
+			heimdallr.getUserColletion('post', 100, this.state.userId).then(
 				(resolve) => {
 					if(resolve.length === 0){
 						this.setState({ endPulling: true });
@@ -139,6 +141,8 @@ export default class UserProfile extends React.Component {
 						}
 					});
 					console.log('peguei esses caras aqui', resolve);
+					var after = Date.now() - before;
+					console.log(`o mais foda levou: ${after}`);
 					this.setState({ posts: resolve });
 				}
 			);

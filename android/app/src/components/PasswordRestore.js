@@ -59,6 +59,7 @@ export default class PasswordRestore extends React.Component{
 								autoCapitalize='none'
 								placeholder='E-mail...'
 								autoCompleteType='email'
+								borderBottomWidth={1}
 								keyboardType='email-address'
 								textContentType='emailAddress'
 								onChangeText={text => this.setState({ user: text })}

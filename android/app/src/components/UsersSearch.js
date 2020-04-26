@@ -52,8 +52,6 @@ export default class UsersSearch extends React.Component {
 							onChangeText={ text => this.changeText(text) }
 							placeholder='Usuario'
 							textContentType='name'
-							borderBottomWidth = {0}
-							borderBottomColor='white'
 							flex={1}
 						/>
 					</View>

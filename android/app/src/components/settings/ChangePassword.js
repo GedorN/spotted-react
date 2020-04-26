@@ -31,6 +31,7 @@ export default class ChangePassword extends React.Component {
 				<View style={{marginTop: 10}}>
 					<RUMineTextInput
 						onChangeText={ text => this.setState({ newPassword: text }) }
+						borderBottomWidth={1}
 						autoCapitalize='none'
 						placeholder='Senha'
 						textContentType='password'
@@ -40,6 +41,7 @@ export default class ChangePassword extends React.Component {
 					<RUMineTextInput
 						onChangeText={ text => this.setState({ confirmNewPassword: text }) }
 						autoCapitalize='none'
+						borderBottomWidth={1}
 						placeholder='Confirmar senha'
 						textContentType='password'
 					/>

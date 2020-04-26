@@ -79,6 +79,7 @@ export default class Login extends React.Component {
 	                    autoCompleteType='email'
 	                    keyboardType='email-address'
 	                    textContentType='emailAddress'
+	                    borderBottomWidth={1}
 	                    onChangeText={text => this.setState({user: text})}
                     />
                     <EyeOfThePassword

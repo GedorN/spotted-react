@@ -77,7 +77,7 @@ const collections = {
 			},
 			{
 				desc: 'date',
-				type: 'object',
+				type: 'number',
 				required: true,
 			},
 			{

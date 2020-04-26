@@ -46,7 +46,7 @@ export default class RUMineTextInput extends React.Component {
 				onFocus={ this.props.onFocus }
 				style={{
 					height: this.props.height ? this.props.height : 40,
-					borderBottomWidth: this.props.borderBottomWidth ? this.props.borderBottomWidth : 1,
+					borderBottomWidth: this.props.borderBottomWidth ? this.props.borderBottomWidth : 0,
 					borderBottomColor: this.props.borderBottomColor ? this.props.borderBottomColor : theme.primary,
 					marginBottom: this.props.marginBottom ? this.props.marginBottom : 10,
 					marginRight: this.props.marginRight ? this.props.marginRight : 0,
