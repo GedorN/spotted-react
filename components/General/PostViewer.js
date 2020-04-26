@@ -144,17 +144,17 @@ export default class PostViewer extends React.Component {
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
 		                <Image
 	                        source={{uri: this.props.images[1]}}
-	                        style={{width: width * 0.39, height: 116, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                        style={{width: width * 0.39, height: 116, borderTopRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 	                    />
 	                </TouchableOpacity>
                 </View>
               </View>
-              <View style={{ flexDirection: 'row',  marginBottom: 5}}>
+              <View style={{ flexDirection: 'row',  marginTop: 5}}>
                 <View style={{width: width * 0.40, height: 116}}>
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
 		                <Image
 	                        source={{uri: this.props.images[2]}}
-	                        style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                        style={{width: width * 0.39, height: 116,  borderBottomLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 	                    />
 	                </TouchableOpacity>
                 </View>
@@ -162,7 +162,7 @@ export default class PostViewer extends React.Component {
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
 		                <Image
 	                        source={{uri: this.props.images[3]}}
-	                        style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+	                        style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 	                    />
 	                </TouchableOpacity>
                 </View>
@@ -310,7 +310,7 @@ export default class PostViewer extends React.Component {
           alignItems: 'center',
           alignContent: 'center',
           width: width * 0.95,
-					height: 30,
+	      height: 40,
 					
       },
       postHeaderUserImage: {
