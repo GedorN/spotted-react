@@ -30,6 +30,7 @@ import theme from "../../../../components/General/Theme";
 import Settings from "./Settings";
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
+
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 

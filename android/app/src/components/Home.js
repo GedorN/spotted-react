@@ -35,6 +35,7 @@ import UserImgProfile from '../../../../components/General/UserImgProfile';
 import UUIDGenerator from 'react-native-uuid-generator';
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
+
 const width = Dimensions.get('screen').width;
 
 export default class Home extends React.Component {

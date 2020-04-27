@@ -5,18 +5,21 @@ import {
 	Text,
 	Dimensions,
 	TouchableOpacity,
-	Image,
+	Image, PermissionsAndroid,
 } from 'react-native'
 
 import {
 	TextInput,
 } from 'react-native-paper'
-
+import FlashMessage from "react-native-flash-message";
+import { showMessage, hideMessage } from "react-native-flash-message";
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import RUMineTextInput from "../Inputs/RUMineTextInput";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import theme from "../../../../../components/General/Theme";
+import ImagePicker from "react-native-image-picker";
+import ImageResizer from "react-native-image-resizer";
 
 export default class GeneralSettings extends  React.Component {
 	constructor(props) {
@@ -32,13 +35,85 @@ export default class GeneralSettings extends  React.Component {
 		// this.setState({ email: heimdallr.user })
 	}
 
+	async sendImagePropt() {
+		try {
+			const granted = await PermissionsAndroid.request(
+				PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+				{
+					title: 'Spotted Camera Permission',
+					message:
+						'Spotted needs access to your camera ' +
+						'so you can take awesome pictures ;)',
+					buttonNeutral: 'Ask Me Later',
+					buttonNegative: 'Cancel',
+					buttonPositive: 'OK',
+				},
+			);
+			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+				console.log('You can use the camera');
+				const options = {
+					title: 'Enviar imagem',
+					takePhotoButtonTitle: 'Tirar foto',
+					chooseFromLibraryButtonTitle: 'Pegar do celular',
+					storageOptions: {
+						skipBackup: true,
+						path: 'images',
+					},
+				};
+
+				ImagePicker.showImagePicker(options, response => {
+					if (response.didCancel) {
+						console.log('User cancelled image picker');
+					} else if (response.error) {
+						console.log('ImagePicker Error: ', response.error);
+					} else if (response.customButton) {
+						console.log('User tapped custom button: ', response.customButton);
+					} else {
+						console.log('Imagem escolhida');
+						console.log(response);
+						let image = 'file://' + response.path;
+						console.log('path: ', image);
+						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / 5, 'JPEG', 60).then(
+							(resolve) => {
+								console.log('resolve: ', resolve);
+								this.setState({imageCompressed: resolve.uri});
+
+							},
+							(error) => {
+								console.log('Image resize error: ', error);
+							}).catch((err) => {
+							console.log(err);
+						})
+						this.setState({userImage: image});
+						console.log('Imagem: ', this.state.postImages);
+					}
+				});
+			} else {
+				console.log('Camera permission denied');
+			}
+		} catch (err) {
+			console.warn(err);
+		}
+	}
+
 	saveEdition = () => {
-		console.warn('kk otario');
 		const params = {};
 		params.name = this.state.userName;
 		params.user_image = this.state.userImage;
-		heimdallr.updateProfile(params).then(() => {
-			console.warn('Dados alterados com sucesso');
+		heimdallr.updateProfile(params).then((resolve) => {
+			if(resolve) {
+				this.refs.message.showMessage({
+					message: "Configurações alteradas com sucesso",
+					type: "success",
+					icon: 'success'
+				});
+			} else {
+				this.refs.message.showMessage({
+					message: "Erro ao salvar configurações",
+					type: "danger",
+					icon: 'danger'
+				});
+			}
 		})
 
 	}
@@ -61,9 +136,9 @@ export default class GeneralSettings extends  React.Component {
 					<Text>
 						Foto de perfil:
 					</Text>
-					<TouchableOpacity>
+					<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
 						<View style={{flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginTop: 20}}>
-							<UserImgProfile circular height={120} width={120} uri={heimdallr.user_image} />
+							<UserImgProfile circular height={120} width={120} uri={this.state.userImage} />
 						</View>
 					</TouchableOpacity>
 				</View>
@@ -98,6 +173,7 @@ export default class GeneralSettings extends  React.Component {
 				<View style={{marginTop: 20}}>
 					<FatBottomedButton text='Salvar' color={theme.primary} onTap={() => this.saveEdition()} />
 				</View>
+				<FlashMessage ref='message' position="top" />
 			</View>
 
 		)

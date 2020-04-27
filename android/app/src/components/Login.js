@@ -104,7 +104,7 @@ export default class Login extends React.Component {
 		                <FatBottomedButton color={theme.primary} text={'Registrar-se'} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
 	                </View>
                 </View>
-	            <View style={{position: 'absolute', top: height * 0.9, width: width, alignItems: 'flex-start'}}>
+	            <View style={{position: 'absolute', top: height * 0.85, width: width, alignItems: 'flex-start'}}>
 	                <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>
 			            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
 	                </TouchableOpacity>

@@ -54,7 +54,7 @@ export default class UserProfile extends React.Component {
 					this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
 					heimdallr.getUserColletion('post', this.state.pulledPosts, this.state.userId).then(
 						(resolve) => {
-							if(resolve.length === 0){
+							if(!resolve || resolve.length === 0){
 								this.setState({ endPulling: true });
 							}
 							resolve.forEach((doc) => {
@@ -111,9 +111,9 @@ export default class UserProfile extends React.Component {
 			console.log('Profile: ', this.state.userId);
 			heimdallr.getUserColletion('post', 100, this.state.userId).then(
 				(resolve) => {
-					if(resolve.length === 0){
+					if(!resolve || resolve.length === 0){
 						this.setState({ endPulling: true });
-					}
+					} else
 					resolve.forEach((doc) => {
 						if (!doc.elapsed_time) {
 							const time = moment(doc.data().date).fromNow();

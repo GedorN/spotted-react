@@ -110,6 +110,7 @@ export default  class SignUp extends React.Component {
 				params.creation_date = new Date();
 				params.birth_date = this.state.birth;
 				params.active = 1;
+				params.phone = this.state.phone;
 				params.password = this.state.password;
 				params.uid = user.user.uid;
 				params.user_image = resolve;

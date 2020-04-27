@@ -19,6 +19,8 @@ import FatBottomedButton from "./buttons/FatBottomedButton";
 import theme from "../../../../components/General/Theme";
 import GeneralSettings from "./settings/GeneralSettings";
 import ChangePassword from "./settings/ChangePassword";
+import FlashMessage from "react-native-flash-message";
+
 const height = Dimensions.get('screen').height;
 
 export default class Settings extends React.Component {
@@ -26,7 +28,7 @@ export default class Settings extends React.Component {
 		super(props);
 		this.state= {
 			userName: null,
-			email: 'heuhue',
+			email: null,
 			changePassword: false,
 		};
 	}

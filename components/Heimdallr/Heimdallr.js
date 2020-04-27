@@ -117,12 +117,12 @@ function HeimdallrLib() {
 		      photoURL: user.user_image,
 		  }).then(function () {
 		      console.log('update profile sucessful');
+		      resolve(true);
 		  }).catch(function (error) {
 		      console.log('update profile error: ', error);
+		      resolve(false);
 		  })
-	  }). then(function (resolve) {
-
-	  })
+	  });
   }
 
   this.checkUser = function () {
@@ -237,11 +237,16 @@ function HeimdallrLib() {
 	        .where('uid', '==', uid)
 		    .limit(limit)
 		    .get().then((result) => {
-		    	console.log('ta´certo: ', result.docs[0].data());
-		    	resolve(result.docs.sort((a, b) => {
-		    		console.log('a:', a.data().date );
-		    		return b.data().date - a.data().date;
-			    }));
+		    	if (result && result.docs.length > 0) {
+			        console.log('ta´certo: ', result.docs[0].data());
+			        resolve(result.docs.sort((a, b) => {
+			            console.log('a:', a.data().date );
+			            return b.data().date - a.data().date;
+				    }));
+			    } else {
+		    		console.log('caiu aqui');
+		    		resolve(null);
+			    }
 	        }).catch ((e) => {
 	            console.log('que caca: ', e);
             });
