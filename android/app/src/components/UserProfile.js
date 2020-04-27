@@ -320,6 +320,7 @@ export default class UserProfile extends React.Component {
 	}
 }
 
+
 const styles = StyleSheet.create({
 	container: {
 		marginTop: 20,
@@ -341,3 +342,5 @@ const styles = StyleSheet.create({
 		marginLeft: 20,
 	},
 });
+
+// user profile 

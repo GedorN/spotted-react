@@ -219,7 +219,7 @@ export default  class SignUp extends React.Component {
 					/>
 					<View style={{justifyContent: 'center', alignContent: 'center'}}>
 						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
-							<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderWidth: this.state.profileImage ? 0 : 1, borderColor: theme.primary, borderRadius: 100}}>
+							<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderRadius: 100}}>
 								<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
 							</View>
 						</TouchableOpacity>
