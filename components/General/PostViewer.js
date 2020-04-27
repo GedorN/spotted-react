@@ -17,13 +17,16 @@ import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
 import ReportModal from "./ReportModal";
 import ImageViewer from 'react-native-image-zoom-viewer';
+import RBSheet from "react-native-raw-bottom-sheet";
+import ReportGod from "../../android/app/src/components/Inputs/ReportGod";
 
 import theme from "./Theme";
+import AwesomeAlert from "react-native-awesome-alerts";
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
     this.state = {
-        showModal: false,
+        showAlert: false,
 	    showImages: false,
 	    galleryObj: [],
 	    indexImage: 0,
@@ -43,14 +46,9 @@ export default class PostViewer extends React.Component {
 	  }
   }
 
-    toggleModal () {
-        this.setState({showModal: !this.state.showModal});
-        console.log('opened');
-    }
 
     disableModal () {
 	    this.setState({ showImages: false });
-        this.setState( { showModal: false });
     }
 
     getModalImagesLayout = () => {
@@ -192,6 +190,10 @@ export default class PostViewer extends React.Component {
     });
   }
 
+	closeAlert = () => {
+		this.RBSheet.close();
+		this.props.closeAlert();
+	}
 
   render () {
     return (
@@ -211,17 +213,6 @@ export default class PostViewer extends React.Component {
 						  enableSwipeDown={true}
 						  onSwipeDown={() => {this.setState({ showImages: false })}}
 					  />
-				  </Modal>
-				  <Modal
-					    visible={this.state.showModal}
-					    transparent={true}
-					    hideModalContentWhileAnimating={true}
-					    style={styles.reportModal}
-					    onRequestClose={() => {
-						    this.disableModal();
-					    }}
-				  >
-				      <ReportModal close={this.disableModal.bind(this)}/>
 				  </Modal>
 			  <View style={styles.postHeaderUserImage}>
 			      <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
@@ -248,13 +239,17 @@ export default class PostViewer extends React.Component {
 					          { this.props.elapsed_time }
 				          </Text>
 				      </View>
-	                  <OptionsMenu
-		                  style={{width: 50, height: 50}}
-	                      button={require('../../assets/images/chevron-down-solid.png') }
-	                      buttonStyle={{ width: 20, height: 20, marginTop: 30, opacity: 0.7}}
-	                      options={['Denunciar']}
-	                      actions={[this.toggleModal.bind(this)]}
-	                  />
+				      <TouchableOpacity
+					      onPress={() => this.RBSheet.open()}>
+					      <View
+						      style={{width: 80, height: 50, marginTop: 30, padding: 5, paddingBottom: 10, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'center'}}
+					      >
+						      <Image
+							      style={{width: 20, height: 12}}
+							      source={require('../../assets/images/chevron-down-solid.png')}
+						      />
+					      </View>
+				      </TouchableOpacity>
 			      </View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
@@ -278,6 +273,16 @@ export default class PostViewer extends React.Component {
 			      </View>
 			  </View>
 			</View>
+		    <RBSheet
+			    ref={ref => {
+				    this.RBSheet = ref;
+			    }}
+			    height={300}
+			    animationType={'slide'}
+			    duration={250}
+		    >
+			    <ReportGod  close={this.closeAlert.bind(this)}/>
+		    </RBSheet>
 	    </TouchableOpacity>
     );
   }

@@ -211,7 +211,26 @@ export default class UserProfile extends React.Component {
 			);
 		}
 		return (
-			<Text>Fim da linha</Text>
+			<View style={{
+				flex: 1,
+				height: 50,
+				flexDirection: 'row',
+				backgroundColor: '#aab512',
+				padding: 10,
+				shadowColor: "#000",
+				shadowOffset: {
+					width: 0,
+					height: 2,
+				},
+				shadowOpacity: 0.23,
+				shadowRadius: 2.62,
+				elevation: 4,
+				alignItems: 'center',
+				justifyContent: 'center'
+			}}>
+				<Image source={require('../../../../assets/images/warning.png') } style={{height: 20, width: 25}}/>
+				<Text style={{marginLeft: 5}}>Não há mais postagens para serem vistas</Text>
+			</View>
 		)
 	};
 

@@ -18,8 +18,13 @@ import theme from "../../../../components/General/Theme";
 import OptionsMenu from "react-native-options-menu";
 import CommentaryViewer from "./CommentaryViewer";
 import moment from "moment";
+import RBSheet from "react-native-raw-bottom-sheet";
+import ReportGod from "./Inputs/ReportGod";
+import AwesomeAlert from "react-native-awesome-alerts";
+
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
+
 
 export default class PostDetails extends React.Component {
 	constructor(props) {
@@ -33,6 +38,7 @@ export default class PostDetails extends React.Component {
 			pulling: false,
 			pulledComments: 10,
 			isRefreshing: false,
+			showAlert: false,
 		};
 	}
 
@@ -258,6 +264,11 @@ export default class PostDetails extends React.Component {
 		this.props.navigation.goBack();
 	}
 
+	closeAlert = () => {
+		this.RBSheet.close();
+		this.setState({ showAlert: true });
+	}
+
 
 	render() {
 		return (
@@ -298,13 +309,17 @@ export default class PostDetails extends React.Component {
 													</Text>
 												</TouchableOpacity>
 											</View>
-											<OptionsMenu
-												style={{width: 50, height: 50}}
-												button={require('../../../../assets/images/chevron-down-solid.png') }
-												buttonStyle={{ width: 20, height: 20, opacity: 0.7, marginTop:30}}
-												options={['Denunciar']}
-												actions={[this.toggleModal.bind(this)]}
-											/>
+											<TouchableOpacity
+												onPress={() => this.RBSheet.open()}>
+												<View
+													style={{width: 80, height: 50, marginTop: 30, padding: 5, paddingBottom: 10, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'center'}}
+												>
+													<Image
+														style={{width: 20, height: 12}}
+														source={require('../../../../assets/images/chevron-down-solid.png')}
+													/>
+												</View>
+											</TouchableOpacity>
 										</View>
 										<View style={styles.body}>
 											<View style={styles.post}>
@@ -355,6 +370,30 @@ export default class PostDetails extends React.Component {
 						</View>
 					}
 				</View>
+				<RBSheet
+					ref={ref => {
+						this.RBSheet = ref;
+					}}
+					height={300}
+					animationType={'slide'}
+					duration={250}
+				>
+					<ReportGod  close={this.closeAlert.bind(this)}/>
+				</RBSheet>
+				<AwesomeAlert
+					show={this.state.showAlert}
+					showProgress={false}
+					title="Denúncia realizada"
+					message="Nossos criadores irão analisar a postagem denunciada"
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showConfirmButton={true}
+					confirmText="OK"
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						this.setState({ showAlert: false })
+					}}
+				/>
 			</KeyboardAvoidingView>
 		);
 	}

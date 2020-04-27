@@ -34,6 +34,7 @@ import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
 import UUIDGenerator from 'react-native-uuid-generator';
 import moment from "moment";
+import AwesomeAlert from "react-native-awesome-alerts";
 const width = Dimensions.get('screen').width;
 
 export default class Home extends React.Component {
@@ -47,6 +48,7 @@ export default class Home extends React.Component {
 	    endPulling: false,
 	    isRefreshing: false,
 	    scrolling: false,
+	    showAlert: false,
     };
   }
 
@@ -54,6 +56,10 @@ export default class Home extends React.Component {
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);
+  		if (resolve.length === 0 ) {
+  			console.warn('veio nada');
+  			this.setState({ endPulling: true })
+	    }
   		resolve.forEach((doc) => {
 		    const time = moment(doc.data().date).fromNow();
 		    if (time ===  'a few seconds ago') {
@@ -153,13 +159,34 @@ export default class Home extends React.Component {
 		  );
 	  }
 	  return (
-		  <Text>Fim da linha</Text>
+	  	<View style={{
+	  		flex: 1,
+		    height: 50,
+		    flexDirection: 'row',
+		    backgroundColor: '#aab512',
+		    padding: 10,
+		    shadowColor: "#000",
+		    shadowOffset: {
+			    width: 0,
+			    height: 2,
+		    },
+		    shadowOpacity: 0.23,
+		    shadowRadius: 2.62,
+		    elevation: 4,
+		    alignItems: 'center',
+		    justifyContent: 'center'
+	  	}}>
+		    <Image source={require('../../../../assets/images/warning.png') } style={{height: 20, width: 25}}/>
+		    <Text style={{marginLeft: 5}}>Não há mais postagens para serem vistas</Text>
+	    </View>
 	  )
   };
 
 
 
-
+	confirmReport = () => {
+		this.setState({ showAlert: true });
+	}
 
 
 
@@ -171,7 +198,7 @@ export default class Home extends React.Component {
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling} closeAlert={this.confirmReport.bind(this)} />
               }
               refreshControl={
 	              <RefreshControl
@@ -187,6 +214,20 @@ export default class Home extends React.Component {
               ListFooterComponent={ this.renderFooter.bind(this)}
 
           />
+	      <AwesomeAlert
+		      show={this.state.showAlert}
+		      showProgress={false}
+		      title="Denúncia realizada"
+		      message="Nossos criadores irão analisar a postagem denunciada"
+		      closeOnTouchOutside={true}
+		      closeOnHardwareBackPress={false}
+		      showConfirmButton={true}
+		      confirmText="OK"
+		      confirmButtonColor={'green'}
+		      onConfirmPressed={() => {
+			      this.setState({ showAlert: false })
+		      }}
+	      />
       </View>
     );
   }
