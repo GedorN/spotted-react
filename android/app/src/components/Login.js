@@ -64,10 +64,12 @@ export default class Login extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+			<View style = {{width:width*0.6}}>
                 <Image
-	                style={{width: 210, height: 258, padding: 0,  zIndex: -1}}
+	                style={{width: 210, height: 258, padding: 0,  zIndex: -1, alignSelf:'flex-start',borderColor:theme.primary}}
 	                source={require('../../../../assets/images/simbol.png')}
                 />
+			</View>
 	            {
 	            	this.state.showAttemptFail ?
 			            <Text style={{color: 'red', marginTop: 10}}> *Usuário ou senha incorretos </Text> :
@@ -133,7 +135,7 @@ export default class Login extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-    	alignItems: 'flex-start',
+    	alignItems: 'center',
         flex: 1,
 	    padding: 20
     },
