@@ -316,6 +316,7 @@ export default class PostViewer extends React.Component {
           alignContent: 'center',
           width: width * 0.95,
 	      height: 40,
+	      zIndex: 99,
 					
       },
       postHeaderUserImage: {

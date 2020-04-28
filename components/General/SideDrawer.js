@@ -17,6 +17,9 @@ export default class SideDrawer extends React.Component {
         this.state= {};
     }
 
+    actionPressed = (action) => {
+	    this.props.actionPressed(action);
+    }
 
     render () {
         return (
@@ -32,7 +35,8 @@ export default class SideDrawer extends React.Component {
 	                </View>
                 </View>
                 <View style={styles.content}>
-                    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'} onPress={() => {this.props.actionPressed('settings')}}>
+                    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+                        onPress={this.actionPressed.bind(this, 'settings')}>
 	                    <View style={styles.item}>
 		                    <Image source={require('../../assets/images/user-cog-solid.png')}
 		                        style={{
@@ -117,7 +121,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-start',
 		alignItems: 'center',
 		height: 60,
-		width: '100%',
 		marginBottom: 21,
 	},
     drawerHeader: {
@@ -140,6 +143,7 @@ const styles = StyleSheet.create({
 	    width: '100%',
         alignItems: 'flex-start',
 	    paddingLeft: 21,
+	    zIndex: 9999,
     },
 	landscapeIcon: {
 		tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,

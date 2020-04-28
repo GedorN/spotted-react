@@ -90,7 +90,10 @@ export default class MainScreen extends React.Component {
 		this.setState({ showModal: false })
 	};
 
-	_hideSettingsModal = () => this.setState({ showSettingsModal: false });
+	_hideSettingsModal = () => {
+		console.warn('senti o click de fechar');
+		this.setState({ showSettingsModal: false });
+	}
 
 	componentDidMount(): void {
 		const anonymousRoutes =  [
@@ -150,6 +153,7 @@ export default class MainScreen extends React.Component {
 	setAction = (action) => {
 		switch (action) {
 			case 'settings':
+				console.warn('senti o click');
 				this.setState({ showSettingsModal: true });
 				this._drawer.close();
 				break;

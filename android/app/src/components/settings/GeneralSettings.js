@@ -121,17 +121,19 @@ export default class GeneralSettings extends  React.Component {
 	render () {
 		return (
 			<View>
-				<TouchableOpacity onPress={this.props.close}>
-					<View style={{flexDirection: 'row', height: 20, width: 50}}>
-						<Image
-							style={{width: 20, height: 20, marginRight: 10}}
-							source={require('../../../../../assets/images/arrow-left.png')}
-						/>
-						<Text>
-							voltar
-						</Text>
-					</View>
-				</TouchableOpacity>
+				<View style={{zIndex: 999}}>
+					<TouchableOpacity onPress={this.props.close}>
+						<View style={{flexDirection: 'row', height: 20, width: 50}}>
+							<Image
+								style={{width: 20, height: 20, marginRight: 10}}
+								source={require('../../../../../assets/images/arrow-left.png')}
+							/>
+							<Text>
+								voltar
+							</Text>
+						</View>
+					</TouchableOpacity>
+				</View>
 				<View style={{flexDirection:'column', marginTop: 10}}>
 					<Text>
 						Foto de perfil:
