@@ -233,6 +233,7 @@ export default class MainScreen extends React.Component {
 							animationType='fade'
 							visible={this.state.showModal}
 							onDismiss={this._hideModal}
+							onRequestClose={this._hideModal.bind(this)}
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
 							<PostWrite close={this._hideModal.bind(this)} call={this.postCall.bind(this)} />
@@ -240,6 +241,9 @@ export default class MainScreen extends React.Component {
 						<Modal
 							visible={this.state.showSettingsModal}
 							onDismiss={this._hideSettingsModal}
+							onRequestClose={() => {
+								this.setState({ showSettingsModal: false });
+							}}
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
 							<Settings close={this._hideSettingsModal}/>
