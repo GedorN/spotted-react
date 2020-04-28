@@ -41,6 +41,33 @@ function HeimdallrLib() {
     })
   }
 
+
+  this.getElapsedTime = function (elapsedTime) {
+	  if (elapsedTime ===  'a few seconds ago') {
+		  return doc._data.elapsed_time = '1 min';
+	  } else if (elapsedTime.split(' ')[1] === 'minute') {
+		  return `1min`;
+	  } else if (elapsedTime.split(' ')[1] === 'minutes') {
+		  return `${elapsedTime.split(' ')[0]}min`;
+	  } else if (elapsedTime.split(' ')[1] === 'hour') {
+		  return `1h`;
+	  } else if (elapsedTime.split(' ')[1] === 'hours') {
+		  return `${elapsedTime.split(' ')[0]}h`;
+	  } else if (elapsedTime.split(' ')[1] === 'day') {
+		  return `1d`;
+	  } else if (elapsedTime.split(' ')[1] === 'days') {
+		  return `${elapsedTime.split(' ')[0]}d`;
+	  } else if (elapsedTime.split(' ')[1] === 'month') {
+		  return `1mo`;
+	  } else if (elapsedTime.split(' ')[1] === 'months') {
+		  return `${elapsedTime.split(' ')[0]}mo`;
+	  } else if (elapsedTime.split(' ')[1] === 'year') {
+		  return `1y`;
+	  } else if (elapsedTime.split(' ')[1] === 'years') {
+		  return `${elapsedTime.split(' ')[0]}y`;
+	  }
+  }
+
   
   this.getUID = function () {
   	let UID = null;
