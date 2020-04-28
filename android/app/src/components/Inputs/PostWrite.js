@@ -323,7 +323,7 @@ export default class PostWrite extends React.Component {
 								style={{width: width + 10,
 									borderBottomWidth: 1,
 									borderColor: 'grey',
-									height: this.state.postImages.length > 0 ? 300 : 525,
+									height: this.state.postImages.length > 0 ? height * 0.416 : height * 0.75,
 								}}
 								onChangeText={text => this.setState({postText: text})}
 								autoCapitalize="sentences"
