@@ -91,7 +91,6 @@ export default class MainScreen extends React.Component {
 	};
 
 	_hideSettingsModal = () => {
-		console.warn('senti o click de fechar');
 		this.setState({ showSettingsModal: false });
 	}
 
@@ -153,7 +152,6 @@ export default class MainScreen extends React.Component {
 	setAction = (action) => {
 		switch (action) {
 			case 'settings':
-				console.warn('senti o click');
 				this.setState({ showSettingsModal: true });
 				this._drawer.close();
 				break;
@@ -201,7 +199,7 @@ export default class MainScreen extends React.Component {
 						acceptPan={true}
 						negotiatePan={true}
 						panThreshold={0.1}
-						panOpenMask={0.5}
+						panOpenMask={0.1}
 					>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.openModal.bind(this)}>
