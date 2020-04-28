@@ -116,6 +116,7 @@ export default  class SignUp extends React.Component {
 				params.user_image = resolve;
 				let success = heimdallr.saveCollection('user', params);
 				success.then((r) => {
+					this.forceUpdate();
 					this.updateUser(params);
 				});
 			});
@@ -131,6 +132,7 @@ export default  class SignUp extends React.Component {
 			params.uid = user.user.uid;
 			let success = heimdallr.saveCollection('user', params);
 			success.then((r) => {
+				this.forceUpdate();
 				this.updateUser(params);
 			});
 		}

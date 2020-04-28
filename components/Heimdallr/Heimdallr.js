@@ -363,6 +363,12 @@ function HeimdallrLib() {
             if (collection === 'post') {
             	heimdallr.saveCollection('unverified_post', params);
             }
+            if (collection === 'user') {
+            	this.user_image = params.user_image ? params.user_image : null;
+            	this.user_name = params.name;
+            	this.email = params.email;
+            	this.uid = params.uid;
+            }
             resolve();
           },
           () => {

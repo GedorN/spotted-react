@@ -146,6 +146,32 @@ export default class Home extends React.Component {
 	  this.setState({ isRefreshing: true });
 	  let result = heimdallr.getCollection('post', 10);
 	  result.then( (resolve) => {
+		  resolve.forEach((doc) => {
+			  if (!doc.elapsed_time) {
+				  const time = moment(doc.data().date).fromNow();
+				  if (time ===  'a few seconds ago') {
+					  doc._data.elapsed_time = '1 min';
+				  } else if (time.split(' ')[1] === 'minute') {
+					  doc._data.elapsed_time = `1min`;
+				  } else if (time.split(' ')[1] === 'minutes') {
+					  doc._data.elapsed_time = `${time.split(' ')[0]}min`;
+				  } else if (time.split(' ')[1] === 'hour') {
+					  doc._data.elapsed_time = `1h`;
+				  } else if (time.split(' ')[1] === 'hours') {
+					  doc._data.elapsed_time = `${time.split(' ')[0]}h`;
+				  } else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
+					  doc._data.elapsed_time = `${time.split(' ')[0]}d`;
+				  } else if (time.split(' ')[1] === 'month') {
+					  doc._data.elapsed_time = `1mo`;
+				  } else if (time.split(' ')[1] === 'months') {
+					  doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
+				  } else if (time.split(' ')[1] === 'year') {
+					  doc._data.elapsed_time = `1y`;
+				  } else if (time.split(' ')[1] === 'years') {
+					  doc._data.elapsed_time = `${time.split(' ')[0]}y`;
+				  }
+			  }
+		  });
 		  this.setState({ posts: resolve });
 		  this.setState({ isRefreshing: false });
 	  });
