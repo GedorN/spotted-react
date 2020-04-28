@@ -141,6 +141,12 @@ export default class MainScreen extends React.Component {
 		this.setState({open: false});
 	}
 
+	logOut = () => {
+		heimdallr.signOut();
+		this._drawer.close();
+		this.setState({isLogged: false});
+	}
+
 	setAction = (action) => {
 		switch (action) {
 			case 'settings':
@@ -149,7 +155,11 @@ export default class MainScreen extends React.Component {
 				break;
 			case 'signIn':
 				heimdallr.signOut();
-				this.props.navigation.navigate('SignUp', {navigation: this.props.navigation});				break;
+				this.props.navigation.navigate('SignUp', {navigation: this.props.navigation});
+				break;
+			case 'signOut':
+				this.logOut();
+				break;
 		}
 	}
 

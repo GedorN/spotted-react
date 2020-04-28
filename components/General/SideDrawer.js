@@ -63,6 +63,24 @@ export default class SideDrawer extends React.Component {
 			                </View>
 		                </TouchableOpacity>
 	                }
+	                {
+		                heimdallr.email !== 'spotted@utfpr.com' &&
+		                <TouchableOpacity
+			                style={{position: 'absolute', bottom: 8, paddingLeft: 22}}
+			                onPress={() => {this.props.actionPressed('signOut')}}>
+			                <View style={styles.item}>
+				                <Image source={require('../../assets/images/sign-in-alt-solid.png')}
+				                       style={{
+					                       tintColor: theme.primary,
+					                       width: 40,
+					                       height: 32,
+					                       marginRight: 13,
+				                       }}
+				                />
+				                <Text> Desconectar </Text>
+			                </View>
+		                </TouchableOpacity>
+	                }
 	                <TouchableOpacity style={{position: 'absolute', bottom: 2, paddingLeft: 22}}>
 		                <View >
 			                <Text> About us </Text>

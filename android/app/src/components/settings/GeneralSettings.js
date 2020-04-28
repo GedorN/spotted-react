@@ -122,7 +122,7 @@ export default class GeneralSettings extends  React.Component {
 		return (
 			<View>
 				<TouchableOpacity onPress={this.props.close}>
-					<View style={{flexDirection: 'row'}}>
+					<View style={{flexDirection: 'row', height: 20, width: 50}}>
 						<Image
 							style={{width: 20, height: 20, marginRight: 10}}
 							source={require('../../../../../assets/images/arrow-left.png')}

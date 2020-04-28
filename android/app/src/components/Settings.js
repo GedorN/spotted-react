@@ -38,13 +38,11 @@ export default class Settings extends React.Component {
 	}
 
 	getSettingsScreen = () => {
-		console.warn('na funcção');
 		if (this.state.changePassword) {
 			return (
 				<ChangePassword changePassword={this.toggleChangepassword.bind(this)}/>
 			)
 		} else {
-			console.warn('recebe ai');
 			return (
 				<GeneralSettings changePassword={this.toggleChangepassword.bind(this)} close={this.props.close}/>
 			)
