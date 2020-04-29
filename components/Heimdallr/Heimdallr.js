@@ -50,6 +50,20 @@ function HeimdallrLib() {
     }
 
   }
+  
+  this.deleteConectedUser = function () {
+  	return new Promise((resolve) => {
+	  firebase.auth().currentUser.delete().then(
+		  (success) => {
+		  	console.log('deu boa deletando');
+		    resolve();
+		  },
+		  (error) => {
+		  	console.log('deu merda pra deletar');
+		  }
+	  )
+    })
+  }
 
 
 
@@ -157,6 +171,11 @@ function HeimdallrLib() {
 		      photoURL: user.user_image,
 		  }).then(function () {
 		      console.log('update profile sucessful');
+			  this.user_image = user.user_image ? user.user_image : null;
+			  this.user_name = user.name;
+			  this.email = user.email;
+			  this.uid = user.uid;
+		      this.forceUpdate();
 		      resolve(true);
 		  }).catch(function (error) {
 		      console.log('update profile error: ', error);

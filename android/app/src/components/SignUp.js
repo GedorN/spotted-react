@@ -10,7 +10,12 @@ import {
 	PermissionsAndroid,
 	Image,
 	KeyboardAvoidingView,
+	Modal
 } from 'react-native';
+
+import {
+	ActivityIndicator
+} from 'react-native-paper';
 
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -21,6 +26,8 @@ import FatBottomedButton from "./buttons/FatBottomedButton";
 import theme from "../../../../components/General/Theme";
 import ImageResizer from "react-native-image-resizer";
 import { TextInputMask } from 'react-native-masked-text';
+
+
 
 export default  class SignUp extends React.Component {
 	constructor (props) {
@@ -39,11 +46,31 @@ export default  class SignUp extends React.Component {
 			showEmailAlreadyInUse: false,
 			showPhoneError: false,
 			securePassword: true,
+			confirmationFunction: null,
+			codeInput: null,
+			showConfirmCodeModal: false,
+			inputedWrongCode: false,
+			creatingAccount: false,
 		};
 	}
 
-	componentDidMount(): void {
-		console.log(this.props);
+	async componentDidMount(): void {
+		// c.confirm('123456').then(
+		// 	(resolve) => {
+		// 		console.log('ai jesuis: ', resolve);
+		// 	},
+		// 	(reject) => {
+		// 		console.log('afas: ', reject);
+		// 	}
+		// )
+			// c().then(
+			// 	(resolve) => {
+			// 		console.log('rsoasd: ', resolve);
+			// 	},
+			// 	(reject) => {
+			// 		console.log('rejece', reject);
+			// 	}
+			// )
 	}
 
 	toggleSecureEntry = () => {
@@ -74,11 +101,42 @@ export default  class SignUp extends React.Component {
 		return true;
 	}
 
-	register = () => {
+	sendVerificationMessage = async () => {
 		let fieldsOK = this.signUpFieldsVerification();
 		if (!fieldsOK) {
 			return ;
 		}
+		const func = await heimdallr.sendVerificationMessage('+55' + this.state.phone.replace('(', '').replace(')', '').replace('-', '').replace(' ', ''));
+		this.setState({ confirmationFunction: func });
+		this.setState({ showConfirmCodeModal: true });
+	}
+
+	confirmCode = () => {
+		this.setState({ creatingAccount: true });
+		this.state.confirmationFunction.confirm(this.state.codeInput).then(
+			(resolve) => {
+				heimdallr.deleteConectedUser().then(
+					(success) => {
+						console.log('recebi que deu boa: ');
+						this.register();
+					}
+				)
+			},
+			(reject) => {
+				console.log('pq deu merda: ', reject);
+				this.setState({ creatingAccount: false });
+				this.setState({ inputedWrongCode: true });
+			}
+		)
+	}
+
+	register = () => {
+
+
+		// let fieldsOK = this.signUpFieldsVerification();
+		// if (!fieldsOK) {
+		// 	return ;
+		// }
 		const params = {};
 		params.email = this.state.email;
 		params.password = this.state.password;
@@ -114,6 +172,7 @@ export default  class SignUp extends React.Component {
 				params.password = this.state.password;
 				params.uid = user.user.uid;
 				params.user_image = resolve;
+				console.log('enviar tudo como: ', params);
 				let success = heimdallr.saveCollection('user', params);
 				success.then((r) => {
 					this.forceUpdate();
@@ -127,6 +186,7 @@ export default  class SignUp extends React.Component {
 			params.email = this.state.email;
 			params.creation_date = new Date();
 			params.birth_date = this.state.birth;
+			params.phone = this.state.phone;
 			params.active = 1;
 			params.password = this.state.password;
 			params.uid = user.user.uid;
@@ -294,7 +354,7 @@ export default  class SignUp extends React.Component {
 					</View>
 					<View style={styles.form}>
 						<View style={{marginBottom: 10}}>
-							<FatBottomedButton text='Criar' backgroundColor={theme.primary} color={'white'} onTap={this.register.bind(this)}
+							<FatBottomedButton text='Criar' backgroundColor={theme.primary} color={'white'} onTap={this.sendVerificationMessage.bind(this)}
 							/>
 						</View>
 						<View>
@@ -303,6 +363,64 @@ export default  class SignUp extends React.Component {
 						</View>
 					</View>
 				</View>
+				<Modal
+					statusBarTranslucent={true}
+					hardwareAccelerated={true}
+					animationType='fade'
+					transparent={true}
+					visible={this.state.showConfirmCodeModal}
+					style={{height: 50}}
+				>
+					{
+						!this.state.creatingAccount &&
+						<View style={styles.centeredView}>
+							<View style={styles.modalContainer}>
+								<Text style={styles.textTitle}>Confirmar código</Text>
+								{
+									!this.state.inputedWrongCode &&
+									<View>
+										<Text>Enviamos um código de verificação para o seu telefone.</Text>
+										<Text>Insira ele no campo abaixo:</Text>
+									</View>
+								}
+								{
+									this.state.inputedWrongCode &&
+									<View>
+										<Text>Código inserido incorreto</Text>
+										<Text>Tente novamente:</Text>
+									</View>
+								}
+								<RUMineTextInput
+									onChangeText={ text => this.setState({ codeInput: text }) }
+									autoCapitalize='none'
+									placeholder='Código'
+									keyboardType='numeric'
+									textContentType='oneTimeCode'
+									borderBottomWidth={1}
+								/>
+								<View style={{flexDirection: 'row'}}>
+									<View style={{flex: 1, padding: 5}}>
+										<FatBottomedButton text='Reenviar' color={theme.primary} onTap={this.sendVerificationMessage.bind(this)}
+										/>
+									</View>
+									<View style={{flex: 1, padding: 5}}>
+										<FatBottomedButton text='Confirmar' backgroundColor={theme.primary} color={'white'} onTap={this.confirmCode.bind(this)}
+										/>
+									</View>
+								</View>
+							</View>
+						</View>
+					}
+					{
+						this.state.creatingAccount &&
+						<View style={styles.centeredView}>
+							<View style={styles.modalContainer}>
+								<ActivityIndicator animating={true} color={theme.primary} size={'large'}/>
+								<Text style={{marginTop: 5}}>Estamos preprando tudo para a sua chegada...</Text>
+							</View>
+							</View>
+					}
+				</Modal>
 			</KeyboardAvoidingView>
 		);
 	}
@@ -313,6 +431,31 @@ const styles= StyleSheet.create({
 		flex: 1,
 		padding: 20,
 		paddingTop: 50
+	},
+	modalContainer: {
+		// height: 150,
+		width: 300,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 35,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: 22,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	textTitle: {
+		fontSize: 16,
+		fontWeight: 'bold',
 	},
 	datePicker: {
 		color: 'red'

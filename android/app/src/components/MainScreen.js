@@ -69,7 +69,7 @@ export default class MainScreen extends React.Component {
 	// 	switch (route.key) {
 	// 		case 'home':
 	// 			return <Home navigation={this.props.navigation}/>;
-	// 		case 'post':
+	// 		case 'post':h
 	// 			return <PostWrite />;
 	// 		default:
 	// 			return <Home navigation={this.props.navigation}/>;
@@ -141,6 +141,18 @@ export default class MainScreen extends React.Component {
 
 	closeModal = () => {
 		this.setState({open: false});
+	}
+
+	checkUser = () => {
+		let login = heimdallr.checkUser();
+		login.then((resolve) => {
+			if (heimdallr.user_id) {
+				this.setState({isLogged: true});
+				if (heimdallr.email === 'spotted@utfpr.com') {
+					this.setState({ routes: anonymousRoutes });
+				}
+			}
+		})
 	}
 
 	logOut = () => {
