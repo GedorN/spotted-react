@@ -418,7 +418,7 @@ export default  class SignUp extends React.Component {
 								<ActivityIndicator animating={true} color={theme.primary} size={'large'}/>
 								<Text style={{marginTop: 5}}>Estamos preprando tudo para a sua chegada...</Text>
 							</View>
-							</View>
+						</View>
 					}
 				</Modal>
 			</KeyboardAvoidingView>

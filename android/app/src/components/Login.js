@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-    StyleSheet,
-    View,
-    TextInput,
-    Dimensions,
-    Button,
-    Text,
+	StyleSheet,
+	View,
+	TextInput,
+	Dimensions,
+	Button,
+	Text,
 	TouchableOpacity,
-	Image,
+	Image, Modal,
 } from 'react-native';
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
@@ -15,6 +15,7 @@ import FatBottomedButton from "./buttons/FatBottomedButton";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
 import EyeOfThePassword from "./Inputs/EyeOfThePassword";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import {ActivityIndicator} from "react-native-paper";
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
@@ -27,6 +28,7 @@ export default class Login extends React.Component {
 	        showAttemptFail: false,
 	        securePassword: true,
 	        showAlert: false,
+	        showConfirmCodeModal: false,
         };
     }
 
@@ -48,13 +50,15 @@ export default class Login extends React.Component {
     }
 
     doLogin = async () => {
+    	this.setState({ showConfirmCodeModal: true });
 	    let result = await this.props.login({ user: this.state.user, password: this.state.password }).then().catch((e) => {
 	    	this.setState({ showAttemptFail: true });
 	    });
     }
 
 	anonymousLogin = async () => {
-    	const params = {};
+		this.setState({ showConfirmCodeModal: true });
+		const params = {};
     	params.user = 'spotted@utfpr.com';
     	params.password = 'angeca123';
     	await this.props.login(params).then();
@@ -128,6 +132,21 @@ export default class Login extends React.Component {
 			            this.anonymousLogin();
 		            }}
 	            />
+	            <Modal
+		            statusBarTranslucent={true}
+		            hardwareAccelerated={true}
+		            animationType='fade'
+		            transparent={true}
+		            visible={this.state.showConfirmCodeModal}
+		            style={{height: 50}}
+	            >
+		            <View style={styles.centeredView}>
+			            <View style={styles.modalContainer}>
+				            <ActivityIndicator animating={true} color={theme.primary} size={'large'}/>
+				            <Text style={{marginTop: 5}}>Perguntando ao nosso servidor se você pode entrar...</Text>
+			            </View>
+		            </View>
+	            </Modal>
             </View>
         );
     }
@@ -139,6 +158,31 @@ const styles = StyleSheet.create({
         flex: 1,
 	    padding: 20
     },
+	modalContainer: {
+		// height: 150,
+		width: 300,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 35,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: 22,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	textTitle: {
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
     form: {
         width: width * 0.8,
 	    marginTop: 20,
