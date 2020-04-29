@@ -5,10 +5,11 @@ import {
 	Text,
 	Dimensions,
 	TouchableOpacity,
-	Image, PermissionsAndroid,
+	Image, PermissionsAndroid, Modal,
 } from 'react-native'
 
 import {
+	ActivityIndicator,
 	TextInput,
 } from 'react-native-paper'
 import FlashMessage from "react-native-flash-message";
@@ -21,6 +22,7 @@ import theme from "../../../../../components/General/Theme";
 import ImagePicker from "react-native-image-picker";
 import ImageResizer from "react-native-image-resizer";
 import AwesomeAlert from "react-native-awesome-alerts";
+import EyeOfThePassword from "../Inputs/EyeOfThePassword";
 
 export default class GeneralSettings extends  React.Component {
 	constructor(props) {
@@ -31,11 +33,19 @@ export default class GeneralSettings extends  React.Component {
 			userImage: heimdallr.user_image,
 			imageCompressed: null,
 			showAlert: false,
+			securePassword: true,
+			showConfirmCodeModal: false,
+			user: null,
+			password: null,
 		};
 	}
 
 	componentDidMount = () => {
 		// this.setState({ email: heimdallr.user })
+	}
+
+	toggleSecureEntry = () => {
+		this.setState({ securePassword: !this.state.securePassword });
 	}
 
 	async sendImagePropt() {
@@ -101,11 +111,29 @@ export default class GeneralSettings extends  React.Component {
 
 	deleteUser = () => {
 		console.warn('clidcado o carai0');
-		heimdallr.deleteUser().then(
+		if (!this.state.user || !this.state.password) {
+			return ;
+		}
+		heimdallr.deleteUser(this.state.user, this.state.password).then(
 			(resolve) => {
+				this.setState({ showConfirmCodeModal: false});
 				console.warn('caiu no suc:');
+				this.refs.message.showMessage({
+					message: "Conta apagada com sucesso",
+					type: "success",
+					icon: 'success',
+				});
 				this.props.action('closeHome');
 				this.forceUpdate();
+			},
+			(reject) => {
+				this.setState({ showConfirmCodeModal: false});
+				console.warn('rejetiado');
+				this.refs.message.showMessage({
+					message: "Usuário ou senha incorreto. Tente novamente",
+					type: "danger",
+					icon: 'danger',
+				});
 			}
 		);
 	}
@@ -149,7 +177,8 @@ export default class GeneralSettings extends  React.Component {
 					this.refs.message.showMessage({
 						message: "Erro ao salvar configurações",
 						type: "danger",
-						icon: 'danger'
+						icon: 'danger',
+
 					});
 				}
 			})
@@ -233,9 +262,52 @@ export default class GeneralSettings extends  React.Component {
 					onCancelPressed={() => {
 						this.setState({ showAlert: false })
 					}}
-					onConfirmPressed={this.deleteUser.bind(this)}
+					onConfirmPressed={() => {this.setState({ showConfirmCodeModal: true, showAlert: false })}}
 				/>
-				<FlashMessage ref='message' position="top" />
+				<Modal
+					statusBarTranslucent={true}
+					hardwareAccelerated={true}
+					animationType='fade'
+					transparent={true}
+					visible={this.state.showConfirmCodeModal}
+					style={{height: 50}}
+				>
+					<View style={styles.centeredView}>
+						<View style={styles.modalContainer}>
+							<Text style={styles.textTitle}>Verificação</Text>
+								<View>
+									<Text>Para continuar precisamos que digite seu email e senha novamente:</Text>
+								</View>
+							<RUMineTextInput
+								placeholder='Email'
+								autoCompleteType='email'
+								keyboardType='email-address'
+								textContentType='emailAddress'
+								borderBottomWidth={1}
+								onChangeText={text => this.setState({user: text})}
+							/>
+							<EyeOfThePassword
+								secureTextEntry={this.state.securePassword}
+								toggleSecureEntry={this.toggleSecureEntry.bind(this)}
+								placeholder='Senha'
+								autoCompleteType='password'
+								textContentType='password'
+								onChangeText={text => this.setState({password: text})}
+							/>
+							<View style={{flexDirection: 'row'}}>
+								<View style={{flex: 1, padding: 5}}>
+									<FatBottomedButton text='Cancelar' color={theme.primary} onTap={() => {this.setState({ showConfirmCodeModal: false })}}
+									/>
+								</View>
+								<View style={{flex: 1, padding: 5}}>
+									<FatBottomedButton text='Confirmar' backgroundColor={theme.primary} color={'white'} onTap={this.deleteUser.bind(this)}
+									/>
+								</View>
+							</View>
+						</View>
+					</View>
+				</Modal>
+				<FlashMessage ref='message' position="top" style={{ zIndex: 1000 }}/>
 			</View>
 
 		)
@@ -243,5 +315,29 @@ export default class GeneralSettings extends  React.Component {
 }
 
 const styles = StyleSheet.create({
-
+	modalContainer: {
+		// height: 150,
+		width: 300,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 35,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: 22,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	textTitle: {
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
 });

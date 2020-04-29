@@ -50,10 +50,10 @@ function HeimdallrLib() {
     }
 
   }
-	this.deleteUser = function () {
-		return new Promise((resolve) => {
+	this.deleteUser = function (user, password) {
+		return new Promise((resolve, reject) => {
 			try{
-				firebase.auth().signInWithEmailAndPassword('teste13@gmail.com', 'asd123').then(
+				firebase.auth().signInWithEmailAndPassword(user, password).then(
 					() => {
 						firebase.auth().currentUser.delete().then(
 							(success) => {
@@ -61,12 +61,15 @@ function HeimdallrLib() {
 								resolve();
 							},
 							(error) => {
-								console.log('deu merda pra deletar', error);
+								console.warn('deu merda pra deletar', error);
+								reject();
 							}
 						)
 					},
-					(reject) => {
-						console.log('desgraça: ', reject);
+					(rej) => {
+						console.warn('desgraça: ', rej);
+						reject();
+
 					}
 				)
 
