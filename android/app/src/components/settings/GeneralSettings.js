@@ -28,6 +28,7 @@ export default class GeneralSettings extends  React.Component {
 			userName: heimdallr.user_name,
 			email: heimdallr.email,
 			userImage: heimdallr.user_image,
+			imageCompressed: null,
 		};
 	}
 
@@ -96,25 +97,57 @@ export default class GeneralSettings extends  React.Component {
 		}
 	}
 
+	deleteUser = () => {
+		console.warn('clidcado o carai0');
+		heimdallr.deleteConectedUser();
+		this.props.action('closeHome');
+		this.forceUpdate();
+	}
+
 	saveEdition = () => {
-		const params = {};
-		params.name = this.state.userName;
-		params.user_image = this.state.userImage;
-		heimdallr.updateProfile(params).then((resolve) => {
-			if(resolve) {
-				this.refs.message.showMessage({
-					message: "Configurações alteradas com sucesso",
-					type: "success",
-					icon: 'success'
-				});
-			} else {
-				this.refs.message.showMessage({
-					message: "Erro ao salvar configurações",
-					type: "danger",
-					icon: 'danger'
-				});
-			}
-		})
+		if (this.state.userImage !== heimdallr.user_image) {
+			console.warn('aqui mesmo');
+			heimdallr.uploadImage(this.state.imageCompressed).then(
+				(resolve) => {
+					const params = {};
+					params.name = this.state.userName;
+					params.user_image = resolve;
+					heimdallr.updateProfile(params).then((res) => {
+						if(res) {
+							this.refs.message.showMessage({
+								message: "Configurações alteradas com sucesso",
+								type: "success",
+								icon: 'success'
+							});
+						} else {
+							this.refs.message.showMessage({
+								message: "Erro ao salvar configurações",
+								type: "danger",
+								icon: 'danger'
+							});
+						}
+					})
+				}
+			)
+		} else {
+			const params = {};
+			params.name = this.state.userName;
+			heimdallr.updateProfile(params).then((resolve) => {
+				if(resolve) {
+					this.refs.message.showMessage({
+						message: "Configurações alteradas com sucesso",
+						type: "success",
+						icon: 'success'
+					});
+				} else {
+					this.refs.message.showMessage({
+						message: "Erro ao salvar configurações",
+						type: "danger",
+						icon: 'danger'
+					});
+				}
+			})
+		}
 
 	}
 
@@ -174,6 +207,9 @@ export default class GeneralSettings extends  React.Component {
 				</View>
 				<View style={{marginTop: 20}}>
 					<FatBottomedButton text='Salvar' color={theme.primary} onTap={() => this.saveEdition()} />
+				</View>
+				<View style={{position: 'absolute', top: theme.height * 0.8, flex: 1}}>
+					<FatBottomedButton text='Excluir conta' color={theme.primary} onTap={this.deleteUser.bind(this)} />
 				</View>
 				<FlashMessage ref='message' position="top" />
 			</View>
