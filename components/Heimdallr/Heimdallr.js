@@ -41,10 +41,21 @@ function HeimdallrLib() {
     })
   }
 
+  this.sendVerificationMessage = async (number) => {
+  	console.log('to na verifica');
+  	try {
+	   return await firebase.auth().signInWithPhoneNumber(number);
+    } catch (e) {
+	    console.log('peguei: ', e);
+    }
+
+  }
+
+
 
   this.getElapsedTime = function (elapsedTime) {
 	  if (elapsedTime ===  'a few seconds ago') {
-		  return doc._data.elapsed_time = '1 min';
+		  return '1 min';
 	  } else if (elapsedTime.split(' ')[1] === 'minute') {
 		  return `1min`;
 	  } else if (elapsedTime.split(' ')[1] === 'minutes') {
@@ -66,6 +77,8 @@ function HeimdallrLib() {
 	  } else if (elapsedTime.split(' ')[1] === 'years') {
 		  return `${elapsedTime.split(' ')[0]}y`;
 	  }
+
+	  return null;
   }
 
   
