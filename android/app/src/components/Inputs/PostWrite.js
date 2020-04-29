@@ -15,7 +15,7 @@ import ImagePicker from "react-native-image-picker";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
-import moment from "moment";
+import moment from 'moment-timezone';
 import {Text} from "react-native-paper";
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -100,7 +100,7 @@ export default class PostWrite extends React.Component {
 			let self = this;
 			const params = {};
 			params.active = 1;
-			params.date = moment.now();
+			params.date = moment().tz("America/Sao_Paulo").valueOf();
 			params.text = this.state.postText;
 			params.uid = heimdallr.user_id;
 			params.images = this.state.postImages;
