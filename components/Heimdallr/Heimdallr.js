@@ -50,16 +50,42 @@ function HeimdallrLib() {
     }
 
   }
-  
+	this.deleteUser = function () {
+		return new Promise((resolve) => {
+			try{
+				firebase.auth().signInWithEmailAndPassword('teste13@gmail.com', 'asd123').then(
+					() => {
+						firebase.auth().currentUser.delete().then(
+							(success) => {
+								console.warn('deu boa deletando');
+								resolve();
+							},
+							(error) => {
+								console.log('deu merda pra deletar', error);
+							}
+						)
+					},
+					(reject) => {
+						console.log('desgraça: ', reject);
+					}
+				)
+
+			}catch (e) {
+				console.log('erro desca', e);
+			}
+		})
+	}
+
+
   this.deleteConectedUser = function () {
   	return new Promise((resolve) => {
 	  firebase.auth().currentUser.delete().then(
 		  (success) => {
-		  	console.log('deu boa deletando');
+		  	console.warn('deu boa deletando');
 		    resolve();
 		  },
 		  (error) => {
-		  	console.log('deu merda pra deletar');
+		  	console.warn('deu merda pra deletar', error);
 		  }
 	  )
     })
@@ -163,22 +189,19 @@ function HeimdallrLib() {
 		  return true;
 	  })
   }
-
+  
   this.updateProfile = function (user) {
 	  return new Promise((resolve) => {
 		  firebase.auth().currentUser.updateProfile({
 		      displayName: user.name,
 		      photoURL: user.user_image,
 		  }).then(function () {
-		      console.log('update profile sucessful');
+		      console.warn('update profile sucessful');
 			  this.user_image = user.user_image ? user.user_image : null;
 			  this.user_name = user.name;
-			  this.email = user.email;
-			  this.uid = user.uid;
-		      this.forceUpdate();
 		      resolve(true);
 		  }).catch(function (error) {
-		      console.log('update profile error: ', error);
+		      console.warn('update profile error: ', error);
 		      resolve(false);
 		  })
 	  });

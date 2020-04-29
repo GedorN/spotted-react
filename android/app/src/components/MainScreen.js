@@ -174,6 +174,9 @@ export default class MainScreen extends React.Component {
 			case 'signOut':
 				this.logOut();
 				break;
+			case 'closeHome':
+				this.setState({isLogged: false});
+				break;
 		}
 	}
 
@@ -260,7 +263,7 @@ export default class MainScreen extends React.Component {
 							}}
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
-							<Settings close={this._hideSettingsModal}/>
+							<Settings close={this._hideSettingsModal} action={this.setAction}/>
 						</Modal>
 					</Drawer>
 					{/*<MenuDrawer*/}

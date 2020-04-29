@@ -20,6 +20,7 @@ import FatBottomedButton from "../buttons/FatBottomedButton";
 import theme from "../../../../../components/General/Theme";
 import ImagePicker from "react-native-image-picker";
 import ImageResizer from "react-native-image-resizer";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 export default class GeneralSettings extends  React.Component {
 	constructor(props) {
@@ -29,6 +30,7 @@ export default class GeneralSettings extends  React.Component {
 			email: heimdallr.email,
 			userImage: heimdallr.user_image,
 			imageCompressed: null,
+			showAlert: false,
 		};
 	}
 
@@ -99,9 +101,13 @@ export default class GeneralSettings extends  React.Component {
 
 	deleteUser = () => {
 		console.warn('clidcado o carai0');
-		heimdallr.deleteConectedUser();
-		this.props.action('closeHome');
-		this.forceUpdate();
+		heimdallr.deleteUser().then(
+			(resolve) => {
+				console.warn('caiu no suc:');
+				this.props.action('closeHome');
+				this.forceUpdate();
+			}
+		);
 	}
 
 	saveEdition = () => {
@@ -209,8 +215,26 @@ export default class GeneralSettings extends  React.Component {
 					<FatBottomedButton text='Salvar' color={theme.primary} onTap={() => this.saveEdition()} />
 				</View>
 				<View style={{position: 'absolute', top: theme.height * 0.8, flex: 1}}>
-					<FatBottomedButton text='Excluir conta' color={theme.primary} onTap={this.deleteUser.bind(this)} />
+					<FatBottomedButton text='Excluir conta' color={theme.primary} onTap={() => {this.setState({ showAlert: true })}} />
 				</View>
+				<AwesomeAlert
+					show={this.state.showAlert}
+					showProgress={false}
+					title="Excluir conta"
+					message="Você realmente deseja apagar a sua conta? Essa ação não podera ser desfeita."
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showCancelButton={true}
+					showConfirmButton={true}
+					cancelText="Cancelar"
+					confirmText="Continuar"
+					contentContainerStyle={{backgroundColor: 'white', zIndex: 9999999}}
+					confirmButtonColor={theme.primary}
+					onCancelPressed={() => {
+						this.setState({ showAlert: false })
+					}}
+					onConfirmPressed={this.deleteUser.bind(this)}
+				/>
 				<FlashMessage ref='message' position="top" />
 			</View>
 
