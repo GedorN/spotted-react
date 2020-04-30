@@ -36,6 +36,27 @@ function HeimdallrLib() {
     });
   }
 
+  this.getStoreInfo = function (store) {
+  	let info = null;
+  	return new Promise((resolve) => {
+  		try {
+		    console.log('store info');
+		        firebase.firestore().collection('store_info').doc(store).get().then(
+				    (result) => {
+				        console.log('resutlado dos docs: ', result.data());
+				        resolve(result.data());
+				    },
+				    (error) => {
+				        console.log('deu merdinha: ', error);
+				    }
+			    )
+
+	    } catch (e) {
+		    console.log('peguei caca: ', e);
+	    }
+    })
+  }
+
 	this.getServerTime = function (uid, limit) {
 		let docs = null;
 		return new Promise((resolve) => {
@@ -52,7 +73,7 @@ function HeimdallrLib() {
 	}
 
   this.sendVerificationMessage = async (number) => {
-  	console.log('to na verifica');
+  	console.log('to na verifica: ', number);
   	try {
 	   return await firebase.auth().signInWithPhoneNumber(number);
     } catch (e) {

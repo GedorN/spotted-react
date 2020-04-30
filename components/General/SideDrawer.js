@@ -49,6 +49,20 @@ export default class SideDrawer extends React.Component {
 		                    <Text> Configurações </Text>
 	                    </View>
                     </TouchableOpacity>
+	                {/*<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}*/}
+	                {/*                  onPress={this.actionPressed.bind(this, 'cac')}>*/}
+		            {/*    <View style={styles.item}>*/}
+			        {/*        <Image source={require('../../assets/images/user-cog-solid.png')}*/}
+			        {/*               style={{*/}
+				    {/*                   tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,*/}
+				    {/*                   width: 40,*/}
+				    {/*                   height: 32,*/}
+				    {/*                   marginRight: 13,*/}
+			        {/*               }}*/}
+			        {/*        />*/}
+			        {/*        <Text> Proto store </Text>*/}
+		            {/*    </View>*/}
+	                {/*</TouchableOpacity>*/}
 	                {
 		                heimdallr.email === 'spotted@utfpr.com' &&
 		                <TouchableOpacity

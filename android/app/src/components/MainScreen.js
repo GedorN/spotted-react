@@ -28,6 +28,7 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import SideDrawer from "../../../../components/General/SideDrawer";
 import theme from "../../../../components/General/Theme";
 import Settings from "./Settings";
+import Store from "./Store";
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
 
@@ -45,6 +46,8 @@ export default class MainScreen extends React.Component {
 			index: 0,
 			showModal: false,
 			showSettingsModal: false,
+			showStore: false,
+			store: 'cac',
 			routes: [
 				{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 				{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
@@ -177,6 +180,9 @@ export default class MainScreen extends React.Component {
 			case 'closeHome':
 				this.setState({isLogged: false});
 				break;
+			case 'cac':
+				this.setState({ showStore: true, store: 'cac' });
+				break;
 		}
 	}
 
@@ -266,6 +272,17 @@ export default class MainScreen extends React.Component {
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
 							<Settings close={this._hideSettingsModal} action={this.setAction}/>
+						</Modal>
+						<Modal
+							transparent={true}
+							visible={this.state.showStore}
+							onDismiss={this._hideSettingsModal}
+							onRequestClose={() => {
+								this.setState({ showStore: false });
+							}}
+							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+						>
+							<Store store={this.state.store}/>
 						</Modal>
 					</Drawer>
 					{/*<MenuDrawer*/}
