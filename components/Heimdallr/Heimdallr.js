@@ -23,23 +23,33 @@ function HeimdallrLib() {
   	return new Promise((resolve) => {
 	    var antes = Date.now();
   		console.log('la vou eu')
-	    try {
-	        firebase.functions().httpsCallable('getUserCollectionWithLimit')({ uid: uid, limit: limit }).then(
-			    (result) => {
-			    	docs = result;
-			        resolve();
-			    }
-		    ).then(function (resovle) {
-		        var duracao = Date.now() - antes;
-		        console.log('resultado functions: ', docs);
-		        console.log('e levou ', duracao, 'ms');
-		        return docs;
-		    })
-	    } catch (e) {
-		    console.log('deu ruim: ', e);
-	    }
-    })
+        firebase.functions().httpsCallable('getTime')({ uid: uid, limit: limit }).then(
+		    (result) => {
+		        docs = result;
+		        console.log('deu boa crad');
+		        resolve();
+		    }
+	    )
+    }).then(function (res) {
+	    console.log('resultado functions: ', docs.data);
+	    return docs.data;
+    });
   }
+
+	this.getServerTime = function (uid, limit) {
+		let docs = null;
+		return new Promise((resolve) => {
+			var antes = Date.now();
+			firebase.functions().httpsCallable('getTime')().then(
+				(result) => {
+					docs = result;
+					resolve();
+				}
+			)
+		}).then(function (res) {
+			return docs.data;
+		});
+	}
 
   this.sendVerificationMessage = async (number) => {
   	console.log('to na verifica');

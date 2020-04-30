@@ -91,7 +91,7 @@ export default class PostWrite extends React.Component {
 		}
 	}
 
-	savePost(sendedImages) {
+	async savePost(sendedImages) {
 		console.log('Semaphore: ', sendedImages);
 		/* Essa condição é equivalente ao conceito de barreira (só que com uma implementação muito mais simples)
 		 * Espera até que todas as fotos tenham sido enviadas para continuar
@@ -100,7 +100,7 @@ export default class PostWrite extends React.Component {
 			let self = this;
 			const params = {};
 			params.active = 1;
-			params.date = moment().tz("America/Sao_Paulo").valueOf();
+			params.date = await heimdallr.getServerTime();
 			params.text = this.state.postText;
 			params.uid = heimdallr.user_id;
 			params.images = this.state.postImages;
