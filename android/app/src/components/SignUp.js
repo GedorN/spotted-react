@@ -152,7 +152,9 @@ export default  class SignUp extends React.Component {
 			(reject) => {
 				if (reject.message ==  "The email address is already in use by another account.") {
 					this.setState({ showEmailAlreadyInUse: true });
+
 				}
+				this.setState({ creatingAccount: false });
 			}
 		);
 	}
@@ -375,6 +377,11 @@ export default  class SignUp extends React.Component {
 						!this.state.creatingAccount &&
 						<View style={styles.centeredView}>
 							<View style={styles.modalContainer}>
+								<TouchableOpacity onPress={() => {this.setState({ showConfirmCodeModal: false })}}>
+									<View style={{alignSelf: 'flex-end'}}>
+										<Image style={{width: 15, height: 15}} source={require('../../../../assets/images/times-solid.png')}/>
+									</View>
+								</TouchableOpacity>
 								<Text style={styles.textTitle}>Confirmar código</Text>
 								{
 									!this.state.inputedWrongCode &&
