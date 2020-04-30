@@ -227,14 +227,14 @@ export default class PostDetails extends React.Component {
 		return <View></View>;
 	}
 
-	addCommentary = () => {
+	addCommentary = async () => {
 		if (!this.state.commentText || this.state.commentText === '') {
 			return ;
 		}
 		const params = {};
 		params.pid = this.state.post.pid;
 		params.comment = this.state.commentText;
-		params.date = moment.now();
+		params.date = await heimdallr.getServerTime();
 		params.user_image = heimdallr.user_image;
 		params.user_name = heimdallr.user_name;
 		params.id_user = heimdallr.user_id;
