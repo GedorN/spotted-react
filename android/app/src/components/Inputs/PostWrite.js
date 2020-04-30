@@ -7,7 +7,7 @@ import {
 	Image,
 	PermissionsAndroid,
 	KeyboardAvoidingView,
-	Dimensions,
+	Dimensions, StatusBar,
 } from 'react-native';
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
@@ -27,6 +27,11 @@ export default class PostWrite extends React.Component {
 			postText: [],
 			postImages: [],
 		};
+	}
+
+	componentDidMount(): void {
+		StatusBar.setBackgroundColor('white');
+		StatusBar.setBarStyle('dark-content', true);
 	}
 
 	deletePostImg (pos) {
@@ -381,9 +386,12 @@ export default class PostWrite extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		height: height,
 		alignItems: 'center',
 		alignContent: 'center',
 		position: 'absolute',
+		backgroundColor: 'white',
+		zIndex: 99999
 	},
 	header: {
 		width: width,

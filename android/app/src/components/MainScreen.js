@@ -245,7 +245,8 @@ export default class MainScreen extends React.Component {
 							labeled={false}
 						/>
 						<Modal
-							statusBarTranslucent={true}
+							statusBarTranslucent={false}
+							transparent={true}
 							hardwareAccelerated={true}
 							animationType='fade'
 							visible={this.state.showModal}
@@ -256,6 +257,7 @@ export default class MainScreen extends React.Component {
 							<PostWrite close={this._hideModal.bind(this)} call={this.postCall.bind(this)} />
 						</Modal>
 						<Modal
+							transparent={true}
 							visible={this.state.showSettingsModal}
 							onDismiss={this._hideSettingsModal}
 							onRequestClose={() => {
