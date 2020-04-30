@@ -48,7 +48,7 @@ export default class MainScreen extends React.Component {
 			routes: [
 				{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 				{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
-				{ key: 'post', icon: require('../../../../assets/images/plus-square.png')},
+				{ key: 'post', icon: require('../../../../assets/images/plus-circle.png')},
 				{ key: 'user', icon: require('../../../../assets/images/user-solid.png') },
 			],
 		};
