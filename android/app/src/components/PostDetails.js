@@ -18,6 +18,8 @@ import theme from "../../../../components/General/Theme";
 import OptionsMenu from "react-native-options-menu";
 import CommentaryViewer from "./CommentaryViewer";
 import moment from "moment";
+import 'moment/locale/pt-br';
+
 import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -55,6 +57,8 @@ export default class PostDetails extends React.Component {
 		this.setState({ pulling: true });
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
+			console.log('details', moment(resolve[0].data().date).locale('pt-br').format('LLLL'));
+			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
 			this.setState( { post: resolve[0]._data });
 			this.forceUpdate();
 			this.setState({ pulling: false });
@@ -62,6 +66,10 @@ export default class PostDetails extends React.Component {
 
 		let res = heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments);
 		res.then((resolve) => {
+			resolve.forEach((doc) => {
+				const time = moment(doc.data().date).fromNow();
+				doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+			})
 			this.setState({ comments: resolve });
 		});
 
@@ -200,6 +208,10 @@ export default class PostDetails extends React.Component {
 				let result = heimdallr.getComments(this.props.navigation.getParam('pid'), n);
 				result.then((resolve) => {
 					console.log('buscou: ', resolve);
+					resolve.forEach((doc) => {
+						const time = moment(doc.data().date).fromNow();
+						doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+					})
 					if (resolve.length === this.state.comments.length) {
 						this.setState({ endPulling: true });
 					}
@@ -329,6 +341,7 @@ export default class PostDetails extends React.Component {
 												</View>
 											</View>
 										</View>
+										<Text style={{color: 'gray', fontSize: 8}}> {this.state.post ? this.state.post.date : null} </Text>
 									</View>
 								</View>
 							}
@@ -340,7 +353,7 @@ export default class PostDetails extends React.Component {
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>
-								< CommentaryViewer userImage={item._data.user_image} text={item._data.comment} user_name={item._data.user_name} user_id = {item._data.id_user} navigation={this.props.navigation} />
+								< CommentaryViewer userImage={item._data.user_image} text={item._data.comment} user_name={item._data.user_name} user_id = {item._data.id_user} elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} />
 							}
 							keyExtractor={item => item._ref.id}
 							onEndReachedThreshold={0.3}

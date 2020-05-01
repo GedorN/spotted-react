@@ -35,6 +35,7 @@ import UserImgProfile from '../../../../components/General/UserImgProfile';
 import UUIDGenerator from 'react-native-uuid-generator';
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
+import axios from 'react-native-axios'
 
 const width = Dimensions.get('screen').width;
 
@@ -54,6 +55,32 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
+  	// axios({
+	//     method: 'post',
+	//     url: 'https://appws.picpay.com/ecommerce/public/payments',
+	//     headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
+	//     data: {
+	// 	    "referenceId": "10260dfvcb30",
+	//   "callbackUrl": "http://www.spottedutfpr.com.br/callback",
+	// 	    "returnUrl": "http://www.sualoja.com.br/cliente/pedido/102030",
+	// 	    "value": 20,
+	// 	    "expiresAt": "2022-05-01T16:00:00-03:00",
+	// 	    "buyer": {
+	// 		    "firstName": "João",
+	// 		    "lastName": "Da Silva",
+	// 		    "document": "123.456.789-10",
+	// 		    "email": "teste@picpay.com",
+	// 		    "phone": "+55 27 12345-6789"
+	// 	    }
+	//     }
+    // }).then(
+    // 	(resolve) => {
+    // 		console.log('deu biooaooaoaoa guri: ', resolve);
+	//     },
+	//     (reject) => {
+    // 		console.log('tava esperando: ', reject);
+	//     }
+    // );
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);

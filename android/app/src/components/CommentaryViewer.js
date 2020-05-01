@@ -4,7 +4,7 @@ import {
 	View,
 	TouchableOpacity,
 	Text,
-	Dimensions,
+	Dimensions, Image,
 } from 'react-native';
 
 import UserImgProfile from "../../../../components/General/UserImgProfile";
@@ -39,9 +39,20 @@ export default class CommentaryViewer extends React.Component {
 					<UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.props.userImage ? this.props.userImage : null}/>
 				</TouchableOpacity>
 				<View style={styles.body}>
-					<Text style={styles.userNameText}>
-						{this.props.user_name}
-					</Text>
+					<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+						<Text style={styles.userNameText}>
+							{this.props.user_name}
+						</Text>
+						{this.props.elapsed_time &&
+						<Image
+							style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
+							source={require('../../../../assets/images/circle-solid.png') }
+						/>
+						}
+						<Text style= {{marginTop:35}}>
+							{ this.props.elapsed_time }
+						</Text>
+					</View>
 					<Text style={styles.commentaryText}>
 						{ this.props.text }
 					</Text>
@@ -71,7 +82,7 @@ const styles  = StyleSheet.create({
 	userNameText: {
 		fontWeight: 'bold',
 		marginLeft: 16,
-		marginTop:22,
+		marginTop:35,
 	},
 	commentaryText: {
 		marginLeft: 17,
