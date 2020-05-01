@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     drawerHeader: {
         flex: 1,
 	    borderBottomWidth: 1,
-	    borderColor: theme.primary,
+	    borderColor: 'rgba(163, 163, 163, 0.5)',
         flexDirection: 'row',
         alignItems: 'center',
     },
