@@ -36,6 +36,20 @@ function HeimdallrLib() {
     });
   }
 
+  this.getStoreProducts = function (store) {
+  	return new Promise((resolve) => {
+	  firebase.firestore().collection('products').where('sid', '==', store).get().then(
+		  (result) => {
+		  	resolve(result);
+		  },
+		  (reject) => {
+		  	console.log('Erro ao pegar produtos da loja do: ', store);
+		  },
+	  )
+
+    })
+  }
+
   this.getStoreInfo = function (store) {
   	let info = null;
   	return new Promise((resolve) => {

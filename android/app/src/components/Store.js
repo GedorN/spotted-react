@@ -16,6 +16,9 @@ export default class Store extends React.Component {
 		super(props);
 		this.state = {
 			categories: [],
+			colors: [],
+			products: [],
+			scrolling: false,
 		}
 	}
 
@@ -26,26 +29,71 @@ export default class Store extends React.Component {
 				console.log('antes', resolve.categories)
 				this.setState({ categories: resolve.categories });
 				console.log('depois', this.state.categories);
+				this.setState({ colors: resolve.colors });
 			}
 		);
+
+		heimdallr.getStoreProducts(this.props.store).then(
+			(resolve) => {
+				if (resolve.docs.length > 0) {
+					this.setState({ products: resolve.docs })
+					console.log('produtos: ', this.state.products);
+				}
+			}
+		)
+
+	}
+
+	chipPressed = (chip) => {
+		console.warn(chip);
 	}
 
 	render() {
 		return (
 			<View style={styles.container}>
-				<SevenBannerArmy />
-				<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',}}>
-					{
-						this.state.categories.map(i =>
-							<View style={{margin: 5}}>
-								<ImNotTheOnlyChip
-									text={i.name}
-								/>
-							</View>
-						)
+				<FlatList
+					numColumns={2}
+					showsVerticalScrollIndicator={false}
+					onScrollEndDrag={() => this.setState({ scrolling: false })}
+					onScrollBeginDrag={() => this.setState({ scrolling: true })}
+					keyExtractor={item => item.data().name}
+					data={this.state.products}
+					renderItem={({item}) =>
+						<LikeAPrayerductViewer
+							scrolling={this.state.scrolling}
+							product={item.data()}
+							colors={this.state.colors ? this.state.colors : null}
+						/>
 					}
-				</View>
-				<LikeAPrayerductViewer />
+					ListHeaderComponent={() =>
+						<View>
+							<SevenBannerArmy />
+							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',}}>
+								{
+									this.state.categories.map(i =>
+										<View style={{margin: 5}}>
+											<ImNotTheOnlyChip
+												text={i.name}
+												colors={this.state.colors ? this.state.colors : null}
+												cbFunction={this.chipPressed.bind(this)}
+											/>
+										</View>
+									)
+								}
+							</View>
+						</View>
+					}
+				/>
+					{/*<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',}}>*/}
+					{/*	{*/}
+					{/*		this.state.products.map(p =>*/}
+					{/*			<LikeAPrayerductViewer*/}
+					{/*				product={p.data()}*/}
+					{/*				colors={this.state.colors ? this.state.colors : null}*/}
+					{/*			/>*/}
+					{/*		)*/}
+					{/*	}*/}
+					{/*</View>*/}
 			</View>
 		);
 	}
@@ -56,6 +104,6 @@ const styles = StyleSheet.create({
 	container: {
 		padding: 20,
 		height: theme.height,
-		backgroundColor: 'white'
+		backgroundColor: 'white',
 	}
 });
