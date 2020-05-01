@@ -44,6 +44,7 @@ export default  class SignUp extends React.Component {
 			showNameErrorMessage: false,
 			showErrorPasswordLength: false,
 			showEmailAlreadyInUse: false,
+			showEmailBadlyFormatted: false,
 			showPhoneError: false,
 			securePassword: true,
 			confirmationFunction: null,
@@ -154,7 +155,12 @@ export default  class SignUp extends React.Component {
 					this.setState({ showEmailAlreadyInUse: true });
 
 				}
+				if (reject.message ==  "The email address is badly formatted.") {
+					this.setState({ showEmailBadlyFormatted: true });
+
+				}
 				this.setState({ creatingAccount: false });
+				this.setState({showConfirmCodeModal: false });
 			}
 		);
 	}
@@ -293,6 +299,7 @@ export default  class SignUp extends React.Component {
 					{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
 					{this.state.showPhoneError && <Text style={{color: 'red'}}> * Insira um telefone celular válido </Text>}
 					{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
+					{this.state.showEmailBadlyFormatted && <Text style={{color: 'red'}}> * Email com formato incorreto incorreto </Text>}
 					{this.state.showEmailAlreadyInUse && <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
 															<Text> Parece que esse email já está cadastrado.</Text><TouchableOpacity onPress={() => {this.props.navigation.navigate('PasswordRestore')}}><Text style={{color: 'red'}}> Clique aqui </Text></TouchableOpacity>
 															<Text> para recuperar a senha</Text>
