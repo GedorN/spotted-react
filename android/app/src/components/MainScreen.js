@@ -1,5 +1,4 @@
 import React from 'react';
-import firebase from 'react-native-firebase';
 
 import {
 	Dimensions,
@@ -32,7 +31,6 @@ import theme from "../../../../components/General/Theme";
 import Settings from "./Settings";
 import Store from "./Store";
 import NotificationScreen from "./NotificationScreen";
-import Notification from "./Notification";  
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
 
@@ -44,7 +42,7 @@ export default class MainScreen extends React.Component {
 		super();
 		this.state = {
 			postText: '',
-			numberBadge: 0,
+			numberBadge: null,
 			postImages: [],
 			open: false,
 			isLogged: false,
@@ -65,11 +63,14 @@ export default class MainScreen extends React.Component {
 	getHome = () => {return<Home ref={homeScreen => {this.homeScreen = homeScreen}} navigation={this.props.navigation}/>};
 	getUserProfile = () => {return<UserProfile navigation={this.props.navigation} user={heimdallr.user_id}/>}
 	getUsersSearch = () => { return <UsersSearch navigation={this.props.navigation}/>}
-	getNotification = () => { return <NotificationScreen  navigation={this.props.navigation}/> }
+	getNotification = () => { return <NotificationScreen ref={notifications => {this.notifications = notifications}}  navigation={this.props.navigation}/> }
 	_handleIndexChange = (index) => {
 		if (index === 2) {
 			this.setState({ showModal: true });
 			this.setState({ index: 0 });
+		} if (index == 3 && this.notifications) {
+			this.notifications.getData();
+			this.setState({ index });
 		} else {
 			this.setState({ index })
 		}
@@ -122,27 +123,15 @@ export default class MainScreen extends React.Component {
 			}
 		})
 
-		let badgeNumber = heimdallr.getNotificationsNumber(heimdallr.user_id);
-		badgeNumber.then((resolve) => {
-			this.setState({badgeNumber:resolve.counter});
-		});
-	
 
-		firebase.firestore().collection('rel_user_notification').where("uid", "==", heimdallr.user_id)
-		.onSnapshot((querySnapshot) => {
-			querySnapshot.forEach((doc) => {
-				notification = doc.data();
-				let docCounter = doc.data().counter;
-				this.setState({numberBadge:docCounter});
-				
-			});
-  		})
+		heimdallr.getNotificationsNumber(this);
 	}
 
 	getBadge = (prop) => {
 		if (prop.route.key === 'notifications') {
 
 			if(this.state.numberBadge > 0){
+				console.log('type né: ', typeof(this.state.numberBadge));
 				return this.state.numberBadge;
 			}
 			else{

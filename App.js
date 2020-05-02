@@ -7,8 +7,6 @@ import PasswordRestore from "./android/app/src/components/PasswordRestore";
 import PresentationProfile from "./android/app/src/components/PresentationProfile";
 import PostDetails from "./android/app/src/components/PostDetails";
 import UserProfile from "./android/app/src/components/UserProfile";
-import NotificationScreen from "./android/app/src/components/NotificationScreen";
-import Notification from "./android/app/src/components/Notification";
 
 const RootStack = createStackNavigator(
 	{
@@ -18,8 +16,6 @@ const RootStack = createStackNavigator(
 		PresentationProfile: { screen: PresentationProfile },
 		PostDetails: { screen: PostDetails },
 		UserProfile: { screen: UserProfile},
-		NotificationScreen: { screen: NotificationScreen },
-	 	Notification: {screen: Notification}, 
 	},
 	{
 		initialRouteName: 'Home',

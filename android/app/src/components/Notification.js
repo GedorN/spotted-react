@@ -9,6 +9,7 @@ import {
 
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
+import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 
 const width = Dimensions.get('screen').width;
 
@@ -43,13 +44,16 @@ export default class Notification extends React.Component {
                 <TouchableOpacity  onPress={this.goToUserProfile.bind(this)}>
                     <UserImgProfile circular height={45} width={45}  uri={this.props.image_uri}/>
                 </TouchableOpacity>
-                <TouchableOpacity  onPress={this.goToPostDetails.bind(this)} style = {{width: width * 0.85}}>
-                    <Text style = {{flexDirection: 'row', marginTop: 17, marginLeft: 7, marginRight:5}}>
-                        <Text style = {{fontWeight: 'bold',borderWidth:0.8,borderColor:theme.primary}}>{this.props.user_name}</Text>
-                        <Text style = {{width: width * 0.9, borderWidth:0.8,borderColor:theme.primary}}>
-                            {' comentou na sua postagem: ' + '"' + this.props.notification_text + '"'}
+                <TouchableOpacity  onPress={this.goToPostDetails.bind(this)}>
+	                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', width: theme.width * 0.9}}>
+                        <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.user_name}</Text>
+		                <Text style={{flexWrap: 'wrap'}}>
+                             comentou na sua postagem:
                         </Text>
-                    </Text>
+		                <Text style={{flexWrap: 'wrap',}}>
+			                "{this.props.notification_text}"
+		                </Text>
+	                </View>
                 </TouchableOpacity>
             </View>
 		);
@@ -59,29 +63,28 @@ export default class Notification extends React.Component {
 const styles = StyleSheet.create({
     postVisualized: {
         alignSelf: 'flex-start',
-        width: width + (0.2*width),
+	    flex: 1,
+        width: theme.width + 4,
         padding: 8,
-        paddingLeft:15,
+        paddingLeft: 15,
         paddingTop: 15,
-        paddingRight:10,
-        paddingBottom:15,
-        borderRadius: 8,
+        paddingRight: 10,
+        paddingBottom: 15,
         color: 'black',
         flexDirection: 'row', 
-        borderWidth:0.2,
+        borderWidth: 0.2,
         borderColor: 'rgba(59, 56, 50, 0.2)',
         
     },
     noVisualized: {
         backgroundColor: '#e0e0eb',
         alignSelf: 'flex-start',
-        width: width + (0.2*width),
-        padding: 8,
+	    flex: 1,
+	    width: theme.width + 4,
         paddingLeft:15,
         paddingTop: 15,
         paddingRight:10,
         paddingBottom:15,
-        borderRadius: 8,
         color: 'black',
         flexDirection: 'row', 
         borderWidth:0.2,
