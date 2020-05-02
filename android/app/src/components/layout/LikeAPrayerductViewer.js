@@ -4,6 +4,7 @@ import {
 	View,
 	Text,
 	TouchableOpacity,
+	Image,
 } from 'react-native';
 
 import theme from "../../../../../components/General/Theme";
@@ -14,6 +15,13 @@ export default class LikeAPrayer extends React.Component{
 		this.state = {
 			opacityValue: 0.7,
 			opacityValueScrolling: 1,
+		}
+	}
+	componentDidMount(): void {
+		console.log('produto recebido: ', this.props.product);
+		if (this.props.product.images){
+			console.log('ue', this.props.product.images[0])
+
 		}
 	}
 
@@ -62,6 +70,8 @@ export default class LikeAPrayer extends React.Component{
 						alignItems: 'center',
 						justifyContent: 'center',
 						backgroundColor: this.props.colors ? this.props.colors[0] : null,
+						elevation: 4,
+
 					}}>
 						<Text style={{
 							textAlign: 'center',
@@ -77,8 +87,18 @@ export default class LikeAPrayer extends React.Component{
 						height: theme.height * 0.27,
 						width: theme.width * 0.4,
 						borderBottomRightRadius: 30,
-						borderBottomLeftRadius: 30
+						borderBottomLeftRadius: 30,
+						padding: 1,
+						elevation: 1,
+
 					}}>
+						<Image
+							style={{ flex: 1,
+								width: null,
+								height: null,
+								resizeMode: 'contain',
+							}}
+							source={{ uri: this.props.product && this.props.product.images ? this.props.product.images[0] : null}}/>
 					</View>
 				</View>
 			</TouchableOpacity>
@@ -89,7 +109,7 @@ export default class LikeAPrayer extends React.Component{
 const styles = StyleSheet.create({
 	container: {
 		marginTop: 15,
-		marginRight: 25,
+		marginRight: 35,
 		width: theme.width * 0.35,
 		height: theme.height * 0.4,
 	},
