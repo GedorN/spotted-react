@@ -45,12 +45,12 @@ export default class Notification extends React.Component {
                     <UserImgProfile circular height={45} width={45}  uri={this.props.image_uri}/>
                 </TouchableOpacity>
                 <TouchableOpacity  onPress={this.goToPostDetails.bind(this)}>
-	                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', width: theme.width * 0.9}}>
+	                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', width: theme.width * 0.85}}>
                         <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.user_name}</Text>
-		                <Text style={{flexWrap: 'wrap'}}>
+		                <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
                              comentou na sua postagem:
                         </Text>
-		                <Text style={{flexWrap: 'wrap',}}>
+		                <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
 			                "{this.props.notification_text}"
 		                </Text>
 	                </View>

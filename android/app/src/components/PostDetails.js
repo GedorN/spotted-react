@@ -255,7 +255,7 @@ export default class PostDetails extends React.Component {
 
 			heimdallr.getUID().then((uuid) => {
 				notifications.nid = uuid;
-				let result = heimdallr.saveCollection('notifications', notifications);
+				let result = heimdallr.saveNotification(notifications);
 				result.then((resolve) => {
 					console.log("notification received", resolve);
 				});

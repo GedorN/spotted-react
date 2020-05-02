@@ -112,23 +112,22 @@ export default class NotificationScreen extends React.Component {
                     data = {this.state.notifications}
                     renderItem={ ({item}) =>
                         <Notification
-	                        image_uri = {item._data.user_image} notification_text = {item._data.content}
-                           user_name = {item._data.user_name} uid_notification = {item._data.uid_notification}
-                           eid = {item._data.eid} navigation={this.props.navigation} visualized = {item._data.visualized}/>
+	                        image_uri = {item.user_image} notification_text = {item.content}
+                           user_name = {item.user_name} uid_notification = {item.uid_notification}
+                           eid = {item.eid} navigation={this.props.navigation} visualized = {item.visualized}/>
                         }
-                        keyExtractor={item => item._data.nid}
+                        keyExtractor={item => item.nid}
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.state.isRefreshing}
                                 onRefresh={this.onRefresh.bind(this)}
                             />
                         }
-                        keyExtractor={item => item._ref.id}
-							onEndReachedThreshold={0.3}
-							onEndReached={ ({ distanceFromEnd }) => {
-								this.pullMoreNotifications(distanceFromEnd);
-							}}
-							ListFooterComponent={ this.renderFooter.bind(this)}
+						onEndReachedThreshold={0.3}
+						onEndReached={ ({ distanceFromEnd }) => {
+							this.pullMoreNotifications(distanceFromEnd);
+						}}
+						ListFooterComponent={ this.renderFooter.bind(this)}
                         />
 
             </View>

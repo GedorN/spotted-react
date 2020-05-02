@@ -76,6 +76,76 @@ function HeimdallrLib() {
 	      }
 	    })
 	}
+
+	this.saveNotification = function (params) {
+		let returnValue = null;
+		return new Promise((resolve) => {
+			console.log('checking params...');
+			let parametersOK = true;
+			const collections = collectionsStructures;
+			const structure = collections['notification'];
+
+			structure.forEach((e) => {
+				if (e.required === true) {
+					if (!params[e.desc] || e.type != typeof(params[e.desc])) {
+						console.log('ERRO: parâmetro ', e.desc, ' incorreto');
+						if (e.type != typeof(params[e.desc])) {
+							console.log(`Parametro esperado: ${e.type} porém recebido um ${typeof(params[e.desc])}`);
+						}
+						parametersOK = false;
+					}
+				}
+			});
+
+			if (parametersOK) {
+				let notifications = [];
+				firebase.firestore().collection('notification').doc(params.uid).get().then(
+					(result) => {
+						console.log('dos paranue', params);
+						console.log('resultado novo: ', result);
+						if (result.data()) {
+							let temp = result.data().notifications;
+							temp.unshift(params);
+							notifications = temp;
+						} else {
+							notifications.push(params);
+						}
+						firebase.firestore().collection('notification').doc(params.uid).set(
+							{
+								notifications: notifications
+							},
+							{
+								merge: true
+							}
+						);
+					}
+				)
+				// const base = firebase.firestore().collection('notification').doc(params.uid);
+				// base.set(params).then(
+				// 	(docRef) => {
+				// 		// console.warn(`Documento ${docRef.id}`);
+				// 		// console.log(`Documento ${docRef.id}`);
+				// 		returnValue = docRef.id;
+				// 		if (collection === 'user') {
+				// 			this.user_image = params.user_image ? params.user_image : null;
+				// 			this.user_name = params.name;
+				// 			this.email = params.email;
+				// 			this.uid = params.uid;
+				// 		}
+				// 		resolve();
+				// 	},
+				// 	() => {
+				// 		console.log('Erro ao criar a notificação');
+				// 	}
+				// );
+			} else {
+				resolve();
+			}
+
+		}).then(function (resolve) {
+			return returnValue;
+		})
+	}
 	
 	this.resetNotifications = function(uid){
 	    return new Promise((resolve) => {
@@ -96,17 +166,17 @@ function HeimdallrLib() {
   	let docs = null;
   	return new Promise((resolve) => {
         const post = firebase.firestore()
-		    .collection('notifications')
-	        .where('uid', '==', uid)
+		    .collection('notification')
+	        .doc(heimdallr.user_id)
 		    .get().then((result) => {
 		    	console.log('result not; ', result);
-		    	if (result && result.docs.length > 0) {
-			        console.log('user notification: ', result.docs[0].data());
-			        docs = result.docs.sort((a, b) => {
-				        console.log('a:', a.data().date );
-				        return b.data().date - a.data().date;
-			        });
-			        resolve(docs.slice(0, limit));
+		    	if (result && result.data().notifications.length > 0) {
+			        // console.log('user notification: ', result.docs[0].data());
+			        // docs = result.docs.sort((a, b) => {
+				    //     console.log('a:', a.data().date );
+				    //     return b.data().date - a.data().date;
+			        // });
+			        resolve(result.data().notifications.slice(0, limit));
 			    } else {
 		    		console.log('null');
 		    		resolve(null);

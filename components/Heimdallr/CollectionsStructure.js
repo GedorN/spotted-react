@@ -234,7 +234,7 @@ const collections = {
                 type: 'timestamp'
             }
         ],
-        notifications: [
+        notification: [
             {
                 desc: 'eid',
                 type: 'string'
