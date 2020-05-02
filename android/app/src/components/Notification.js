@@ -1,0 +1,92 @@
+import React from 'react';
+import {
+	StyleSheet,
+	View,
+	TouchableOpacity,
+	Text,
+	Dimensions,
+} from 'react-native';
+
+import UserImgProfile from "../../../../components/General/UserImgProfile";
+import theme from "../../../../components/General/Theme";
+
+const width = Dimensions.get('screen').width;
+
+export default class Notification extends React.Component {
+	constructor (props) {
+		super(props);
+		this.state = {
+
+		};
+    }
+
+    return = () => {
+		this.props.navigation.goBack();
+    }
+
+    goToUserProfile = () => {
+		 this.props.navigation.navigate('UserProfile', {
+			userId: this.props.uid_notification,
+		}); 
+
+    }
+    
+    goToPostDetails = () => {
+        this.props.navigation.navigate('PostDetails',{
+            pid:this.props.pid,
+        })
+    }
+    
+    render = () => {
+		return (
+            <View style = {this.props.visualized > 0 ? styles.postVisualized : styles.noVisualized}>
+                <TouchableOpacity  onPress={this.goToUserProfile.bind(this)}>
+                    <UserImgProfile circular height={45} width={45}  uri={this.props.image_uri}/>
+                </TouchableOpacity>
+                <TouchableOpacity  onPress={this.goToPostDetails.bind(this)} style = {{width: width * 0.85}}>
+                    <Text style = {{flexDirection: 'row', marginTop: 17, marginLeft: 7, marginRight:5}}>
+                        <Text style = {{fontWeight: 'bold',borderWidth:0.8,borderColor:theme.primary}}>{this.props.user_name}</Text>
+                        <Text style = {{width: width * 0.9, borderWidth:0.8,borderColor:theme.primary}}>
+                            {' comentou na sua postagem: ' + '"' + this.props.notification_text + '"'}
+                        </Text>
+                    </Text>
+                </TouchableOpacity>
+            </View>
+		);
+	}
+}
+
+const styles = StyleSheet.create({
+    postVisualized: {
+        alignSelf: 'flex-start',
+        width: width + (0.2*width),
+        padding: 8,
+        paddingLeft:15,
+        paddingTop: 15,
+        paddingRight:10,
+        paddingBottom:15,
+        borderRadius: 8,
+        color: 'black',
+        flexDirection: 'row', 
+        borderWidth:0.2,
+        borderColor: 'rgba(59, 56, 50, 0.2)',
+        
+    },
+    noVisualized: {
+        backgroundColor: '#e0e0eb',
+        alignSelf: 'flex-start',
+        width: width + (0.2*width),
+        padding: 8,
+        paddingLeft:15,
+        paddingTop: 15,
+        paddingRight:10,
+        paddingBottom:15,
+        borderRadius: 8,
+        color: 'black',
+        flexDirection: 'row', 
+        borderWidth:0.2,
+        borderColor: 'rgba(59, 56, 50, 0.2)',
+        
+    },
+        
+})

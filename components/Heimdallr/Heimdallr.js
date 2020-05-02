@@ -34,9 +34,74 @@ function HeimdallrLib() {
 	    console.log('resultado functions: ', docs.data);
 	    return docs.data;
     });
+	}
+	
+	this.incrementNotification = function(uid){
+    return new Promise((resolve) => {
+      try{
+          firebase.functions().httpsCallable('incrementUserNotification')({uid:uid}).then(
+            (result) => {
+              console.log("increment notification",result);
+            }
+          )
+      } catch (e) {
+        console.log("erro increment function",e);
+      }
+    })
+	}
+	
+	this.resetNotifications = function(uid){
+    return new Promise((resolve) => {
+      try{
+        firebase.functions().httpsCallable('resetUserNotifications')({uid:uid}).then(
+          (result) => {
+            console.log("reset Notifications", result);
+          }
+        )
+      } catch (e) {
+        console.log("erro reset notifications:",e);
+      }
+    })
   }
+	
+	this.getNotificationsNumber = function (uid) {
+		let value = null;
+		return new Promise((resolve) => {
+			firebase.firestore()
+			.collection('rel_user_notification').where('uid', '==', uid).get().then((result) => {
+				value = result._docs[0]._data;
+				resolve();
+			})
+		}).then(function(resolve){
+			return value;
+		})
+	}
 
-  this.getStoreProducts = function (store) {
+	this.getUserNotifications = function (uid, limit) {
+  	let docs = null;
+  	return new Promise((resolve) => {
+        const post = firebase.firestore()
+		    .collection('notifications')
+	        .where('uid', '==', uid)
+		    .limit(limit)
+		    .get().then((result) => {
+		    	if (result && result.docs.length > 0) {
+			        console.log('user notification: ', result.docs[0].data());
+			        resolve(result.docs.sort((a, b) => {
+			            console.log('a:', a.data().date );
+			            return b.data().date - a.data().date;
+				    }));
+			    } else {
+		    		console.log('null');
+		    		resolve(null);
+			    }
+	        }).catch ((e) => {
+	            console.log('notifications error: ', e);
+            });
+    })  
+	}
+
+	this.getStoreProducts = function (store) {
   	return new Promise((resolve) => {
 	  firebase.firestore().collection('products').where('sid', '==', store).get().then(
 		  (result) => {
@@ -48,7 +113,7 @@ function HeimdallrLib() {
 	  )
 
     })
-  }
+	}
 
   this.getStoreInfo = function (store) {
   	let info = null;

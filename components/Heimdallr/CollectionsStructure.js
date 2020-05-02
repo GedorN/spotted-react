@@ -233,6 +233,48 @@ const collections = {
                 desc: 'creation_date',
                 type: 'timestamp'
             }
+        ],
+        notifications: [
+            {
+                desc: 'pid',
+                type: 'string'
+            },
+            {
+                desc: 'uid',
+                type: 'string'
+            },
+            {
+                desc: 'uid_notification',
+                type: 'string'
+            },
+            {
+                desc: 'user_name',
+                type: 'string'
+            },
+            {
+                desc:'user_image',
+                type:'string'
+            },
+            {
+                desc: 'content',
+                type: 'string'
+            },
+            {
+                desc: 'nid',
+                type: 'string'
+            },
+            {
+                desc: 'date',
+                type: 'timestamp'
+            },
+            {
+                desc: 'visualized',
+                type: 'number'
+            },
+            {
+                desc: 'entity',
+                type: 'string'
+            }
         ]
 
 };

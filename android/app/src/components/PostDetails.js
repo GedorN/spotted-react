@@ -270,6 +270,28 @@ export default class PostDetails extends React.Component {
 
 
 		})
+
+		if(heimdallr.user_id != this.state.post.uid){
+			const notifications = {};
+			notifications.pid = this.state.post.pid;
+			notifications.uid = this.state.post.uid;
+			notifications.uid_notification = heimdallr.user_id;
+			notifications.user_name = heimdallr.user_name;
+			notifications.user_image = heimdallr.user_image;
+			notifications.content = this.state.commentText;
+			notifications.date = await heimdallr.getServerTime();
+			notifications.visualized = 0;
+			notifications.entity = "commentary";
+			heimdallr.incrementNotification(this.state.post.uid);
+
+			heimdallr.getUID().then((uuid) => {
+				notifications.nid = uuid;
+				let result = heimdallr.saveCollection('notifications', notifications);
+				result.then((resolve) => {
+					console.log("notification received", resolve);
+				});
+			})
+		}
 	}
 
 	return = () => {

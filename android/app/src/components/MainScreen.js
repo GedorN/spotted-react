@@ -1,4 +1,6 @@
 import React from 'react';
+import firebase from 'react-native-firebase';
+
 import {
 	Dimensions,
 	StyleSheet,
@@ -29,6 +31,8 @@ import SideDrawer from "../../../../components/General/SideDrawer";
 import theme from "../../../../components/General/Theme";
 import Settings from "./Settings";
 import Store from "./Store";
+import NotificationScreen from "./NotificationScreen";
+import Notification from "./Notification";  
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
 
@@ -40,6 +44,7 @@ export default class MainScreen extends React.Component {
 		super();
 		this.state = {
 			postText: '',
+			numberBadge: 0,
 			postImages: [],
 			open: false,
 			isLogged: false,
@@ -52,6 +57,7 @@ export default class MainScreen extends React.Component {
 				{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 				{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
 				{ key: 'post', icon: require('../../../../assets/images/plus-circle.png')},
+				{ key: 'notifications', icon: require('../../../../assets/images/bell.png')},
 				{ key: 'user', icon: require('../../../../assets/images/user-solid.png') },
 			],
 		};
@@ -59,6 +65,7 @@ export default class MainScreen extends React.Component {
 	getHome = () => {return<Home ref={homeScreen => {this.homeScreen = homeScreen}} navigation={this.props.navigation}/>};
 	getUserProfile = () => {return<UserProfile navigation={this.props.navigation} user={heimdallr.user_id}/>}
 	getUsersSearch = () => { return <UsersSearch navigation={this.props.navigation}/>}
+	getNotification = () => { return <NotificationScreen  navigation={this.props.navigation}/> }
 	_handleIndexChange = (index) => {
 		if (index === 2) {
 			this.setState({ showModal: true });
@@ -83,6 +90,7 @@ export default class MainScreen extends React.Component {
 		post: PostWrite,
 		user: this.getUserProfile,
 		search: this.getUsersSearch,
+		notifications: this.getNotification,
 	});
 
 	postCall = () => {
@@ -113,7 +121,37 @@ export default class MainScreen extends React.Component {
 				}
 			}
 		})
+
+		let badgeNumber = heimdallr.getNotificationsNumber(heimdallr.user_id);
+		badgeNumber.then((resolve) => {
+			this.setState({badgeNumber:resolve.counter});
+		});
+	
+
+		firebase.firestore().collection('rel_user_notification').where("uid", "==", heimdallr.user_id)
+		.onSnapshot((querySnapshot) => {
+			querySnapshot.forEach((doc) => {
+				notification = doc.data();
+				let docCounter = doc.data().counter;
+				this.setState({numberBadge:docCounter});
+				
+			});
+  		})
 	}
+
+	getBadge = (prop) => {
+		if (prop.route.key === 'notifications') {
+
+			if(this.state.numberBadge > 0){
+				return this.state.numberBadge;
+			}
+			else{
+				return null;
+			}
+		}
+		return null;
+	}
+
 
 	toggleOpen = () => {
 		this.setState({open: !this.state.open});
@@ -245,6 +283,7 @@ export default class MainScreen extends React.Component {
 							renderScene={this.renderScene}
 							barStyle={styles.bottomBar}
 							activeColor={theme.primary}
+							getBadge={this.getBadge.bind(this)}
 							// inactiveColor={'black'}
 							sceneAnimationEnabled={false}
 							shifting={false}
