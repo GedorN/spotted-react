@@ -19,10 +19,6 @@ export default class LikeAPrayer extends React.Component{
 	}
 	componentDidMount(): void {
 		console.log('produto recebido: ', this.props.product);
-		if (this.props.product.images){
-			console.log('ue', this.props.product.images[0])
-
-		}
 	}
 
 	getTxtColor = (color) => {

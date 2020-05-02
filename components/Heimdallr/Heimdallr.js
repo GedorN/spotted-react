@@ -36,6 +36,20 @@ function HeimdallrLib() {
     });
 	}
 
+	this.getUserTickets = function () {
+		return new Promise((resolve) => {
+			firebase.firestore().collection('tickets').where('uid', '==', this.user_id).get().then(
+				(result) => {
+					let docs = result.docs;
+					docs.sort((a, b) => {
+						return (b.data().date - a.data().date)
+					});
+					resolve(docs);
+				}
+			)
+		})
+	}
+
 
 	this.getNotificationsNumber = function (context) {
   	    return new Promise((resolve) => {
@@ -461,7 +475,7 @@ function HeimdallrLib() {
 				.get().then((result) => {
 					docs = result.docs;
 					docs.sort((a, b) => {
-						return (b._data.date.seconds) - (a._data.date.seconds)
+						return (b._data.date) - (a._data.date)
 					});
 					docs = docs.slice(0, limit);
 					resolve();

@@ -31,6 +31,7 @@ import theme from "../../../../components/General/Theme";
 import Settings from "./Settings";
 import Store from "./Store";
 import NotificationScreen from "./NotificationScreen";
+import Tickets from "./Tickets";
 // import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 // import SideDrawer from "../../../../components/General/SideDrawer";
 
@@ -49,6 +50,7 @@ export default class MainScreen extends React.Component {
 			index: 0,
 			showModal: false,
 			showSettingsModal: false,
+			showTickets: false,
 			showStore: false,
 			store: 'cac',
 			routes: [
@@ -311,6 +313,17 @@ export default class MainScreen extends React.Component {
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
 							<Store store={this.state.store}/>
+						</Modal>
+						<Modal
+							transparent={true}
+							visible={this.state.showTickets}
+							onDismiss={this._hideSettingsModal}
+							onRequestClose={() => {
+								this.setState({ showTickets: false });
+							}}
+							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+						>
+							<Tickets />
 						</Modal>
 					</Drawer>
 					{/*<MenuDrawer*/}

@@ -10,13 +10,24 @@ import {
 } from 'react-native';
 
 import theme from "../../../../components/General/Theme";
+import heimdallr from "../../../../components/Heimdallr/Heimdallr";
+import LikeARollingTicketViewer from "./layout/LikeARollingTicketViewer";
 
 export default class Tickets extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-
+			tickets: [],
 		}
+	}
+
+	componentDidMount(): void {
+		heimdallr.getUserTickets().then(
+			(resolve) => {
+				console.log('tick: ', resolve);
+				this.setState({ tickets: resolve });
+			}
+		)
 	}
 
 	render() {
@@ -34,6 +45,13 @@ export default class Tickets extends React.Component {
 					</View>
 				</TouchableOpacity>
 				<Text>Aqui você pode consultar os seus pedidos</Text>
+				<FlatList
+					keyExtractor={item => item._ref.id}
+					data={this.state.tickets}
+					renderItem={ ({ item }) =>
+						<LikeARollingTicketViewer ticket={item.data()}/>
+					}
+				/>
 			</View>
 		)
 	}
