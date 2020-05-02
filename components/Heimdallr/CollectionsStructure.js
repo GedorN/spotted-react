@@ -236,7 +236,7 @@ const collections = {
         ],
         notifications: [
             {
-                desc: 'pid',
+                desc: 'eid',
                 type: 'string'
             },
             {

@@ -34,7 +34,7 @@ export default class Notification extends React.Component {
     
     goToPostDetails = () => {
         this.props.navigation.navigate('PostDetails',{
-            pid:this.props.pid,
+            pid:this.props.eid,
         })
     }
     
