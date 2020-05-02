@@ -300,7 +300,7 @@ export default class PostDetails extends React.Component {
 				</TouchableOpacity>
 				<View style={styles.colContainer}>
 					<View
-						style={{height: height - 160 }}
+						style={{height: height - 160, width: theme.width * 0.98 }}
 					>
 						<FlatList
 							ListHeaderComponent = {() =>
