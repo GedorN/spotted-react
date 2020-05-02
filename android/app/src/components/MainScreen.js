@@ -70,7 +70,7 @@ export default class MainScreen extends React.Component {
 		if (index === 2) {
 			this.setState({ showModal: true });
 			this.setState({ index: 0 });
-		} if (index == 3 && this.notifications) {
+		} else if (index == 3 && this.notifications) {
 			this.notifications.getData();
 			this.setState({ index });
 		} else {
