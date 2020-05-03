@@ -113,6 +113,9 @@ export default  class SignUp extends React.Component {
 	}
 
 	confirmCode = () => {
+		if (!this.state.codeInput || this.state.codeInput === '') {
+			return ;
+		}
 		this.setState({ creatingAccount: true });
 		this.state.confirmationFunction.confirm(this.state.codeInput).then(
 			(resolve) => {
@@ -146,9 +149,14 @@ export default  class SignUp extends React.Component {
 		console.log('tá salvando?');
 		result.then(
 			(resolve) => {
-				console.log('voltou>: ', resolve);
-				this.saveUser(resolve);
-				this.props.navigation.goBack();
+				try {
+					console.log('voltou>: ', resolve);
+					this.saveUser(resolve);
+
+
+				} catch (e) {
+					console.log('mas que merda:', e);
+				}
 			},
 			(reject) => {
 				if (reject.message ==  "The email address is already in use by another account.") {
@@ -161,6 +169,7 @@ export default  class SignUp extends React.Component {
 				}
 				this.setState({ creatingAccount: false });
 				this.setState({showConfirmCodeModal: false });
+
 			}
 		);
 	}
@@ -208,7 +217,12 @@ export default  class SignUp extends React.Component {
 	}
 
 	updateUser = (user) => {
-		let result = heimdallr.updateProfile(user);
+		heimdallr.updateProfile(user).then(
+			(resolve) => {
+				this.forceUpdate();
+				this.props.navigation.goBack();
+			}
+		);
 	}
 
 	async sendImagePropt() {

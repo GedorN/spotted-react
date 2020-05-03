@@ -363,6 +363,7 @@ function HeimdallrLib() {
 
 
   this.getElapsedTime = function (elapsedTime) {
+  	console.log('temp oaquui: ', elapsedTime);
 	  if (elapsedTime ===  'há poucos segundos') {
 		  return '1 min';
 	  } else if (elapsedTime.split(' ')[2] === 'minuto') {
@@ -373,7 +374,7 @@ function HeimdallrLib() {
 		  return `1h`;
 	  } else if (elapsedTime.split(' ')[2] === 'horas') {
 		  return `${elapsedTime.split(' ')[1]}h`;
-	  } else if (elapsedTime.split(' ')[2] === 'dias') {
+	  } else if (elapsedTime.split(' ')[2] === 'dia') {
 		  return `1d`;
 	  } else if (elapsedTime.split(' ')[2] === 'dias') {
 		  return `${elapsedTime.split(' ')[1]}d`;

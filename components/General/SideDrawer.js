@@ -5,6 +5,7 @@ import {
     Text,
     TouchableOpacity,
 	Image,
+	DeviceEventEmitter
 } from 'react-native';
 
 import UserImgProfile from "./UserImgProfile";
@@ -17,7 +18,20 @@ export default class SideDrawer extends React.Component {
         this.state= {};
     }
 
-    actionPressed = (action) => {
+    componentDidMount(): void {
+    	if (!heimdallr.user_name) {
+		    let interval = setInterval(() => {
+	            this.setState({  });
+	            if (heimdallr.user_name) {
+	                clearInterval(interval);
+			    }
+		    }, 3000);
+	    }
+    }
+
+
+
+	actionPressed = (action) => {
 	    this.props.actionPressed(action);
     }
 
