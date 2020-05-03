@@ -250,7 +250,7 @@ export default class PostDetails extends React.Component {
 	}
 
 	triggerNotification = async () => {
-		if(heimdallr.user_id != this.state.post.uid){
+		if(heimdallr.user_id != this.state.post.data().uid){
 			const notifications = {};
 			notifications.eid = this.state.post.data().pid;
 			notifications.uid = this.state.post.data().uid;

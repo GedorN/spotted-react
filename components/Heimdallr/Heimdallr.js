@@ -363,7 +363,6 @@ function HeimdallrLib() {
 
 
   this.getElapsedTime = function (elapsedTime) {
-  	console.log('temp oaquui: ', elapsedTime);
 	  if (elapsedTime ===  'há poucos segundos') {
 		  return '1 min';
 	  } else if (elapsedTime.split(' ')[2] === 'minuto') {

@@ -18,6 +18,7 @@ export default class Tickets extends React.Component {
 		super(props);
 		this.state = {
 			tickets: [],
+			scrolling: false,
 		}
 	}
 
@@ -46,10 +47,12 @@ export default class Tickets extends React.Component {
 				</TouchableOpacity>
 				<Text>Aqui você pode consultar os seus pedidos</Text>
 				<FlatList
+					onScrollEndDrag={() => this.setState({ scrolling: false })}
+					onScrollBeginDrag={() => this.setState({ scrolling: true })}
 					keyExtractor={item => item._ref.id}
 					data={this.state.tickets}
 					renderItem={ ({ item }) =>
-						<LikeARollingTicketViewer ticket={item.data()}/>
+						<LikeARollingTicketViewer ticket={item.data()} scrolling={this.state.scrolling} />
 					}
 				/>
 			</View>
