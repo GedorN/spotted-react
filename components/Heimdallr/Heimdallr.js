@@ -76,6 +76,76 @@ function HeimdallrLib() {
 	      }
 	    })
 	}
+	
+	this.saveComment = function (params) {
+		let returnValue = null;
+		return new Promise((resolve) => {
+			console.log('checking params...');
+			let parametersOK = true;
+			const collections = collectionsStructures;
+			const structure = collections['comment'];
+
+			structure.forEach((e) => {
+				if (e.required === true) {
+					if (!params[e.desc] || e.type != typeof(params[e.desc])) {
+						console.log('ERRO: parâmetro ', e.desc, ' incorreto');
+						if (e.type != typeof(params[e.desc])) {
+							console.log(`Parametro esperado: ${e.type} porém recebido um ${typeof(params[e.desc])}`);
+						}
+						parametersOK = false;
+					}
+				}
+			});
+
+			if (parametersOK) {
+				let comments = [];
+				firebase.firestore().collection('comment').doc(params.pid).get().then(
+					(result) => {
+						console.log('dos paranue', params);
+						console.log('resultado novo: ', result);
+						if (result.data()) {
+							let temp = result.data().comments;
+							temp.unshift(params);
+							comments = temp;
+						} else {
+							comments.push(params);
+						}
+						firebase.firestore().collection('comment').doc(params.pid).set(
+							{
+								comments: comments
+							},
+							{
+								merge: true
+							}
+						);
+					}
+				)
+				// const base = firebase.firestore().collection('notification').doc(params.uid);
+				// base.set(params).then(
+				// 	(docRef) => {
+				// 		// console.warn(`Documento ${docRef.id}`);
+				// 		// console.log(`Documento ${docRef.id}`);
+				// 		returnValue = docRef.id;
+				// 		if (collection === 'user') {
+				// 			this.user_image = params.user_image ? params.user_image : null;
+				// 			this.user_name = params.name;
+				// 			this.email = params.email;
+				// 			this.uid = params.uid;
+				// 		}
+				// 		resolve();
+				// 	},
+				// 	() => {
+				// 		console.log('Erro ao criar a notificação');
+				// 	}
+				// );
+			} else {
+				resolve();
+			}
+
+		}).then(function (resolve) {
+			return returnValue;
+		})
+	}
 
 	this.saveNotification = function (params) {
 		let returnValue = null;
@@ -541,13 +611,14 @@ function HeimdallrLib() {
 		return new Promise((resolve) => {
 			const post = firebase.firestore()
 				.collection('comment')
-				.where('pid', '==', pid)
+				.doc(pid)
 				.get().then((result) => {
-					docs = result.docs;
-					docs.sort((a, b) => {
-						return (b._data.date) - (a._data.date)
-					});
-					docs = docs.slice(0, limit);
+					// docs = result.docs;
+					// docs.sort((a, b) => {
+					// 	return (b._data.date) - (a._data.date)
+					// });
+					// docs = docs.slice(0, limit);
+					docs = result.data().comments.slice(0, limit);
 					resolve();
 				}).catch ((e) => {
 					console.log('Erro: ', e);

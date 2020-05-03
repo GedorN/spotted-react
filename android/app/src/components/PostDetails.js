@@ -58,8 +58,8 @@ export default class PostDetails extends React.Component {
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
 			console.log('details', moment(resolve[0].data().date).locale('pt-br').format('LLLL'));
-			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
-			this.setState( { post: resolve[0]._data });
+			resolve[0].date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
+			this.setState( { post: resolve[0] });
 			this.forceUpdate();
 			this.setState({ pulling: false });
 		});
@@ -67,8 +67,8 @@ export default class PostDetails extends React.Component {
 		let res = heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments);
 		res.then((resolve) => {
 			resolve.forEach((doc) => {
-				const time = moment(doc.data().date).fromNow();
-				doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+				const time = moment(doc.date).fromNow();
+				doc.elapsed_time = heimdallr.getElapsedTime(time);
 			})
 			this.setState({ comments: resolve });
 		});
@@ -98,7 +98,6 @@ export default class PostDetails extends React.Component {
 		if (!this.state.post || !this.state.post.images) {
 			return ;
 		}
-		console.log('seu cu', this.state.post);
 		if (this.state.post.images) {
 
 			if (this.state.post.images.length === 1) {
@@ -209,8 +208,8 @@ export default class PostDetails extends React.Component {
 				result.then((resolve) => {
 					console.log('buscou: ', resolve);
 					resolve.forEach((doc) => {
-						const time = moment(doc.data().date).fromNow();
-						doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+						const time = moment(doc.date).fromNow();
+						doc.elapsed_time = heimdallr.getElapsedTime(time);
 					})
 					if (resolve.length === this.state.comments.length) {
 						this.setState({ endPulling: true });
@@ -267,6 +266,8 @@ export default class PostDetails extends React.Component {
 		if (!this.state.commentText || this.state.commentText === '') {
 			return ;
 		}
+
+
 		const params = {};
 		params.pid = this.state.post.pid;
 		params.comment = this.state.commentText;
@@ -275,22 +276,18 @@ export default class PostDetails extends React.Component {
 		params.user_name = heimdallr.user_name;
 		params.id_user = heimdallr.user_id;
 		heimdallr.getUID().then((uuid) => {
+
+			const data = {};
+			data.user_image = heimdallr.user_image;
+			data.user_name = heimdallr.user_name;
+			data.comment = this.state.commentText;
+			data.cid = uuid;
+			let posts = this.state.comments;
+			posts.unshift(data);
+			this.setState({ comments: posts });
+			this.postTextInput.clear();
 			params.cid = uuid;
-			let result = heimdallr.saveCollection('comment', params);
-			result.then((resolve) => {
-
-				const _data = {};
-				_data.user_image = heimdallr.user_image;
-				_data.user_name = heimdallr.user_name;
-				_data.comment = this.state.commentText;
-				_data.cid = uuid;
-				const _ref = {id: resolve};
-				let posts = this.state.comments;
-				posts.unshift({_data, _ref});
-				this.setState({ comments: posts });
-				this.postTextInput.clear();
-
-			});
+			heimdallr.saveComment(params);
 		})
 
 		this.triggerNotification();
@@ -378,9 +375,9 @@ export default class PostDetails extends React.Component {
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>
-								< CommentaryViewer userImage={item._data.user_image} text={item._data.comment} user_name={item._data.user_name} user_id = {item._data.id_user} elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} />
+								< CommentaryViewer userImage={item.user_image} text={item.comment} user_name={item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
 							}
-							keyExtractor={item => item._ref.id}
+							keyExtractor={item => item.cid}
 							onEndReachedThreshold={0.3}
 							onEndReached={ ({ distanceFromEnd }) => {
 								this.pullMoreCommentaries(distanceFromEnd);
