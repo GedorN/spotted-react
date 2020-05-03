@@ -253,7 +253,7 @@ export default class PostDetails extends React.Component {
 		if(heimdallr.user_id != this.state.post.uid){
 			const notifications = {};
 			notifications.eid = this.state.post.data().pid;
-			notifications.uid = this.state.post.uid;
+			notifications.uid = this.state.post.data().uid;
 			notifications.uid_notification = heimdallr.user_id;
 			notifications.user_name = heimdallr.user_name;
 			notifications.user_image = heimdallr.user_image;
@@ -261,7 +261,7 @@ export default class PostDetails extends React.Component {
 			notifications.date = await heimdallr.getServerTime();
 			notifications.visualized = 0;
 			notifications.entity = "commentary";
-			heimdallr.incrementNotification(this.state.post.uid);
+			heimdallr.incrementNotification(this.state.post.data().uid);
 
 			heimdallr.getUID().then((uuid) => {
 				notifications.nid = uuid;
