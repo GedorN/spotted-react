@@ -58,8 +58,9 @@ export default class PostDetails extends React.Component {
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
 			console.log('details', moment(resolve[0].data().date).locale('pt-br').format('LLLL'));
-			resolve[0].date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
+			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
 			this.setState( { post: resolve[0] });
+			console.log('que post é esse? ', this.state.post);
 			this.forceUpdate();
 			this.setState({ pulling: false });
 		});
@@ -72,6 +73,8 @@ export default class PostDetails extends React.Component {
 			})
 			this.setState({ comments: resolve });
 		});
+
+
 
 	}
 
@@ -87,10 +90,13 @@ export default class PostDetails extends React.Component {
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
-		let result = heimdallr.getCollection('post', 10);
+		let result = heimdallr.getComments(this.state.post.data().pid, 10);
 		result.then( (resolve) => {
-			this.setState({ posts: resolve });
+			this.setState({ comments: resolve });
 			this.setState({ isRefreshing: false });
+			this.setState({ pulledComments: 10 });
+			this.setState({ endPulling: false });
+
 		});
 	}
 
@@ -199,6 +205,7 @@ export default class PostDetails extends React.Component {
 	}
 
 	pullMoreCommentaries = (distanceFromEnd) => {
+		console.log('fui chamado');
 		if (!this.state.endPulling) {
 			if (!this.state.pulling) {
 				this.setState({ pulling: true });
@@ -206,15 +213,19 @@ export default class PostDetails extends React.Component {
 				n = n + 5;
 				let result = heimdallr.getComments(this.props.navigation.getParam('pid'), n);
 				result.then((resolve) => {
-					console.log('buscou: ', resolve);
 					resolve.forEach((doc) => {
 						const time = moment(doc.date).fromNow();
 						doc.elapsed_time = heimdallr.getElapsedTime(time);
 					})
-					if (resolve.length === this.state.comments.length) {
+
+					if (resolve.length === 0) {
 						this.setState({ endPulling: true });
+						this.setState({ comments: this.state.comments.concat(resolve)  })
+					} else if (resolve.length === this.state.comments.length) {
+						this.setState({ endPulling: true });
+					} else {
+						this.setState( { comments: resolve });
 					}
-					this.setState( { comments: resolve });
 					this.setState({ pulledComments: n });
 					this.setState({ pulling: false });
 				})
@@ -241,7 +252,7 @@ export default class PostDetails extends React.Component {
 	triggerNotification = async () => {
 		if(heimdallr.user_id != this.state.post.uid){
 			const notifications = {};
-			notifications.eid = this.state.post.pid;
+			notifications.eid = this.state.post.data().pid;
 			notifications.uid = this.state.post.uid;
 			notifications.uid_notification = heimdallr.user_id;
 			notifications.user_name = heimdallr.user_name;
@@ -269,13 +280,15 @@ export default class PostDetails extends React.Component {
 
 
 		const params = {};
-		params.pid = this.state.post.pid;
+		params.pid = this.state.post.data().pid;
 		params.comment = this.state.commentText;
 		params.date = await heimdallr.getServerTime();
 		params.user_image = heimdallr.user_image;
 		params.user_name = heimdallr.user_name;
 		params.id_user = heimdallr.user_id;
 		heimdallr.getUID().then((uuid) => {
+			params.cid = uuid;
+			heimdallr.saveComment(params);
 
 			const data = {};
 			data.user_image = heimdallr.user_image;
@@ -286,8 +299,6 @@ export default class PostDetails extends React.Component {
 			posts.unshift(data);
 			this.setState({ comments: posts });
 			this.postTextInput.clear();
-			params.cid = uuid;
-			heimdallr.saveComment(params);
 		})
 
 		this.triggerNotification();
@@ -329,7 +340,7 @@ export default class PostDetails extends React.Component {
 								<View style={styles.rowContainer}>
 									<View style={styles.postHeaderUserImage}>
 										<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-											<UserImgProfile circular height={45} width={45} uri={this.state.post? this.state.post.user_image : null}/>
+											<UserImgProfile circular height={45} width={45} uri={this.state.post? this.state.post.data().user_image : null}/>
 										</TouchableOpacity>
 									</View>
 									<View style={{flexDirection: 'column'}}>
@@ -339,7 +350,7 @@ export default class PostDetails extends React.Component {
 													<Text
 														style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
 													>
-														{this.state.post ? this.state.post.user_name: null}
+														{this.state.post ? this.state.post.data().user_name: null}
 													</Text>
 												</TouchableOpacity>
 											</View>
@@ -357,13 +368,13 @@ export default class PostDetails extends React.Component {
 										</View>
 										<View style={styles.body}>
 											<View style={styles.post}>
-												<Text style={{marginTop:25}}> {this.state.post ? this.state.post.text : null} </Text>
+												<Text style={{marginTop:25}}> {this.state.post ? this.state.post.data().text : null} </Text>
 												<View >
 													{this.getModalImagesLayout()}
 												</View>
 											</View>
 										</View>
-										<Text style={{color: 'gray', fontSize: 8}}> {this.state.post ? this.state.post.date : null} </Text>
+										<Text style={{color: 'gray', fontSize: 8}}> {this.state.post ? this.state.post.data().date : null} </Text>
 									</View>
 								</View>
 							}

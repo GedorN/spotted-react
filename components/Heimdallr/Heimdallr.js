@@ -618,7 +618,8 @@ function HeimdallrLib() {
 					// 	return (b._data.date) - (a._data.date)
 					// });
 					// docs = docs.slice(0, limit);
-					docs = result.data().comments.slice(0, limit);
+					console.log('so acheu isso', result);
+					docs = result.data() ? result.data().comments.slice(0, limit) : [];
 					resolve();
 				}).catch ((e) => {
 					console.log('Erro: ', e);
