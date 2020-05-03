@@ -363,28 +363,28 @@ function HeimdallrLib() {
 
 
   this.getElapsedTime = function (elapsedTime) {
-	  if (elapsedTime ===  'a few seconds ago') {
+	  if (elapsedTime ===  'há poucos segundos') {
 		  return '1 min';
-	  } else if (elapsedTime.split(' ')[1] === 'minute') {
+	  } else if (elapsedTime.split(' ')[2] === 'minuto') {
 		  return `1min`;
-	  } else if (elapsedTime.split(' ')[1] === 'minutes') {
-		  return `${elapsedTime.split(' ')[0]}min`;
-	  } else if (elapsedTime.split(' ')[1] === 'hour') {
+	  } else if (elapsedTime.split(' ')[2] === 'minutos') {
+		  return `${elapsedTime.split(' ')[1]}min`;
+	  } else if (elapsedTime.split(' ')[2] === 'hora') {
 		  return `1h`;
-	  } else if (elapsedTime.split(' ')[1] === 'hours') {
-		  return `${elapsedTime.split(' ')[0]}h`;
-	  } else if (elapsedTime.split(' ')[1] === 'day') {
+	  } else if (elapsedTime.split(' ')[2] === 'horas') {
+		  return `${elapsedTime.split(' ')[1]}h`;
+	  } else if (elapsedTime.split(' ')[2] === 'dias') {
 		  return `1d`;
-	  } else if (elapsedTime.split(' ')[1] === 'days') {
-		  return `${elapsedTime.split(' ')[0]}d`;
-	  } else if (elapsedTime.split(' ')[1] === 'month') {
+	  } else if (elapsedTime.split(' ')[2] === 'dias') {
+		  return `${elapsedTime.split(' ')[1]}d`;
+	  } else if (elapsedTime.split(' ')[1] === 'mes') {
 		  return `1mo`;
-	  } else if (elapsedTime.split(' ')[1] === 'months') {
-		  return `${elapsedTime.split(' ')[0]}mo`;
-	  } else if (elapsedTime.split(' ')[1] === 'year') {
+	  } else if (elapsedTime.split(' ')[1] === 'meses') {
+		  return `${elapsedTime.split(' ')[1]}mo`;
+	  } else if (elapsedTime.split(' ')[1] === 'ano') {
 		  return `1y`;
-	  } else if (elapsedTime.split(' ')[1] === 'years') {
-		  return `${elapsedTime.split(' ')[0]}y`;
+	  } else if (elapsedTime.split(' ')[1] === 'anos') {
+		  return `${elapsedTime.split(' ')[1]}y`;
 	  }
 
 	  return null;
