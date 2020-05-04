@@ -50,7 +50,7 @@ export default class SideDrawer extends React.Component {
                 </View>
                 <View style={styles.content}>
                     <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-                        onPress={this.actionPressed.bind(this, 'settings')}>
+                        onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
 	                    <View style={styles.item}>
 		                    <Image source={require('../../assets/images/user-cog-solid.png')}
 		                        style={{
@@ -64,7 +64,7 @@ export default class SideDrawer extends React.Component {
 	                    </View>
                     </TouchableOpacity>
 	                {/*<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}*/}
-	                {/*                  onPress={this.actionPressed.bind(this, 'cac')}>*/}
+	                {/*                  onPress={() => {this.props.navigation.push('Store', {store : 'cac'})}}>*/}
 		            {/*    <View style={styles.item}>*/}
 			        {/*        <Image source={require('../../assets/images/user-cog-solid.png')}*/}
 			        {/*               style={{*/}
@@ -72,7 +72,7 @@ export default class SideDrawer extends React.Component {
 				    {/*                   width: 40,*/}
 				    {/*                   height: 32,*/}
 				    {/*                   marginRight: 13,*/}
-			        {/*               }}*/}
+			        {/*               }}m*/}
 			        {/*        />*/}
 			        {/*        <Text> Proto store </Text>*/}
 		            {/*    </View>*/}
@@ -92,24 +92,6 @@ export default class SideDrawer extends React.Component {
 				                       }}
 				                />
 				                <Text> Registrar-se </Text>
-			                </View>
-		                </TouchableOpacity>
-	                }
-	                {
-		                heimdallr.email !== 'spotted@utfpr.com' &&
-		                <TouchableOpacity
-			                style={{position: 'absolute', bottom: 8, paddingLeft: 22}}
-			                onPress={() => {this.props.actionPressed('signOut')}}>
-			                <View style={styles.item}>
-				                <Image source={require('../../assets/images/sign-in-alt-solid.png')}
-				                       style={{
-					                       tintColor: theme.primary,
-					                       width: 40,
-					                       height: 32,
-					                       marginRight: 13,
-				                       }}
-				                />
-				                <Text> Desconectar </Text>
 			                </View>
 		                </TouchableOpacity>
 	                }

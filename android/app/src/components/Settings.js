@@ -44,7 +44,7 @@ export default class Settings extends React.Component {
 			)
 		} else {
 			return (
-				<GeneralSettings changePassword={this.toggleChangepassword.bind(this)} close={this.props.close} action={this.props.action}/>
+				<GeneralSettings changePassword={this.toggleChangepassword.bind(this)} navigation={this.props.navigation} action={this.props.action}/>
 			)
 		}
 	}

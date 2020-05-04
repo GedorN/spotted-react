@@ -23,7 +23,6 @@ import Login from "./Login";
 import UserProfile from "./UserProfile";
 import PostWrite from "./Inputs/PostWrite";
 import UsersSearch from "./UsersSearch";
-import MenuDrawer from "react-native-side-drawer";
 import Drawer from "react-native-drawer";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import SideDrawer from "../../../../components/General/SideDrawer";
@@ -32,8 +31,6 @@ import Settings from "./Settings";
 import Store from "./Store";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
-// import heimdallr from "../../../../components/Heimdallr/Heimdallr";
-// import SideDrawer from "../../../../components/General/SideDrawer";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -51,7 +48,7 @@ export default class MainScreen extends React.Component {
 			showModal: false,
 			showSettingsModal: false,
 			showTickets: false,
-			showStore: false,
+			showStore: true,
 			store: 'cac',
 			routes: [
 				{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
@@ -108,7 +105,11 @@ export default class MainScreen extends React.Component {
 		this.setState({ showSettingsModal: false });
 	}
 
-	componentDidMount(): void {
+	componentDidMount =() => {
+		if (this.props.navigation.getParam('logOut')) {
+			this.logOut();
+			return ;
+		}
 		const anonymousRoutes =  [
 			{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 			{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
@@ -117,13 +118,18 @@ export default class MainScreen extends React.Component {
 		StatusBar.setBarStyle('dark-content', true);
 		let login = heimdallr.checkUser();
 		login.then((resolve) => {
+			console.warn('usuário: ', resolve);
 			if (heimdallr.user_id) {
 				this.setState({isLogged: true});
 				if (heimdallr.email === 'spotted@utfpr.com') {
 					this.setState({ routes: anonymousRoutes });
 				}
 			}
-		})
+		},
+			(reject) => {
+				console.log('o que tem? ', reject);
+			}
+		)
 
 
 		heimdallr.getNotificationsNumber(this);
@@ -188,9 +194,7 @@ export default class MainScreen extends React.Component {
 	}
 
 	logOut = () => {
-		heimdallr.signOut();
-		this._drawer.close();
-		this.setState({isLogged: false});
+		this.state.isLogged = false
 	}
 
 	setAction = (action) => {
@@ -217,7 +221,7 @@ export default class MainScreen extends React.Component {
 
 	drawerContent = () => {
 		return (
-			<SideDrawer actionPressed={this.setAction}/>
+			<SideDrawer navigation={this.props.navigation} actionPressed={this.setAction}/>
 		);
 		//TODO tirar margem do topo
 	};
@@ -303,17 +307,17 @@ export default class MainScreen extends React.Component {
 						>
 							<Settings close={this._hideSettingsModal} action={this.setAction}/>
 						</Modal>
-						<Modal
-							transparent={true}
-							visible={this.state.showStore}
-							onDismiss={this._hideSettingsModal}
-							onRequestClose={() => {
-								this.setState({ showStore: false });
-							}}
-							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
-						>
-							<Store store={this.state.store}/>
-						</Modal>
+						{/*<Modal*/}
+						{/*	transparent={true}*/}
+						{/*	visible={this.state.showStore}*/}
+						{/*	onDismiss={this._hideSettingsModal}*/}
+						{/*	onRequestClose={() => {*/}
+						{/*		this.setState({ showStore: false });*/}
+						{/*	}}*/}
+						{/*	contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}*/}
+						{/*>*/}
+						{/*	<Store navigation={this.props.navigation} store={this.state.store}/>*/}
+						{/*</Modal>*/}
 						<Modal
 							transparent={true}
 							visible={this.state.showTickets}

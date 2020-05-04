@@ -12,6 +12,8 @@ import {
 	ActivityIndicator,
 	TextInput,
 } from 'react-native-paper'
+
+import {StackActions} from "react-navigation";
 import FlashMessage from "react-native-flash-message";
 import { showMessage, hideMessage } from "react-native-flash-message";
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
@@ -123,8 +125,7 @@ export default class GeneralSettings extends  React.Component {
 					type: "success",
 					icon: 'success',
 				});
-				this.props.action('closeHome');
-				this.forceUpdate();
+				this.props.navigation.push('Home', {logOut: true});
 			},
 			(reject) => {
 				this.setState({ showConfirmCodeModal: false});
@@ -186,11 +187,16 @@ export default class GeneralSettings extends  React.Component {
 
 	}
 
+	logOut = () => {
+		heimdallr.signOut();
+		this.props.navigation.push('Home', {logOut: true});
+	}
+
 	render () {
 		return (
 			<View>
 				<View style={{zIndex: 999}}>
-					<TouchableOpacity onPress={this.props.close}>
+					<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
 						<View style={{flexDirection: 'row', height: 20, width: 50}}>
 							<Image
 								style={{width: 20, height: 20, marginRight: 10}}
@@ -243,9 +249,19 @@ export default class GeneralSettings extends  React.Component {
 				<View style={{marginTop: 20}}>
 					<FatBottomedButton text='Salvar' color={theme.primary} onTap={() => this.saveEdition()} />
 				</View>
-				<View style={{position: 'absolute', top: theme.height * 0.8, flex: 1}}>
-					<FatBottomedButton text='Excluir conta' color={theme.primary} onTap={() => {this.setState({ showAlert: true })}} />
+				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.9}}>
+					<TouchableOpacity onPress={() => {this.setState({ showAlert: true })}}>
+						<Text style={{color: 'red'}}>
+							Excluir conta
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity onPress={this.logOut.bind(this)}>
+						<Text style={{color: 'red'}}>
+							Desconectar
+						</Text>
+					</TouchableOpacity>
 				</View>
+
 				<AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}

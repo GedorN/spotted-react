@@ -23,8 +23,8 @@ export default class Store extends React.Component {
 	}
 
 	componentDidMount(): void {
-		console.log('loja escolhida: ', this.props.store);
-		heimdallr.getStoreInfo(this.props.store).then(
+		console.warn('loja escolhida: ', this.props.navigation.getParam('store'));
+		heimdallr.getStoreInfo(this.props.navigation.getParam('store')).then(
 			(resolve) => {
 				console.log('antes', resolve.categories)
 				this.setState({ categories: resolve.categories });
@@ -33,7 +33,7 @@ export default class Store extends React.Component {
 			}
 		);
 
-		heimdallr.getStoreProducts(this.props.store).then(
+		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
 			(resolve) => {
 				if (resolve.docs.length > 0) {
 					this.setState({ products: resolve.docs })
@@ -43,6 +43,7 @@ export default class Store extends React.Component {
 		)
 
 	}
+
 
 	chipPressed = (chip) => {
 		console.warn(chip);
@@ -63,15 +64,16 @@ export default class Store extends React.Component {
 							scrolling={this.state.scrolling}
 							product={item.data()}
 							colors={this.state.colors ? this.state.colors : null}
+							navigation={this.props.navigation}
 						/>
 					}
-					ListHeaderComponent={() =>
+					ListHeaderComponent={({item}) =>
 						<View>
 							<SevenBannerArmy />
 							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',}}>
 								{
 									this.state.categories.map(i =>
-										<View style={{margin: 5}}>
+										<View style={{margin: 5}} key={i.name}>
 											<ImNotTheOnlyChip
 												text={i.name}
 												colors={this.state.colors ? this.state.colors : null}

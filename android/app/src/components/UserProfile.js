@@ -52,7 +52,7 @@ export default class UserProfile extends React.Component {
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
 					this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
-					heimdallr.getUserColletion('post', this.state.pulledPosts, this.state.userId).then(
+					heimdallr.getUserColletion('post', 10, this.state.userId).then(
 						(resolve) => {
 							if(!resolve || resolve.length === 0){
 								this.setState({ endPulling: true });

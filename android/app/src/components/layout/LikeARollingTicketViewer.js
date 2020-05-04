@@ -35,7 +35,9 @@ export default class LikeARollingTicketViewer extends React.Component {
 
 	render() {
 		return (
-			<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}>
+			<TouchableOpacity onPress={this.props.pressed()}
+			                  activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
+			>
 				<View style={styles.container}>
 					<LikeAPrayerductViewer  product={this.state.product} colors={this.props.ticket ? this.props.ticket.colors : null}/>
 					<View style={styles.product_info}>
@@ -60,7 +62,6 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 		flexDirection:'row',
 		flexWrap: 'wrap',
-		backgroundColor: 'red',
 		width: theme.width * 0.35
 	}
 });

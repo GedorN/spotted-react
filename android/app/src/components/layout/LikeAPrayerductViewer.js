@@ -52,10 +52,22 @@ export default class LikeAPrayer extends React.Component{
 		}
 	}
 
+	goToProductScreen = () => {
+		try {
+			console.warn('olah que eu voui');
+			this.props.navigation.push('ProductScreen', {iid: this.props.product.iid});
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
 
 	render() {
 		return (
-			<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}>
+			<TouchableOpacity
+				onPress={this.goToProductScreen.bind(this)}
+				activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
+			>
 				<View style={styles.container}>
 					<View style={{
 						borderWidth: 1,

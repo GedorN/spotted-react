@@ -586,7 +586,6 @@ function HeimdallrLib() {
         const post = firebase.firestore()
 		    .collection(collection)
 	        .where('uid', '==', uid)
-		    .limit(limit)
 		    .get().then((result) => {
 		    	if (result && result.docs.length > 0) {
 			        console.log('ta´certo: ', result.docs[0].data());
