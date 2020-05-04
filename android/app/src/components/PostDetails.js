@@ -84,7 +84,7 @@ export default class PostDetails extends React.Component {
 
 	goToUserProfile = () => {
 		this.props.navigation.push('UserProfile', {
-			userId: this.state.post.uid,
+			userId: this.state.post.data().uid,
 		});
 	}
 
