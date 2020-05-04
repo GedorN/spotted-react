@@ -26,6 +26,8 @@ export default class PostWrite extends React.Component {
 		this.state = {
 			postText: [],
 			postImages: [],
+			anonymousUser: '0',
+			anonymousText: "Postar como anônimo ?",
 		};
 	}
 
@@ -96,6 +98,20 @@ export default class PostWrite extends React.Component {
 		}
 	}
 
+	getAnonymous = () => {
+
+		heimdallr.getUID().then((uuid) => {
+			this.setState({anonymousUser:this.state.anonymousUser == '0'? '1' : '0'});
+			if(this.state.anonymousUser == '1'){
+               this.setState({anonymousText: "Será postado como anônimo"});
+			}
+			else{
+				this.setState({anonymousText: "Postar como anônimo ?"})
+			}
+		})
+		
+	}
+
 	async savePost(sendedImages) {
 		console.log('Semaphore: ', sendedImages);
 		/* Essa condição é equivalente ao conceito de barreira (só que com uma implementação muito mais simples)
@@ -110,6 +126,7 @@ export default class PostWrite extends React.Component {
 			params.uid = heimdallr.user_id;
 			params.images = this.state.postImages;
 			params.user_name = heimdallr.user_name;
+			params.anonymous = this.state.anonymousUser;
 			params.user_image = heimdallr.user_image;
 			params.comments = 0;
 			heimdallr.getUID().then((uuid) => {
@@ -338,21 +355,35 @@ export default class PostWrite extends React.Component {
 								ref={input => (this.postTextInput = input)}
 							/>
 						</View>
-						<TouchableOpacity disabled={this.state.postImages.length === 4} onPress={this.sendImagePropt.bind(this)}>
+						<View style = {{flexDirection:"row", height:45}}>
+						<TouchableOpacity onPress ={this.getAnonymous.bind(this)} style = {{width:45,height:45,
+														marginTop:3,marginLeft: theme.width *0.08}}>
 							<Image
-								source={require('../../../../../assets/images/camera-icon.png')}
-								style={{
-									width: 35,
-									height: 30,
-									alignSelf:'flex-end',
-									marginRight:28,
-									marginTop:7,
-									opacity: this.state.postImages.length === 4 ? 0.4 : 1
-								}}
-							/>
-						</TouchableOpacity>
-						<View style={{alignSelf:'center'}}>
-							{this.getModalImagesLayout()}
+									source={require('../../../../../assets/images/mask-solid.png')}
+									style = {{ width:50,height:40, alignSelf:'flex-start', opacity:1}}
+									/>
+							
+							</TouchableOpacity>
+							<Text style = {{marginTop:14,marginLeft:11, opacity:this.state.anonymousUser == 0 ? 0.5 : 1, width:theme.width *0.55,
+							                fontWeight: this.state.anonymousUser == 0? 'normal':'bold' }}>{this.state.anonymousText}</Text>
+							
+							<TouchableOpacity disabled={this.state.postImages.length === 4} onPress={this.sendImagePropt.bind(this)}
+											>
+								<Image
+									source={require('../../../../../assets/images/camera-icon.png')}
+									style={{
+										width: 35,
+										height: 30,
+										alignSelf:'flex-end',
+										marginLeft:theme.width *0.08,
+										marginTop:7,
+										opacity: this.state.postImages.length === 4 ? 0.4 : 1
+									}}
+								/>
+							</TouchableOpacity>
+							<View style={{alignSelf:'center'}}>
+								{this.getModalImagesLayout()}
+							</View>
 						</View>
 						<View style={{marginTop: this.state.postImages.length > 0 ? 25 : 15, width: width * 0.9, marginLeft: 25}}>
 							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>

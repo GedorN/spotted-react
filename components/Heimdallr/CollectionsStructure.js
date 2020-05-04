@@ -84,7 +84,11 @@ const collections = {
 				desc: 'user_image',
 				type: 'string',
 				required: false,
-			}
+            },
+            {
+                desc: 'anonymous',
+                type: 'string'
+            }
 		],
         post: [
             {
@@ -130,6 +134,10 @@ const collections = {
                 desc: 'images',
                 type: 'array',
                 required: false,
+            },
+            {
+                desc: 'anonymous',
+                type: 'string'
             }
         ],
 		unverified_post: [
@@ -273,6 +281,10 @@ const collections = {
             },
             {
                 desc: 'entity',
+                type: 'string'
+            },
+            {
+                desc: 'anonymous',
                 type: 'string'
             }
         ]

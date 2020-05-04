@@ -186,7 +186,8 @@ export default class PostViewer extends React.Component {
   goToComments = () => {
   	this.props.navigation.push('PostDetails', {
   		pid: this.props.pid,
-	    userImage: this.props.userImage,
+			userImage: this.props.userImage,
+			anonymous: this.props.anonymous?this.props.anonymous:'0',
     });
   }
 
@@ -215,14 +216,14 @@ export default class PostViewer extends React.Component {
 					  />
 				  </Modal>
 			  <View style={styles.postHeaderUserImage}>
-			      <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
+			      <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
 			          <UserImgProfile circular height={45} width={45} uri={this.props.userImage}/>
 			      </TouchableOpacity>
 			  </View>
 			  <View style={{flexDirection: 'column'}}>
 			      <View style={styles.postHeader}>
 				      <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-				          <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToUserProfile.bind(this)}>
+				          <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
 				              <Text
 				                  style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
 				              >

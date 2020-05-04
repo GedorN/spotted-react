@@ -192,8 +192,11 @@ export default class Home extends React.Component {
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
               renderItem={ ({item}) =>
-                  <PostViewer text={item._data.text} pid={item._data.pid} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling} closeAlert={this.confirmReport.bind(this)} />
-              }
+							<PostViewer text={item._data.text} anonymous = {item._data.anonymous?item._data.anonymous:'0'} pid={item._data.pid} uid={item._data.uid} images={item._data.images} 
+									user={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_name:'Anônimo'):item._data.user_name} 
+									userImage={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_image:null):item._data.user_image} 
+									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling} 
+									closeAlert={this.confirmReport.bind(this)} />  }
               refreshControl={
 	              <RefreshControl
 		              refreshing={this.state.isRefreshing}

@@ -41,6 +41,9 @@ export default class PostDetails extends React.Component {
 			pulledComments: 10,
 			isRefreshing: false,
 			showAlert: false,
+			anonymousProfile:'0',
+			anonymousUser:'0',
+			anonymousText: "Comentário..."
 		};
 	}
 
@@ -63,6 +66,7 @@ export default class PostDetails extends React.Component {
 			console.log('que post é esse? ', this.state.post);
 			this.forceUpdate();
 			this.setState({ pulling: false });
+			this.setState({anonymousProfile:this.props.navigation.getParam('anonymous')});
 		});
 
 		let res = heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments);
@@ -96,6 +100,7 @@ export default class PostDetails extends React.Component {
 			this.setState({ isRefreshing: false });
 			this.setState({ pulledComments: 10 });
 			this.setState({ endPulling: false });
+			this.setState({anonymousProfile:this.props.navigation.getParam('anonymous')});
 
 		});
 	}
@@ -204,6 +209,20 @@ export default class PostDetails extends React.Component {
 		}
 	}
 
+	getAnonymous = () => {
+
+		heimdallr.getUID().then((uuid) => {
+			this.setState({anonymousUser:this.state.anonymousUser == '0'? '1' : '0'});
+			if(this.state.anonymousUser == '1'){
+               this.setState({anonymousText: "Comentário anônimo..."});
+			}
+			else{
+				this.setState({anonymousText: "Comentário..."})
+			}
+		})
+		
+	}
+
 	pullMoreCommentaries = (distanceFromEnd) => {
 		console.log('fui chamado');
 		if (!this.state.endPulling) {
@@ -257,6 +276,7 @@ export default class PostDetails extends React.Component {
 			notifications.uid_notification = heimdallr.user_id;
 			notifications.user_name = heimdallr.user_name;
 			notifications.user_image = heimdallr.user_image;
+			notifications.anonymous =  this.state.anonymousUser;
 			notifications.content = this.state.commentText;
 			notifications.date = await heimdallr.getServerTime();
 			notifications.visualized = 0;
@@ -285,14 +305,15 @@ export default class PostDetails extends React.Component {
 		params.date = await heimdallr.getServerTime();
 		params.user_image = heimdallr.user_image;
 		params.user_name = heimdallr.user_name;
+		params.anonymous =  this.state.anonymousUser;
 		params.id_user = heimdallr.user_id;
 		heimdallr.getUID().then((uuid) => {
 			params.cid = uuid;
 			heimdallr.saveComment(params);
 
 			const data = {};
-			data.user_image = heimdallr.user_image;
-			data.user_name = heimdallr.user_name;
+			data.user_image = this.state.anonymousUser == '0'? heimdallr.user_image : null;
+			data.user_name = this.state.anonymousUser == '0'? heimdallr.user_name : 'Anônimo';
 			data.comment = this.state.commentText;
 			data.cid = uuid;
 			let posts = this.state.comments;
@@ -339,18 +360,18 @@ export default class PostDetails extends React.Component {
 							ListHeaderComponent = {() =>
 								<View style={styles.rowContainer}>
 									<View style={styles.postHeaderUserImage}>
-										<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-											<UserImgProfile circular height={45} width={45} uri={this.state.post? this.state.post.data().user_image : null}/>
+										<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
+											<UserImgProfile circular height={45} width={45} uri={this.state.post?(this.state.anonymousProfile == '0'? this.state.post.data().user_image : null) : null}/>
 										</TouchableOpacity>
 									</View>
 									<View style={{flexDirection: 'column'}}>
 										<View style={styles.postHeader}>
 											<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-												<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+												<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
 													<Text
 														style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
 													>
-														{this.state.post ? this.state.post.data().user_name: null}
+														{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
 													</Text>
 												</TouchableOpacity>
 											</View>
@@ -386,7 +407,7 @@ export default class PostDetails extends React.Component {
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>
-								< CommentaryViewer userImage={item.user_image} text={item.comment} user_name={item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+								< CommentaryViewer  userImage={item.anonymous?(item.anonymous == '0'?item.user_image:null):item.user_image}  anonymous={item.anonymous?item.anonymous:'0'} text={item.comment} user_name={item.anonymous?(item.anonymous == '0'?item.user_name:'Anônimo'):item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
 							}
 							keyExtractor={item => item.cid}
 							onEndReachedThreshold={0.3}
@@ -402,14 +423,20 @@ export default class PostDetails extends React.Component {
 							<TextInput
 								style={styles.textInput}
 								capitalize='sentences'
-								placeholder='Comentário...'
+								placeholder={this.state.anonymousText}
 								multiline
 								onChangeText={text => this.setState({commentText: text})}
 								ref={input => (this.postTextInput = input)}
 							/>
+							<TouchableOpacity onPress={this.getAnonymous.bind(this)}>
+								<Image
+								   style={{width: 44, height: 35, marginLeft: 5, marginBottom:5}} 
+								   source={require('../../../../assets/images/mask-solid.png')}
+								/>
+							</TouchableOpacity>
 							<TouchableOpacity onPress={this.addCommentary.bind(this)}>
 								<Image
-									style={{width: 30, height: 30, marginLeft: 20, marginBottom:5}}
+									style={{width: 30, height: 30, marginLeft: 17, marginBottom:5}}
 									source={require('../../../../assets/images/send.png')}
 								/>
 							</TouchableOpacity>
@@ -474,7 +501,7 @@ const styles = StyleSheet.create({
 	textInput: {
 		height: 40,
 		borderBottomWidth: 0,
-		width: width * 0.8,
+		width: width * 0.7,
 		marginLeft:10,
 
 		

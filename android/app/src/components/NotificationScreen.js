@@ -111,10 +111,11 @@ export default class NotificationScreen extends React.Component {
                 <FlatList
                     data = {this.state.notifications}
                     renderItem={ ({item}) =>
-                        <Notification
-	                        image_uri = {item.user_image} notification_text = {item.content}
-                           user_name = {item.user_name} uid_notification = {item.uid_notification}
-                           eid = {item.eid} navigation={this.props.navigation} visualized = {item.visualized}/>
+					<Notification
+						image_uri = {item.user_image} notification_text = {item.content}
+				   		user_name = {item.user_name} uid_notification = {item.uid_notification}
+				   		eid = {item.eid} navigation={this.props.navigation} visualized = {item.visualized}
+				   		anonymous = {item.anonymous?item.anonymous:'0'}/>
                         }
                         keyExtractor={item => item.nid}
                         refreshControl={
