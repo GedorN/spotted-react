@@ -66,7 +66,7 @@ export default class PostDetails extends React.Component {
 			console.log('que post é esse? ', this.state.post);
 			this.forceUpdate();
 			this.setState({ pulling: false });
-			this.setState({anonymousProfile:this.props.navigation.getParam('anonymous')});
+			this.setState({anonymousProfile:this.props.navigation.getParam('anonymous')?this.props.navigation.getParam('anonymous'):'0'});
 		});
 
 		let res = heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments);
@@ -100,7 +100,7 @@ export default class PostDetails extends React.Component {
 			this.setState({ isRefreshing: false });
 			this.setState({ pulledComments: 10 });
 			this.setState({ endPulling: false });
-			this.setState({anonymousProfile:this.props.navigation.getParam('anonymous')});
+			this.setState({anonymousProfile:this.props.navigation.getParam('anonymous')?this.props.navigation.getParam('anonymous'):'0'});
 
 		});
 	}
