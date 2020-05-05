@@ -52,7 +52,7 @@ export default class UserProfile extends React.Component {
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
 					this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
-					heimdallr.getUserColletion('post', 10, this.state.userId).then(
+					heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
 							if(!resolve || resolve.length === 0){
 								this.setState({ endPulling: true });
@@ -81,7 +81,7 @@ export default class UserProfile extends React.Component {
 			this.state.userName = heimdallr.user_name;
 			this.state.userImageUrl = [{url: heimdallr.user_image}];
 			console.log('Profile: ', this.state.userId);
-			heimdallr.getUserColletion('post', 100, this.state.userId).then(
+			heimdallr.getUserColletion(100, this.state.userId).then(
 				(resolve) => {
 					if(!resolve || resolve.length === 0){
 						this.setState({ endPulling: true });
@@ -109,7 +109,7 @@ export default class UserProfile extends React.Component {
 				this.setState({ pulling: true });
 				let n = this.state.pulledPosts;
 				n = 5 + n;
-				let result = heimdallr.getUserColletion('post', n, this.state.userId);
+				let result = heimdallr.getUserColletion(n, this.state.userId);
 				result.then((resolve) => {
 					if (resolve.length === this.state.posts.length) {
 						this.setState({ endPulling: true });
@@ -169,7 +169,7 @@ export default class UserProfile extends React.Component {
 	};
 
 	onRefresh = () => {
-		heimdallr.getUserColletion('post', 10, this.state.userId).then(
+		heimdallr.getUserColletion(10, this.state.userId).then(
 			(resolve) => {
 				if(resolve.length === 0){
 					this.setState({ endPulling: true });

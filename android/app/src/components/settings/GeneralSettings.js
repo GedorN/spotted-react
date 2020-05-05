@@ -247,7 +247,7 @@ export default class GeneralSettings extends  React.Component {
 					<FatBottomedButton text='Alterar senha' color={theme.primary} onTap={this.props.changePassword} />
 				</View>
 				<View style={{marginTop: 20}}>
-					<FatBottomedButton text='Salvar' color={theme.primary} onTap={() => this.saveEdition()} />
+					<FatBottomedButton text='Salvar' color={'white'} backgroundColor={theme.primary} onTap={() => this.saveEdition()} />
 				</View>
 				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.9}}>
 					<TouchableOpacity onPress={() => {this.setState({ showAlert: true })}}>
@@ -265,8 +265,8 @@ export default class GeneralSettings extends  React.Component {
 				<AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}
-					title="Excluir conta"
-					message="Você realmente deseja apagar a sua conta? Essa ação não podera ser desfeita."
+					title="Não seremos os mesmos sem você"
+					message="Você realmente deseja apagar a sua conta? Essa ação não poderá ser desfeita e nos dexará muito tristes :("
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showCancelButton={true}

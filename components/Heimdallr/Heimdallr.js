@@ -579,20 +579,19 @@ function HeimdallrLib() {
 	  })
   }
   
-  this.getUserColletion = function (collection, limit, uid) {
+  this.getUserColletion = function (limit, uid) {
   	let docs = null;
-  	console.log('collection: ', collection, 'liimit: ', limit, 'uid: ', uid);
   	return new Promise((resolve) => {
         const post = firebase.firestore()
-		    .collection(collection)
+		    .collection('post')
 	        .where('uid', '==', uid)
 		    .get().then((result) => {
 		    	if (result && result.docs.length > 0) {
-			        console.log('ta´certo: ', result.docs[0].data());
-			        docs = result.docs.sort((a, b) => {
-				        console.log('a:', a.data().date );
+			        docs = result.docs.filter((d) => {return d.data().anonymous !== '1'})
+			        docs = docs.sort((a, b) => {
 				        return b.data().date - a.data().date;
 			        });
+			        console.log('ta´certo: ', docs);
 			        resolve(docs.slice(0, limit));
 			    } else {
 		    		console.log('caiu aqui');
