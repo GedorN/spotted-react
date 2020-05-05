@@ -223,7 +223,6 @@ export default class PostDetails extends React.Component {
 		else{
 			this.setState({anonymousText: "Comentário..."})
 		}
-		this.setState({ commentText: text });
 	}
 
 	pullMoreCommentaries = (distanceFromEnd) => {
