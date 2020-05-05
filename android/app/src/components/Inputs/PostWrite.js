@@ -339,9 +339,9 @@ export default class PostWrite extends React.Component {
 						<View>
 							<TextInput
 								style={{width: width + 10,
-									borderBottomWidth: 1,
+									borderBottomWidth: 0.7,
 									borderColor: 'grey',
-									height: this.state.postImages.length > 0 ? height * 0.400 : height * 0.70,
+									height: this.state.postImages.length > 0 ? height * 0.395 : height * 0.70,
 								}}
 								onChangeText={text => this.setState({postText: text})}
 								autoCapitalize="sentences"
@@ -351,7 +351,10 @@ export default class PostWrite extends React.Component {
 								ref={input => (this.postTextInput = input)}
 							/>
 						</View>
-						<View style = {{flexDirection:"row", height:45}}>
+						<View style={{alignSelf:'center'}}>
+							{this.getModalImagesLayout()}
+						</View>
+						<View style = {{flexDirection:"row", height:45,marginTop:this.state.postImages.length > 0 ? 10 : 2}}>
 							<TouchableOpacity
 								onPress = {this.getAnonymous.bind(this)}
 								style =
@@ -383,10 +386,7 @@ export default class PostWrite extends React.Component {
 								/>
 							</TouchableOpacity>
 						</View>
-						<View style={{alignSelf:'center'}}>
-							{this.getModalImagesLayout()}
-						</View>
-						<View style={{marginTop: this.state.postImages.length > 0 ? 25 : 15, width: width * 0.9, marginLeft: 25}}>
+						<View style={{marginTop:15, width: width * 0.9, marginLeft: 25}}>
 							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>

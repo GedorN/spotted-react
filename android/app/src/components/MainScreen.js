@@ -259,7 +259,7 @@ export default class MainScreen extends React.Component {
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.openModal.bind(this)}>
 								<Image source={require('../../../../assets/images/bars-solid.png')}
-									   style={{width: 25, height: 25, tintColor: theme.primary, marginTop:7,
+									   style={{width: 25, height: 25, tintColor: theme.primary, marginTop:10,
 											marginLeft:10}}/>
 							</TouchableOpacity>
 							{/*<Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>*/}
