@@ -602,17 +602,20 @@ function HeimdallrLib() {
   	let docs = null;
   	console.log('recebi:', limit, uid);
   	return new Promise((resolve) => {
-        const post = firebase.firestore()
-		    .collection('post')
-	        .where('uid', '==', uid)
+        firebase.firestore()
+		    .collection('user_posts')
+	        .doc(uid)
 		    .get().then((result) => {
-		    	if (result && result.docs.length > 0) {
-			        docs = result.docs.filter((d) => {return !d.data().anonymous})
-			        docs = docs.sort((a, b) => {
-				        return b.data().date - a.data().date;
-			        });
-			        console.log('ta´certo: ', docs);
-			        resolve(docs.slice(0, limit));
+			    console.log('asdasd', result);
+		    	if (result && result.data() && result.data().posts) {
+		    		let docs = result.data().posts.slice(0, limit);
+				    // docs = result.docs.filter((d) => {return !d.data().anonymous})
+			        // docs = docs.sort((a, b) => {
+				    //     return b.data().date - a.data().date;
+				    // console.log('ta´certo: ', docs);
+				    console.log('ué', docs);
+				    // });
+				    resolve(docs);
 			    } else {
 		    		console.log('caiu aqui');
 		    		resolve(null);
@@ -705,8 +708,32 @@ function HeimdallrLib() {
 			return docs;
 		})
 	}
+
+	this.savePersonalColletion = function (params) {
+  	console.log('recebi po');
+		return new Promise((resolve) => {
+			firebase.firestore().collection('user_posts').doc(params.uid).get().then().then(
+				(result) => {
+					console.log('o que tem aqui', result);
+					if (!result.data()) {
+						firebase.firestore().collection('user_posts').doc(params.uid).set({
+							posts: [params]
+						});
+					} else {
+						let posts = result.data().posts;
+						posts.unshift(params);
+						firebase.firestore().collection('user_posts').doc(params.uid).set({
+							posts: posts
+						});
+					}
+				}
+			)
+		})
+	}
+
   this.saveCollection = function (collection, params) {
     let returnValue = null;
+    console.log('ue');
     return new Promise((resolve) => {
       console.log('checking params...');
       let parametersOK = true;
@@ -734,6 +761,10 @@ function HeimdallrLib() {
             returnValue = docRef.id;
             if (collection === 'post') {
             	heimdallr.saveCollection('unverified_post', params);
+            	console.log('deve entrar: ', params.anonymous);
+            	if (!params.anonymous) {
+            	    heimdallr.savePersonalColletion(params);
+	            }
             }
             if (collection === 'user') {
             	this.user_image = params.user_image ? params.user_image : null;

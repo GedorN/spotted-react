@@ -317,6 +317,7 @@ export default class PostDetails extends React.Component {
 			data.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
 			data.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
 			data.comment = this.state.commentText;
+			data.anonymous =  this.state.anonymousUser;
 			data.cid = uuid;
 			let posts = this.state.comments;
 			posts.push(data);

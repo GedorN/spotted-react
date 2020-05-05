@@ -54,16 +54,16 @@ export default class UserProfile extends React.Component {
 					this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
 					heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
+							console.log('peguei de volta', resolve);
 							if(!resolve || resolve.length === 0){
 								this.setState({ endPulling: true });
 							}
 							resolve.forEach((doc) => {
 								if (!doc.elapsed_time) {
-									const time = moment(doc.data().date).fromNow();
-									doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+									const time = moment(doc.date).fromNow();
+									doc.elapsed_time = heimdallr.getElapsedTime(time);
 								}
 							});
-							console.log('peguei esses caras aqui', resolve);
 							this.setState({ posts: resolve });
 							this.setState({userId:this.props.navigation.getParam('userId')});
 						}
@@ -88,12 +88,11 @@ export default class UserProfile extends React.Component {
 					} else
 					resolve.forEach((doc) => {
 						if (!doc.elapsed_time) {
-							const time = moment(doc.data().date).fromNow();
-							doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+							const time = moment(doc.date).fromNow();
+							doc.elapsed_time = heimdallr.getElapsedTime(time);
 
 						}
 					});
-					console.log('peguei esses caras aqui', resolve);
 					var after = Date.now() - before;
 					console.log(`o mais foda levou: ${after}`);
 					this.setState({ posts: resolve });
@@ -116,8 +115,8 @@ export default class UserProfile extends React.Component {
 					}
 					resolve.forEach((doc) => {
 						if (!doc.elapsed_time) {
-							const time = moment(doc.data().date).fromNow();
-							doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+							const time = moment(doc.date).fromNow();
+							doc.elapsed_time = heimdallr.getElapsedTime(time);
 
 						}
 					});
@@ -176,8 +175,8 @@ export default class UserProfile extends React.Component {
 				}
 				resolve.forEach((doc) => {
 					if (!doc.elapsed_time) {
-						const time = moment(doc.data().date).fromNow();
-						doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+						const time = moment(doc.date).fromNow();
+						doc.elapsed_time = heimdallr.getElapsedTime(time);
 					}
 				});
 				console.log('peguei esses caras aqui', resolve);
@@ -210,7 +209,7 @@ export default class UserProfile extends React.Component {
 					onScrollEndDrag={() => this.setState({ scrolling: false })}
 					onScrollBeginDrag={() => this.setState({ scrolling: true })}
 					renderItem={ ({item}) =>
-							<PostViewer text={item._data.text} pid={item._data.pid} elapsed_time={item._data.elapsed_time} uid={item._data.uid} images={item._data.images} user={item._data.user_name} userImage={item._data.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+							<PostViewer text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
 					}
 					ListHeaderComponent={() =>
 						<View style={styles.profileHeader}>
@@ -232,7 +231,7 @@ export default class UserProfile extends React.Component {
 							onRefresh={this.onRefresh.bind(this)}
 						/>
 					}
-					keyExtractor={item => item._ref.id}
+					keyExtractor={item => item.pid}
 					onEndReachedThreshold={0.3}
 					onEndReached={({ distanceFromEnd }) => {
 						this.pullMorePosts(distanceFromEnd);
