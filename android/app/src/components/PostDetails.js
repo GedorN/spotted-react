@@ -416,8 +416,10 @@ export default class PostDetails extends React.Component {
 							}}
 							ListFooterComponent={ this.renderFooter.bind(this)}
 						/>
+						<Text style = {{opacity:0.5,fontSize:13,marginLeft:15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
 					</View>
 					{
+						
 						heimdallr.email !== 'spotted@utfpr.com' &&
 						<View style={styles.commentContainer}>
 							<TextInput
@@ -430,7 +432,7 @@ export default class PostDetails extends React.Component {
 							/>
 							<TouchableOpacity onPress={this.getAnonymous.bind(this)}>
 								<Image
-								   style={{width: 44, height: 35, marginLeft: 5, marginBottom:5}} 
+								   style={{width: 44, height: 35, marginLeft: 5, marginBottom:5, opacity:this.state.anonymousUser == '0'? 0.5:1}} 
 								   source={require('../../../../assets/images/mask-solid.png')}
 								/>
 							</TouchableOpacity>
