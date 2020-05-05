@@ -19,7 +19,6 @@ export default class CommentaryViewer extends React.Component {
 
 		};
 	}
-
 	goToUserProfile = () => {
 		 this.props.navigation.push('UserProfile', {
 			userId: this.props.user_id,
@@ -34,7 +33,7 @@ export default class CommentaryViewer extends React.Component {
 	render = () => {
 		return (
 			<View style={styles.container}>
-				<TouchableOpacity  onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
+				<TouchableOpacity  onPress={this.props.anonymous? null : this.goToUserProfile.bind(this)}>
 					<UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.props.userImage ? this.props.userImage : null}/>
 				</TouchableOpacity>
 				<View style={styles.body}>
@@ -48,13 +47,15 @@ export default class CommentaryViewer extends React.Component {
 							source={require('../../../../assets/images/circle-solid.png') }
 						/>
 						}
-						<Text style= {{marginTop:35}}>
+						<Text style= {{marginTop:35, flexWrap: 'wrap'}}>
 							{ this.props.elapsed_time }
 						</Text>
 					</View>
-					<Text style={styles.commentaryText}>
-						{ this.props.text }
-					</Text>
+					<View style={{width: theme.width * 0.85}}>
+						<Text style={styles.commentaryText}>
+							{ this.props.text }
+						</Text>
+					</View>
 				</View>
 			</View>
 		);
@@ -72,7 +73,7 @@ const styles  = StyleSheet.create({
 		paddingLeft: 20,
 		borderColor: 'rgba(59, 56, 50, 0.2)',
 		borderBottomWidth: 0.18,
-		width: width,
+		width: theme.width,
 
 	},
 	body: {

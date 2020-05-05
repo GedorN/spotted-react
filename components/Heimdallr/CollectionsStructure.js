@@ -87,7 +87,7 @@ const collections = {
             },
             {
                 desc: 'anonymous',
-                type: 'string'
+                type: 'boolean'
             }
 		],
         post: [
@@ -137,7 +137,7 @@ const collections = {
             },
             {
                 desc: 'anonymous',
-                type: 'string'
+                type: 'boolean'
             }
         ],
 		unverified_post: [
@@ -285,7 +285,7 @@ const collections = {
             },
             {
                 desc: 'anonymous',
-                type: 'string'
+                type: 'boolean'
             }
         ]
 

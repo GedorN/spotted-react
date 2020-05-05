@@ -42,7 +42,7 @@ export default class PostDetails extends React.Component {
 			isRefreshing: false,
 			showAlert: false,
 			anonymousProfile:'0',
-			anonymousUser:'0',
+			anonymousUser: false,
 			anonymousText: "Comentário..."
 		};
 	}
@@ -96,6 +96,10 @@ export default class PostDetails extends React.Component {
 		this.setState({ isRefreshing: true });
 		let result = heimdallr.getComments(this.state.post.data().pid, 10);
 		result.then( (resolve) => {
+			resolve.forEach((doc) => {
+				const time = moment(doc.date).fromNow();
+				doc.elapsed_time = heimdallr.getElapsedTime(time);
+			})
 			this.setState({ comments: resolve });
 			this.setState({ isRefreshing: false });
 			this.setState({ pulledComments: 10 });
@@ -210,8 +214,10 @@ export default class PostDetails extends React.Component {
 	}
 
 	getAnonymous = () => {
-		this.setState({anonymousUser:this.state.anonymousUser === '0'? '1' : '0'});
-		if(this.state.anonymousUser === '1'){
+		const isAnon = !this.state.anonymousUser;
+		this.setState({ anonymousUser: isAnon });
+
+		if(isAnon){
            this.setState({anonymousText: "Comentário anônimo..."});
 		}
 		else{
@@ -308,12 +314,12 @@ export default class PostDetails extends React.Component {
 			heimdallr.saveComment(params);
 
 			const data = {};
-			data.user_image = this.state.anonymousUser == '0'? heimdallr.user_image : null;
-			data.user_name = this.state.anonymousUser == '0'? heimdallr.user_name : 'Anônimo';
+			data.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
+			data.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
 			data.comment = this.state.commentText;
 			data.cid = uuid;
 			let posts = this.state.comments;
-			posts.unshift(data);
+			posts.push(data);
 			this.setState({ comments: posts });
 			this.postTextInput.clear();
 		})
@@ -403,7 +409,7 @@ export default class PostDetails extends React.Component {
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>
-								< CommentaryViewer  userImage={item.anonymous?(item.anonymous == '0'?item.user_image:null):item.user_image}  anonymous={item.anonymous?item.anonymous:'0'} text={item.comment} user_name={item.anonymous?(item.anonymous == '0'?item.user_name:'Anônimo'):item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+								< CommentaryViewer  userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
 							}
 							keyExtractor={item => item.cid}
 							onEndReachedThreshold={0.3}
@@ -428,7 +434,7 @@ export default class PostDetails extends React.Component {
 							/>
 							<TouchableOpacity onPress={this.getAnonymous.bind(this)}>
 								<Image
-								   style={{width: 44, height: 35, marginLeft: 5, marginBottom:5, opacity:this.state.anonymousUser == '0'? 0.5:1}} 
+								   style={{width: 44, height: 35, marginLeft: 5, marginBottom:5, opacity: !this.state.anonymousUser ? 0.5 : 1}}
 								   source={require('../../../../assets/images/mask-solid.png')}
 								/>
 							</TouchableOpacity>

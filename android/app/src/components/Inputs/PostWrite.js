@@ -26,7 +26,7 @@ export default class PostWrite extends React.Component {
 		this.state = {
 			postText: [],
 			postImages: [],
-			anonymousUser: '0',
+			anonymousUser: false,
 			anonymousText: "Postar como anônimo ?",
 		};
 	}
@@ -37,7 +37,6 @@ export default class PostWrite extends React.Component {
 	}
 
 	deletePostImg (pos) {
-		// sim... esse loop está bem feio, porém array.splice não funciona no react
 		let images = [];images = this.state.postImages;
 		let newImg = [];
 		for (let i = 0; i < images.length; i++) {
@@ -99,8 +98,9 @@ export default class PostWrite extends React.Component {
 	}
 
 	getAnonymous = () => {
-		this.setState({anonymousUser:this.state.anonymousUser == '0'? '1' : '0'});
-		if(this.state.anonymousUser == '1'){
+		const isAnon = !this.state.anonymousUser;
+		this.setState({anonymousUser: isAnon});
+		if(isAnon){
            this.setState({anonymousText: "Será postado como anônimo"});
 		}
 		else{
@@ -367,8 +367,8 @@ export default class PostWrite extends React.Component {
 								/>
 
 							</TouchableOpacity>
-							<Text style = {{marginTop:14,marginLeft:11, opacity:this.state.anonymousUser == 0 ? 0.5 : 1, width:theme.width *0.55,
-								fontWeight: this.state.anonymousUser == 0? 'normal':'bold' }}>{this.state.anonymousText}</Text>
+							<Text style = {{marginTop:14,marginLeft:11, opacity: !this.state.anonymousUser ? 0.5 : 1, width:theme.width *0.55,
+								fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
 							<TouchableOpacity disabled={this.state.postImages.length === 4} onPress={this.sendImagePropt.bind(this)}>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}

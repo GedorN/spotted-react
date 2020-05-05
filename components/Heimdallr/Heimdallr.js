@@ -105,7 +105,7 @@ function HeimdallrLib() {
 						console.log('resultado novo: ', result);
 						if (result.data()) {
 							let temp = result.data().comments;
-							temp.unshift(params);
+							temp.push(params);
 							comments = temp;
 						} else {
 							comments.push(params);
@@ -587,7 +587,7 @@ function HeimdallrLib() {
 	        .where('uid', '==', uid)
 		    .get().then((result) => {
 		    	if (result && result.docs.length > 0) {
-			        docs = result.docs.filter((d) => {return d.data().anonymous !== '1'})
+			        docs = result.docs.filter((d) => {return !d.data().anonymous})
 			        docs = docs.sort((a, b) => {
 				        return b.data().date - a.data().date;
 			        });
