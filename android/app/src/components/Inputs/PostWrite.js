@@ -99,17 +99,13 @@ export default class PostWrite extends React.Component {
 	}
 
 	getAnonymous = () => {
-
-		heimdallr.getUID().then((uuid) => {
-			this.setState({anonymousUser:this.state.anonymousUser == '0'? '1' : '0'});
-			if(this.state.anonymousUser == '1'){
-               this.setState({anonymousText: "Será postado como anônimo"});
-			}
-			else{
-				this.setState({anonymousText: "Postar como anônimo ?"})
-			}
-		})
-		
+		this.setState({anonymousUser:this.state.anonymousUser == '0'? '1' : '0'});
+		if(this.state.anonymousUser == '1'){
+           this.setState({anonymousText: "Será postado como anônimo"});
+		}
+		else{
+			this.setState({anonymousText: "Postar como anônimo ?"})
+		}
 	}
 
 	async savePost(sendedImages) {
@@ -356,8 +352,14 @@ export default class PostWrite extends React.Component {
 							/>
 						</View>
 						<View style = {{flexDirection:"row", height:45}}>
-						<TouchableOpacity onPress ={this.getAnonymous.bind(this)} style = {{width:45,height:45,
-														marginTop:3,marginLeft: theme.width *0.08}}>
+						<TouchableOpacity
+							onPress = { this.getAnonymous.bind(this) }
+							style = {{
+									width:45,
+									height:45,
+									marginTop:3,
+									marginLeft: theme.width *0.08
+							}}>
 							<Image
 									source={require('../../../../../assets/images/mask-solid.png')}
 									style = {{ width:50,height:40, alignSelf:'flex-start', opacity:1}}

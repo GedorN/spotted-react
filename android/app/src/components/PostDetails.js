@@ -210,17 +210,13 @@ export default class PostDetails extends React.Component {
 	}
 
 	getAnonymous = () => {
-
-		heimdallr.getUID().then((uuid) => {
-			this.setState({anonymousUser:this.state.anonymousUser == '0'? '1' : '0'});
-			if(this.state.anonymousUser == '1'){
-               this.setState({anonymousText: "Comentário anônimo..."});
-			}
-			else{
-				this.setState({anonymousText: "Comentário..."})
-			}
-		})
-		
+		this.setState({anonymousUser:this.state.anonymousUser === '0'? '1' : '0'});
+		if(this.state.anonymousUser === '1'){
+           this.setState({anonymousText: "Comentário anônimo..."});
+		}
+		else{
+			this.setState({anonymousText: "Comentário..."})
+		}
 	}
 
 	pullMoreCommentaries = (distanceFromEnd) => {

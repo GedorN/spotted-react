@@ -118,7 +118,6 @@ export default class MainScreen extends React.Component {
 		StatusBar.setBarStyle('dark-content', true);
 		let login = heimdallr.checkUser();
 		login.then((resolve) => {
-			console.warn('usuário: ', resolve);
 			if (heimdallr.user_id) {
 				this.setState({isLogged: true});
 				if (heimdallr.email === 'spotted@utfpr.com') {
