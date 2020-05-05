@@ -187,7 +187,7 @@ export default class Home extends React.Component {
   render() {
     return (
       <View style={{}}>
-          <FlatList
+	      <FlatList
               data = {this.state.posts}
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
@@ -224,7 +224,9 @@ export default class Home extends React.Component {
 		      onConfirmPressed={() => {
 			      this.setState({ showAlert: false })
 		      }}
+
 	      />
+
       </View>
     );
   }

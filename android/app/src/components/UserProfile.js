@@ -171,46 +171,18 @@ export default class UserProfile extends React.Component {
 	onRefresh = () => {
 		heimdallr.getUserColletion(10, this.state.userId).then(
 			(resolve) => {
-				if(resolve.length === 0){
+				if(!resolve || resolve.length === 0){
 					this.setState({ endPulling: true });
 				}
 				resolve.forEach((doc) => {
 					if (!doc.elapsed_time) {
 						const time = moment(doc.data().date).fromNow();
-						if (time ===  'a few seconds ago') {
-							doc._data.elapsed_time = '1 min';
-							console.log('convertendo');
-						} else if (time.split(' ')[1] === 'minute') {
-							doc._data.elapsed_time = `1min`;
-						} else if (time.split(' ')[1] === 'minutes') {
-							doc._data.elapsed_time = `${time.split(' ')[0]}min`;
-							console.log('sub: ', time.split(' ')[1]);
-						} else if (time.split(' ')[1] === 'hour') {
-							doc._data.elapsed_time = `1h`;
-						} else if (time.split(' ')[1] === 'hours') {
-							doc._data.elapsed_time = `${time.split(' ')[0]}h`;
-							console.log('sub: ', time.split(' ')[1]);
-						} else if (time.split(' ')[1] === 'day' || time.split(' ')[1] === 'days') {
-							doc._data.elapsed_time = `${time.split(' ')[0]}d`;
-							console.log('sub: ', time.split(' ')[1]);
-						} else if (time.split(' ')[1] === 'month') {
-							doc._data.elapsed_time = `1mo`;
-							console.log('sub: ', time.split(' ')[1]);
-						} else if (time.split(' ')[1] === 'months') {
-							doc._data.elapsed_time = `${time.split(' ')[0]}mo`;
-							console.log('sub: ', time.split(' ')[1]);
-						} else if (time.split(' ')[1] === 'year') {
-							doc._data.elapsed_time = `1y`;
-							console.log('sub: ', time.split(' ')[1]);
-						} else if (time.split(' ')[1] === 'years') {
-							doc._data.elapsed_time = `${time.split(' ')[0]}y`;
-							console.log('sub: ', time.split(' ')[1]);
-						}
+						doc._data.elapsed_time = heimdallr.getElapsedTime(time);
 					}
 				});
 				console.log('peguei esses caras aqui', resolve);
 				this.setState({ posts: resolve });
-				this.setState({userId:this.props.navigation.getParam('userId')});
+
 			}
 		);
 	}

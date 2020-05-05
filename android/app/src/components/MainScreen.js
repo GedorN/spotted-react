@@ -18,6 +18,7 @@ import {
 	BottomNavigation,
 } from 'react-native-paper'
 
+
 import Home from './Home';
 import Login from "./Login";
 import UserProfile from "./UserProfile";
@@ -31,6 +32,7 @@ import Settings from "./Settings";
 import Store from "./Store";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
+import {showMessage} from "react-native-flash-message";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -244,14 +246,14 @@ export default class MainScreen extends React.Component {
 						tweenDuration={250}
 						openDrawerOffset={0.2} // 20% gap on the right side of drawer
 						// panCloseMask={0.9}
-						closedDrawerOffset={-3}
+						closedDrawerOffset={0}
 						tapToClose={true}
 						tweenHandler={(ratio) => ({
 							main: { opacity: !ratio ? 1 : 0.2, backgroundColor: !ratio ? null : 'black' }
 						})}
 						acceptPan={true}
 						negotiatePan={true}
-						panThreshold={0.1}
+						panThreshold={0.25}
 						panOpenMask={0.1}
 					>
 						<View style={styles.header}>
@@ -328,6 +330,7 @@ export default class MainScreen extends React.Component {
 						>
 							<Tickets />
 						</Modal>
+
 					</Drawer>
 					{/*<MenuDrawer*/}
 					{/*    open={this.state.open}*/}
@@ -339,7 +342,6 @@ export default class MainScreen extends React.Component {
 					{/*    style={{margin: 0, padding: 0, width: 0, height: 0, display: 'none'}}*/}
 					{/*>*/}
 					{/*</MenuDrawer>*/}
-
 				</View>
 			);
 		}

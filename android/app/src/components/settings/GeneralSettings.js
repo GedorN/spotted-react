@@ -5,7 +5,9 @@ import {
 	Text,
 	Dimensions,
 	TouchableOpacity,
-	Image, PermissionsAndroid, Modal,
+	Image,
+	PermissionsAndroid,
+	Modal,
 } from 'react-native'
 
 import {
@@ -13,8 +15,6 @@ import {
 	TextInput,
 } from 'react-native-paper'
 
-import {StackActions} from "react-navigation";
-import FlashMessage from "react-native-flash-message";
 import { showMessage, hideMessage } from "react-native-flash-message";
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
@@ -39,6 +39,7 @@ export default class GeneralSettings extends  React.Component {
 			showConfirmCodeModal: false,
 			user: null,
 			password: null,
+			showLoadingModal: false,
 		};
 	}
 
@@ -88,7 +89,10 @@ export default class GeneralSettings extends  React.Component {
 						console.log(response);
 						let image = 'file://' + response.path;
 						console.log('path: ', image);
-						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / 5, 'JPEG', 60).then(
+						let propCo =  600000 / response.fileSize;
+						let quality = propCo > 1 ? 100 : 100 * propCo;
+						let constant = propCo < 1 ? 1 / propCo : 1;
+						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / constant, 'JPEG', quality).then(
 							(resolve) => {
 								console.log('resolve: ', resolve);
 								this.setState({imageCompressed: resolve.uri});
@@ -119,18 +123,18 @@ export default class GeneralSettings extends  React.Component {
 		heimdallr.deleteUser(this.state.user, this.state.password).then(
 			(resolve) => {
 				this.setState({ showConfirmCodeModal: false});
-				console.warn('caiu no suc:');
-				this.refs.message.showMessage({
+				this.props.navigation.push('Home', {logOut: true});
+				showMessage({
 					message: "Conta apagada com sucesso",
 					type: "success",
 					icon: 'success',
 				});
-				this.props.navigation.push('Home', {logOut: true});
+				console.warn('caiu no suc:');
 			},
 			(reject) => {
 				this.setState({ showConfirmCodeModal: false});
 				console.warn('rejetiado');
-				this.refs.message.showMessage({
+				showMessage({
 					message: "Usuário ou senha incorreto. Tente novamente",
 					type: "danger",
 					icon: 'danger',
@@ -140,6 +144,7 @@ export default class GeneralSettings extends  React.Component {
 	}
 
 	saveEdition = () => {
+		this.setState({ showLoadingModal: true });
 		if (this.state.userImage !== heimdallr.user_image) {
 			console.warn('aqui mesmo');
 			heimdallr.uploadImage(this.state.imageCompressed).then(
@@ -147,19 +152,24 @@ export default class GeneralSettings extends  React.Component {
 					const params = {};
 					params.name = this.state.userName;
 					params.user_image = resolve;
+					params.uid = heimdallr.user_id;
 					heimdallr.updateProfile(params).then((res) => {
+						heimdallr.updateUserData(params);
 						if(res) {
-							this.refs.message.showMessage({
+							showMessage({
 								message: "Configurações alteradas com sucesso",
 								type: "success",
 								icon: 'success'
 							});
+							this.setState({ showLoadingModal: false });
+							this.props.navigation.push('Home');
 						} else {
-							this.refs.message.showMessage({
+							showMessage({
 								message: "Erro ao salvar configurações",
 								type: "danger",
 								icon: 'danger'
 							});
+							this.setState({ showLoadingModal: false });
 						}
 					})
 				}
@@ -167,20 +177,25 @@ export default class GeneralSettings extends  React.Component {
 		} else {
 			const params = {};
 			params.name = this.state.userName;
+			params.uid = heimdallr.user_id;
 			heimdallr.updateProfile(params).then((resolve) => {
+				heimdallr.updateUserData(params);
 				if(resolve) {
-					this.refs.message.showMessage({
+					showMessage({
 						message: "Configurações alteradas com sucesso",
 						type: "success",
 						icon: 'success'
 					});
+					this.setState({ showLoadingModal: false });
+					this.props.navigation.push('Home');
 				} else {
-					this.refs.message.showMessage({
+					showMessage({
 						message: "Erro ao salvar configurações",
 						type: "danger",
 						icon: 'danger',
 
 					});
+					this.setState({ showLoadingModal: false });
 				}
 			})
 		}
@@ -251,12 +266,12 @@ export default class GeneralSettings extends  React.Component {
 				</View>
 				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.9}}>
 					<TouchableOpacity onPress={() => {this.setState({ showAlert: true })}}>
-						<Text style={{color: 'red'}}>
+						<Text style={{color: theme.primary}}>
 							Excluir conta
 						</Text>
 					</TouchableOpacity>
 					<TouchableOpacity onPress={this.logOut.bind(this)}>
-						<Text style={{color: 'red'}}>
+						<Text style={{color: theme.primary}}>
 							Desconectar
 						</Text>
 					</TouchableOpacity>
@@ -323,7 +338,19 @@ export default class GeneralSettings extends  React.Component {
 						</View>
 					</View>
 				</Modal>
-				<FlashMessage ref='message' position="top" style={{ zIndex: 1000 }}/>
+				<Modal statusBarTranslucent={true}
+				       hardwareAccelerated={true}
+				       animationType='fade'
+				       transparent={true}
+				       visible={this.state.showLoadingModal}
+				       style={{height: 50}}>
+					<View style={styles.centeredView}>
+						<View style={styles.modalContainer}>
+							<ActivityIndicator animating={true} color={theme.primary} size={'large'}/>
+							<Text style={{textAlign: 'center'}}> Aplicando alterações </Text>
+						</View>
+					</View>
+				</Modal>
 			</View>
 
 		)

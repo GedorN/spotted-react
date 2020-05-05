@@ -458,6 +458,25 @@ function HeimdallrLib() {
 		  return true;
 	  })
   }
+
+  this.updateUserData = function (user) {
+	  return new Promise((resolve) => {
+	  	firebase.firestore().collection('user').where('uid', '==', user.uid).get().then(
+		    (result) => {
+		    	if (result && result.docs && result.docs[0]) {
+		    		console.warn('seguindo', result.docs[0]._ref.path.split('/')[1]);
+		    		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+					    user_image: user.user_image ? user.user_image : null,
+					    name: user.name,
+				    }, {merge: true}).then((res) => {
+				    	console.warn('deu boa');
+				    	resolve();
+				    })
+			    }
+		    }
+	    )
+	  })
+  }
   
   this.updateProfile = function (user) {
 	  return new Promise((resolve) => {
@@ -581,6 +600,7 @@ function HeimdallrLib() {
   
   this.getUserColletion = function (limit, uid) {
   	let docs = null;
+  	console.log('recebi:', limit, uid);
   	return new Promise((resolve) => {
         const post = firebase.firestore()
 		    .collection('post')

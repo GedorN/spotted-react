@@ -49,8 +49,8 @@ export default class SideDrawer extends React.Component {
 	                </View>
                 </View>
                 <View style={styles.content}>
-                    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-                        onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
+                    <TouchableOpacity style={{backgroundColor: 'red'}} disabled={heimdallr.email === 'spotted@utfpr.com'}
+                          onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
 	                    <View style={styles.item}>
 		                    <Image source={require('../../assets/images/user-cog-solid.png')}
 		                        style={{

@@ -217,12 +217,13 @@ export default class PostDetails extends React.Component {
 		const isAnon = !this.state.anonymousUser;
 		this.setState({ anonymousUser: isAnon });
 
-		if(isAnon){
+		if(isAnon && !this.state.commentText){
            this.setState({anonymousText: "Comentário anônimo..."});
 		}
 		else{
 			this.setState({anonymousText: "Comentário..."})
 		}
+		this.setState({ commentText: text });
 	}
 
 	pullMoreCommentaries = (distanceFromEnd) => {
@@ -418,10 +419,13 @@ export default class PostDetails extends React.Component {
 							}}
 							ListFooterComponent={ this.renderFooter.bind(this)}
 						/>
-						<Text style = {{opacity:0.5,fontSize:13,marginLeft:15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
+						{
+							heimdallr.email !== 'spotted@utfpr.com' &&
+							<Text style = {{opacity: 0.5, fontSize: 13, marginLeft: 15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
+						}
 					</View>
 					{
-						
+
 						heimdallr.email !== 'spotted@utfpr.com' &&
 						<View style={styles.commentContainer}>
 							<TextInput
