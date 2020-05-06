@@ -33,6 +33,7 @@ import Store from "./Store";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
 import {showMessage} from "react-native-flash-message";
+import {NavigationActions, StackActions} from "react-navigation";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -205,8 +206,13 @@ export default class MainScreen extends React.Component {
 				this._drawer.close();
 				break;
 			case 'signIn':
-				heimdallr.signOut();
-				this.props.navigation.navigate('SignUp', {navigation: this.props.navigation});
+				heimdallr.signOut().then(() => {
+					const resetAction = StackActions.reset({
+						index: 0,
+						actions: [NavigationActions.navigate({ routeName: 'SignUp' })],
+					});
+					this.props.navigation.dispatch(resetAction);
+				});
 				break;
 			case 'signOut':
 				this.logOut();

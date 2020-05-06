@@ -25,6 +25,8 @@ import ImagePicker from "react-native-image-picker";
 import ImageResizer from "react-native-image-resizer";
 import AwesomeAlert from "react-native-awesome-alerts";
 import EyeOfThePassword from "../Inputs/EyeOfThePassword";
+import { StackActions, NavigationActions } from 'react-navigation';
+
 
 export default class GeneralSettings extends  React.Component {
 	constructor(props) {
@@ -123,13 +125,16 @@ export default class GeneralSettings extends  React.Component {
 		heimdallr.deleteUser(this.state.user, this.state.password).then(
 			(resolve) => {
 				this.setState({ showConfirmCodeModal: false});
-				this.props.navigation.push('Home', {logOut: true});
 				showMessage({
 					message: "Conta apagada com sucesso",
 					type: "success",
 					icon: 'success',
 				});
-				console.warn('caiu no suc:');
+				const resetAction = StackActions.reset({
+					index: 0,
+					actions: [NavigationActions.navigate({ routeName: 'Home' })],
+				});
+				this.props.navigation.dispatch(resetAction);
 			},
 			(reject) => {
 				this.setState({ showConfirmCodeModal: false});
@@ -162,7 +167,11 @@ export default class GeneralSettings extends  React.Component {
 								icon: 'success'
 							});
 							this.setState({ showLoadingModal: false });
-							this.props.navigation.push('Home');
+							const resetAction = StackActions.reset({
+								index: 0,
+								actions: [NavigationActions.navigate({ routeName: 'Home' })],
+							});
+							this.props.navigation.dispatch(resetAction);
 						} else {
 							showMessage({
 								message: "Erro ao salvar configurações",
@@ -187,7 +196,11 @@ export default class GeneralSettings extends  React.Component {
 						icon: 'success'
 					});
 					this.setState({ showLoadingModal: false });
-					this.props.navigation.push('Home');
+					const resetAction = StackActions.reset({
+						index: 0,
+						actions: [NavigationActions.navigate({ routeName: 'Home' })],
+					});
+					this.props.navigation.dispatch(resetAction);
 				} else {
 					showMessage({
 						message: "Erro ao salvar configurações",
@@ -203,8 +216,13 @@ export default class GeneralSettings extends  React.Component {
 	}
 
 	logOut = () => {
-		heimdallr.signOut();
-		this.props.navigation.push('Home', {logOut: true});
+		heimdallr.signOut().then(() => {
+			const resetAction = StackActions.reset({
+				index: 0,
+				actions: [NavigationActions.navigate({ routeName: 'Home' })],
+			});
+			this.props.navigation.dispatch(resetAction);
+		});
 	}
 
 	render () {

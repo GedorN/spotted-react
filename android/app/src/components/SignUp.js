@@ -26,6 +26,7 @@ import FatBottomedButton from "./buttons/FatBottomedButton";
 import theme from "../../../../components/General/Theme";
 import ImageResizer from "react-native-image-resizer";
 import { TextInputMask } from 'react-native-masked-text';
+import {NavigationActions, StackActions} from "react-navigation";
 
 
 
@@ -219,8 +220,11 @@ export default  class SignUp extends React.Component {
 	updateUser = (user) => {
 		heimdallr.updateProfile(user).then(
 			(resolve) => {
-				this.forceUpdate();
-				this.props.navigation.goBack();
+				const resetAction = StackActions.reset({
+					index: 0,
+					actions: [NavigationActions.navigate({ routeName: 'Home' })],
+				});
+				this.props.navigation.dispatch(resetAction);
 			}
 		);
 	}
