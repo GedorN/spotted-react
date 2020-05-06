@@ -9,7 +9,7 @@ import {
 	TouchableOpacity,
 	FlatList,
 	ActivityIndicator,
-	KeyboardAvoidingView, RefreshControl,
+	KeyboardAvoidingView, RefreshControl, Modal,
 } from 'react-native';
 
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -23,6 +23,7 @@ import 'moment/locale/pt-br';
 import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
+import ImageViewer from "react-native-image-zoom-viewer";
 
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
@@ -43,7 +44,10 @@ export default class PostDetails extends React.Component {
 			showAlert: false,
 			anonymousProfile:'0',
 			anonymousUser: false,
-			anonymousText: "Comentário..."
+			anonymousText: "Comentário...",
+			showImages: false,
+			galleryObj: [],
+			indexImage: 0,
 		};
 	}
 
@@ -63,6 +67,13 @@ export default class PostDetails extends React.Component {
 			console.log('details', moment(resolve[0].data().date).locale('pt-br').format('LLLL'));
 			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
 			this.setState( { post: resolve[0] });
+			if (resolve[0].data().images) {
+				(resolve[0].data().images).forEach((img) => {
+					let images = this.state.galleryObj;
+					images.push({url: img});
+					this.setState({ galleryObj: images });
+				});
+			}
 			console.log('que post é esse? ', this.state.post);
 			this.forceUpdate();
 			this.setState({ pulling: false });
@@ -80,6 +91,11 @@ export default class PostDetails extends React.Component {
 
 
 
+	}
+
+
+	disableModal () {
+		this.setState({ showImages: false });
 	}
 
 	_keyboardDidShow = (e) => {
@@ -117,32 +133,38 @@ export default class PostDetails extends React.Component {
 
 			if (this.state.post.data().images.length === 1) {
 				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
 						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: width * 0.80, height: 235}}>
-								<Image
-									source={{uri: this.state.post.data().images[0]}}
-									style={{width: width * 0.79, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[0]}}
+										style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
 						</View>
 					</View>
 				)
 			} else if (this.state.post.data().images.length === 2) {
 				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start'}}>
-						<View style={{ flexDirection: 'row', marginBottom: 5}}>
+					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: width * 0.40, height: 235}}>
-								<Image
-									source={{uri: this.state.post.data().images[0]}}
-									style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[0]}}
+										style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
 							<View style={{width: width * 0.40, height: 235}}>
-								<Image
-									source={{uri: this.state.post.data().images[1]}}
-									style={{width: width * 0.39, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[1]}}
+										style={{width: width * 0.39, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
 						</View>
 					</View>
@@ -152,57 +174,71 @@ export default class PostDetails extends React.Component {
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: width * 0.40, height: 235}}>
-								<Image
-									source={{uri: this.state.post.data().images[0]}}
-									style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[0]}}
+										style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
 							<View style={{flexDirection: 'column'}}>
 								<View style={{width: width * 0.40, height: 116}}>
-									<Image
-										source={{uri: this.state.post.data().images[1]}}
-										style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-									/>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[1]}}
+											style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
 								</View>
 								<View style={{width: width * 0.40, height: 116}}>
-									<Image
-										source={{uri: this.state.post.data().images[2]}}
-										style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
-									/>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[2]}}
+											style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
 								</View>
 							</View>
 						</View>
 					</View>
 				)
-			} else if (this.state.post.images.length === 4) {
+			} else if (this.state.post.data().images.length === 4) {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: width * 0.40, height: 116}}>
-								<Image
-									source={{uri: this.state.post.data().images[0]}}
-									style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[0]}}
+										style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
-							<View style={{width: width * 0.40, height: 100}}>
-								<Image
-									source={{uri: this.state.post.data().images[1]}}
-									style={{width: width * 0.39, height: 116, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+							<View style={{width: width * 0.40, height: 116}}>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[1]}}
+										style={{width: width * 0.39, height: 116, borderTopRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
 						</View>
-						<View style={{ flexDirection: 'row',  marginBottom: 5}}>
+						<View style={{ flexDirection: 'row',  marginTop: 5}}>
 							<View style={{width: width * 0.40, height: 116}}>
-								<Image
-									source={{uri: this.state.post.data().images[2]}}
-									style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[2]}}
+										style={{width: width * 0.39, height: 116,  borderBottomLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
-							<View style={{width: width * 0.40, height: 116}}>
-								<Image
-									source={{uri: this.state.post.data().images[3]}}
-									style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
-								/>
+							<View style={{width: width * 0.40, height: 100}}>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[3]}}
+										style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									/>
+								</TouchableOpacity>
 							</View>
 						</View>
 					</View>
@@ -344,6 +380,21 @@ export default class PostDetails extends React.Component {
 			<KeyboardAvoidingView
 				style={{zIndex: 0, flex: 1}}
 			>
+				<Modal
+					visible={this.state.showImages}
+					transparent={true}
+					onRequestClose={() => {
+						this.disableModal();
+					}}
+				>
+					<ImageViewer
+						imageUrls={this.state.galleryObj}
+						index={this.state.indexImage}
+						swipeDownThreshold={0.5}
+						enableSwipeDown={true}
+						onSwipeDown={() => {this.setState({ showImages: false })}}
+					/>
+				</Modal>
 				<TouchableOpacity onPress={this.return.bind(this)}>
 					<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
 						<Image

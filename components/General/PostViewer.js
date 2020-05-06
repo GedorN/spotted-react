@@ -133,7 +133,7 @@ export default class PostViewer extends React.Component {
                 <View style={{width: width * 0.40, height: 116}}>
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
 		                <Image
-	                        source={{uri: this.props.images[1]}}
+	                        source={{uri: this.props.images[0]}}
 	                        style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 	                    />
 	                </TouchableOpacity>

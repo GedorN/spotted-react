@@ -354,19 +354,19 @@ export default class PostWrite extends React.Component {
 						<View style={{alignSelf:'center'}}>
 							{this.getModalImagesLayout()}
 						</View>
-						<View style = {{flexDirection:"row", height:45,marginTop:this.state.postImages.length > 0 ? 10 : 2}}>
+						<View style = {{flexDirection:"row", height: 45 , marginTop: this.state.postImages.length > 0 ? 10 : 2}}>
 							<TouchableOpacity
 								onPress = {this.getAnonymous.bind(this)}
 								style =
 									{{
-										width:45,
-										height:45,
-										marginTop:3,
+										width: 45,
+										height: 45,
+										marginTop: 3,
 										marginLeft: theme.width * 0.08}}
 							>
 								<Image
 									source={require('../../../../../assets/images/mask-solid.png')}
-									style = {{ width:50,height:40, alignSelf:'flex-start', opacity:1}}
+									style = {{ width: 50, height: 40, alignSelf: 'flex-start', opacity: 1}}
 								/>
 
 							</TouchableOpacity>
@@ -390,25 +390,6 @@ export default class PostWrite extends React.Component {
 							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
-					{/*<View style={{flexDirection: 'row-reverse', marginTop: 2}}>*/}
-					{/*	<TouchableOpacity onPress={this.doPost.bind(this)}*/}
-					{/*	                  style={{marginRight: 20}}*/}
-					{/*	>*/}
-					{/*		<Image*/}
-					{/*			style={{width: 30, height: 30}}*/}
-					{/*			source={require('../../../../../assets/images/send.png')}*/}
-					{/*		/>*/}
-					{/*	</TouchableOpacity>*/}
-					{/*	<TouchableOpacity*/}
-					{/*		onPress={this.sendImagePropt.bind(this)}*/}
-					{/*		style={{marginRight: 20}}*/}
-					{/*	>*/}
-					{/*		<Image*/}
-					{/*			style={{width: 30, height: 30}}*/}
-					{/*			source={require('../../../../../assets/images/camera-icon.png')}*/}
-					{/*		/>*/}
-					{/*	</TouchableOpacity>*/}
-					{/*</View>*/}
 				</View>
 			</View>
 		);
