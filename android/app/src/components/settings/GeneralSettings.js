@@ -89,9 +89,9 @@ export default class GeneralSettings extends  React.Component {
 						console.log(response);
 						let image = 'file://' + response.path;
 						console.log('path: ', image);
-						let propCo =  600000 / response.fileSize;
+						let propCo =  900000 / response.fileSize;
 						let quality = propCo > 1 ? 100 : 100 * propCo;
-						let constant = propCo < 1 ? 1 / propCo : 1;
+						let constant = propCo > 1 ? 0.8 : 1;
 						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / constant, 'JPEG', quality).then(
 							(resolve) => {
 								console.log('resolve: ', resolve);
