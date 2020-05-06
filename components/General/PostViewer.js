@@ -72,7 +72,7 @@ export default class PostViewer extends React.Component {
           )
         } else if (this.props.images.length === 2) {
           return (
-            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: width * 0.40, height: 235}}>
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
