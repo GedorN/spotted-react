@@ -215,7 +215,7 @@ export default class PostWrite extends React.Component {
 			return (
 				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 					<View style={{ flexDirection: 'row', marginBottom: 5}}>
-						<View style={{width: 140, height: 200, backgroundColor: 'yellow'}}>
+						<View style={{width: 140, height: 200}}>
 							<Image
 								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
@@ -341,7 +341,7 @@ export default class PostWrite extends React.Component {
 								style={{width: width + 10,
 									borderBottomWidth: 0.7,
 									borderColor: 'grey',
-									height: this.state.postImages.length > 0 ? height * 0.395 : height * 0.70,
+									height: this.state.postImages.length > 0 ? height * 0.406 : height * 0.70,
 								}}
 								onChangeText={text => this.setState({postText: text})}
 								autoCapitalize="sentences"

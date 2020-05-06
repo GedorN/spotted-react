@@ -110,63 +110,63 @@ export default class PostDetails extends React.Component {
 	}
 
 	getModalImagesLayout = () => {
-		if (!this.state.post || !this.state.post.images) {
+		if (!this.state.post) {
 			return ;
 		}
-		if (this.state.post.images) {
+		if (this.state.post && this.state.post.data().images) {
 
-			if (this.state.post.images.length === 1) {
+			if (this.state.post.data().images.length === 1) {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: width * 0.80, height: 235}}>
 								<Image
-									source={{uri: this.state.post.images[0]}}
-									style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									source={{uri: this.state.post.data().images[0]}}
+									style={{width: width * 0.79, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 						</View>
 					</View>
 				)
-			} else if (this.state.post.images.length === 2) {
+			} else if (this.state.post.data().images.length === 2) {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start'}}>
 						<View style={{ flexDirection: 'row', marginBottom: 5}}>
 							<View style={{width: width * 0.40, height: 235}}>
 								<Image
-									source={{uri: this.state.post.images[0]}}
+									source={{uri: this.state.post.data().images[0]}}
 									style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 							<View style={{width: width * 0.40, height: 235}}>
 								<Image
-									source={{uri: this.state.post.images[1]}}
+									source={{uri: this.state.post.data().images[1]}}
 									style={{width: width * 0.39, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 						</View>
 					</View>
 				)
-			} else if (this.state.post.images.length === 3) {
+			} else if (this.state.post.data().images.length === 3) {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: width * 0.40, height: 235}}>
 								<Image
-									source={{uri: this.state.post.images[0]}}
+									source={{uri: this.state.post.data().images[0]}}
 									style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 							<View style={{flexDirection: 'column'}}>
 								<View style={{width: width * 0.40, height: 116}}>
 									<Image
-										source={{uri: this.state.post.images[1]}}
+										source={{uri: this.state.post.data().images[1]}}
 										style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 									/>
 								</View>
 								<View style={{width: width * 0.40, height: 116}}>
 									<Image
-										source={{uri: this.state.post.images[2]}}
+										source={{uri: this.state.post.data().images[2]}}
 										style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 									/>
 								</View>
@@ -180,13 +180,13 @@ export default class PostDetails extends React.Component {
 						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: width * 0.40, height: 116}}>
 								<Image
-									source={{uri: this.state.post.images[1]}}
+									source={{uri: this.state.post.data().images[0]}}
 									style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 							<View style={{width: width * 0.40, height: 100}}>
 								<Image
-									source={{uri: this.state.post.images[1]}}
+									source={{uri: this.state.post.data().images[1]}}
 									style={{width: width * 0.39, height: 116, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
@@ -194,13 +194,13 @@ export default class PostDetails extends React.Component {
 						<View style={{ flexDirection: 'row',  marginBottom: 5}}>
 							<View style={{width: width * 0.40, height: 116}}>
 								<Image
-									source={{uri: this.state.post.images[2]}}
+									source={{uri: this.state.post.data().images[2]}}
 									style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
 							<View style={{width: width * 0.40, height: 116}}>
 								<Image
-									source={{uri: this.state.post.images[3]}}
+									source={{uri: this.state.post.data().images[3]}}
 									style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
 							</View>
