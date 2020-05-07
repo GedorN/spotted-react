@@ -50,6 +50,9 @@ export default class Login extends React.Component {
     }
 
     doLogin = async () => {
+    	if (!this.state.user || !this.state.password) {
+    		return ;
+	    }
     	this.setState({ showConfirmCodeModal: true });
 	    let result = await this.props.login({ user: this.state.user, password: this.state.password }).then().catch((e) => {
 	    	this.setState({ showAttemptFail: true });

@@ -347,16 +347,37 @@ function HeimdallrLib() {
 
 
   this.deleteConectedUser = function () {
-  	return new Promise((resolve) => {
+  	return new Promise((resolve, reject) => {
 	  firebase.auth().currentUser.delete().then(
 		  (success) => {
 		  	console.warn('deu boa deletando');
-		    resolve();
+		    resolve(success);
 		  },
 		  (error) => {
 		  	console.warn('deu merda pra deletar', error);
+		  	reject(error);
 		  }
 	  )
+    })
+  }
+
+
+  this.saveData = function (chave, data) {
+  	console.warn('vai cai');
+	  return new Promise((resolve) => {
+	  	try{
+	  		console.warn('ola');
+		  firebase.firestore().collection('errors').add({
+			  problem: data,
+			  from: chave
+		  });
+
+	    } catch (e) {
+		    console.warn('aconteceu isso: ', e);
+		    resolve();
+	    }
+		  resolve();
+
     })
   }
 

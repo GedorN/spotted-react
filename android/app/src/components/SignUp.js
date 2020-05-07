@@ -112,23 +112,52 @@ export default  class SignUp extends React.Component {
 		const func = await heimdallr.sendVerificationMessage('+55' + this.state.phone.replace('(', '').replace(')', '').replace('-', '').replace(' ', ''));
 		this.setState({ confirmationFunction: func });
 		this.setState({ showConfirmCodeModal: true });
+		heimdallr.checkUser().then((result) => {
+			if (result) {
+				this.setState({ creatingAccount: true });
+				heimdallr.deleteConectedUser().then(
+					(success) => {
+						console.log('recebi que deu boa: ');
+						this.register();
+					},
+					(reject) => {
+						this.setState({ creatingAccount: false });
+						this.setState({ inputedWrongCode: true });
+					}
+				)
+			}
+		})
 	}
 
 	confirmCode = () => {
 		if (!this.state.codeInput || this.state.codeInput === '') {
 			return ;
 		}
+
 		this.setState({ creatingAccount: true });
+		heimdallr.saveData('checkpoint', ['b']);
+
 		this.state.confirmationFunction.confirm(this.state.codeInput).then(
 			(resolve) => {
 				heimdallr.deleteConectedUser().then(
 					(success) => {
 						console.log('recebi que deu boa: ');
 						this.register();
+					},
+					(reject) => {
+						heimdallr.saveData('reject_deleteUser', JSON.stringify(reject));
 					}
 				)
 			},
 			(reject) => {
+				heimdallr.deleteConectedUser().then(
+					(sucess) => {
+						heimdallr.saveData('resolve_deleteUserdaReject', JSON.stringify(sucess));
+					},
+					(fracasso) => {
+						heimdallr.saveData('fracasso_deleteUser', JSON.stringify(fracasso));
+					}
+				)
 				console.log('pq deu merda: ', reject);
 				this.setState({ creatingAccount: false });
 				this.setState({ inputedWrongCode: true });
@@ -161,6 +190,7 @@ export default  class SignUp extends React.Component {
 				}
 			},
 			(reject) => {
+				heimdallr.saveData('reject_updadte', JSON.stringify(reject));
 				if (reject.message ==  "The email address is already in use by another account.") {
 					this.setState({ showEmailAlreadyInUse: true });
 
