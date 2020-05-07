@@ -108,6 +108,7 @@ export default  class SignUp extends React.Component {
 		if (!fieldsOK) {
 			return ;
 		}
+		this.setState({ showErrorMessage: false, showNameErrorMessage: false, showErrorPasswordLength: false, showEmailAlreadyInUse: false, showEmailBadlyFormatted: false  });
 		const func = await heimdallr.sendVerificationMessage('+55' + this.state.phone.replace('(', '').replace(')', '').replace('-', '').replace(' ', ''));
 		this.setState({ confirmationFunction: func });
 		this.setState({ showConfirmCodeModal: true });
@@ -290,6 +291,14 @@ export default  class SignUp extends React.Component {
 		}
 	}
 
+	cancelPress = () => {
+		const resetAction = StackActions.reset({
+			index: 0,
+			actions: [NavigationActions.navigate({ routeName: 'Home' })],
+		});
+		this.props.navigation.dispatch(resetAction);
+	}
+
 	setDate = (event, date) => {
 		console.log('setDate');
 		this.setState({showDatePicker: false});
@@ -385,7 +394,7 @@ export default  class SignUp extends React.Component {
 							/>
 						</View>
 						<View>
-							<FatBottomedButton text='Cancelar' color={theme.primary} onTap={() => this.props.navigation.push('Home')}
+							<FatBottomedButton text='Cancelar' color={theme.primary} onTap={this.cancelPress.bind(this)}
 							/>
 						</View>
 					</View>

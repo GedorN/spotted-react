@@ -58,12 +58,20 @@ export default class Login extends React.Component {
     }
 
 	anonymousLogin = async () => {
+		this.setState({ showAlert: false });
 		this.setState({ showConfirmCodeModal: true });
 		const params = {};
     	params.user = 'spotted@utfpr.com';
     	params.password = 'angeca123';
-    	await this.props.login(params).then();
-		this.setState({ showAlert: false });
+    	heimdallr.signIn(params).then((resolve) => {
+		    this.setState({ showConfirmCodeModal: true });
+		    this.setState({ showAlert: false });
+		    const resetAction = StackActions.reset({
+			    index: 0,
+			    actions: [NavigationActions.navigate({ routeName: 'Home' })],
+		    });
+		    this.props.navigation.dispatch(resetAction);
+	    })
     }
 
     render() {

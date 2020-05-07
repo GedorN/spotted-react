@@ -250,7 +250,7 @@ export default class MainScreen extends React.Component {
 						type='overlay'
 						captureGestures={true}
 						tweenDuration={250}
-						openDrawerOffset={0.2} // 20% gap on the right side of drawer
+						openDrawerOffset={0.1} // 20% gap on the right side of drawer
 						// panCloseMask={0.9}
 						closedDrawerOffset={0}
 						tapToClose={true}

@@ -32,7 +32,13 @@ export default class SideDrawer extends React.Component {
 
 
 	actionPressed = (action) => {
-	    this.props.actionPressed(action);
+    	heimdallr.signOut().then((resolve) => {
+			const resetAction = StackActions.reset({
+				index: 0,
+				actions: [NavigationActions.navigate({ routeName: 'SignUp' })],
+			});
+			this.props.navigation.dispatch(resetAction);
+	    })
     }
 
     render () {
@@ -80,7 +86,7 @@ export default class SideDrawer extends React.Component {
 	                {
 		                heimdallr.email === 'spotted@utfpr.com' &&
 		                <TouchableOpacity
-			                style={{position: 'absolute', bottom: 8, paddingLeft: 22}}
+			                style={{position: 'absolute', bottom: 8, paddingLeft: 22, opacity: 0.8}}
 			                onPress={() => {this.props.actionPressed('signIn')}}>
 			                <View style={styles.item}>
 				                <Image source={require('../../assets/images/sign-in-alt-solid.png')}

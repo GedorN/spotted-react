@@ -247,7 +247,7 @@ export default class PostViewer extends React.Component {
 					      >
 						      <Image
 							      style={{width: 20, height: 12}}
-							      source={require('../../assets/images/chevron-down-solid.png')}
+							      source={require('../../assets/images/ellipsis-h-solid.png')}
 						      />
 					      </View>
 				      </TouchableOpacity>

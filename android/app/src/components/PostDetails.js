@@ -436,7 +436,7 @@ export default class PostDetails extends React.Component {
 												>
 													<Image
 														style={{width: 20, height: 12}}
-														source={require('../../../../assets/images/chevron-down-solid.png')}
+														source={require('../../../../assets/images/ellipsis-h-solid.png')}
 													/>
 												</View>
 											</TouchableOpacity>
@@ -472,7 +472,9 @@ export default class PostDetails extends React.Component {
 						/>
 						{
 							heimdallr.email !== 'spotted@utfpr.com' &&
-							<Text style = {{opacity: 0.5, fontSize: 13, marginLeft: 15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
+							<View style={{height: theme.height * 0.04, flexDirection: 'row', alignItems: 'flex-end'}}>
+								<Text style = {{opacity: 0.5, fontSize: 13, marginLeft: 15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
+							</View>
 						}
 					</View>
 					{
@@ -495,7 +497,7 @@ export default class PostDetails extends React.Component {
 							</TouchableOpacity>
 							<TouchableOpacity onPress={this.addCommentary.bind(this)}>
 								<Image
-									style={{width: 30, height: 30, marginLeft: 17, marginBottom:5}}
+									style={{width: 30, height: 30, marginLeft: 5, marginBottom:5}}
 									source={require('../../../../assets/images/send.png')}
 								/>
 							</TouchableOpacity>
