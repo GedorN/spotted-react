@@ -44,7 +44,7 @@ export default class Home extends React.Component {
     super(props);
     this.state = {
         posts: null,
-        pulledPosts: 10,
+        pulledPosts: 40,
         loading: false,
 	    pulling: false,
 	    endPulling: false,
@@ -110,7 +110,7 @@ export default class Home extends React.Component {
 	        this.setState({ pulling: true });
 		    console.log('chegou');
 		    let n = this.state.pulledPosts;
-		    n = 5 + n;
+		    n = 30 + n;
 		    console.log('puxando: ', n);
 		    let result = heimdallr.getCollection('post', n);
 		    result.then((resolve) => {
@@ -179,7 +179,6 @@ export default class Home extends React.Component {
 	    </View>
 	  )
   };
-
 
 
 	confirmReport = () => {
