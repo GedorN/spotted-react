@@ -101,7 +101,8 @@ export default class MainScreen extends React.Component {
 	}
 
 	_hideModal = () => {
-		this.setState({ showModal: false })
+		this.setState({ showModal: false });
+		this.homeScreen.setRefreshing();
 	};
 
 	_hideSettingsModal = () => {
@@ -230,7 +231,6 @@ export default class MainScreen extends React.Component {
 		return (
 			<SideDrawer navigation={this.props.navigation} actionPressed={this.setAction}/>
 		);
-		//TODO tirar margem do topo
 	};
 
 	returnContent = () => {

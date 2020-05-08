@@ -97,6 +97,10 @@ export default class Home extends React.Component {
   	});
   }
 
+  setRefreshing = () => {
+	  this.setState({ isRefreshing: true });
+  }
+
   pullMorePosts = (distanceFromEnd) => {
   	if (!this.state.endPulling) {
 	    console.log('interval?', distanceFromEnd);
