@@ -47,7 +47,7 @@ export default class PostWrite extends React.Component {
 	}
 
 	doPost = () => {
-		if (this.state.postText == '' && this.state.postImages.length == 0 ) {
+		if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0) {
 			console.log('nothing to do...');
 			return ;
 		}

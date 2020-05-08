@@ -118,7 +118,6 @@ const collections = {
             {
                 desc: 'text',
                 type: 'string',
-                required: true,
             },
             {
                 desc: 'active',
@@ -168,7 +167,6 @@ const collections = {
 			{
 				desc: 'text',
 				type: 'string',
-				required: true,
 			},
 			{
 				desc: 'active',
