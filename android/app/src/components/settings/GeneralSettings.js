@@ -16,6 +16,7 @@ import {
 } from 'react-native-paper'
 
 import { showMessage, hideMessage } from "react-native-flash-message";
+import FlashMessage from "react-native-flash-message";
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import RUMineTextInput from "../Inputs/RUMineTextInput";
@@ -119,17 +120,12 @@ export default class GeneralSettings extends  React.Component {
 
 	deleteUser = () => {
 		console.warn('clidcado o carai0');
-		if (!this.state.user || !this.state.password) {
+		if (!this.state.password) {
 			return ;
 		}
-		heimdallr.deleteUser(this.state.user, this.state.password).then(
+		heimdallr.deleteUser(heimdallr.email, this.state.password).then(
 			(resolve) => {
 				this.setState({ showConfirmCodeModal: false});
-				showMessage({
-					message: "Conta apagada com sucesso",
-					type: "success",
-					icon: 'success',
-				});
 				const resetAction = StackActions.reset({
 					index: 0,
 					actions: [NavigationActions.navigate({ routeName: 'Home' })],
@@ -139,7 +135,7 @@ export default class GeneralSettings extends  React.Component {
 			(reject) => {
 				this.setState({ showConfirmCodeModal: false});
 				console.warn('rejetiado');
-				showMessage({
+				this.refs.message.showMessage({
 					message: "Usuário ou senha incorreto. Tente novamente",
 					type: "danger",
 					icon: 'danger',
@@ -173,10 +169,11 @@ export default class GeneralSettings extends  React.Component {
 							});
 							this.props.navigation.dispatch(resetAction);
 						} else {
-							showMessage({
+							this.refs.message.showMessage({
 								message: "Erro ao salvar configurações",
 								type: "danger",
-								icon: 'danger'
+								icon: 'danger',
+								style: {backgroundColor: 'black'}
 							});
 							this.setState({ showLoadingModal: false });
 						}
@@ -228,7 +225,7 @@ export default class GeneralSettings extends  React.Component {
 	render () {
 		return (
 			<View>
-				<View style={{zIndex: 999}}>
+				<View style={{zIndex: 0}}>
 					<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
 						<View style={{flexDirection: 'row', height: 20, width: 50}}>
 							<Image
@@ -299,7 +296,7 @@ export default class GeneralSettings extends  React.Component {
 					show={this.state.showAlert}
 					showProgress={false}
 					title="Não seremos os mesmos sem você"
-					message="Você realmente deseja apagar a sua conta? Essa ação não poderá ser desfeita e nos dexará muito tristes :("
+					message="Você realmente deseja apagar a sua conta? Essa ação não poderá ser desfeita e nos deixará muito tristes :("
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showCancelButton={true}
@@ -325,16 +322,8 @@ export default class GeneralSettings extends  React.Component {
 						<View style={styles.modalContainer}>
 							<Text style={styles.textTitle}>Verificação</Text>
 								<View>
-									<Text>Para continuar precisamos que digite seu email e senha novamente:</Text>
+									<Text>Para continuar precisamos que digite a sua senha novamente:</Text>
 								</View>
-							<RUMineTextInput
-								placeholder='Email'
-								autoCompleteType='email'
-								keyboardType='email-address'
-								textContentType='emailAddress'
-								borderBottomWidth={1}
-								onChangeText={text => this.setState({user: text})}
-							/>
 							<EyeOfThePassword
 								secureTextEntry={this.state.securePassword}
 								toggleSecureEntry={this.toggleSecureEntry.bind(this)}
@@ -369,6 +358,7 @@ export default class GeneralSettings extends  React.Component {
 						</View>
 					</View>
 				</Modal>
+				<FlashMessage ref={'message'} style={{ zIndex: 99 }} />
 			</View>
 
 		)
