@@ -48,6 +48,7 @@ export default class PostDetails extends React.Component {
 			showImages: false,
 			galleryObj: [],
 			indexImage: 0,
+			creatingComment: false,
 		};
 	}
 
@@ -335,33 +336,39 @@ export default class PostDetails extends React.Component {
 		if (!this.state.commentText || this.state.commentText === '') {
 			return ;
 		}
+		if (!this.state.creatingComment) {
+			this.setState({ creatingComment: true });
 
 
-		const params = {};
-		params.pid = this.state.post.data().pid;
-		params.comment = this.state.commentText;
-		params.date = await heimdallr.getServerTime();
-		params.user_image = heimdallr.user_image;
-		params.user_name = heimdallr.user_name;
-		params.anonymous =  this.state.anonymousUser;
-		params.id_user = heimdallr.user_id;
-		heimdallr.getUID().then((uuid) => {
-			params.cid = uuid;
-			heimdallr.saveComment(params);
-
-			const data = {};
-			data.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
-			data.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
-			data.comment = this.state.commentText;
-			data.anonymous =  this.state.anonymousUser;
-			data.cid = uuid;
-			let posts = this.state.comments;
-			posts.push(data);
-			this.setState({ comments: posts });
+			const params = {};
 			this.postTextInput.clear();
-		})
+			const comment = this.state.commentText;
+			this.setState({ commentText: null });
+			params.pid = this.state.post.data().pid;
+			params.comment = comment;
+			params.date = await heimdallr.getServerTime();
+			params.user_image = heimdallr.user_image;
+			params.user_name = heimdallr.user_name;
+			params.anonymous =  this.state.anonymousUser;
+			params.id_user = heimdallr.user_id;
+			heimdallr.getUID().then((uuid) => {
+				params.cid = uuid;
 
-		this.triggerNotification();
+				heimdallr.saveComment(params);
+				const data = {};
+				data.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
+				data.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
+				data.comment = comment;
+				data.anonymous =  this.state.anonymousUser;
+				data.cid = uuid;
+				let posts = this.state.comments;
+				posts.push(data);
+				this.setState({ comments: posts });
+				this.setState({ creatingComment: false });
+			})
+
+			this.triggerNotification();
+		}
 
 	}
 
