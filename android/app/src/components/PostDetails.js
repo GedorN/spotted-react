@@ -385,7 +385,7 @@ export default class PostDetails extends React.Component {
 	}
 
 	comentaryCallback = (alertState) => {
-		this.setState({showAlert : alertState});
+		this.setState({showAlert : true});
 	}
 
 

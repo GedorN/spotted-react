@@ -20,7 +20,6 @@ export default class CommentaryViewer extends React.Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			showAlert: false,
 		};
 	}
 	goToUserProfile = () => {
@@ -36,8 +35,7 @@ export default class CommentaryViewer extends React.Component {
 
 	closeAlert = () => {
 		this.RBSheet.close();
-		this.setState({ showAlert: true });
-		this.props.commentaryCallback(this.state.showAlert);
+		this.props.commentaryCallback();
 	}
 
 
