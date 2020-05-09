@@ -10,6 +10,7 @@ import RUMineTextInput from "./Inputs/RUMineTextInput";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import {Text} from "react-native-paper";
 import UserBannerView from "../../../../components/General/UserBannerView";
+import theme from '../../../../components/General/Theme';
 const width = Dimensions.get('screen').width;
 
 export default class UsersSearch extends React.Component {
@@ -19,24 +20,36 @@ export default class UsersSearch extends React.Component {
 			search: null,
 			users: [],
 			allUsers: [],
+			unicSearch: true,
+			show: true,
 		};
 	}
 
 	componentDidMount = () => {
-		let users = heimdallr.getCollection('user');
-		users.then((resolve) => {
-			console.log('Resultado de todos os usuários: ', resolve);
-			this.setState({ users: resolve.slice(0, 9) });
-			this.setState({ allUsers: resolve });
-		})
+
 	}
 
 	changeText = (text) => {
-		console.log(text);
+		if(this.state.unicSearch){
+			let users = heimdallr.getCollection('user');
+			users.then((resolve) => {
+			console.log('Resultado de todos os usuários: ', resolve);
+			this.setState({ users: resolve.slice(0, 9) });
+			this.setState({ allUsers: resolve });
+			this.setState({unicSearch: false});
+			console.log("state unic search", this.state.unicSearch);
+			this.setState({show: false});
+			})
+
+		}
+
+	
+		console.log("digitado",text);
 		this.setState({ search: text });
 		console.log('carai: ', this.state.allUsers.filter((i) => i._data.name.includes(text)));
 		let tempUser = this.state.allUsers.filter((i) => i._data.name.toLowerCase().includes(text.toLowerCase()));
 		this.setState({ users: tempUser.slice(0, 9)});
+
 	}
 
 	render() {
@@ -56,6 +69,12 @@ export default class UsersSearch extends React.Component {
 						/>
 					</View>
 				</View>
+				{this.state.show?(
+					<View style = {{width: theme.width, borderColor: 'rgba(59, 56, 50, 0.2)',borderTopWidth:0.9,
+					padding:theme.width * 0.04}}>
+					<Text  style = {{ opacity: 0.5}}>{'Nenhum Resultado'}</Text>
+					</View>) : null
+				}
 				<View style={styles.usersContainer}>
 					<FlatList
 						data={this.state.users}
