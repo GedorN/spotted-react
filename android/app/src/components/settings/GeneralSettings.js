@@ -262,6 +262,7 @@ export default class GeneralSettings extends  React.Component {
 				</View>
 				<View style={{marginTop: 10}}>
 					<TextInput
+						disabled={true}
 						label='Email (você não pode alterar)'
 						autoCompleteType={'username'}
 						textContentType={'name'}

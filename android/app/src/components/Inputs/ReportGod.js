@@ -3,6 +3,9 @@ import {
 	View,
 	Text,
 	StyleSheet,
+	TouchableOpacity,
+	Image,
+	RefreshControl,
 } from 'react-native';
 
 import {
@@ -22,19 +25,15 @@ export default class ReportGod extends React.Component {
 	}
 
 	makeReport = async (idReport) => {
-
+		this.props.close();
 		if(this.props.typeEntity === 'comentario'){
 			let params = {};
 			params.pid = this.props.pid;
 			params.author = heimdallr.user_id;
 			params.category = idReport;
-			params.uid = this.props.idEntity,
+			params.uid = this.props.idEntity;
 			params.date = await heimdallr.getServerTime();
-
-			let result = heimdallr.saveSpecificColletion('commentary_report',params);
-			result.then((resolve) => {
-				console.warn("REPORT SAVED");
-			})
+			heimdallr.saveSpecificColletion('commentary_report',params);
 
 		}
 
@@ -44,15 +43,9 @@ export default class ReportGod extends React.Component {
 			params.category = idReport;
 			params.uid = this.props.idEntity;
 			params.date = await heimdallr.getServerTime();
-
-			let result = heimdallr.saveSpecificColletion('post_report',params);
-			result.then((resolve) => {
-				console.warn("REPORT SAVED");
-			})
+			heimdallr.saveSpecificColletion('post_report',params);
 		}
 
-		
-		this.props.close();
 	}
 
 
@@ -65,26 +58,30 @@ export default class ReportGod extends React.Component {
 				<Text
 					style={{fontSize: 16, marginTop: 5}}
 				>A postagem possui conteúdo: </Text>
-				<List.Item
-					title="Pornográfico"
-					onPress={this.makeReport.bind(this, 2)}
-					left={() => <List.Icon icon={require('../../../../../assets/images/pig.png')} style={{width: 20, height: 20}}/>}
-				/>
-				<List.Item
-					title="Ofensivo"
-					onPress={this.makeReport.bind(this, 3)}
-					left={() => <List.Icon icon={require('../../../../../assets/images/bully.png')} style={{width: 20, height: 20}}/>}
-				/>
-				<List.Item
-					title="Violento"
-					onPress={this.makeReport.bind(this, 1)}
-					left={() => <List.Icon icon={require('../../../../../assets/images/horror.png')} style={{width: 20, height: 20}}/>}
-				/>
-				<List.Item
-					title="Outros..."
-					onPress={this.makeReport.bind(this, 4)}
-					left={() => <List.Icon icon={require('../../../../../assets/images/flag.png')} style={{width: 20, height: 20}}/>}
-				/>
+				<TouchableOpacity onPress={this.makeReport.bind(this, 2)}>
+					<View style={styles.listItem}>
+						<Image style={styles.listImage} source={require('../../../../../assets/images/pig.png')}/>
+						<Text> Pornográfico </Text>
+					</View>
+				</TouchableOpacity>
+				<TouchableOpacity onPress={this.makeReport.bind(this, 3)}>
+					<View style={styles.listItem}>
+						<Image style={styles.listImage} source={require('../../../../../assets/images/bully.png')}/>
+						<Text> Ofensivo </Text>
+					</View>
+				</TouchableOpacity>
+				<TouchableOpacity onPress={this.makeReport.bind(this, 1)}>
+					<View style={styles.listItem}>
+						<Image style={styles.listImage} source={require('../../../../../assets/images/horror.png')}/>
+						<Text> Violento </Text>
+					</View>
+				</TouchableOpacity>
+				<TouchableOpacity onPress={this.makeReport.bind(this, 4)}>
+					<View style={styles.listItem}>
+						<Image style={styles.listImage} source={require('../../../../../assets/images/flag.png')}/>
+						<Text> Outros... </Text>
+					</View>
+				</TouchableOpacity>
 			</View>
 		);
 	}
@@ -93,5 +90,15 @@ export default class ReportGod extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		padding: 10
+	},
+	listImage: {
+		width: 25,
+		height: 25,
+		marginRight: 20,
+	},
+	listItem: {
+		flexDirection: 'row',
+		alignContent: 'center',
+		margin: 10,
 	}
 })
