@@ -752,6 +752,28 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.saveSpecificColletion = function (collection,params) {
+  	console.log('params.uid',params.uid);
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).doc(params.uid).get().then(
+				(result) => {
+					console.log('result', result.data());
+					if (!result.data()) {
+						firebase.firestore().collection(collection).doc(params.uid).set({
+							dataArray: [params]
+						});
+					} else {
+						let saveData = result.data().dataArray;
+						saveData.unshift(params);
+						firebase.firestore().collection(collection).doc(params.uid).set({
+							dataArray: saveData
+						});
+					}
+				}
+			)
+		})
+	}
+
   this.saveCollection = function (collection, params) {
     let returnValue = null;
     console.log('ue');

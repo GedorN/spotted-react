@@ -297,37 +297,40 @@ export default class PostViewer extends React.Component {
 			      </TouchableOpacity>
 			  </View>
 			  <View style={{flexDirection: 'column'}}>
-			      <View style={styles.postHeader}>
-				      <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-				          <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
-				              <Text
-				                  style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
-				              >
-				                  {this.props.user}
-				              </Text>
-				          </TouchableOpacity>
-					      {this.props.elapsed_time &&
-					          <Image
-						          style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
-						          source={require('../../assets/images/circle-solid.png') }
-					          />
-					      }
-				          <Text style= {{marginTop:35}}>
-					          { this.props.elapsed_time }
-				          </Text>
-				      </View>
-				      <TouchableOpacity
-					      onPress={() => this.RBSheet.open()}>
-					      <View
-						      style={{width: 80, height: 50, marginTop: 30, padding: 5, paddingBottom: 10, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'center'}}
-					      >
-						      <Image
-							      style={{width: 20, height: 12}}
-							      source={require('../../assets/images/ellipsis-h-solid.png')}
-						      />
-					      </View>
-				      </TouchableOpacity>
-			      </View>
+					<View style = {{flexDirection: 'row'}}>
+								<View style={styles.postHeader}>
+									<View style={{ flexDirection: 'row', alignItems: 'center'}}>
+											<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
+													<Text
+															style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+													>
+															{this.props.user}
+													</Text>
+											</TouchableOpacity>
+										{this.props.elapsed_time &&
+												<Image
+													style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
+													source={require('../../assets/images/circle-solid.png') }
+												/>
+										}
+											<Text style= {{marginTop:35}}>
+												{ this.props.elapsed_time }
+											</Text>
+									</View>
+								</View>
+								<TouchableOpacity
+										style = {{width:theme.width * 0.14, alignSelf:'flex-end',height:theme.width * 0.08,flexDirection:'column',justifyContent:'flex-end'}}
+										onPress={() => this.RBSheet.open()}>
+										<View
+											style={{width: 40, height: theme.height * 0.1, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+										>
+											<Image
+												style={{width: 20, height: 12}}
+												source={require('../../assets/images/ellipsis-h-solid.png')}
+											/>
+										</View>
+									</TouchableOpacity>
+							</View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
 			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}> { this.props.text } </Text>
@@ -358,7 +361,7 @@ export default class PostViewer extends React.Component {
 			    animationType={'slide'}
 			    duration={250}
 		    >
-			    <ReportGod  close={this.closeAlert.bind(this)}/>
+			    <ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'}/>
 		    </RBSheet>
 	    </TouchableOpacity>
     );
@@ -375,17 +378,16 @@ export default class PostViewer extends React.Component {
       },
       body: {
 					flexDirection: 'column',
-					marginTop:25,
+					marginTop:10,
       },
       postHeader: {
-      	flex: 1,
         justifyContent: 'space-between',
         flexDirection: 'row',
-		height: 15,
-		fontWeight: 'bold',
-		alignItems: 'center',
-		alignContent: 'center',
-		width: width * 0.83,
+				height: 15,
+				fontWeight: 'bold',
+				alignItems: 'center',
+				alignContent: 'center',
+				width: width * 0.70,
       },
       postFooter: {
           flexDirection: 'row',

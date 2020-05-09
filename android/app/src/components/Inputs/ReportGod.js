@@ -21,7 +21,37 @@ export default class ReportGod extends React.Component {
 		};
 	}
 
-	makeReport = (idReport) => {
+	makeReport = async (idReport) => {
+
+		if(this.props.typeEntity === 'comentario'){
+			let params = {};
+			params.pid = this.props.pid;
+			params.author = heimdallr.user_id;
+			params.category = idReport;
+			params.uid = this.props.idEntity,
+			params.date = await heimdallr.getServerTime();
+
+			let result = heimdallr.saveSpecificColletion('commentary_report',params);
+			result.then((resolve) => {
+				console.warn("REPORT SAVED");
+			})
+
+		}
+
+		else {
+			let params = {};
+			params.author = heimdallr.user_id;
+			params.category = idReport;
+			params.uid = this.props.idEntity;
+			params.date = await heimdallr.getServerTime();
+
+			let result = heimdallr.saveSpecificColletion('post_report',params);
+			result.then((resolve) => {
+				console.warn("REPORT SAVED");
+			})
+		}
+
+		
 		this.props.close();
 	}
 

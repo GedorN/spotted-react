@@ -25,6 +25,7 @@ import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
 
+
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
 
@@ -49,6 +50,7 @@ export default class PostDetails extends React.Component {
 			galleryObj: [],
 			indexImage: 0,
 			creatingComment: false,
+			postId: '',
 		};
 	}
 
@@ -63,6 +65,7 @@ export default class PostDetails extends React.Component {
 
 	componentDidMount = () => {
 		this.setState({ pulling: true });
+		this.state.postId =  this.props.navigation.getParam('pid');
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
 			console.log('details', moment(resolve[0].data().date).locale('pt-br').format('LLLL'));
@@ -381,6 +384,11 @@ export default class PostDetails extends React.Component {
 		this.setState({ showAlert: true });
 	}
 
+	comentaryCallback = (alertState) => {
+		this.setState({showAlert : alertState});
+	}
+
+
 
 	render() {
 		return (
@@ -426,31 +434,34 @@ export default class PostDetails extends React.Component {
 										</TouchableOpacity>
 									</View>
 									<View style={{flexDirection: 'column'}}>
-										<View style={styles.postHeader}>
-											<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-												<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
-													<Text
-														style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
-													>
-														{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
-													</Text>
-												</TouchableOpacity>
+										<View style={{flexDirection:'row'}}>
+											<View style={styles.postHeader}>
+												<View style={{flexDirection: 'row', alignItems: 'center'}}>
+													<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
+														<Text
+															style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+														>
+															{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
+														</Text>
+													</TouchableOpacity>
+												</View>
 											</View>
 											<TouchableOpacity
-												onPress={() => this.RBSheet.open()}>
-												<View
-													style={{width: 80, height: 50, marginTop: 30, padding: 5, paddingBottom: 10, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'center'}}
-												>
-													<Image
-														style={{width: 20, height: 12}}
-														source={require('../../../../assets/images/ellipsis-h-solid.png')}
-													/>
-												</View>
+													style = {{width:theme.width * 0.14,height:theme.height * 0.048,flexDirection:'column',justifyContent:'flex-end'}}
+													onPress={() => this.RBSheet.open()}>
+													<View
+														style={{width: 40, height: 20, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+													>
+														<Image
+															style={{width: 20, height: 12}}
+															source={require('../../../../assets/images/ellipsis-h-solid.png')}
+														/>
+													</View>
 											</TouchableOpacity>
 										</View>
 										<View style={styles.body}>
 											<View style={styles.post}>
-												<Text style={{marginTop:25}}> {this.state.post ? this.state.post.data().text : null} </Text>
+												<Text style={{marginTop:10}}> {this.state.post ? this.state.post.data().text : null} </Text>
 												<View >
 													{this.getModalImagesLayout()}
 												</View>
@@ -468,7 +479,7 @@ export default class PostDetails extends React.Component {
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>
-								< CommentaryViewer  userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+								< CommentaryViewer commentaryCallback = {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
 							}
 							keyExtractor={item => item.cid}
 							onEndReachedThreshold={0.3}
@@ -519,7 +530,7 @@ export default class PostDetails extends React.Component {
 					animationType={'slide'}
 					duration={250}
 				>
-					<ReportGod  close={this.closeAlert.bind(this)}/>
+					<ReportGod  close={this.closeAlert.bind(this)} idEntity={this.state.postId} typeEntity = {'post'}/>
 				</RBSheet>
 				<AwesomeAlert
 					show={this.state.showAlert}
@@ -549,6 +560,7 @@ const styles = StyleSheet.create({
 		borderTopWidth: 0.2,
 		borderColor: 'rgba(59, 56, 50, 0.2)',
 		flex: 1,
+		width:theme.width*0.99,
 		
 	},
 	rowContainer: {
@@ -579,14 +591,13 @@ const styles = StyleSheet.create({
 		marginBottom:40,
 	},
 	postHeader: {
-		flex: 1,
 		justifyContent: 'space-between',
 		flexDirection: 'row',
 		height: 15,
 		fontWeight: 'bold',
 		alignItems: 'center',
 		alignContent: 'center',
-		width: width * 0.83,
+		width: width * 0.70,
 	},
 	commentContainer: {
 		position: 'absolute',

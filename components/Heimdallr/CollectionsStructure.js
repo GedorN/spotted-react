@@ -285,6 +285,38 @@ const collections = {
                 desc: 'anonymous',
                 type: 'boolean'
             }
+        ],
+        post_report: [
+            {
+                desc: 'author',
+                type: 'string'
+            },
+            {
+                desc: 'category',
+                type: 'string'
+            },
+            {
+                desc: 'date',
+                type: 'timestamp'
+            }
+        ],
+        commentary_report: [
+            {
+                desc: 'pid',
+                type: 'string'
+            },
+            {
+                desc: 'author',
+                type: 'string'
+            },
+            {
+                desc: 'category',
+                type: 'string'
+            },
+            {
+                desc: 'date',
+                type: 'timestamp'
+            }
         ]
 
 };
