@@ -84,7 +84,7 @@ export default class LikeAPrayer extends React.Component{
 						<Text style={{
 							textAlign: 'center',
 							fontSize: this.props.product && this.props.product.name ? this.getFontSize(this.props.product.name) : null,
-							color: this.props.colors ? this.getTxtColor(this.props.colors[0]) : 'black'
+							color: this.props.colors ? this.props.colors[1] : 'black'
 						}}>
 							{ this.props.product ? this.props.product.name : '' }
 						</Text>

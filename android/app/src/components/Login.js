@@ -128,6 +128,7 @@ export default class Login extends React.Component {
 	            <AwesomeAlert
 		            show={this.state.showAlert}
 		            showProgress={false}
+		            style={{position: 'absolute'}}
 		            title="Modo anônimo"
 		            message="Usuários anônimos não podem realizar postagens e nem comentários"
 		            closeOnTouchOutside={true}
