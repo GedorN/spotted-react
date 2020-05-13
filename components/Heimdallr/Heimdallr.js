@@ -271,6 +271,22 @@ function HeimdallrLib() {
     })
 	}
 
+	this.getProduct = function (iid) {
+		let product = null;
+		return new Promise ((resolve) => {
+			firebase.firestore()
+			.collection('products')
+			.where('iid', '==', iid).get().then((result) => {
+				console.warn("PRODUCT",result);
+				product =  result._docs[0]._data;
+				resolve();
+			})
+		}).then(function(resolve){
+			return product;
+		})
+	}
+
+
   this.getStoreInfo = function (store) {
   	let info = null;
   	return new Promise((resolve) => {
