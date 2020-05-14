@@ -7,6 +7,7 @@
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
+import { functionTypeAnnotation } from '@babel/types';
 
 
 function HeimdallrLib() {
@@ -76,6 +77,7 @@ function HeimdallrLib() {
 	      }
 	    })
 	}
+
 	
 	this.saveComment = function (params) {
 		let returnValue = null;
@@ -377,6 +379,18 @@ function HeimdallrLib() {
     })
   }
 
+	this.saveTicketsRegister = function (item){
+
+		return new Promise((resolve) => {
+			try{
+				firebase.firestore().collection('tickets').add({item});	
+			} catch (e) {
+				console.warn("erro save tickets", e);
+				resolve();
+			}
+			resolve();
+		})
+	}
 
   this.saveData = function (chave, data) {
   	console.warn('vai cai');

@@ -30,27 +30,20 @@ export default class CustomizationOptions extends React.Component {
     }
 
     componentDidMount(): void {
-/*
-        console.warn("PRODUCT CUSTOMIZATION", this.props.productCustomization);
-        console.warn("CUSTOM",this.props.custom.label);
-        console.warn("colors RECEIVED",this.props.colors); */
-        this.props.productCustomization.forEach(item => {
+    }
 
-            if(item === this.props.custom.label){
-                this.state.i = this.props.productCustomization.indexOf(item);
-                /* console.warn("state i"  ,this.state.i); */
-            }
-        })
+
+    getOption = (item,labelOption) => {
+      
+        this.setState({ color: item });
+        this.props.customizationCallback(item,labelOption);
 
     }
 
-    getOption = (item) => {
-       /*  console.warn("item",item); */
-        this.state.color = item;
-        this.setState({ color: item });
-       /*  console.warn("STATE COLOR",this.state.color); */
-       this.props.customizationCallback(this.state.i,this.i);
+    getRadioButtomOption = (item,labelOption) => {
 
+        this.setState({checked: item});
+        this.props.customizationCallback(item,labelOption);
     }
 
 
@@ -61,13 +54,13 @@ export default class CustomizationOptions extends React.Component {
             <View style={{alignSelf:'center'}}>
                 {
                 	this.props.custom.field === 'select' &&
-                    <View style = {{width:theme.width * 0.50}}>
-                        <Text style = {{ fontWeight:'bold' ,fontSize:20,alignSelf:'center',marginTop:25,marginBottom:5}}>{this.props.custom.label}</Text>
+                    <View style = {{width:theme.width * 0.90}}>
+                        <Text style = {{ fontWeight:'bold' ,fontSize:25,alignSelf:'center',marginTop:25,marginBottom:5}}>{this.props.custom.label}</Text>
                         {
-                        	this.props.custom.options.map(i =>
-		                        <TouchableOpacity style = {{marginTop:25,justifyContent:'center'}} onPress = {this.getOption.bind(this,i)}>
+                        	this.props.custom.options.map((i) =>
+		                        <TouchableOpacity style = {{elevation: 2 ,borderColor:(this.state.color === i?this.props.colors[0] :'#8f8f8f'),borderWidth:(this.state.color === i? 4 : 2),borderRadius:25, marginTop:25,justifyContent:'center'}} onPress = {this.getOption.bind(this,i,this.props.custom.label)}>
 		                            <View  key={i} >
-		                                <Text style = {{fontSize:17,marginBottom:22,alignSelf:'center',fontWeight:'bold',color:(this.state.color === i? this.state.color1 : this.state.color2)}}>{i}</Text>
+		                                <Text style = {{fontSize:22,marginBottom:theme.height*0.025,marginTop:theme.height*0.025,alignSelf:'center',fontWeight:'bold',color:(this.state.color === i? this.props.colors[0] :'#8f8f8f')}}>{i}</Text>
 		                            </View>
 		                        </TouchableOpacity>
                             )}
@@ -77,19 +70,19 @@ export default class CustomizationOptions extends React.Component {
 
                 {
                 	this.props.custom.field === 'radio' &&
-                    <View style = {{width:theme.width * 0.50}}>
-                        <Text style = {{ fontWeight:'bold' ,fontSize:20,alignSelf:'center',marginTop:15,marginBottom:this.props.custom.options.length > 2 ? 10 : 50}}>{this.props.custom.label}</Text>
+                    <View style = {{width:theme.width * 0.90}}>
+                        <Text style = {{ fontWeight:'bold' ,fontSize:25,alignSelf:'center',marginTop:25,marginBottom:5}}>{this.props.custom.label}</Text>
                         {
                         	this.props.custom.options.map(i =>
 	                            <View key={i}>
-	                                <View style = {{marginBottom:25,justifyContent:'center'}}>
-	                                    <Text style = {{fontSize:17,marginBottom:11,marginTop:11,alignSelf:'center',color:'#8f8f8f',fontWeight:'bold'}}>{i}</Text>
+	                                <View style = {{marginBottom:20,justifyContent:'center'}}>
+	                                    <Text style = {{fontSize:22,marginBottom:theme.height*0.025,marginTop:theme.height*0.025,alignSelf:'center',color:'#8f8f8f',fontWeight:'bold'}}>{i}</Text>
 	                                   <View style = {{ width:theme.width * 0.1,alignSelf:'center'}}>
 	                                        <RadioButton
 	                                            color  = {this.props.colors[0]}
 	                                            value = {i}
 	                                            status={this.state.checked ===  i ? 'checked' : 'unchecked'}
-	                                            onPress={() => { this.setState({ checked: i }); }}
+	                                            onPress={ this.getRadioButtomOption.bind(this,i,this.props.custom.label)}
 	                                            />
 	                                    </View>
 	                                </View>
@@ -97,6 +90,7 @@ export default class CustomizationOptions extends React.Component {
                             )}
                     </View>
                 }
+                
 
 
             </View>
