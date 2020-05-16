@@ -21,6 +21,8 @@ import CustomizationOptions from './CustomizationOptions';
 import FatBottomedButton from'./buttons/FatBottomedButton';
 import CustomizationTextArea from './CustomizationTexArea';
 import AwesomeAlert from "react-native-awesome-alerts";
+import CustomSelect from "./custom/CustomSelect";
+import CustomRadio from "./custom/CustomRadio";
 
 
 export default class ProductScreen extends React.Component {
@@ -35,63 +37,29 @@ export default class ProductScreen extends React.Component {
 			description : '',
 			showAlert : false,
 			PicPay : null,
-			PicPayPrice : null,
+			PicPayPrice : '',
 		}
 	}
 
 	componentDidMount(): void {
-		console.warn('ih rapaz', this.props.navigation.getParam('iid'));
+		console.log('ih rapazinho', this.props.navigation.getParam('iid'));
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
-		let result = heimdallr.getProduct(this.state.iidProduct);
-		result.then((resolve) => {
-			this.setState({product: resolve});
-			this.setState({productImages: resolve.images});
+		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
+			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price * 1.1});
 
-			this.state.product.customization.forEach((item) => {
-				let params = {};
-				params.label = item.label;
-				params.selectedOption = null;
-				this.state.customizationDetails.push(params);
-
-			})
-
-			let value = (this.state.product.price * 1.1);
-			this.setState({PicPayPrice : value});
-			
 		})
 
 
 	}
 
-	
-
 	renderPage(image, index) {
         return (
             <View key={index} style = {{ height:theme.height * 0.58}}>
-                <Image style={{ width: theme.width * 0.85,height:theme.height * 0.55,alignSelf:'center'  }} source={{ uri: image }} />
+                <Image style={{ width: theme.width * 0.85, height:theme.height * 0.55, alignSelf:'center' }} source={{ uri: image }} />
             </View>
         );
 	}
-
-	renderFooter = () => {
-		if (this.state.comments && this.state.comments.length > 0 && !this.state.endPulling) {
-			return (
-				<View style={{marginBottom: 70}}>
-					<ActivityIndicator size="large" color="#0000ff" />
-				</View>
-			);
-		}
-		return <View></View>;
-	}
-
-	getOptionCustomization = (item,itemIndex) => {
-		
-		this.state.customizationDetails[itemIndex].selectedOption = item; 
-		this.setState({customizationItems: this.state.customizationDetails});
-	}
-
 	openAlert = () =>{
-
 		this.setState({showAlert : true});
 	}
 
@@ -113,134 +81,170 @@ export default class ProductScreen extends React.Component {
 		params.url = 'PicPay';
 		params.description = this.state.customizationItems;
 		params.payment = (this.state.PicPay === true? 'PicPay' : this.state.product.sid);
-	
+
 		heimdallr.saveTicketsRegister(params);
-		/* 
+		/*
 		this.setState({customizationItems: null});
 	 	this.setState({PicPay : null});   */
 		}
-		
+
 		/* this.setState({PicPay : null}); */
 	}
 
-	
+
+	setSelectValue(item) {
+		if (this.state.product.customization.find((i) => (i.label === item.label)).value) {
+			this.state.product.customization.find((i) => (i.label === item.label)).value.push(item.value)
+		} else {
+			this.state.product.customization.find((i) => (i.label === item.label)).value = [item.value];
+		}
+	}
+
+	setRadioValue(item) {
+		this.state.product.customization.find((i) => (i.label === item.label)).value = item;
+	}
+	setTextValue (item) {
+		console.log('recebi texto:', item);
+		this.state.product.customization.find((i) => (i.label === item.label)).value = item.value;
+	}
+
+
 
 	render() {
 		return (
-			<KeyboardAvoidingView
-				style={{zIndex: 0, flex: 1}}
-			>
-			<View style={{flex: 1}}>
-				<View >
-                <FlatList
-					ListHeaderComponent = {() =>
-						<View>
-							<View
-								style = {styles.logoContainer}>
-								<Image
-									style = {{width:90,height:70,alignSelf:'center'}}
-									source={{ uri:this.state.product? this.state.product.logo : null}}>
-								</Image>
-							</View>
-							<View style = {{marginTop:20,marginBottom:15}}>
-								<Text
-								style = {styles.productName}
-								> {this.state.product? this.state.product.name : null}</Text>
-							</View>
-
-							<Carousel
-								activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
-								autoplay
-								autoplayTimeout={5000}
-								loop
-								index={0}
-								pageSize={theme.width}
-							>
-								{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
-							</Carousel>
-
-							<View style = {styles.payContainer}>
-								<Text style = {{color:'#8f8f8f', fontWeight:'bold',fontSize:19,marginBottom:4}}>
-									{'Valor:'}
-								</Text>
-								<View style = {{flexDirection:'row'}}>
-									<Text style = {{fontWeight:'bold',fontSize:17}}>
-										{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
-									</Text>
+			<KeyboardAvoidingView style={{zIndex: 0, flex: 1}} >
+				<View style={{flex: 1}}>
+					<View>
+	                <FlatList
+						ListHeaderComponent = {() =>
+							<View>
+								<View style = {styles.logoContainer}>
 									<Image
-										style = {{width:37,height:29,marginLeft:3}}
-										source = {{uri:this.state.product? this.state.product.logo : null}}>
-
+										style = {{width:90,height:70,alignSelf:'center'}}
+										source={{ uri:this.state.product? this.state.product.logo : null}}>
 									</Image>
 								</View>
-								<View style = {{flexDirection:'row',marginTop:5}}>
-									<Text style = {{fontWeight:'bold',fontSize:17}}>
-										{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+								<View style = {{marginTop:20,marginBottom:15}}>
+									<Text style = {styles.productName} >
+										{this.state.product? this.state.product.name : null}
 									</Text>
-									<Image
-										style = {{width:61,height:20,marginLeft:3,marginTop:5}}
-										source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-									</Image>
 								</View>
-							</View>
-							<Text style = {{width:theme.width * 0.9,alignSelf:'center',marginTop:theme.height * 0.02,flexDirection:'row' }}>
-								<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
-								{this.customizationItems != []? ( 
-								this.state.customizationItems.map(i =>
-								<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
-								{i.selectedOption != null? (i.label + ' ' + (i.selectedOption != null ? i.selectedOption : ' ---- ') + (this.state.customizationItems.indexOf(i) === (this.state.customizationItems.length - 1)? '.' : ',')): null }
-								</Text>
-								)):null}
-							</Text>
 
-							<View style = {{ width: theme.width * 0.9,alignSelf:'center',marginTop:theme.height*0.03}}>
-							<FatBottomedButton text = {'Comprar'} backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-												color = {this.state.product? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
-												onTap = {this.openAlert.bind(this)}/>
-							</View>
-							<View style = {styles.descriptionContainer}>
-								<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
-								<Text style = {styles.description}>{this.state.product? this.state.product.Description : null}</Text>
-							</View>
-							<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product? this.state.product.colors[0] : null,elevation: 8, }}>
-								<Text style = {{alignSelf:'center', fontSize:24,fontWeight:'bold',color: (this.state.product?this.state.product.colors[1]:'black')}}>{'Opções de Personalização'}</Text>
-							</View>
-						</View>
+								<Carousel
+									activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
+									autoplay
+									autoplayTimeout={5000}
+									loop
+									index={0}
+									pageSize={theme.width}
+								>
+									{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
+								</Carousel>
 
-					}
-                    data = {this.state.product ? this.state.product.customization : null}
-					renderItem={ ({item}) =>
+								<View style = {styles.payContainer}>
+									<Text style = {{color:'#8f8f8f', fontWeight:'bold',fontSize:19,marginBottom:4}}>
+										{'Valor:'}
+									</Text>
+									<View style = {{flexDirection:'row'}}>
+										<Text style = {{fontWeight:'bold',fontSize:17}}>
+											{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
+										</Text>
+										<Image
+											style = {{width:37,height:29,marginLeft:3}}
+											source = {{uri:this.state.product? this.state.product.logo : ''}}>
 
-						<View style = {{alignSelf:'center'}} >
-
-							<CustomizationOptions customizationCallback = {this.getOptionCustomization} itemIndex = {this.state.product.customization.indexOf(item)} colors = {this.state.product.colors} custom = {item}/>
-
-						</View>
-					}
-					numColumns={1}
-                    keyExtractor={item => item.label}
-					onEndReachedThreshold={0.3}
-					ListFooterComponent={ () =>
-						<View>
-							{this.state.product ? (
-								<View style = {{marginTop:20}}>
-									<View style = {{borderBottomColor:'#8f8f8f',borderBottomWidth:1,marginBottom:theme.height * 0.02}}>
-										<Text style = {{color:'#8f8f8f',marginLeft:theme.width * 0.05}}>{'Preencha apenas os campos em que desejar escrita :'}</Text>
+										</Image>
 									</View>
-									{this.state.product.customization.map(i => 
-										<View  key = {i.label} >
-											<CustomizationTextArea  customizationCallback = {this.getOptionCustomization}  item = {i} itemIndex = {this.state.product.customization.indexOf(i)}/>
-										</View>
-										)}
-									
-								</View>) : null}
-						</View>
+									<View style = {{flexDirection:'row',marginTop:5}}>
+										<Text style = {{fontWeight:'bold',fontSize:17}}>
+											{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+										</Text>
+										<Image
+											style = {{width:61,height:20,marginLeft:3,marginTop:5}}
+											source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+										</Image>
+									</View>
+								</View>
 
-					}
-                />
-            	</View>
-			</View>
-			<AwesomeAlert
+
+								<Text style = {{width:theme.width * 0.9, alignSelf:'center', marginTop:theme.height * 0.02, flexDirection:'row' }}>
+									<Text style = {{color:'#8f8f8f', fontSize:15, textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
+									{
+										this.customizationItems != [] &&
+											this.state.customizationItems.map(i =>
+												<Text
+													key={i.label}
+													style={{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}
+												>
+													{i.selectedOption != null? (i.label + ' ' + (i.selectedOption != null ? i.selectedOption : ' ---- ') + (this.state.customizationItems.indexOf(i) === (this.state.customizationItems.length - 1)? '.' : ',')): null }
+												</Text>
+											)
+									}
+								</Text>
+
+
+
+
+								<View style = {{ width: theme.width * 0.9,alignSelf:'center',marginTop:theme.height*0.03}}>
+									<FatBottomedButton
+										text = {'Comprar'}
+										backgroundColor = {this.state.product? this.state.product.colors[0] : null}
+										color = {this.state.product? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
+										onTap = {this.openAlert.bind(this)}
+									/>
+								</View>
+								<View style = {styles.descriptionContainer}>
+									<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
+									<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
+								</View>
+								<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
+									<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product?this.state.product.colors[1]:'black')}}>{'Opções de Personalização'}</Text>
+								</View>
+							</View>
+
+						}
+	                    data = {this.state.product ? this.state.product.customization : null}
+						renderItem={ ({item}) =>
+
+							<View style = {{alignSelf:'center'}} >
+								{
+									item.field === 'select' &&
+										<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+								}
+								{
+									item.field === 'radio' &&
+									<CustomRadio selected={this.setRadioValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+								}
+
+							</View>
+						}
+						numColumns={1}
+	                    keyExtractor={item => item.label}
+						onEndReachedThreshold={0.3}
+						ListFooterComponent={ () =>
+							<View>
+								{
+									this.state.product &&
+										<View style = {{marginTop:20}}>
+											<View style = {{borderBottomColor:'#8f8f8f', borderBottomWidth:1,marginBottom:theme.height * 0.02}}>
+												<Text style = {{color:'#8f8f8f',marginLeft:theme.width * 0.05}}>{'Preencha apenas os campos em que desejar escrita :'}</Text>
+											</View>
+											{
+												this.state.product.customization.map(i =>
+													<View  key = {i.label} >
+														<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {i}/>
+													</View>
+												)
+											}
+										</View>
+								}
+							</View>
+
+						}
+	                />
+	                </View>
+				</View>
+				<AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}
 					title="Confirmação da compra"
@@ -334,9 +338,9 @@ const styles = StyleSheet.create({
 	description : {
 		flex:1,
 		fontSize:15,
-		textAlign: 'justify', 
+		textAlign: 'justify',
 		lineHeight: 25,
-	}, 
+	},
 	descriptionWord : {
 		fontWeight:'bold',
 		fontSize:16,
