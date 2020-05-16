@@ -33,17 +33,17 @@ export default class CustomizationOptions extends React.Component {
     }
 
 
-    getOption = (item,labelOption) => {
+    getOption = (item) => {
       
         this.setState({ color: item });
-        this.props.customizationCallback(item,labelOption);
+        this.props.customizationCallback(item,this.props.itemIndex);
 
     }
 
-    getRadioButtomOption = (item,labelOption) => {
+    getRadioButtomOption = (item) => {
 
         this.setState({checked: item});
-        this.props.customizationCallback(item,labelOption);
+        this.props.customizationCallback(item,this.props.itemIndex);
     }
 
 
@@ -58,7 +58,7 @@ export default class CustomizationOptions extends React.Component {
                         <Text style = {{ fontWeight:'bold' ,fontSize:25,alignSelf:'center',marginTop:25,marginBottom:5}}>{this.props.custom.label}</Text>
                         {
                         	this.props.custom.options.map((i) =>
-		                        <TouchableOpacity style = {{elevation: 2 ,borderColor:(this.state.color === i?this.props.colors[0] :'#8f8f8f'),borderWidth:(this.state.color === i? 4 : 2),borderRadius:25, marginTop:25,justifyContent:'center'}} onPress = {this.getOption.bind(this,i,this.props.custom.label)}>
+		                        <TouchableOpacity style = {{elevation: 2 ,borderColor:(this.state.color === i?this.props.colors[0] :'#8f8f8f'),borderWidth:(this.state.color === i? 4 : 2),borderRadius:25, marginTop:25,justifyContent:'center'}} onPress = {this.getOption.bind(this,i)}>
 		                            <View  key={i} >
 		                                <Text style = {{fontSize:22,marginBottom:theme.height*0.025,marginTop:theme.height*0.025,alignSelf:'center',fontWeight:'bold',color:(this.state.color === i? this.props.colors[0] :'#8f8f8f')}}>{i}</Text>
 		                            </View>
@@ -82,7 +82,7 @@ export default class CustomizationOptions extends React.Component {
 	                                            color  = {this.props.colors[0]}
 	                                            value = {i}
 	                                            status={this.state.checked ===  i ? 'checked' : 'unchecked'}
-	                                            onPress={ this.getRadioButtomOption.bind(this,i,this.props.custom.label)}
+	                                            onPress={ this.getRadioButtomOption.bind(this,i)}
 	                                            />
 	                                    </View>
 	                                </View>

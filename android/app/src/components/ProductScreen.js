@@ -30,10 +30,12 @@ export default class ProductScreen extends React.Component {
 			iidProduct: '',
 			product : null,
 			productImages: null,
+			customizationItems : [],
 			customizationDetails: [],
 			description : '',
 			showAlert : false,
 			PicPay : null,
+			PicPayPrice : null,
 		}
 	}
 
@@ -52,7 +54,13 @@ export default class ProductScreen extends React.Component {
 				this.state.customizationDetails.push(params);
 
 			})
+
+			let value = (this.state.product.price * 1.1);
+			this.setState({PicPayPrice : value});
+			
 		})
+
+
 	}
 
 	
@@ -76,32 +84,10 @@ export default class ProductScreen extends React.Component {
 		return <View></View>;
 	}
 
-	getOptionCustomization = (i,labelOption) => {
-
-		this.state.customizationDetails.forEach((item) => {
-			if(item.label === labelOption){
-				if(this.state.customizationDetails.indexOf(item) === this.state.customizationDetails.length-1){
-					item.selectedOption = (i + '.');
-				}
-				else{
-					item.selectedOption = (i + ',');
-				}
-	
-			}
-		})
-
-
-		let saveProduct = '';
-		this.state.customizationDetails.forEach((item) => {
-			
-			if(item.selectedOption != null){
-			
-				saveProduct = ( saveProduct + ' ' + item.label + ' '+ item.selectedOption );
-				
-			}
-			this.setState({description : saveProduct });
-
-		})
+	getOptionCustomization = (item,itemIndex) => {
+		
+		this.state.customizationDetails[itemIndex].selectedOption = item; 
+		this.setState({customizationItems: this.state.customizationDetails});
 	}
 
 	openAlert = () =>{
@@ -113,7 +99,7 @@ export default class ProductScreen extends React.Component {
 
 		this.setState({showAlert : false});
 
-		if(this.state.description != '' && this.state.PicPay != null){
+		if(this.state.PicPay != null){
 
 		let params = {};
 		params.colors = this.state.product.colors;
@@ -125,13 +111,13 @@ export default class ProductScreen extends React.Component {
 		params.store_name = this.state.product.sid;
 		params.uid = heimdallr.user_id;
 		params.url = 'PicPay';
-		params.description = this.state.description;
+		params.description = this.state.customizationItems;
 		params.payment = (this.state.PicPay === true? 'PicPay' : this.state.product.sid);
 	
 		heimdallr.saveTicketsRegister(params);
 		/* 
-		this.setState({description: ''});
-		this.setState({PicPay : null});  */
+		this.setState({customizationItems: null});
+	 	this.setState({PicPay : null});   */
 		}
 		
 		/* this.setState({PicPay : null}); */
@@ -189,23 +175,27 @@ export default class ProductScreen extends React.Component {
 								</View>
 								<View style = {{flexDirection:'row',marginTop:5}}>
 									<Text style = {{fontWeight:'bold',fontSize:17}}>
-										{'R$ ' + (this.state.product? this.state.product.PicPayPrice : '') + ' - Pago pelo '}
+										{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
 									</Text>
 									<Image
 										style = {{width:61,height:20,marginLeft:3,marginTop:5}}
-										source = {{uri:this.state.product? this.state.product.PicPayLogo : null}}>
+										source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
 									</Image>
 								</View>
 							</View>
-							<View style = {{width:theme.width * 0.9,alignSelf:'center',marginTop:theme.height * 0.02}}>
-								<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
-									{'Caracaterísticas escolhidas:' + (this.state.description === ''? ' Nenhuma por enquanto' :this.state.description) }
+							<Text style = {{width:theme.width * 0.9,alignSelf:'center',marginTop:theme.height * 0.02,flexDirection:'row' }}>
+								<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
+								{this.customizationItems != []? ( 
+								this.state.customizationItems.map(i =>
+								<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
+								{i.selectedOption != null? (i.label + ' ' + (i.selectedOption != null ? i.selectedOption : ' ---- ') + (this.state.customizationItems.indexOf(i) === (this.state.customizationItems.length - 1)? '.' : ',')): null }
 								</Text>
-							</View>
+								)):null}
+							</Text>
 
 							<View style = {{ width: theme.width * 0.9,alignSelf:'center',marginTop:theme.height*0.03}}>
 							<FatBottomedButton text = {'Comprar'} backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-												color = {this.state.product? this.state.product.colors[1] : null }borderWidth = {0.1} height = {48}
+												color = {this.state.product? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
 												onTap = {this.openAlert.bind(this)}/>
 							</View>
 							<View style = {styles.descriptionContainer}>
@@ -223,7 +213,7 @@ export default class ProductScreen extends React.Component {
 
 						<View style = {{alignSelf:'center'}} >
 
-							<CustomizationOptions customizationCallback = {this.getOptionCustomization}  colors = {this.state.product.colors} custom = {item}/>
+							<CustomizationOptions customizationCallback = {this.getOptionCustomization} itemIndex = {this.state.product.customization.indexOf(item)} colors = {this.state.product.colors} custom = {item}/>
 
 						</View>
 					}
@@ -234,10 +224,15 @@ export default class ProductScreen extends React.Component {
 						<View>
 							{this.state.product ? (
 								<View style = {{marginTop:20}}>
-									<Text style = {{color:'#8f8f8f',marginLeft:theme.width * 0.05}}>{'Preencha apenas os campos em que desejar escrita :'}</Text>
-									<View style = {{borderTopColor:'#8f8f8f',borderTopWidth:0.5,marginTop:theme.height * 0.005,paddingTop:theme.height * 0.02}}>
-										<CustomizationTextArea  customizationCallback = {this.getOptionCustomization}  customization ={this.state.product.customization}/>
+									<View style = {{borderBottomColor:'#8f8f8f',borderBottomWidth:1,marginBottom:theme.height * 0.02}}>
+										<Text style = {{color:'#8f8f8f',marginLeft:theme.width * 0.05}}>{'Preencha apenas os campos em que desejar escrita :'}</Text>
 									</View>
+									{this.state.product.customization.map(i => 
+										<View  key = {i.label} >
+											<CustomizationTextArea  customizationCallback = {this.getOptionCustomization}  item = {i} itemIndex = {this.state.product.customization.indexOf(i)}/>
+										</View>
+										)}
+									
 								</View>) : null}
 						</View>
 
@@ -252,11 +247,16 @@ export default class ProductScreen extends React.Component {
 					titleStyle = {{fontWeight:'bold',width:theme.width * 0.8,marginTop:-(theme.height * 0.015),borderTopLeftRadius:6, borderTopRightRadius:6, paddingTop:14,paddingBottom:14,backgroundColor:this.state.product?this.state.product.colors[0]: null,color:this.state.product?this.state.product.colors[1]:'black'}}
 					contentContainerStyle = {{padding:0,width:theme.width}}
 					customView = {
-						<View>
-							<View style = {styles.productDetails}>
-								<Text style = {{textAlign: 'justify',lineHeight: 25,color:'black',fontWeight:'700'}}>{'Detalhes do produto:'+ (this.state.description === ''? ' Nenhum detalhe selecionado.':this.state.description)}</Text>
-							</View>
-							<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:10,marginBottom:7,marginTop:10}}>{'Selecione a forma de pagamento :'}</Text>
+						<View style = {{paddingBottom:10}}>
+							<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',marginTop:theme.height * 0.01,flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
+								<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
+								{this.state.customizationItems.map(i =>
+								<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
+								{i.selectedOption != null? (' '+ i.label + ' ' + (i.selectedOption != null ? i.selectedOption : ' ---- ') + (this.state.customizationItems.indexOf(i) === (this.state.customizationItems.length - 1)? '.' : ',')): null }
+								</Text>
+								)}
+							</Text>
+							<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:10,marginBottom:7,marginTop:7}}>{'Selecione a forma de pagamento :'}</Text>
 							<TouchableOpacity onPress = { () => this.setState({PicPay : false})}
 							style = {{borderColor:'#8f8f8f',borderWidth:(this.state.PicPay === false? 3:1),paddingLeft:10,paddingRight:7,paddingTop:15,paddingBottom:10,marginLeft:5,marginRight:5,marginTop:10,borderRadius:25}}>
 								<View style = {{flexDirection:'row'}}>
@@ -277,11 +277,11 @@ export default class ProductScreen extends React.Component {
 								<View style = {{flexDirection:'row'}}>
 									<Text
 										style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-										>{'R$ ' + (this.state.product? this.state.product.PicPayPrice : '') + ' - Pago pelo '}
+										>{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
 									</Text>
 									<Image
 										style = {{width:61,height:20,marginLeft:3,marginTop:0}}
-										source = {{uri:this.state.product? this.state.product.PicPayLogo : null}}>
+										source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
 									</Image>
 								</View>
 								<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'O pagamento é efetivado na hora, '+(this.state.product? this.state.product.sid : 'o reponsável')+
