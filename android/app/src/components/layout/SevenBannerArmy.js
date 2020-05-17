@@ -25,8 +25,9 @@ export default class SevenBannerArmy extends React.Component {
 
 const styles = StyleSheet.create({
 	banner: {
-		height: theme.height * 0.1,
+		width:theme.width*0.98,
+		height: theme.height * 0.23,
 		borderWidth: 1,
-		borderRadius: 20,
+		
 	}
 })

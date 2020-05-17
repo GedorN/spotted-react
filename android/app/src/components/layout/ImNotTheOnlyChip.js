@@ -42,7 +42,9 @@ export default class ImNotTheOnlyChip extends React.Component {
 				<View style={{
 					borderWidth: 1,
 					borderRadius: 20,
-					padding: 3,
+					padding: 7,
+					paddingLeft:11,
+					paddingRight:11,
 					backgroundColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 0.5)',
 					borderColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 0.5)',
 
