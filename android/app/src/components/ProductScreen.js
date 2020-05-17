@@ -38,6 +38,7 @@ export default class ProductScreen extends React.Component {
 			showAlert : false,
 			PicPay : null,
 			PicPayPrice : '',
+			payment: false,
 		}
 	}
 
@@ -65,30 +66,28 @@ export default class ProductScreen extends React.Component {
 
 	ticketsRegister = async () => {
 
-		this.setState({showAlert : false});
+	
 
 		if(this.state.PicPay != null){
 
-		let params = {};
-		params.colors = this.state.product.colors;
-		params.date = await heimdallr.getServerTime();
-		params.iid = this.state.iidProduct;
-		params.image = this.state.productImages[0];
-		params.product_name = this.state.product.name;
-		params.status = 'pending';
-		params.store_name = this.state.product.sid;
-		params.uid = heimdallr.user_id;
-		params.url = 'PicPay';
-		params.description = this.state.customizationItems;
-		params.payment = (this.state.PicPay === true? 'PicPay' : this.state.product.sid);
+			this.setState({showAlert : false});
 
-		heimdallr.saveTicketsRegister(params);
-		/*
-		this.setState({customizationItems: null});
-	 	this.setState({PicPay : null});   */
+			let params = {};
+			params.colors = this.state.product.colors;
+			params.date = await heimdallr.getServerTime();
+			params.iid = this.state.iidProduct;
+			params.image = this.state.productImages[0];
+			params.product_name = this.state.product.name;
+			params.status = 'pending';
+			params.store_name = this.state.product.sid;
+			params.uid = heimdallr.user_id;
+			params.url = 'PicPay';
+			params.description = this.state.product.customization;
+			params.payment = (this.state.PicPay === true? 'PicPay' : this.state.product.sid);
+
+			heimdallr.saveTicketsRegister(params);
 		}
-
-		/* this.setState({PicPay : null}); */
+		
 	}
 
 
@@ -101,7 +100,8 @@ export default class ProductScreen extends React.Component {
 	}
 
 	setRadioValue(item) {
-		this.state.product.customization.find((i) => (i.label === item.label)).value = item;
+		this.state.product.customization.find((i) => (i.label === item.label)).value = item.value;
+		console.warn('CUSTOMIZATION',this.state.product.customization);
 	}
 	setTextValue (item) {
 		console.log('recebi texto:', item);
@@ -165,24 +165,6 @@ export default class ProductScreen extends React.Component {
 										</Image>
 									</View>
 								</View>
-
-
-								<Text style = {{width:theme.width * 0.9, alignSelf:'center', marginTop:theme.height * 0.02, flexDirection:'row' }}>
-									<Text style = {{color:'#8f8f8f', fontSize:15, textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
-									{
-										this.customizationItems != [] &&
-											this.state.customizationItems.map(i =>
-												<Text
-													key={i.label}
-													style={{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}
-												>
-													{i.selectedOption != null? (i.label + ' ' + (i.selectedOption != null ? i.selectedOption : ' ---- ') + (this.state.customizationItems.indexOf(i) === (this.state.customizationItems.length - 1)? '.' : ',')): null }
-												</Text>
-											)
-									}
-								</Text>
-
-
 
 
 								<View style = {{ width: theme.width * 0.9,alignSelf:'center',marginTop:theme.height*0.03}}>
@@ -254,12 +236,21 @@ export default class ProductScreen extends React.Component {
 						<View style = {{paddingBottom:10}}>
 							<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',marginTop:theme.height * 0.01,flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
 								<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
-								{this.state.customizationItems.map(i =>
+								{	this.state.product &&
+									this.state.product.customization.map(i =>
 								<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
-								{i.selectedOption != null? (' '+ i.label + ' ' + (i.selectedOption != null ? i.selectedOption : ' ---- ') + (this.state.customizationItems.indexOf(i) === (this.state.customizationItems.length - 1)? '.' : ',')): null }
+									{i.value?(' ' + i.label + ' ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
 								</Text>
 								)}
 							</Text>
+							{
+								this.state.payment === 'true' &&
+								<View style = {{backgroundColor:'red'}}>
+									<Text style = {{fontWeight:'bold'}}>
+										{'Escolha uma forma de pagamento'}
+									</Text>
+								</View>
+							}
 							<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:10,marginBottom:7,marginTop:7}}>{'Selecione a forma de pagamento :'}</Text>
 							<TouchableOpacity onPress = { () => this.setState({PicPay : false})}
 							style = {{borderColor:'#8f8f8f',borderWidth:(this.state.PicPay === false? 3:1),paddingLeft:10,paddingRight:7,paddingTop:15,paddingBottom:10,marginLeft:5,marginRight:5,marginTop:10,borderRadius:25}}>
@@ -297,9 +288,9 @@ export default class ProductScreen extends React.Component {
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showCancelButton = {true}
-					showConfirmButton={true}
+					showConfirmButton={this.state}
 					confirmText="Confirmar"
-					confirmButtonColor={this.state.product?this.state.product.colors[0]: 'green'}
+					confirmButtonColor={this.state.product && this.state.PicPay != null?this.state.product.colors[0]:'#d0d0d0'}
 					cancelText = "Cancelar"
 					onCancelPressed = {() => {
 						this.setState({ showAlert: false })
