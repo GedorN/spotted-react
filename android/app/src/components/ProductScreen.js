@@ -166,15 +166,6 @@ export default class ProductScreen extends React.Component {
 									</View>
 								</View>
 
-
-								<View style = {{ width: theme.width * 0.9,alignSelf:'center',marginTop:theme.height*0.03}}>
-									<FatBottomedButton
-										text = {'Comprar'}
-										backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-										color = {this.state.product? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
-										onTap = {this.openAlert.bind(this)}
-									/>
-								</View>
 								<View style = {styles.descriptionContainer}>
 									<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
 									<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
@@ -191,11 +182,15 @@ export default class ProductScreen extends React.Component {
 							<View style = {{alignSelf:'center'}} >
 								{
 									item.field === 'select' &&
-										<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+									<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
 								}
 								{
 									item.field === 'radio' &&
 									<CustomRadio selected={this.setRadioValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+								}
+								{
+									item.field === 'textArea' &&
+									<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {item}/>
 								}
 
 							</View>
@@ -207,18 +202,17 @@ export default class ProductScreen extends React.Component {
 							<View>
 								{
 									this.state.product &&
-										<View style = {{marginTop:20}}>
-											<View style = {{borderBottomColor:'#8f8f8f', borderBottomWidth:1,marginBottom:theme.height * 0.02}}>
-												<Text style = {{color:'#8f8f8f',marginLeft:theme.width * 0.05}}>{'Preencha apenas os campos em que desejar escrita :'}</Text>
-											</View>
-											{
-												this.state.product.customization.map(i =>
-													<View  key = {i.label} >
-														<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {i}/>
-													</View>
-												)
-											}
-										</View>
+									<View style = {{marginTop: theme.height*0.04}}>
+										<Text style = {{alignSelf:'center',color:'#8f8f8f',fontWeight:'bold'}}>{'Após preencher as opções necessárias confirme a compra :'}</Text>
+										<View style = {styles.footer}>
+											<FatBottomedButton
+												text = {'Comprar'}
+												backgroundColor = {this.state.product? this.state.product.colors[0] : null}
+												color = {this.state.product? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
+												onTap = {this.openAlert.bind(this)}
+											/>
+										</View>	
+									</View>	
 								}
 							</View>
 
@@ -321,10 +315,15 @@ const styles = StyleSheet.create({
 		alignSelf:'center'
 	},
 	descriptionContainer : {
-		width:theme.width * 0.9,
+		width:theme.width * 0.92,
 		alignSelf:'center',
-		padding:10,
-		marginTop: theme.height * 0.03
+		paddingLeft:15,
+		paddingRight:17,
+		marginTop: theme.height * 0.03,
+		borderRadius:25,
+		paddingBottom:20,
+		paddingTop:20,
+		elevation:3,
 	},
 	description : {
 		flex:1,
@@ -345,5 +344,14 @@ const styles = StyleSheet.create({
 		paddingLeft:10,
 		paddingBottom:5,
 		paddingTop:5
+	},
+	footer : {
+		width: theme.width,
+		alignSelf:'center',
+		marginBottom:theme.height*0.04,
+		borderTopWidth:0.5,borderTopColor:'#8f8f8f',
+		borderTopWidth:1,paddingLeft:theme.width*0.06,
+		paddingRight:theme.width*0.06,
+		paddingTop:theme.height*0.03
 	}
 });
