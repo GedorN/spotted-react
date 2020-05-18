@@ -14,9 +14,18 @@ export default class ImNotTheOnlyChip extends React.Component {
 		}
 	}
 
+	componentDidMount(): void {
+		console.log('pqp', this.props.selected, this.props.text);
+		if (this.props.selected.length > 0 && this.props.selected.find((i) => i === this.props.id)){
+			console.log('alterando');
+			this.setState({ pressed: true });
+			// this.state.pressed = true;
+		}
+	}
+
 	pressed  = () => {
 		this.setState({ pressed: !this.state.pressed });
-		this.props.cbFunction(this.props.text);
+		this.props.cbFunction(this.props.id);
 	}
 
 	getTxtColor = (color) => {

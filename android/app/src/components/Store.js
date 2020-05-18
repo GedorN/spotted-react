@@ -17,31 +17,34 @@ export default class Store extends React.Component {
 		super(props);
 		this.state = {
 			categories: [],
+			filteredCategories: [],
 			colors: [],
 			products: [],
+			filteredProducts: [],
 			scrolling: false,
 			logo: null,
+			banner: null,
 		}
 	}
 
 	componentDidMount(): void {
-		console.warn('loja escolhida: ', this.props.navigation.getParam('store'));
 		heimdallr.getStoreInfo(this.props.navigation.getParam('store')).then(
 			(resolve) => {
-				console.log('antes', resolve.categories)
-				this.setState({ categories: resolve.categories });
-				console.log('depois', this.state.categories);
-				this.setState({ colors: resolve.colors });
-				this.setState({logo : resolve.logo});
-				console.warn("LOGO",this.state.logo);
+				this.setState({
+					categories: resolve.categories,
+					colors: resolve.colors,
+					logo : resolve.logo,
+					banner: resolve.banner
+				});
 			}
 		);
 
 		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
 			(resolve) => {
 				if (resolve.docs.length > 0) {
-					this.setState({ products: resolve.docs })
-					console.log('produtos: ', this.state.products);
+					console.log('que porra: ', resolve.docs.map((d) => d._data));
+					const mappedDocs =  resolve.docs.map((d) => d._data);
+					this.setState({ products: mappedDocs, filteredProducts: mappedDocs });
 				}
 			}
 		)
@@ -50,7 +53,24 @@ export default class Store extends React.Component {
 
 
 	chipPressed = (chip) => {
-		console.warn(chip);
+		let filteredCategories = this.state.filteredCategories;
+		let filteredProducts = [];
+		if (filteredCategories.find((fc) => fc === chip)) {
+			filteredCategories.splice(filteredCategories.indexOf(chip), 1);
+		} else {
+			filteredCategories.push(chip);
+		}
+
+		if (filteredCategories.length > 0) {
+			for(let i = 0; i < filteredCategories.length; i++) {
+				let prod = this.state.products.filter((p) => p.category === filteredCategories[i]);
+				filteredProducts = filteredProducts.concat(prod);
+			}
+		} else {
+			filteredProducts = this.state.products;
+		}
+		this.setState({ filteredProducts: filteredProducts, filteredCategories: filteredCategories });
+
 	}
 
 	render() {
@@ -61,13 +81,13 @@ export default class Store extends React.Component {
 					showsVerticalScrollIndicator={false}
 					onScrollEndDrag={() => this.setState({ scrolling: false })}
 					onScrollBeginDrag={() => this.setState({ scrolling: true })}
-					keyExtractor={item => item.data().name}
-					data={this.state.products}
+					keyExtractor={item => item.name}
+					data={this.state.filteredProducts}
 					renderItem={({item}) =>
 					<View style = {{width:theme.width*0.49,marginBottom:theme.width*0.07}}>
 						<LikeAPrayerductViewer
 							scrolling={this.state.scrolling}
-							product={item.data()}
+							product={item}
 							colors={this.state.colors ? this.state.colors : null}
 							navigation={this.props.navigation}
 						/>
@@ -81,7 +101,9 @@ export default class Store extends React.Component {
 									this.state.categories.map(i =>
 										<View style={{margin: 5}} key={i.name}>
 											<ImNotTheOnlyChip
+												selected={this.state.filteredCategories}
 												text={i.name}
+												id={i.key}
 												colors={this.state.colors ? this.state.colors : null}
 												cbFunction={this.chipPressed.bind(this)}
 											/>

@@ -33,7 +33,7 @@ export default class CustomizationTextArea extends React.Component {
     render = () => {
         return (
 
-            <View>
+            <View style={styles.container}>
                 {
                 	this.props.item.field === 'textArea' &&
 	                    <View style = {{alignSelf:'center',marginBottom:theme.height * 0.05}}>
@@ -52,3 +52,10 @@ export default class CustomizationTextArea extends React.Component {
     }
 
 }
+
+
+const styles= StyleSheet.create({
+	container: {
+		marginTop: 8,
+	}
+})

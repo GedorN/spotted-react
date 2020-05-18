@@ -63,7 +63,7 @@ function HeimdallrLib() {
             })
         })
 	}
-	
+
 	this.incrementNotification = function(uid){
 	    return new Promise((resolve) => {
 	      try{
@@ -78,7 +78,7 @@ function HeimdallrLib() {
 	    })
 	}
 
-	
+
 	this.saveComment = function (params) {
 		let returnValue = null;
 		return new Promise((resolve) => {
@@ -218,7 +218,7 @@ function HeimdallrLib() {
 			return returnValue;
 		})
 	}
-	
+
 	this.resetNotifications = function(uid){
 	    return new Promise((resolve) => {
 	      try{
@@ -232,7 +232,7 @@ function HeimdallrLib() {
 	      }
 	    })
   }
-	
+
 
 	this.getUserNotifications = function (uid, limit) {
   	let docs = null;
@@ -256,7 +256,7 @@ function HeimdallrLib() {
 	        }).catch ((e) => {
 	            console.log('notifications error: ', e);
             });
-    })  
+    })
 	}
 
 	this.getStoreProducts = function (store) {
@@ -293,11 +293,14 @@ function HeimdallrLib() {
   	let info = null;
   	return new Promise((resolve) => {
   		try {
-		    console.log('store info');
-		        firebase.firestore().collection('store_info').doc(store).get().then(
+		        console.log('store info from ', store);
+		        firebase.firestore().collection('user_store_manager').where('store_code', '==', store).get().then(
 				    (result) => {
+				    	if (result && result.docs) {
+				    		console.log('resultado ', result);
+				            resolve(result.docs[0].data().store_info);
+					    }
 				        console.log('resutlado dos docs: ', result.data());
-				        resolve(result.data());
 				    },
 				    (error) => {
 				        console.log('deu merdinha: ', error);
@@ -383,7 +386,7 @@ function HeimdallrLib() {
 
 		return new Promise((resolve) => {
 			try{
-				firebase.firestore().collection('tickets').add({item});	
+				firebase.firestore().collection('tickets').add({item});
 			} catch (e) {
 				console.warn("erro save tickets", e);
 				resolve();
@@ -441,7 +444,7 @@ function HeimdallrLib() {
 	  return null;
   }
 
-  
+
   this.getUID = function () {
   	let UID = null;
   	return new Promise((resolve) => {
@@ -456,7 +459,7 @@ function HeimdallrLib() {
     	return UID;
     })
   }
-  
+
   this.PasswordRestore = function (params) {
   	let resseted= false;
   	return new Promise((resolve) => {
@@ -528,7 +531,7 @@ function HeimdallrLib() {
 	    )
 	  })
   }
-  
+
   this.updateProfile = function (user) {
 	  return new Promise((resolve) => {
 		  firebase.auth().currentUser.updateProfile({
@@ -648,7 +651,7 @@ function HeimdallrLib() {
 		  return user;
 	  })
   }
-  
+
   this.getUserColletion = function (limit, uid) {
   	let docs = null;
   	console.log('recebi:', limit, uid);
@@ -675,7 +678,7 @@ function HeimdallrLib() {
 	            console.log('que caca: ', e);
             });
     })
-	  
+
   }
 
 	this.getComments = (pid, limit) => {

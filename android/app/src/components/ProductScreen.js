@@ -17,7 +17,6 @@ import {
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import Carousel from 'react-native-banner-carousel';
-import CustomizationOptions from './CustomizationOptions';
 import FatBottomedButton from'./buttons/FatBottomedButton';
 import CustomizationTextArea from './CustomizationTexArea';
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -46,7 +45,7 @@ export default class ProductScreen extends React.Component {
 		console.log('ih rapazinho', this.props.navigation.getParam('iid'));
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
-			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price * 1.1});
+			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : (resolve.price * 1.1).toFixed(2)});
 
 		})
 
@@ -66,7 +65,7 @@ export default class ProductScreen extends React.Component {
 
 	ticketsRegister = async () => {
 
-	
+
 
 		if(this.state.PicPay != null){
 
@@ -87,7 +86,7 @@ export default class ProductScreen extends React.Component {
 
 			heimdallr.saveTicketsRegister(params);
 		}
-		
+
 	}
 
 
@@ -101,11 +100,26 @@ export default class ProductScreen extends React.Component {
 
 	setRadioValue(item) {
 		this.state.product.customization.find((i) => (i.label === item.label)).value = item.value;
-		console.warn('CUSTOMIZATION',this.state.product.customization);
 	}
 	setTextValue (item) {
-		console.log('recebi texto:', item);
 		this.state.product.customization.find((i) => (i.label === item.label)).value = item.value;
+	}
+
+	getTxtColor = (color) => {
+		let c = color.substring(1);      // strip #
+		let rgb = parseInt(c, 16);   // convert rrggbb to decimal
+		let r = (rgb >> 16) & 0xff;  // extract red
+		let g = (rgb >>  8) & 0xff;  // extract green
+		let b = (rgb >>  0) & 0xff;  // extract blue
+		let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
+
+
+		if (luma < 40) {
+			return 'white'
+		} else {
+			return '#000000'
+		}
+
 	}
 
 
@@ -203,16 +217,16 @@ export default class ProductScreen extends React.Component {
 								{
 									this.state.product &&
 									<View style = {{marginTop: theme.height*0.04}}>
-										<Text style = {{alignSelf:'center',color:'#8f8f8f',fontWeight:'bold'}}>{'Após preencher as opções necessárias confirme a compra :'}</Text>
+										<Text style = {{alignSelf:'center', color:'#8f8f8f', fontWeight:'bold', padding: 4}}>{'Após preencher as opções necessárias confirme a compra :'}</Text>
 										<View style = {styles.footer}>
 											<FatBottomedButton
 												text = {'Comprar'}
 												backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-												color = {this.state.product? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
+												color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
 												onTap = {this.openAlert.bind(this)}
 											/>
-										</View>	
-									</View>	
+										</View>
+									</View>
 								}
 							</View>
 
@@ -349,8 +363,9 @@ const styles = StyleSheet.create({
 		width: theme.width,
 		alignSelf:'center',
 		marginBottom:theme.height*0.04,
-		borderTopWidth:0.5,borderTopColor:'#8f8f8f',
-		borderTopWidth:1,paddingLeft:theme.width*0.06,
+		borderTopColor:'#8f8f8f',
+		borderTopWidth:1,
+		paddingLeft:theme.width*0.06,
 		paddingRight:theme.width*0.06,
 		paddingTop:theme.height*0.03
 	}
