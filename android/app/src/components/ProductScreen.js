@@ -38,6 +38,7 @@ export default class ProductScreen extends React.Component {
 			PicPay : null,
 			PicPayPrice : '',
 			payment: false,
+			errorMissingValues: false,
 		}
 	}
 
@@ -120,6 +121,16 @@ export default class ProductScreen extends React.Component {
 			return '#000000'
 		}
 
+	}
+
+
+	buttonEnabled = () => {
+		console.warn('verificando carai', this.state.product.customization.map((p) => p.value));
+		if (this.state.product.customization.map((p) => p.value).some((fp) => {return fp === undefined})) {
+			this.setState( { errorMissingValues: true });
+		} else {
+			this.openAlert();
+		}
 	}
 
 
@@ -218,12 +229,17 @@ export default class ProductScreen extends React.Component {
 									this.state.product &&
 									<View style = {{marginTop: theme.height*0.04}}>
 										<Text style = {{alignSelf:'center', color:'#8f8f8f', fontWeight:'bold', padding: 4}}>{'Após preencher as opções necessárias confirme a compra :'}</Text>
+
 										<View style = {styles.footer}>
+											{
+												this.state.errorMissingValues &&
+												<Text style={{color: 'red', marginBottom: 4}}> *Obrigatório o preenchimento de todos os campos </Text>
+											}
 											<FatBottomedButton
 												text = {'Comprar'}
 												backgroundColor = {this.state.product? this.state.product.colors[0] : null}
 												color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
-												onTap = {this.openAlert.bind(this)}
+												onTap = {this.buttonEnabled.bind(this)}
 											/>
 										</View>
 									</View>

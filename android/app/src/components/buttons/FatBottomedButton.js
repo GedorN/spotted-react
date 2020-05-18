@@ -36,14 +36,21 @@ export default class FatBottomedButton extends React.Component {
 		}
 	}
 
+	getBackgroundColor() {
+		if (this.props.disabled) {
+			return '#8f8f8f';
+		}
+		return this.props.backgroundColor;
+	}
+
 	render () {
 		return (
-			<TouchableOpacity onPress={ this.props.onTap }>
+			<TouchableOpacity disabled={this.props.disabled ? this.props.disabled : false} onPress={ this.props.onTap }>
 				<View
 					style={{
 						justifyContent: 'center',
 						alignItems: 'center',
-						backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : 'white',
+						backgroundColor: this.props.backgroundColor ? this.getBackgroundColor() : 'white',
 						borderColor: this.props.borderColor ? this.props.borderColor : theme.primary,
 						borderWidth: this.props.borderWidth ? this.props.borderWidth : 1.2,
 						height: this.props.height ? this.props.height : 42,
