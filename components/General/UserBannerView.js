@@ -16,10 +16,9 @@ export default class UserBannerView extends React.Component {
 	}
 
 	goToUserProfile = () => {
-		console.warn("USER ID RECEIVED", this.props.userId);
 	 	this.props.navigation.navigate('UserProfile', {
 		   userId: this.props.userId,
-	   });  
+	   });
 
    }
 

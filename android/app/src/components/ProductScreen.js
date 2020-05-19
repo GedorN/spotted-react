@@ -12,6 +12,7 @@ import {
 	Modal,
 	TextInput,
 	KeyboardAvoidingView,
+	Linking,
 } from 'react-native';
 
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -22,6 +23,9 @@ import CustomizationTextArea from './CustomizationTexArea';
 import AwesomeAlert from "react-native-awesome-alerts";
 import CustomSelect from "./custom/CustomSelect";
 import CustomRadio from "./custom/CustomRadio";
+import { showMessage, hideMessage } from "react-native-flash-message";
+import FlashMessage from "react-native-flash-message";
+import axios from 'react-native-axios';
 
 
 export default class ProductScreen extends React.Component {
@@ -35,7 +39,8 @@ export default class ProductScreen extends React.Component {
 			customizationDetails: [],
 			description : '',
 			showAlert : false,
-			PicPay : null,
+			picPay : false,
+			directlyToStore: false,
 			PicPayPrice : '',
 			payment: false,
 			errorMissingValues: false,
@@ -46,8 +51,7 @@ export default class ProductScreen extends React.Component {
 		console.log('ih rapazinho', this.props.navigation.getParam('iid'));
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
-			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : (resolve.price * 1.1).toFixed(2)});
-
+			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : (parseFloat(resolve.price) * 1.1).toFixed(2)});
 		})
 
 
@@ -65,11 +69,7 @@ export default class ProductScreen extends React.Component {
 	}
 
 	ticketsRegister = async () => {
-
-
-
-		if(this.state.PicPay != null){
-
+		if (this.state.directlyToStore ){
 			this.setState({showAlert : false});
 
 			let params = {};
@@ -81,11 +81,70 @@ export default class ProductScreen extends React.Component {
 			params.status = 'pending';
 			params.store_name = this.state.product.sid;
 			params.uid = heimdallr.user_id;
-			params.url = 'PicPay';
 			params.description = this.state.product.customization;
-			params.payment = (this.state.PicPay === true? 'PicPay' : this.state.product.sid);
+			params.payment = (this.state.picPay ? 'PicPay' : this.state.product.sid);
 
 			heimdallr.saveTicketsRegister(params);
+			showMessage({
+				message: "Compra realizada com sucesso",
+				type: "success",
+				icon: 'success'
+			});
+		} else if (this.state.picPay ) {
+			console.log('VOu ir pelo pic',heimdallr.user_name.split(' ')[0], heimdallr.user_name.split(' ')[1], heimdallr.email );
+			this.setState({showAlert : false});
+
+			let params = {};
+			params.colors = this.state.product.colors;
+			params.date = await heimdallr.getServerTime();
+			params.iid = this.state.iidProduct;
+			params.image = this.state.productImages[0];
+			params.product_name = this.state.product.name;
+			params.status = 'pending';
+			params.store_name = this.state.product.sid;
+			params.uid = heimdallr.user_id;
+			params.description = this.state.product.customization;
+			params.payment = (this.state.picPay ? 'PicPay' : this.state.product.sid);
+
+
+			axios({
+			    method: 'post',
+			    url: 'https://appws.picpay.com/ecommerce/public/payments',
+			    headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
+			    data: {
+				    "referenceId": await heimdallr.getUID(),
+				    "callbackUrl": "http://www.spottedutfpr.com.br/callback",
+				    "value": this.state.PicPayPrice,
+				    "expiresAt": "2022-05-01T16:00:00-03:00",
+				    "buyer": {
+					    "firstName": heimdallr.user_name.split(' ')[0],
+					    "lastName": heimdallr.user_name.split(' ')[0],
+					    "document": "123.456.789-10",
+					    "email": heimdallr.email,
+					    "phone": "+55 27 12345-6789"
+				    }
+			    }
+			}).then(
+				(resolve) => {
+
+					params.url = resolve.data.paymentUrl;
+					heimdallr.saveTicketsRegister(params);
+					Linking.openURL(resolve.data.paymentUrl);
+					showMessage({
+						message: "Compra realizada com sucesso",
+						type: "success",
+						icon: 'success'
+					});
+			    },
+			    (reject) => {
+					console.log('tava esperando: ', reject);
+				    showMessage({
+					    message: "Erro ao realizar a compra",
+					    type: "danger",
+					    icon: 'danger'
+				    });
+			    }
+			);
 		}
 
 	}
@@ -125,7 +184,6 @@ export default class ProductScreen extends React.Component {
 
 
 	buttonEnabled = () => {
-		console.warn('verificando carai', this.state.product.customization.map((p) => p.value));
 		if (this.state.product.customization.map((p) => p.value).some((fp) => {return fp === undefined})) {
 			this.setState( { errorMissingValues: true });
 		} else {
@@ -172,7 +230,7 @@ export default class ProductScreen extends React.Component {
 									</Text>
 									<View style = {{flexDirection:'row'}}>
 										<Text style = {{fontWeight:'bold',fontSize:17}}>
-											{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
+											{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
 										</Text>
 										<Image
 											style = {{width:37,height:29,marginLeft:3}}
@@ -196,7 +254,7 @@ export default class ProductScreen extends React.Component {
 									<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
 								</View>
 								<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
-									<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product?this.state.product.colors[1]:'black')}}>{'Opções de Personalização'}</Text>
+									<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
 								</View>
 							</View>
 
@@ -255,9 +313,9 @@ export default class ProductScreen extends React.Component {
 					showProgress={false}
 					title="Confirmação da compra"
 					titleStyle = {{fontWeight:'bold',width:theme.width * 0.8,marginTop:-(theme.height * 0.015),borderTopLeftRadius:6, borderTopRightRadius:6, paddingTop:14,paddingBottom:14,backgroundColor:this.state.product?this.state.product.colors[0]: null,color:this.state.product?this.state.product.colors[1]:'black'}}
-					contentContainerStyle = {{padding:0,width:theme.width}}
+					contentContainerStyle = {{ padding:0, width:theme.width}}
 					customView = {
-						<View style = {{paddingBottom:10}}>
+						<View style = {{ padding: 10 }}>
 							<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',marginTop:theme.height * 0.01,flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
 								<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
 								{	this.state.product &&
@@ -276,35 +334,71 @@ export default class ProductScreen extends React.Component {
 								</View>
 							}
 							<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:10,marginBottom:7,marginTop:7}}>{'Selecione a forma de pagamento :'}</Text>
-							<TouchableOpacity onPress = { () => this.setState({PicPay : false})}
-							style = {{borderColor:'#8f8f8f',borderWidth:(this.state.PicPay === false? 3:1),paddingLeft:10,paddingRight:7,paddingTop:15,paddingBottom:10,marginLeft:5,marginRight:5,marginTop:10,borderRadius:25}}>
-								<View style = {{flexDirection:'row'}}>
-									<Text
-										style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-										>{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
-									</Text>
-									<Image
-										style = {{width:37,height:29,marginLeft:3}}
-										source = {{uri:this.state.product? this.state.product.logo : null}}>
-									</Image>
+							<TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
+								<View
+									style = {{
+										borderColor:'#8f8f8f',
+										borderWidth:(this.state.directlyToStore ? 3 : 1),
+										paddingLeft:10,
+										paddingRight:7,
+										paddingTop:15,
+										paddingBottom:10,
+										marginLeft:5,
+										marginRight:5,
+										marginTop:10,
+										borderRadius:25
+									}}
+								>
+									<View
+										style = {{
+											flexDirection:'row',
+										}}
+									>
+										<Text
+											style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
+											>{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
+										</Text>
+										<Image
+											style = {{width:37,height:29,marginLeft:3}}
+											source = {{uri:this.state.product? this.state.product.logo : null}}>
+										</Image>
+									</View>
+									<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'Seu telefone será enviado para ' + (this.state.product? this.state.product.sid : 'o reponsável') +
+									' entrar em contato e agendar hora e local para pagamento presencial.A compra será confirmada após essa etapa.'}</Text>
 								</View>
-								<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'Seu telefone será enviado para ' + (this.state.product? this.state.product.sid : 'o reponsável') +
-								' entrar em contato e agendar hora e local para pagamento presencial.A compra será confirmada após essa etapa.'}</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress = { () => this.setState({PicPay : true})}
-							style = {{borderColor:'#21c25e',borderWidth:(this.state.PicPay === true? 3:1),paddingLeft:10,paddingRight:7,paddingTop:15,paddingBottom:10,marginLeft:5,marginRight:5,marginTop:10,borderRadius:25}}>
-								<View style = {{flexDirection:'row'}}>
-									<Text
-										style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-										>{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
-									</Text>
-									<Image
-										style = {{width:61,height:20,marginLeft:3,marginTop:0}}
-										source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-									</Image>
+							<TouchableOpacity onPress = { () => this.setState({ picPay : true, directlyToStore: false })}>
+								<View
+									style = {{
+										borderColor:'#21c25e',
+										borderWidth:(this.state.picPay ? 3 : 1),
+										paddingLeft:10,
+										paddingRight:7,
+										paddingTop:15,
+										paddingBottom:10,
+										marginLeft:5,
+										marginRight:5,
+										marginTop:10,
+										borderRadius:25
+									}}
+								>
+									<View
+										style = {{
+											flexDirection:'row',
+										}}
+									>
+										<Text
+											style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
+											>{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+										</Text>
+										<Image
+											style = {{width:61,height:20,marginLeft:3,marginTop:0}}
+											source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+										</Image>
+									</View>
+									<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'O pagamento é efetivado na hora, '+(this.state.product? this.state.product.sid : 'o reponsável')+
+													' receberá automaticamente o comprovante de seu pagamento e a confirmação da sua compra. Assim que seu produto chegar entrarão em contato.' }</Text>
 								</View>
-								<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'O pagamento é efetivado na hora, '+(this.state.product? this.state.product.sid : 'o reponsável')+
-												' receberá automaticamente o comprovante de seu pagamento e a confirmação da sua compra. Assim que seu produto chegar entrarão em contato.' }</Text>
 							</TouchableOpacity>
 						</View>
 
@@ -312,16 +406,18 @@ export default class ProductScreen extends React.Component {
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showCancelButton = {true}
-					showConfirmButton={this.state}
+					showConfirmButton={true}
 					confirmText="Confirmar"
-					confirmButtonColor={this.state.product && this.state.PicPay != null?this.state.product.colors[0]:'#d0d0d0'}
+					confirmButtonColor={this.state.directlyToStore || this.state.picPay ? this.state.product.colors[0]:'#d0d0d0'}
+					confirmButtonTextStyle={{color: this.state.directlyToStore || this.state.picPay ? this.getTxtColor(this.state.product.colors[0]):'black'}}
 					cancelText = "Cancelar"
 					onCancelPressed = {() => {
 						this.setState({ showAlert: false })
 					}}
 					onConfirmPressed={this.ticketsRegister}
 				/>
-		</KeyboardAvoidingView>
+				<FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
+			</KeyboardAvoidingView>
 		)
 	}
 }

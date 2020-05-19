@@ -18,7 +18,6 @@ export default class ReportModal extends React.Component {
     }
 
     makeReport = (idReport) => {
-        console.warn('reporting: ', idReport);
         const params = {};
         params.date = new Date();
         params.solved = -1;
@@ -27,7 +26,6 @@ export default class ReportModal extends React.Component {
         let result = heimdallr.saveCollection('report', params);
         result.then(
         	(resolve) => {
-	            console.warn('report has been done!');
 	            this.props.close();
             },
 	        (reject) => {

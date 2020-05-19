@@ -119,7 +119,6 @@ export default class GeneralSettings extends  React.Component {
 	}
 
 	deleteUser = () => {
-		console.warn('clidcado o carai0');
 		if (!this.state.password) {
 			return ;
 		}
@@ -134,7 +133,6 @@ export default class GeneralSettings extends  React.Component {
 			},
 			(reject) => {
 				this.setState({ showConfirmCodeModal: false});
-				console.warn('rejetiado');
 				this.refs.message.showMessage({
 					message: "Usuário ou senha incorreto. Tente novamente",
 					type: "danger",
@@ -147,7 +145,6 @@ export default class GeneralSettings extends  React.Component {
 	saveEdition = () => {
 		this.setState({ showLoadingModal: true });
 		if (this.state.userImage !== heimdallr.user_image) {
-			console.warn('aqui mesmo');
 			heimdallr.uploadImage(this.state.imageCompressed).then(
 				(resolve) => {
 					const params = {};

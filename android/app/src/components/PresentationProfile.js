@@ -22,7 +22,6 @@ export default class PresentationProfile extends React.Component {
 
 	componentDidMount = () => {
 		let uid = this.props.navigation.getParam('userId');
-		console.warn('receiving: ', uid);
 		this.state.userId = uid;
 		// this.setState({ userId: uid });
 		let user = heimdallr.getUserInfo(this.state.userId);

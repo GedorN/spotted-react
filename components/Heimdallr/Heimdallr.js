@@ -16,6 +16,7 @@ function HeimdallrLib() {
   this.user_name = 'Admin';
   this.email = null;
   this.token = null;
+  this.phone = null;
 
 
   // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
@@ -279,7 +280,6 @@ function HeimdallrLib() {
 			firebase.firestore()
 			.collection('products')
 			.where('iid', '==', iid).get().then((result) => {
-				console.warn("PRODUCT",result);
 				product =  result._docs[0]._data;
 				resolve();
 			})
@@ -344,11 +344,9 @@ function HeimdallrLib() {
 					() => {
 						firebase.auth().currentUser.delete().then(
 							(success) => {
-								console.warn('deu boa deletando');
 								resolve();
 							},
 							(error) => {
-								console.warn('deu merda pra deletar', error);
 								reject();
 							}
 						)
@@ -371,7 +369,6 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
 	  firebase.auth().currentUser.delete().then(
 		  (success) => {
-		  	console.warn('deu boa deletando');
 		    resolve(success);
 		  },
 		  (error) => {
@@ -386,7 +383,9 @@ function HeimdallrLib() {
 
 		return new Promise((resolve) => {
 			try{
-				firebase.firestore().collection('tickets').add({item});
+				firebase.firestore().collection('tickets').add({
+					...item
+				});
 			} catch (e) {
 				console.warn("erro save tickets", e);
 				resolve();
@@ -396,10 +395,8 @@ function HeimdallrLib() {
 	}
 
   this.saveData = function (chave, data) {
-  	console.warn('vai cai');
 	  return new Promise((resolve) => {
 	  	try{
-	  		console.warn('ola');
 		  firebase.firestore().collection('errors').add({
 			  problem: data,
 			  from: chave
@@ -538,7 +535,6 @@ function HeimdallrLib() {
 		      displayName: user.name,
 		      photoURL: user.user_image,
 		  }).then(function () {
-		      console.warn('update profile sucessful');
 			  this.user_image = user.user_image ? user.user_image : null;
 			  this.user_name = user.name;
 		      resolve(true);

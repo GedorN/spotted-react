@@ -64,12 +64,6 @@ export default class PostWrite extends React.Component {
 			this.state.postImages.forEach((img) => {
 				console.log('before: ', this.state.postImages);
 				let propCo =  900000 / img.fileSize;
-				console.warn(img.fileSize);
-				if (propCo < 1) {
-					console.warn('Ué cusão');
-				} else {
-					console.warn('deu boa não');
-				}
 				let quality = propCo > 1 ? 100 : 100 * propCo;
 				let constant = propCo > 1 ? 0.8 : 1;
 				ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
@@ -86,7 +80,6 @@ export default class PostWrite extends React.Component {
 
 					},
 					(reject) => {
-						console.warn('Deu merdinha');
 					}
 				)
 			})
