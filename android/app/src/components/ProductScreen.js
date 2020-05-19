@@ -105,6 +105,7 @@ export default class ProductScreen extends React.Component {
 			params.uid = heimdallr.user_id;
 			params.description = this.state.product.customization;
 			params.payment = (this.state.picPay ? 'PicPay' : this.state.product.sid);
+			params.referenceId = await heimdallr.getUID();
 
 
 			axios({
@@ -112,7 +113,7 @@ export default class ProductScreen extends React.Component {
 			    url: 'https://appws.picpay.com/ecommerce/public/payments',
 			    headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
 			    data: {
-				    "referenceId": await heimdallr.getUID(),
+				    "referenceId": params.referenceId,
 				    "callbackUrl": "http://www.spottedutfpr.com.br/callback",
 				    "value": this.state.PicPayPrice,
 				    "expiresAt": "2022-05-01T16:00:00-03:00",
