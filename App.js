@@ -10,6 +10,8 @@ import UserProfile from "./android/app/src/components/UserProfile";
 import ProductScreen from "./android/app/src/components/ProductScreen";
 import Store from "./android/app/src/components/Store";
 import Settings from "./android/app/src/components/Settings";
+import Tickets from "./android/app/src/components/Tickets";
+
 
 const RootStack = createStackNavigator(
 	{
@@ -22,6 +24,8 @@ const RootStack = createStackNavigator(
 		ProductScreen: { screen: ProductScreen },
 		Store: { screen: Store },
 		Settings: { screen: Settings },
+		Tickets: { screen: Tickets},
+
 	},
 	{
 		initialRouteName: 'Home',

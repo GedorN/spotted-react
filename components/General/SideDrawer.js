@@ -69,6 +69,20 @@ export default class SideDrawer extends React.Component {
 		                    <Text> Configurações </Text>
 	                    </View>
                     </TouchableOpacity>
+					<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+	                                  onPress={() => {this.props.navigation.push('Tickets',  {navigation: this.props.navigation})}}>
+		                <View style={styles.item}>
+				                <Image source={require('../../assets/images/shopping-bag.png')}
+			                       style={{
+				                       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
+				                       width: 35,
+				                       height: 40,
+				                       marginRight: 25,
+			                       }}
+			                />
+			                <Text>Pedidos</Text>
+		                </View>
+	                </TouchableOpacity>
 	                <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
 	                                  onPress={() => {this.props.navigation.push('Store', {store : 'cac'})}}>
 		                <View style={styles.item}>
@@ -97,7 +111,7 @@ export default class SideDrawer extends React.Component {
 					                       marginRight: 13,
 				                       }}
 				                />
-				                <Text> Registrar-se </Text>
+				                <Text>{ 'Registrar-se' }</Text>
 			                </View>
 		                </TouchableOpacity>
 	                }

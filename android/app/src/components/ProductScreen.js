@@ -78,8 +78,9 @@ export default class ProductScreen extends React.Component {
 			params.iid = this.state.iidProduct;
 			params.image = this.state.productImages[0];
 			params.product_name = this.state.product.name;
-			params.status = 'pending';
+			params.status = 'Pending';
 			params.store_name = this.state.product.sid;
+			params.store_logo = this.state.product.logo;
 			params.uid = heimdallr.user_id;
 			params.description = this.state.product.customization;
 			params.payment = (this.state.picPay ? 'PicPay' : this.state.product.sid);
@@ -100,9 +101,11 @@ export default class ProductScreen extends React.Component {
 			params.iid = this.state.iidProduct;
 			params.image = this.state.productImages[0];
 			params.product_name = this.state.product.name;
-			params.status = 'pending';
+			params.status = 'Pending';
 			params.store_name = this.state.product.sid;
+			params.store_logo = this.state.product.logo;
 			params.uid = heimdallr.user_id;
+			params.url = 'PicPay';
 			params.description = this.state.product.customization;
 			params.payment = (this.state.picPay ? 'PicPay' : this.state.product.sid);
 			params.referenceId = await heimdallr.getUID();
