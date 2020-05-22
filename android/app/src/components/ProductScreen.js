@@ -90,6 +90,7 @@ export default class ProductScreen extends React.Component {
 			params.description = this.state.product.customization;
 			params.payment = this.state.product.sid;
 			params.product_price = this.state.product.price;
+			params.referenceId = await heimdallr.getUID();
 
 			heimdallr.saveTicketsRegister(params);
 			this.setState({showAlert : false, showLoading: true});
