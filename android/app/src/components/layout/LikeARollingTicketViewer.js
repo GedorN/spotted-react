@@ -51,48 +51,75 @@ export default class LikeARollingTicketViewer extends React.Component {
 		});
 	}
 
+	getChipColor = () => {
+		if (this.props.ticket.status === 'Pendente') {
+			return '#8f8f8f';
+		} else if (this.props.ticket.status === 'Pago') {
+			return 'green';
+		} else if (this.props.ticket.status === 'Entregue') {
+			return this.props.ticket.colors[0];
+		}
+
+		return '#8f8f8f';
+	}
+
 	render() {
 		return (
 			<View>
 				<TouchableOpacity onPress = {() => this.setState({showModal : true})}
-					style = {{alignContent:'center',alignItems:'center',alignSelf:'center',width:theme.width * 0.95}}
 					activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
 				>
-
+					<View
+						style = {{alignContent:'center',alignItems:'center',alignSelf:'center',width:theme.width * 0.95}}
+					>
 						<View style={styles.product_info}>
 							<View style = {styles.ticketHeader}>
 								<Image
-										style = {styles.ticketLogo}
-										source ={{uri : this.props.ticket.store_logo }}
-									/>
+									style = {styles.ticketLogo}
+									source ={{uri : this.props.ticket.store_logo }}
+								/>
 							</View>
-							<View style = {{marginLeft:theme.width * 0.0022}}>
-								<Text style = {{...styles.productName,color:this.props.ticket.colors[0]}}>
-											  { this.props.ticket? this.props.ticket.product_name : '' }</Text>
-								<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
-									<Image
-										style = {styles.productImage}
-										source ={{uri : this.props.ticket.image }}
-									/>
-								</TouchableOpacity>
-							</View>
-							<View style = {{flexDirection:'column',marginLeft:7}}>
-								<View style = {styles.ticketDetails}>
-									<View style = {{...styles.ticketView,width:theme.width*0.24}}>
-										<Text style = {{...styles.ticketLetter,color:this.props.ticket.colors[0]}}>{'Data'}</Text>
-										<Text style = {styles.dateLetter}>{this.state.ticketDate}</Text>
-									</View>
-									<View style = {{...styles.ticketView, width:theme.width * 0.3 }}>
-										<Text style = {{...styles.ticketLetter, color:this.props.ticket.colors[0]}}>{'Pagamento'}</Text>
-										<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? this.props.ticket.product_price : '')}</Text>
-										<Text style = {styles.paymentLetter}> {this.props.ticket ? this.props.ticket.payment : null} </Text>
-									</View>
+							<View style = {styles.product_info_body} >
+								<View style={{flexDirection: 'column'}}>
+									<Text style = {{...styles.productName, color: this.props.ticket.colors[0]}}>
+								        { this.props.ticket? this.props.ticket.product_name : '' }
+									</Text>
+									<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
+										<Image
+											style = {styles.productImage}
+											source ={{uri : this.props.ticket.image }}
+										/>
+									</TouchableOpacity>
 								</View>
-								<View style = {{...styles.ticketStatus,backgroundColor:this.props.ticket.colors[0]}}>
-									<Text style = {styles.statusLetter}>{(this.props.ticket ? this.props.ticket.status : null)}</Text>
+								<View style = {{flexDirection:'column'}}>
+									<View style = {styles.ticketDetails}>
+										<View style = {{...styles.ticketView,width:theme.width*0.24}}>
+											<Text style = {{...styles.ticketLetter,color:this.props.ticket.colors[0]}}>{'Data'}</Text>
+											<Text style = {styles.dateLetter}>{this.state.ticketDate}</Text>
+										</View>
+										<View style = {{...styles.ticketView, width:theme.width * 0.3 }}>
+											<Text style = {{...styles.ticketLetter, color:this.props.ticket.colors[0]}}>{'Pagamento'}</Text>
+											<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? this.props.ticket.product_price : '')}</Text>
+											<Text style = {styles.paymentLetter}> {this.props.ticket ? this.props.ticket.payment : null} </Text>
+										</View>
+									</View>
+									<View style = {{...styles.ticketStatus, backgroundColor: this.getChipColor()}} >
+										<Text style = {{
+											alignSelf:'center',
+											fontWeight:'bold',
+											color: heimdallr.getTxtColor(this.getChipColor()),
+											fontSize:18,
+											marginBottom:theme.height*0.002
+										}}
+										>
+											{(this.props.ticket ? this.props.ticket.status : null)}
+										</Text>
+									</View>
 								</View>
 							</View>
 						</View>
+					</View>
+
 				</TouchableOpacity>
 				<Modal
 		            hardwareAccelerated={true}
@@ -166,14 +193,18 @@ const styles = StyleSheet.create({
 	},
 	product_info: {
 		marginTop: 20,
-		flexDirection:'row',
+		flexDirection:'column',
 		flexWrap: 'wrap',
 		width: theme.width * 0.89,
 		borderRadius:25,
 		height:theme.height * 0.30,
-		elevation:4,
-		marginBottom:10
-
+		elevation: 2,
+	},
+	product_info_body: {
+		flexDirection: 'row',
+		width: theme.width * 0.89,
+		paddingRight: 4,
+		paddingLeft: 4
 	},
 	productImage : {
 		width:100,
@@ -182,16 +213,16 @@ const styles = StyleSheet.create({
 		marginTop:theme.height * 0.02
 	},
 	ticketHeader : {
-		height:theme.height*0.05,
-		width:theme.width * 0.89,
-		marginTop:theme.height * 0.01
+		height: theme.height *0.05,
+		width: theme.width * 0.89,
+		marginTop: theme.height *  0.01
 	},
 	ticketLogo : {
-		width:50,
-		height:40,
-		marginLeft:theme.width * 0.02,
-		alignSelf:'center',
-		marginTop:theme.height * 0.012
+		width: 50,
+		height: 40,
+		marginLeft: theme.width * 0.02,
+		alignSelf: 'center',
+		marginTop: theme.height * 0.012
 	},
 	ticketDetails : {
 		marginLeft:10,
@@ -214,16 +245,9 @@ const styles = StyleSheet.create({
 		borderRadius:15,
 		alignSelf:'center',
 		justifyContent:'center',
-		marginTop:theme.height*0.01,
-		height:theme.height*0.05,
-		width:theme.width*0.52
-	},
-	statusLetter : {
-		alignSelf:'center',
-		fontWeight:'bold',
-		color:'white',
-		fontSize:18,
-		marginBottom:theme.height*0.002
+		marginTop: theme.height * 0.01,
+		height: theme.height * 0.05,
+		width: theme.width * 0.52
 	},
 	paymentLetter : {
 		alignSelf:'center',

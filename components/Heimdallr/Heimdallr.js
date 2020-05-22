@@ -876,6 +876,18 @@ function HeimdallrLib() {
     })
   }
 
+  this.checkTicketsStatus = function() {
+  	return new Promise((resolve, reject) => {
+  		firebase.functions().httpsCallable('verifyUserTickets')({uid: this.user_id}).then(
+  			(result) => {
+  				resolve(result);
+		    },
+		    (error) => {
+  				reject(error);
+		    }
+	    )
+    })
+  }
 
   this.uploadImage = function (image) {
     const rand = 'img' + new Date().getTime().toString();
