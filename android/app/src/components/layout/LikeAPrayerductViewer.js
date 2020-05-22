@@ -64,41 +64,54 @@ export default class LikeAPrayer extends React.Component{
 	render() {
 		return (
 			<TouchableOpacity
+		
 				onPress={this.goToProductScreen.bind(this)}
 				activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
 			>
 				<View style={styles.container}>
+					
 					<View style={{
-						borderWidth: 1,
-						height: theme.height * 0.08,
-						width: theme.width * 0.4,
-						borderTopLeftRadius: 30,
-						borderTopRightRadius: 30,
+						
+						borderTopWidth: 0,
+						height: theme.height * 0.37,
+						width: theme.width * 0.42,
+					/* 	borderBottomRightRadius: 30,
+						borderBottomLeftRadius: 30, */
+						borderRadius:30,
+						
+						/* elevation:4, */
+						/* alignContent:'center', */
+						 /* alignItems:'center',  */
+						/* justifyContent:'center',  */
+						
+
+					}}>
+					<View style={{
+						/* borderWidth: 1, */
+						
+						
+						alignSelf:'center',
+						height: theme.height * 0.1,
+						width: theme.width * 0.418,
+						borderTopLeftRadius: 35,
+						borderTopRightRadius: 35,
+						borderBottomRightRadius:2,
+						borderBottomLeftRadius:2, 
 						alignItems: 'center',
 						justifyContent: 'center',
 						backgroundColor: this.props.colors ? this.props.colors[0] : null,
-						elevation: 4,
+						
 
 					}}>
 						<Text style={{
-							textAlign: 'center',
+							textAlign: 'center',fontWeight:'bold',
 							fontSize: this.props.product && this.props.product.name ? this.getFontSize(this.props.product.name) : null,
 							color: this.props.colors ? this.props.colors[1] : 'black'
 						}}>
 							{ this.props.product ? this.props.product.name : '' }
 						</Text>
 					</View>
-					<View style={{
-						borderWidth: 1,
-						borderTopWidth: 0,
-						height: theme.height * 0.27,
-						width: theme.width * 0.4,
-						borderBottomRightRadius: 30,
-						borderBottomLeftRadius: 30,
-						padding: 1,
-						elevation: 1,
-
-					}}>
+						<View style = {{width:theme.width * 0.3,height:theme.height * 0.25,alignSelf:'center'}}>
 						<Image
 							style={{ flex: 1,
 								width: null,
@@ -106,6 +119,8 @@ export default class LikeAPrayer extends React.Component{
 								resizeMode: 'contain',
 							}}
 							source={{ uri: this.props.product && this.props.product.images ? this.props.product.images[0] : null}}/>
+						</View>
+						<Text style = {{fontWeight:'bold',color:'#8f8f8f', alignSelf:'center'}}>{ this.props.product && this.props.product.price? ('Valor: R$ ' + this.props.product.price) : ''}</Text>
 					</View>
 				</View>
 			</TouchableOpacity>
@@ -115,10 +130,16 @@ export default class LikeAPrayer extends React.Component{
 
 const styles = StyleSheet.create({
 	container: {
-		marginTop: 15,
-		marginRight: 35,
-		width: theme.width * 0.35,
+		marginTop:10,
+		width: theme.width * 0.427,
 		height: theme.height * 0.4,
+		borderRadius:30,
+		alignSelf:'center',
+		elevation:4,
+		alignContent:'center',
+		alignItems:'center',
+		/* borderColor:'black',
+		borderWidth:1 */
 	},
 
 })
