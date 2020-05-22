@@ -26,6 +26,7 @@ import CustomRadio from "./custom/CustomRadio";
 import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import axios from 'react-native-axios';
+import moment from "moment";
 
 
 export default class ProductScreen extends React.Component {
@@ -44,6 +45,10 @@ export default class ProductScreen extends React.Component {
 			PicPayPrice : '',
 			payment: false,
 			errorMissingValues: false,
+			showLoading: false,
+			isRefreshing: false,
+			showConfirmButton: true,
+			showCancelButton : true,
 		}
 	}
 
@@ -70,7 +75,7 @@ export default class ProductScreen extends React.Component {
 
 	ticketsRegister = async () => {
 		if (this.state.directlyToStore ){
-			this.setState({showAlert : false});
+			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
 			let params = {};
 			params.colors = this.state.product.colors;
@@ -83,9 +88,11 @@ export default class ProductScreen extends React.Component {
 			params.store_logo = this.state.product.logo;
 			params.uid = heimdallr.user_id;
 			params.description = this.state.product.customization;
-			params.payment = (this.state.picPay ? 'PicPay' : this.state.product.sid);
+			params.payment = this.state.product.sid;
+			params.product_price = this.state.product.price;
 
 			heimdallr.saveTicketsRegister(params);
+			this.setState({showAlert : false, showLoading: true});
 			showMessage({
 				message: "Compra realizada com sucesso",
 				type: "success",
@@ -93,7 +100,7 @@ export default class ProductScreen extends React.Component {
 			});
 		} else if (this.state.picPay ) {
 			console.log('VOu ir pelo pic',heimdallr.user_name.split(' ')[0], heimdallr.user_name.split(' ')[1], heimdallr.email );
-			this.setState({showAlert : false});
+			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
 			let params = {};
 			params.colors = this.state.product.colors;
@@ -107,7 +114,8 @@ export default class ProductScreen extends React.Component {
 			params.uid = heimdallr.user_id;
 			params.url = 'PicPay';
 			params.description = this.state.product.customization;
-			params.payment = (this.state.picPay ? 'PicPay' : this.state.product.sid);
+			params.payment = 'PicPay';
+			params.product_price = this.state.PicPayPrice;
 			params.referenceId = await heimdallr.getUID();
 
 
@@ -134,6 +142,7 @@ export default class ProductScreen extends React.Component {
 					params.url = resolve.data.paymentUrl;
 					heimdallr.saveTicketsRegister(params);
 					Linking.openURL(resolve.data.paymentUrl);
+					this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true});
 					showMessage({
 						message: "Compra realizada com sucesso",
 						type: "success",
@@ -142,6 +151,7 @@ export default class ProductScreen extends React.Component {
 			    },
 			    (reject) => {
 					console.log('tava esperando: ', reject);
+				    this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true});
 				    showMessage({
 					    message: "Erro ao realizar a compra",
 					    type: "danger",
@@ -186,6 +196,13 @@ export default class ProductScreen extends React.Component {
 
 	}
 
+	onRefresh = () => {
+		this.setState({ isRefreshing: true });
+		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
+			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : (parseFloat(resolve.price) * 1.1).toFixed(2), isRefreshing: false});
+		})
+	}
+
 
 	buttonEnabled = () => {
 		if (this.state.product.customization.map((p) => p.value).some((fp) => {return fp === undefined})) {
@@ -202,215 +219,240 @@ export default class ProductScreen extends React.Component {
 			<KeyboardAvoidingView style={{zIndex: 0, flex: 1}} >
 				<View style={{flex: 1}}>
 					<View>
-	                <FlatList
-						ListHeaderComponent = {() =>
-							<View>
-								<View style = {styles.logoContainer}>
-									<Image
-										style = {{width:90,height:70,alignSelf:'center'}}
-										source={{ uri:this.state.product? this.state.product.logo : null}}>
-									</Image>
-								</View>
-								<View style = {{marginTop:20,marginBottom:15}}>
-									<Text style = {styles.productName} >
-										{this.state.product? this.state.product.name : null}
-									</Text>
-								</View>
-
-								<Carousel
-									activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
-									autoplay
-									autoplayTimeout={5000}
-									loop
-									index={0}
-									pageSize={theme.width}
-								>
-									{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
-								</Carousel>
-
-								<View style = {styles.payContainer}>
-									<Text style = {{color:'#8f8f8f', fontWeight:'bold',fontSize:19,marginBottom:4}}>
-										{'Valor:'}
-									</Text>
-									<View style = {{flexDirection:'row'}}>
-										<Text style = {{fontWeight:'bold',fontSize:17}}>
-											{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
-										</Text>
+		                <FlatList
+							ListHeaderComponent = {() =>
+								<View>
+									<View style = {styles.logoContainer}>
 										<Image
-											style = {{width:37,height:29,marginLeft:3}}
-											source = {{uri:this.state.product? this.state.product.logo : ''}}>
-
+											style = {{width:90,height:70,alignSelf:'center'}}
+											source={{ uri:this.state.product? this.state.product.logo : null}}>
 										</Image>
 									</View>
-									<View style = {{flexDirection:'row',marginTop:5}}>
-										<Text style = {{fontWeight:'bold',fontSize:17}}>
-											{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+									<View style = {{marginTop:20,marginBottom:15}}>
+										<Text style = {styles.productName} >
+											{this.state.product? this.state.product.name : null}
 										</Text>
-										<Image
-											style = {{width:61,height:20,marginLeft:3,marginTop:5}}
-											source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-										</Image>
 									</View>
-								</View>
 
-								<View style = {styles.descriptionContainer}>
-									<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
-									<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
-								</View>
-								<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
-									<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
-								</View>
-							</View>
+									<Carousel
+										activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
+										autoplay
+										autoplayTimeout={5000}
+										loop
+										index={0}
+										pageSize={theme.width}
+									>
+										{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
+									</Carousel>
 
-						}
-	                    data = {this.state.product ? this.state.product.customization : null}
-						renderItem={ ({item}) =>
+									<View style = {styles.payContainer}>
+										<Text style = {{color:'#8f8f8f', fontWeight:'bold',fontSize:19,marginBottom:4}}>
+											{'Valor:'}
+										</Text>
+										<View style = {{flexDirection:'row'}}>
+											<Text style = {{fontWeight:'bold',fontSize:17}}>
+												{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
+											</Text>
+											<Image
+												style = {{width:37,height:29,marginLeft:3}}
+												source = {{uri:this.state.product? this.state.product.logo : ''}}>
 
-							<View style = {{alignSelf:'center'}} >
-								{
-									item.field === 'select' &&
-									<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
-								}
-								{
-									item.field === 'radio' &&
-									<CustomRadio selected={this.setRadioValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
-								}
-								{
-									item.field === 'textArea' &&
-									<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {item}/>
-								}
-
-							</View>
-						}
-						numColumns={1}
-	                    keyExtractor={item => item.label}
-						onEndReachedThreshold={0.3}
-						ListFooterComponent={ () =>
-							<View>
-								{
-									this.state.product &&
-									<View style = {{marginTop: theme.height*0.04}}>
-										<Text style = {{alignSelf:'center', color:'#8f8f8f', fontWeight:'bold', padding: 4}}>{'Após preencher as opções necessárias confirme a compra :'}</Text>
-
-										<View style = {styles.footer}>
-											{
-												this.state.errorMissingValues &&
-												<Text style={{color: 'red', marginBottom: 4}}> *Obrigatório o preenchimento de todos os campos </Text>
-											}
-											<FatBottomedButton
-												text = {'Comprar'}
-												backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-												color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
-												onTap = {this.buttonEnabled.bind(this)}
-											/>
+											</Image>
+										</View>
+										<View style = {{flexDirection:'row',marginTop:5}}>
+											<Text style = {{fontWeight:'bold',fontSize:17}}>
+												{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+											</Text>
+											<Image
+												style = {{width:61,height:20,marginLeft:3,marginTop:5}}
+												source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+											</Image>
 										</View>
 									</View>
-								}
-							</View>
 
-						}
-	                />
+									<View style = {styles.descriptionContainer}>
+										<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
+										<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
+									</View>
+									<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
+										<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
+									</View>
+								</View>
+
+							}
+		                    data = {this.state.product ? this.state.product.customization : null}
+							refreshControl={
+								<RefreshControl
+									refreshing={this.state.isRefreshing}
+									onRefresh={this.onRefresh.bind(this)}
+								/>
+							}
+							renderItem={ ({item}) =>
+
+								<View style = {{alignSelf:'center'}} >
+									{
+										item.field === 'select' &&
+										<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+									}
+									{
+										item.field === 'radio' &&
+										<CustomRadio selected={this.setRadioValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+									}
+									{
+										item.field === 'textArea' &&
+										<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {item}/>
+									}
+
+								</View>
+							}
+							numColumns={1}
+		                    keyExtractor={item => item.label}
+							onEndReachedThreshold={0.3}
+							ListFooterComponent={ () =>
+								<View>
+									{
+										this.state.product &&
+										<View style = {{marginTop: theme.height*0.04}}>
+											<Text style = {{alignSelf:'center', color:'#8f8f8f', fontWeight:'bold', padding: 4}}>{'Após preencher as opções necessárias confirme a compra :'}</Text>
+
+											<View style = {styles.footer}>
+												{
+													this.state.errorMissingValues &&
+													<Text style={{color: 'red', marginBottom: 4}}> *Obrigatório o preenchimento de todos os campos </Text>
+												}
+												<FatBottomedButton
+													text = {'Comprar'}
+													backgroundColor = {this.state.product? this.state.product.colors[0] : null}
+													color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
+													onTap = {this.buttonEnabled.bind(this)}
+												/>
+											</View>
+										</View>
+									}
+								</View>
+
+							}
+		                />
 	                </View>
 				</View>
 				<AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}
 					title="Confirmação da compra"
-					titleStyle = {{fontWeight:'bold',width:theme.width * 0.8,marginTop:-(theme.height * 0.015),borderTopLeftRadius:6, borderTopRightRadius:6, paddingTop:14,paddingBottom:14,backgroundColor:this.state.product?this.state.product.colors[0]: null,color:this.state.product?this.state.product.colors[1]:'black'}}
+					titleStyle = {{fontWeight:'bold', width:theme.width * 0.8, marginTop:-(theme.height * 0.015),borderTopLeftRadius:6, borderTopRightRadius:6, paddingTop:14,paddingBottom:14,backgroundColor:this.state.product?this.state.product.colors[0]: null,color:this.state.product?this.state.product.colors[1]:'black'}}
 					contentContainerStyle = {{ padding:0, width:theme.width}}
 					customView = {
 						<View style = {{ padding: 10 }}>
-							<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',marginTop:theme.height * 0.01,flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
-								<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
-								{	this.state.product &&
-									this.state.product.customization.map(i =>
-								<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
-									{i.value?(' ' + i.label + ' ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
-								</Text>
-								)}
-							</Text>
 							{
-								this.state.payment === 'true' &&
-								<View style = {{backgroundColor:'red'}}>
-									<Text style = {{fontWeight:'bold'}}>
-										{'Escolha uma forma de pagamento'}
+								!this.state.showLoading &&
+								<View>
+									<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',marginTop:theme.height * 0.01,flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
+										<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
+										{	this.state.product &&
+											this.state.product.customization.map(i =>
+										<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
+											{i.value?(' ' + i.label + ' ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
+										</Text>
+										)}
 									</Text>
+									{
+										this.state.payment === 'true' &&
+										<View style = {{backgroundColor:'red'}}>
+											<Text style = {{fontWeight:'bold'}}>
+												{'Escolha uma forma de pagamento'}
+											</Text>
+										</View>
+									}
+									<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:10,marginBottom:7,marginTop:7}}>{'Selecione a forma de pagamento :'}</Text>
+									<TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
+										<View
+											style = {{
+												borderColor:'#8f8f8f',
+												borderWidth:(this.state.directlyToStore ? 3 : 1),
+												paddingLeft:10,
+												paddingRight:7,
+												paddingTop:15,
+												paddingBottom:10,
+												marginLeft:5,
+												marginRight:5,
+												marginTop:10,
+												borderRadius:25
+											}}
+										>
+											<View
+												style = {{
+													flexDirection:'row',
+												}}
+											>
+												<Text
+													style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
+													>{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
+												</Text>
+												<Image
+													style = {{width:37,height:29,marginLeft:3}}
+													source = {{uri:this.state.product? this.state.product.logo : null}}>
+												</Image>
+											</View>
+											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'Seu telefone será enviado para ' + (this.state.product? this.state.product.sid : 'o reponsável') +
+											' entrar em contato e agendar hora e local para pagamento presencial.A compra será confirmada após essa etapa.'}</Text>
+										</View>
+									</TouchableOpacity>
+									<TouchableOpacity onPress = { () => this.setState({ picPay : true, directlyToStore: false })}>
+										<View
+											style = {{
+												borderColor:'#21c25e',
+												borderWidth:(this.state.picPay ? 3 : 1),
+												paddingLeft:10,
+												paddingRight:7,
+												paddingTop:15,
+												paddingBottom:10,
+												marginLeft:5,
+												marginRight:5,
+												marginTop:10,
+												borderRadius:25
+											}}
+										>
+											<View
+												style = {{
+													flexDirection:'row',
+												}}
+											>
+												<Text
+													style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
+													>{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+												</Text>
+												<Image
+													style = {{width:61,height:20,marginLeft:3,marginTop:0}}
+													source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+												</Image>
+											</View>
+											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'O pagamento é efetivado na hora, '+(this.state.product? this.state.product.sid : 'o reponsável')+
+															' receberá automaticamente o comprovante de seu pagamento e a confirmação da sua compra. Assim que seu produto chegar entrarão em contato.' }</Text>
+										</View>
+									</TouchableOpacity>
 								</View>
 							}
-							<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:10,marginBottom:7,marginTop:7}}>{'Selecione a forma de pagamento :'}</Text>
-							<TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
-								<View
-									style = {{
-										borderColor:'#8f8f8f',
-										borderWidth:(this.state.directlyToStore ? 3 : 1),
-										paddingLeft:10,
-										paddingRight:7,
-										paddingTop:15,
-										paddingBottom:10,
-										marginLeft:5,
-										marginRight:5,
-										marginTop:10,
-										borderRadius:25
-									}}
-								>
-									<View
-										style = {{
-											flexDirection:'row',
-										}}
-									>
-										<Text
-											style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-											>{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
+							{
+								this.state.showLoading &&
+								<View>
+									<ActivityIndicator size="large" color={this.state.product? this.state.product.colors[0] : theme.primary} />
+									<View style={{flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap'}}>
+										<Text style={{fontStyle: 'italic'}}>
+											HOOOOOOLD!
 										</Text>
-										<Image
-											style = {{width:37,height:29,marginLeft:3}}
-											source = {{uri:this.state.product? this.state.product.logo : null}}>
-										</Image>
-									</View>
-									<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'Seu telefone será enviado para ' + (this.state.product? this.state.product.sid : 'o reponsável') +
-									' entrar em contato e agendar hora e local para pagamento presencial.A compra será confirmada após essa etapa.'}</Text>
-								</View>
-							</TouchableOpacity>
-							<TouchableOpacity onPress = { () => this.setState({ picPay : true, directlyToStore: false })}>
-								<View
-									style = {{
-										borderColor:'#21c25e',
-										borderWidth:(this.state.picPay ? 3 : 1),
-										paddingLeft:10,
-										paddingRight:7,
-										paddingTop:15,
-										paddingBottom:10,
-										marginLeft:5,
-										marginRight:5,
-										marginTop:10,
-										borderRadius:25
-									}}
-								>
-									<View
-										style = {{
-											flexDirection:'row',
-										}}
-									>
-										<Text
-											style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-											>{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+										<Text style={{wordWrap: 'break-word' }}>
+											Estamos preparando o seu pedido ;)
 										</Text>
-										<Image
-											style = {{width:61,height:20,marginLeft:3,marginTop:0}}
-											source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-										</Image>
 									</View>
-									<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'O pagamento é efetivado na hora, '+(this.state.product? this.state.product.sid : 'o reponsável')+
-													' receberá automaticamente o comprovante de seu pagamento e a confirmação da sua compra. Assim que seu produto chegar entrarão em contato.' }</Text>
 								</View>
-							</TouchableOpacity>
+							}
 						</View>
 
 					}
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
-					showCancelButton = {true}
-					showConfirmButton={true}
+					showCancelButton = {this.state.showCancelButton}
+					showConfirmButton={this.state.showConfirmButton}
 					confirmText="Confirmar"
 					confirmButtonColor={this.state.directlyToStore || this.state.picPay ? this.state.product.colors[0]:'#d0d0d0'}
 					confirmButtonTextStyle={{color: this.state.directlyToStore || this.state.picPay ? this.getTxtColor(this.state.product.colors[0]):'black'}}
