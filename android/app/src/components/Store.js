@@ -39,7 +39,7 @@ export default class Store extends React.Component {
 				console.warn('RESOLVE',resolve.colors);
 				console.warn('this.state.logo',this.state.logo);
 			}
-			
+
 		);
 
 		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
@@ -118,7 +118,7 @@ export default class Store extends React.Component {
 								<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.015}}>{'Produtos '}</Text>
 								<View style = {{alignItems:'flex-start'}}>
 									<Image
-										source = {{ uri:this.state.logo}}
+										source = {{ uri: this.state.logo}}
 										style = {{resizeMode: 'contain', width:theme.width*0.18,height:theme.height*0.07,marginBottom:10}}>
 									</Image>
 								</View>

@@ -9,7 +9,8 @@ import {
 	Image,
 	Alert,
 	Modal,
-	Button
+	Button,
+	Clipboard
 } from 'react-native'
 
 import theme from "../../../../../components/General/Theme";
@@ -28,6 +29,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 			opacityValueScrolling: 1,
 			ticketDate: '',
 			showModal: false,
+			copiedText: false,
 		}
 	}
 	componentDidMount(): void {
@@ -61,6 +63,11 @@ export default class LikeARollingTicketViewer extends React.Component {
 		}
 
 		return '#8f8f8f';
+	}
+
+	copyText = () => {
+		Clipboard.setString(this.props.ticket.referenceId);
+		this.setState({ copiedText: true });
 	}
 
 	render() {
@@ -158,7 +165,19 @@ export default class LikeARollingTicketViewer extends React.Component {
 								<Text style = {styles.modalLetter}>{'Data: ' +this.state.ticketDate }</Text>
 								<Text style = {styles.modalLetter}>
 								{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' +this.props.ticket.product_price }</Text>
-								<Text style = {{fontSize:15,color:'#8f8f8f'}}>{'Id:' + this.props.ticket.referenceId}</Text>
+								<TouchableOpacity onPress={this.copyText.bind(this)}>
+									<View style={{flexDirection: 'row', alignItems: 'flex-start', alignContent: 'center'}}>
+										<Image
+											style={{width: 18, height: 20, tintColor: '#8f8f8f'}}
+											source={require('../../../../../assets/images/copy-regular.png')}
+										/>
+										<Text style = {{fontSize:12, color:'#8f8f8f', marginLeft: 4}}>{this.props.ticket.referenceId}</Text>
+									</View>
+								</TouchableOpacity>
+								{
+									this.state.copiedText &&
+									<Text style={{fontSize: 12, color: 'green', alignSelf: 'center'}}> copiado</Text>
+								}
 								<Text style = {{...styles.modalStatus,color:this.props.ticket.colors[0]}}>{'Status: ' + this.props.ticket.status}</Text>
 							</View>
 							<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
@@ -167,11 +186,14 @@ export default class LikeARollingTicketViewer extends React.Component {
 										source ={{uri : this.props.ticket.image }}
 									/>
 							</TouchableOpacity>
-							<TouchableOpacity style = {{alignSelf:'center',marginTop:25}} onPress = {() => this.setState({showModal : false})}>
-								<View style = {{...styles.modalButton,backgroundColor : this.props.ticket.colors[0]}}>
-									<Text style = {{marginBottom:10,marginTop:10,fontWeight:'bold',fontSize:20}}>{'Pagar'}</Text>
-								</View>
-							</TouchableOpacity>
+				            {
+				            	this.state.payment === 'PicPay' &&
+								<TouchableOpacity style = {{alignSelf:'center',marginTop:25}} onPress = {() => this.setState({showModal : false})}>
+									<View style = {{...styles.modalButton,backgroundColor : this.props.ticket.colors[0]}}>
+										<Text style = {{marginBottom:10,marginTop:10,fontWeight:'bold',fontSize:20}}>{'Pagar'}</Text>
+									</View>
+								</TouchableOpacity>
+				            }
 
 			            </View>
 		            </View>
@@ -208,18 +230,18 @@ const styles = StyleSheet.create({
 	},
 	productImage : {
 		width:100,
-		height:100,
+		height:115,
 		marginLeft:theme.width * 0.02,
 		marginTop:theme.height * 0.02
 	},
 	ticketHeader : {
-		height: theme.height *0.05,
+		height: theme.height *0.03,
 		width: theme.width * 0.89,
 		marginTop: theme.height *  0.01
 	},
 	ticketLogo : {
-		width: 50,
-		height: 40,
+		width: 40,
+		height: 30,
 		marginLeft: theme.width * 0.02,
 		alignSelf: 'center',
 		marginTop: theme.height * 0.012
@@ -311,15 +333,14 @@ const styles = StyleSheet.create({
 	modalStatus : {
 		fontWeight:'bold',
 		fontSize:20,
-		marginBottom:5,
+		marginBottom: 1,
 		alignSelf:'center',
-		marginTop:15
+		marginTop:5
 	},
 	modalImage : {
-		width:150,
-		height:150,
+		width: 130,
+		height: 160,
 		marginLeft:theme.width * 0.02,
-		marginTop:theme.height * 0.02,
 		alignSelf:'center'
 	},
 	modalButton : {
