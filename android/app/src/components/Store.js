@@ -36,7 +36,10 @@ export default class Store extends React.Component {
 					logo : resolve.logo,
 					banner: resolve.banner
 				});
+				console.warn('RESOLVE',resolve.colors);
+				console.warn('this.state.logo',this.state.logo);
 			}
+			
 		);
 
 		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(

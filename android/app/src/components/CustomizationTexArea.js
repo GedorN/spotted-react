@@ -36,7 +36,7 @@ export default class CustomizationTextArea extends React.Component {
             <View style={styles.container}>
                 {
                 	this.props.item.field === 'textArea' &&
-	                    <View style = {{alignSelf:'center',marginBottom:theme.height * 0.05}}>
+	                    <View style = {{alignSelf:'center',marginBottom:theme.height * 0.01,marginTop:theme.height * 0.04}}>
 	                        <Text style = {{fontWeight:'bold' ,fontSize:22, marginBottom:theme.height * 0.01}}>{this.props.item.label}</Text>
 	                        <TextInput
 	                            style = {{borderColor:'#8f8f8f',borderWidth:2, width:theme.width*0.9,opacity: 0.7,borderRadius:10,fontSize:14,fontWeight:'500',paddingLeft:10}}
