@@ -83,7 +83,7 @@ export default class ProductScreen extends React.Component {
 			params.iid = this.state.iidProduct;
 			params.image = this.state.productImages[0];
 			params.product_name = this.state.product.name;
-			params.status = 'Pending';
+			params.status = 'PENDING';
 			params.store_name = this.state.product.sid;
 			params.store_logo = this.state.product.logo;
 			params.uid = heimdallr.user_id;
@@ -108,7 +108,7 @@ export default class ProductScreen extends React.Component {
 			params.iid = this.state.iidProduct;
 			params.image = this.state.productImages[0];
 			params.product_name = this.state.product.name;
-			params.status = 'Pending';
+			params.status = 'PENDING';
 			params.store_name = this.state.product.sid;
 			params.store_logo = this.state.product.logo;
 			params.uid = heimdallr.user_id;
