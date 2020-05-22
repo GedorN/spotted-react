@@ -110,13 +110,13 @@ export default class LikeARollingTicketViewer extends React.Component {
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.props.ticket.colors[0]}}>
 								<TouchableOpacity onPress={() => {this.disableModal()}}>
 									<Image
-										style = {{width: 15, height: 15, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.props.ticket.colors[0])}}
+										style = {{width: 15, height: 15,opacity:0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.props.ticket.colors[0])}}
 										source = {require('../../../../../assets/images/times-solid.png')}
 									/>
 								</TouchableOpacity>
 								<Text style = {{fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.props.ticket.colors[0])}}>{'Detalhes do pedido'}</Text>
 							</View>
-							<View style = {{marginTop:theme.height*0.07}}>
+							<View style = {{marginTop:theme.height*0.08}}>
 								<Text style = {{fontWeight:'bold',fontSize:15,marginBottom:4}}>
 								{'Produto : ' + this.props.ticket.product_name }</Text>
 								<Text style = {{flexDirection:'row',textAlign: 'justify' ,marginBottom:10}}>
@@ -131,6 +131,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 								<Text style = {styles.modalLetter}>{'Data: ' +this.state.ticketDate }</Text>
 								<Text style = {styles.modalLetter}>
 								{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' +this.props.ticket.product_price }</Text>
+								<Text style = {{fontSize:15,color:'#8f8f8f'}}>{'Id:' + this.props.ticket.referenceId}</Text>
 								<Text style = {{...styles.modalStatus,color:this.props.ticket.colors[0]}}>{'Status: ' + this.props.ticket.status}</Text>
 							</View>
 							<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
