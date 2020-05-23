@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 	banner: {
 		width:theme.width*0.98,
 		height: theme.height * 0.23,
-		borderWidth: 1,
+		marginBottom:theme.height*0.007,
 		flex: 1,
 	}
 })

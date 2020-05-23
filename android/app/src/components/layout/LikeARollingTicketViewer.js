@@ -151,12 +151,14 @@ export default class LikeARollingTicketViewer extends React.Component {
 			            <View style={styles.modalContainer}>
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.props.ticket.colors[0]}}>
 								<TouchableOpacity onPress={() => {this.disableModal()}}>
+								<View style = {{width:theme.width * 0.15,height:theme.height*0.05,alignSelf:'flex-end'}}>
 									<Image
 										style = {{width: 15, height: 15,opacity:0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.props.ticket.colors[0])}}
 										source = {require('../../../../../assets/images/times-solid.png')}
 									/>
+								</View>
 								</TouchableOpacity>
-								<Text style = {{fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.props.ticket.colors[0])}}>{'Detalhes do pedido'}</Text>
+								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.props.ticket.colors[0])}}>{'Detalhes do pedido'}</Text>
 							</View>
 							<View style = {{marginTop:theme.height*0.08}}>
 								<Text style = {{fontWeight:'bold',fontSize:15,marginBottom:4}}>
