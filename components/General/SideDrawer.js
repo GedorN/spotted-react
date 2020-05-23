@@ -153,6 +153,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		height: 60,
 		marginBottom: 21,
+		width:theme.width * 0.7,
+	
 	},
     drawerHeader: {
         flex: 1,
