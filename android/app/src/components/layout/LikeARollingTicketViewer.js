@@ -77,59 +77,55 @@ export default class LikeARollingTicketViewer extends React.Component {
 
 	render() {
 		return (
-			<View>
+			<View style={{flex: 1}}>
 				<TouchableOpacity onPress = {() => this.setState({showModal : true})}
 					activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
 				>
-					<View
-						style = {{alignContent:'center',alignItems:'center',alignSelf:'center',width:theme.width * 0.95}}
-					>
-						<View style={styles.product_info}>
-							<View style = {styles.ticketHeader}>
-								<Image
-									style = {styles.ticketLogo}
-									source ={{uri : this.props.ticket.store_logo }}
-								/>
-							</View>
-							<View style = {styles.product_info_body} >
-								<View style={{flexDirection: 'column'}}>
-									<View style = {{width:theme.width*0.27}}>
-										<Text style = {{...styles.productName, color: this.props.ticket.colors[0]}}
-													 	ellipsizeMode='tail' numberOfLines={1}>
-											{ this.props.ticket? this.props.ticket.product_name : '' }
-										</Text>
-									</View>
-									<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
-										<Image
-											style = {styles.productImage}
-											source ={{uri : this.props.ticket.image }}
-										/>
-									</TouchableOpacity>
+					<View style={styles.product_info}>
+						<View style = {styles.ticketHeader}>
+							<Image
+								style = {styles.ticketLogo}
+								source ={{uri : this.props.ticket.store_logo }}
+							/>
+						</View>
+						<View style = {styles.product_info_body} >
+							<View style={{flexDirection: 'column'}}>
+								<View style = {{width:theme.width*0.27}}>
+									<Text style = {{...styles.productName, color: this.props.ticket.colors[0]}}
+												    ellipsizeMode='tail' numberOfLines={1}>
+										{ this.props.ticket? this.props.ticket.product_name : '' }
+									</Text>
 								</View>
-								<View style = {{flexDirection:'column'}}>
-									<View style = {styles.ticketDetails}>
-										<View style = {{...styles.ticketView,width:theme.width*0.24}}>
-											<Text style = {{...styles.ticketLetter,color:this.props.ticket.colors[0]}}>{'Data'}</Text>
-											<Text style = {styles.dateLetter}>{this.state.ticketDate}</Text>
-										</View>
-										<View style = {{...styles.ticketView, width:theme.width * 0.3 }}>
-											<Text style = {{...styles.ticketLetter, color:this.props.ticket.colors[0]}}>{'Pagamento'}</Text>
-											<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? this.props.ticket.product_price : '')}</Text>
-											<Text style = {styles.paymentLetter}> {this.props.ticket ? this.props.ticket.payment : null} </Text>
-										</View>
+								<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
+									<Image
+										style = {styles.productImage}
+										source ={{uri : this.props.ticket.image }}
+									/>
+								</TouchableOpacity>
+							</View>
+							<View style = {{flexDirection:'column'}}>
+								<View style = {styles.ticketDetails}>
+									<View style = {{...styles.ticketView,width:theme.width*0.24}}>
+										<Text style = {{...styles.ticketLetter,color:this.props.ticket.colors[0]}}>{'Data'}</Text>
+										<Text style = {styles.dateLetter}>{this.state.ticketDate}</Text>
 									</View>
-									<View style = {{...styles.ticketStatus, backgroundColor: this.getChipColor()}} >
-										<Text style = {{
-											alignSelf:'center',
-											fontWeight:'bold',
-											color: heimdallr.getTxtColor(this.getChipColor()),
-											fontSize:18,
-											marginBottom:theme.height*0.002
-										}}
-										>
-											{(this.props.ticket ? this.props.ticket.status : null)}
-										</Text>
+									<View style = {{...styles.ticketView, width:theme.width * 0.3 }}>
+										<Text style = {{...styles.ticketLetter, color:this.props.ticket.colors[0]}}>{'Pagamento'}</Text>
+										<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? this.props.ticket.product_price : '')}</Text>
+										<Text style = {styles.paymentLetter}> {this.props.ticket ? this.props.ticket.payment : null} </Text>
 									</View>
+								</View>
+								<View style = {{...styles.ticketStatus, backgroundColor: this.getChipColor()}} >
+									<Text style = {{
+										alignSelf:'center',
+										fontWeight:'bold',
+										color: heimdallr.getTxtColor(this.getChipColor()),
+										fontSize:18,
+										marginBottom:theme.height*0.002
+									}}
+									>
+										{(this.props.ticket ? this.props.ticket.status : null)}
+									</Text>
 								</View>
 							</View>
 						</View>
@@ -228,7 +224,11 @@ const styles = StyleSheet.create({
 		width: theme.width * 0.89,
 		borderRadius:25,
 		height:theme.height * 0.30,
+		alignContent:'center',
+		alignItems:'center',
+		alignSelf:'center',
 		elevation: 2,
+		backgroundColor: 'white',
 	},
 	product_info_body: {
 		flexDirection: 'row',

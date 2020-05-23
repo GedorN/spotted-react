@@ -12,6 +12,8 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import SevenBannerArmy from "./layout/SevenBannerArmy";
 import LikeAPrayerductViewer from "./layout/LikeAPrayerductViewer";
+
+let scrolling = false;
 export default class Store extends React.Component {
 	constructor (props) {
 		super(props);
@@ -21,7 +23,6 @@ export default class Store extends React.Component {
 			colors: [],
 			products: [],
 			filteredProducts: [],
-			scrolling: false,
 			logo: null,
 			banner: null,
 		}
@@ -82,14 +83,14 @@ export default class Store extends React.Component {
 				<FlatList
 					numColumns={2}
 					showsVerticalScrollIndicator={false}
-					onScrollEndDrag={() => this.setState({ scrolling: false })}
-					onScrollBeginDrag={() => this.setState({ scrolling: true })}
+					onScrollEndDrag={() => {scrolling = false}}
+					onScrollBeginDrag={() => {scrolling = false}}
 					keyExtractor={item => item.name}
 					data={this.state.filteredProducts}
 					renderItem={({item}) =>
 					<View style = {{width:theme.width*0.49,marginBottom:theme.width*0.07}}>
 						<LikeAPrayerductViewer
-							scrolling={this.state.scrolling}
+							scrolling={scrolling}
 							product={item}
 							colors={this.state.colors ? this.state.colors : null}
 							navigation={this.props.navigation}
