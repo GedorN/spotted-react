@@ -88,9 +88,12 @@ export default class LikeARollingTicketViewer extends React.Component {
 							</View>
 							<View style = {styles.product_info_body} >
 								<View style={{flexDirection: 'column'}}>
-									<Text style = {{...styles.productName, color: this.props.ticket.colors[0]}}>
-								        { this.props.ticket? this.props.ticket.product_name : '' }
-									</Text>
+									<View style = {{width:120}}>
+										<Text style = {{...styles.productName, color: this.props.ticket.colors[0]}}
+													 	ellipsizeMode='tail' numberOfLines={1}>
+											{ this.props.ticket? this.props.ticket.product_name : '' }
+										</Text>
+									</View>
 									<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
 										<Image
 											style = {styles.productImage}
@@ -226,7 +229,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		width: theme.width * 0.89,
 		paddingRight: 4,
-		paddingLeft: 4
+		paddingLeft: theme.width*0.01,
+		justifyContent:'center'
 	},
 	productImage : {
 		width:100,

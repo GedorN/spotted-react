@@ -229,7 +229,7 @@ export default class ProductScreen extends React.Component {
 											source={{ uri:this.state.product? this.state.product.logo : null}}>
 										</Image>
 									</View>
-									<View style = {{marginTop:20,marginBottom:15}}>
+									<View style = {{marginTop:20,marginBottom:15,width:theme.width*0.9,alignSelf:'center'}}>
 										<Text style = {styles.productName} >
 											{this.state.product? this.state.product.name : null}
 										</Text>
@@ -481,7 +481,9 @@ const styles = StyleSheet.create({
 	productName : {
 		fontWeight:'bold',
 		fontSize:25,
-		alignSelf:'center'},
+		alignSelf:'center',
+		textAlign:'justify'
+	},
 
 	payContainer : {
 		width:theme.width * 0.9,

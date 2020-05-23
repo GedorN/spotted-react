@@ -100,14 +100,17 @@ export default class LikeAPrayer extends React.Component{
 						alignItems: 'center',
 						justifyContent: 'center',
 						backgroundColor: this.props.colors ? this.props.colors[0] : null,
+						paddingLeft:10,
+						paddingRight:10,
 						
 
 					}}>
 						<Text style={{
 							textAlign: 'center',fontWeight:'bold',
-							fontSize: this.props.product && this.props.product.name ? this.getFontSize(this.props.product.name) : null,
+							fontSize:16,
 							color: this.props.colors ? this.props.colors[1] : 'black'
-						}}>
+						}}
+							ellipsizeMode='tail' numberOfLines={2}>
 							{ this.props.product ? this.props.product.name : '' }
 						</Text>
 					</View>
