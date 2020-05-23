@@ -6,6 +6,7 @@ import {
 	TouchableOpacity
 } from 'react-native';
 
+import theme from "../../../../../components/General/Theme";
 export default class ImNotTheOnlyChip extends React.Component {
 	constructor(props) {
 		super(props);
@@ -52,8 +53,8 @@ export default class ImNotTheOnlyChip extends React.Component {
 					borderWidth: 1,
 					borderRadius: 20,
 					padding: 7,
-					paddingLeft:11,
-					paddingRight:11,
+					paddingLeft:theme.width * 0.04,
+					paddingRight:theme.width * 0.04,
 					backgroundColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 0.5)',
 					borderColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 0.5)',
 

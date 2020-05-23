@@ -325,8 +325,9 @@ export default class ProductScreen extends React.Component {
 									{
 										this.state.product &&
 										<View style = {{marginTop: theme.height*0.04}}>
-											<Text style = {{alignSelf:'center', color:'#8f8f8f', fontWeight:'bold', padding: 4}}>{'Após preencher as opções necessárias confirme a compra :'}</Text>
-
+											<View sytle = {{width:theme.width * 0.95,alignSelf:'center'}}>
+												<Text style = {{alignSelf:'center', color:'#8f8f8f', padding: 4,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
+											</View>
 											<View style = {styles.footer}>
 												{
 													this.state.errorMissingValues &&
@@ -358,7 +359,7 @@ export default class ProductScreen extends React.Component {
 							{
 								!this.state.showLoading &&
 								<View>
-									<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',marginTop:theme.height * 0.01,flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
+									<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
 										<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
 										{	this.state.product &&
 											this.state.product.customization.map(i =>
