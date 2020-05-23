@@ -7,10 +7,6 @@ import {
 	Image,
 } from 'react-native';
 
-import {
-	TouchableRipple
-} from 'react-native-paper'
-
 import theme from "../../../../../components/General/Theme";
 
 export default class LikeAPrayer extends React.Component{
@@ -67,12 +63,11 @@ export default class LikeAPrayer extends React.Component{
 
 	render() {
 		return (
-			<View style={styles.container}>
-				<TouchableRipple
-					rippleColor="rgba(143, 143, 143, .8)"
-					onPress={this.goToProductScreen.bind(this)}
-					activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
-				>
+			<TouchableOpacity
+				onPress={this.goToProductScreen.bind(this)}
+				activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
+			>
+				<View style={styles.container}>
 					<View>
 						<View style={{
 							alignSelf:'center',
@@ -108,8 +103,8 @@ export default class LikeAPrayer extends React.Component{
 						</View>
 						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ this.props.product && this.props.product.price? ('Valor: R$ ' + this.props.product.price) : ''}</Text>
 					</View>
-				</TouchableRipple>
-			</View>
+				</View>
+			</TouchableOpacity>
 		);
 	}
 }

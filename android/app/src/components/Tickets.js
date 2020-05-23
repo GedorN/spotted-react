@@ -52,16 +52,14 @@ export default class Tickets extends React.Component {
 				<FlatList
 					ListHeaderComponent = {() =>
 						<View>
-							<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
-								<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
-									<Image
-										style={{width: 12, height: 12, marginTop:4}}
-										source={require('../../../../assets/images/arrow-left.png')}
-									/>
-									<Text style={{marginLeft: 5}}>
-										voltar
-									</Text>
-								</View>
+							<TouchableOpacity style={{flexDirection: 'row', marginTop: 7,  paddingLeft: 10}} onPress={() => {this.props.navigation.goBack()}}>
+								<Image
+									style={{width: 12, height: 12, marginTop:4}}
+									source={require('../../../../assets/images/arrow-left.png')}
+								/>
+								<Text style={{marginLeft: 5}}>
+									voltar
+								</Text>
 							</TouchableOpacity>
 							<Text style = {{fontWeight:'bold',color:'#8f8f8f'}}>Acompanhe seus pedidos</Text>
 						</View>}
@@ -87,7 +85,6 @@ export default class Tickets extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		padding: 1,
 		backgroundColor: 'white',
 	}
 })
