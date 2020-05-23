@@ -24,6 +24,7 @@ export default class Tickets extends React.Component {
 	}
 
 	componentDidMount(): void {
+		heimdallr.checkTicketsStatus(heimdallr.user_id);
 		heimdallr.getUserTickets().then(
 			(resolve) => {
 
@@ -35,7 +36,7 @@ export default class Tickets extends React.Component {
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
-		heimdallr.checkTicketsStatus();
+		heimdallr.checkTicketsStatus(heimdallr.user_id);
 		heimdallr.getUserTickets().then(
 			(resolve) => {
 				this.setState({ tickets: resolve });

@@ -10,7 +10,8 @@ import {
 	Alert,
 	Modal,
 	Button,
-	Clipboard
+	Clipboard,
+	Linking,
 } from 'react-native'
 
 import theme from "../../../../../components/General/Theme";
@@ -68,6 +69,10 @@ export default class LikeARollingTicketViewer extends React.Component {
 	copyText = () => {
 		Clipboard.setString(this.props.ticket.referenceId);
 		this.setState({ copiedText: true });
+	}
+
+	redirectToPay = () => {
+		Linking.openURL(this.props.ticket.url);
 	}
 
 	render() {
@@ -190,12 +195,10 @@ export default class LikeARollingTicketViewer extends React.Component {
 									/>
 							</TouchableOpacity>
 				            {
-				            	this.state.payment === 'PicPay' &&
-								<TouchableOpacity style = {{alignSelf:'center',marginTop:25}} onPress = {() => this.setState({showModal : false})}>
-									<View style = {{...styles.modalButton,backgroundColor : this.props.ticket.colors[0]}}>
-										<Text style = {{marginBottom:10,marginTop:10,fontWeight:'bold',fontSize:20}}>{'Pagar'}</Text>
-									</View>
-								</TouchableOpacity>
+					            this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
+								<View style = {{ marginTop: 12 }}>
+									<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
+								</View>
 				            }
 
 			            </View>
@@ -348,7 +351,8 @@ const styles = StyleSheet.create({
 		alignSelf:'center'
 	},
 	modalButton : {
-		borderRadius:10,width:theme.width*0.5,
+		borderRadius: 10,
+		width:theme.width * 0.5,
 		alignContent:'center',
 		alignItems:'center',
 		justifyContent:'center'

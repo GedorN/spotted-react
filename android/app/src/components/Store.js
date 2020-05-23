@@ -4,7 +4,7 @@ import {
 	StyleSheet,
 	Text,
 	FlatList,
-	Image,
+	Image, TouchableOpacity,
 } from "react-native";
 
 import ImNotTheOnlyChip from "./layout/ImNotTheOnlyChip";
@@ -98,7 +98,18 @@ export default class Store extends React.Component {
 					}
 					ListHeaderComponent={({item}) =>
 						<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
-							<SevenBannerArmy />
+							<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
+								<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+									<Image
+										style={{width: 12, height: 12, marginTop:4}}
+										source={require('../../../../assets/images/arrow-left.png')}
+									/>
+									<Text style={{marginLeft: 5}}>
+										voltar
+									</Text>
+								</View>
+							</TouchableOpacity>
+							<SevenBannerArmy url={this.state.banner}/>
 							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10}}>
 								{
 									this.state.categories.map(i =>

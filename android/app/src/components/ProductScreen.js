@@ -223,6 +223,17 @@ export default class ProductScreen extends React.Component {
 		                <FlatList
 							ListHeaderComponent = {() =>
 								<View>
+									<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
+										<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+											<Image
+												style={{width: 12, height: 12, marginTop:4}}
+												source={require('../../../../assets/images/arrow-left.png')}
+											/>
+											<Text style={{marginLeft: 5}}>
+												voltar
+											</Text>
+										</View>
+									</TouchableOpacity>
 									<View style = {styles.logoContainer}>
 										<Image
 											style = {{width:90,height:70,alignSelf:'center'}}

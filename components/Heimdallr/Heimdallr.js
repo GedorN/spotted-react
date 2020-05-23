@@ -876,9 +876,9 @@ function HeimdallrLib() {
     })
   }
 
-  this.checkTicketsStatus = function() {
+  this.checkTicketsStatus = function(uid) {
   	return new Promise((resolve, reject) => {
-  		firebase.functions().httpsCallable('verifyUserTickets')({uid: this.user_id}).then(
+  		firebase.functions().httpsCallable('verifyUserTickets')({uid:uid}).then(
   			(result) => {
   				resolve(result);
 		    },
