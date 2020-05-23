@@ -7,6 +7,10 @@ import {
 } from 'react-native';
 
 import theme from "../../../../../components/General/Theme";
+import {
+	TouchableRipple
+} from 'react-native-paper'
+
 export default class ImNotTheOnlyChip extends React.Component {
 	constructor(props) {
 		super(props);
@@ -48,17 +52,16 @@ export default class ImNotTheOnlyChip extends React.Component {
 
 	render() {
 		return (
-			<TouchableOpacity onPress={this.pressed.bind(this)}>
+			<TouchableRipple rippleColor="rgba(143, 143, 143, .8)" onPress={this.pressed.bind(this)}>
 				<View style={{
 					borderWidth: 1,
 					borderRadius: 20,
 					padding: 7,
-					paddingLeft:theme.width * 0.04,
-					paddingRight:theme.width * 0.04,
-					backgroundColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 0.5)',
-					borderColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 0.5)',
-
-					elevation: 1,
+					paddingLeft: theme.width * 0.04,
+					paddingRight: theme.width * 0.04,
+					backgroundColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 1)',
+					borderColor: this.props.colors && this.state.pressed ?  this.props.colors[0] : 'rgba(166, 166, 162, 1)',
+					elevation: 2,
 				}}>
 					<Text
 						style={{
@@ -66,7 +69,7 @@ export default class ImNotTheOnlyChip extends React.Component {
 						}}
 					> {this.props.text} </Text>
 				</View>
-			</TouchableOpacity>
+			</TouchableRipple>
 		)
 	}
 }

@@ -511,6 +511,7 @@ const styles = StyleSheet.create({
 		paddingBottom:20,
 		paddingTop:20,
 		elevation:3,
+		backgroundColor: 'white',
 	},
 	description : {
 		flex:1,

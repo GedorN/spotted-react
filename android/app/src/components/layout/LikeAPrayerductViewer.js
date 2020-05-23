@@ -7,6 +7,10 @@ import {
 	Image,
 } from 'react-native';
 
+import {
+	TouchableRipple
+} from 'react-native-paper'
+
 import theme from "../../../../../components/General/Theme";
 
 export default class LikeAPrayer extends React.Component{
@@ -63,50 +67,49 @@ export default class LikeAPrayer extends React.Component{
 
 	render() {
 		return (
-			<TouchableOpacity
-
-				onPress={this.goToProductScreen.bind(this)}
-				activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
-			>
-				<View style={styles.container}>
-					<View style={{
-						alignSelf:'center',
-						height: theme.height * 0.1,
-						width: theme.width * 0.43,
-						borderTopLeftRadius: 30,
-						borderTopRightRadius: 30,
-						borderBottomRightRadius:2,
-						borderBottomLeftRadius:2,
-						alignItems: 'center',
-						justifyContent: 'center',
-						backgroundColor: this.props.colors ? this.props.colors[0] : null,
-						paddingLeft:theme.width * 0.03,
-						paddingRight:theme.width * 0.03,
-						
-					}}>
-						<Text style={{
-							textAlign: 'center',fontWeight:'bold',
-							fontSize:16,
-							color: this.props.colors ? this.props.colors[1] : 'black'
-						}}
-							ellipsizeMode='tail' numberOfLines={2}>
-							{ this.props.product ? this.props.product.name : '' }
-						</Text>
-					</View>
-					<View style = {{width:theme.width * 0.43, height:theme.height * 0.25, alignSelf:'center'}}>
-						<Image
-							style={{
-								flex: 1,
-								width: null,
-								height: null,
-								resizeMode: 'contain',
+			<View style={styles.container}>
+				<TouchableRipple
+					rippleColor="rgba(143, 143, 143, .8)"
+					onPress={this.goToProductScreen.bind(this)}
+					activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
+				>
+					<View>
+						<View style={{
+							alignSelf:'center',
+							height: theme.height * 0.1,
+							width: theme.width * 0.43,
+							borderTopLeftRadius: 30,
+							borderTopRightRadius: 30,
+							borderBottomRightRadius:2,
+							borderBottomLeftRadius:2,
+							alignItems: 'center',
+							justifyContent: 'center',
+							backgroundColor: this.props.colors ? this.props.colors[0] : null,
+						}}>
+							<Text style={{
+								textAlign: 'center',fontWeight:'bold',
+								fontSize:16,
+								color: this.props.colors ? this.props.colors[1] : 'black'
 							}}
-							source={{ uri: this.props.product && this.props.product.images ? this.props.product.images[0] : null}}
-						/>
+								ellipsizeMode='tail' numberOfLines={2}>
+								{ this.props.product ? this.props.product.name : '' }
+							</Text>
+						</View>
+						<View style = {{width:theme.width * 0.43, height:theme.height * 0.25, alignSelf:'center'}}>
+							<Image
+								style={{
+									flex: 1,
+									width: null,
+									height: null,
+									resizeMode: 'contain',
+								}}
+								source={{ uri: this.props.product && this.props.product.images ? this.props.product.images[0] : null}}
+							/>
+						</View>
+						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ this.props.product && this.props.product.price? ('Valor: R$ ' + this.props.product.price) : ''}</Text>
 					</View>
-					<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ this.props.product && this.props.product.price? ('Valor: R$ ' + this.props.product.price) : ''}</Text>
-				</View>
-			</TouchableOpacity>
+				</TouchableRipple>
+			</View>
 		);
 	}
 }
