@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 
 import theme from "../../../../../components/General/Theme";
+import Ripple from 'react-native-material-ripple';
+
 
 export default class LikeAPrayer extends React.Component{
 	constructor(props) {
@@ -63,11 +65,13 @@ export default class LikeAPrayer extends React.Component{
 
 	render() {
 		return (
-			<TouchableOpacity
-				onPress={this.goToProductScreen.bind(this)}
-				activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
-			>
-				<View style={styles.container}>
+			<View style={styles.container}>
+				<Ripple
+					rippleOpacity={0.42}
+					rippleColor="rgba(143, 143, 143, .8)"
+					onPress={this.goToProductScreen.bind(this)}
+					activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
+				>
 					<View>
 						<View style={{
 							alignSelf:'center',
@@ -105,8 +109,8 @@ export default class LikeAPrayer extends React.Component{
 						</View>
 						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ this.props.product && this.props.product.price? ('Valor: R$ ' + this.props.product.price) : ''}</Text>
 					</View>
-				</View>
-			</TouchableOpacity>
+				</Ripple>
+			</View>
 		);
 	}
 }
@@ -121,7 +125,9 @@ const styles = StyleSheet.create({
 		elevation: 2,
 		alignContent:'center',
 		alignItems:'center',
-		backgroundColor: 'white'
+		backgroundColor: 'white',
+		borderTopLeftRadius: 30,
+		borderTopRightRadius: 30,
 	},
 
 })

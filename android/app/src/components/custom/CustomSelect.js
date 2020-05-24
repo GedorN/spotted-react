@@ -6,9 +6,8 @@ import {
 	View
 } from 'react-native';
 
-import {
-	TouchableRipple
-} from 'react-native-paper'
+import Ripple from 'react-native-material-ripple';
+
 import theme from "../../../../../components/General/Theme";
 
 export default class CustomSelect extends React.Component {
@@ -49,11 +48,11 @@ export default class CustomSelect extends React.Component {
 					</Text>
 					{
 						this.props.custom.options.map((i) =>
-							<TouchableRipple rippleColor="rgba(143, 143, 143, .8)" onPressIn={this.getOption.bind(this,i)}>
+							<Ripple rippleColor="rgba(143, 143, 143, .8)" onPressIn={this.getOption.bind(this,i)}>
 								<View style = {{elevation: 2, backgroundColor: 'white', borderColor:(this.state.color.find((c) => c === i) ? this.props.colors[0] :'#8f8f8f'), borderWidth:(this.state.color.find((c) => c === i) ? 4 : 2), borderRadius:25, marginTop:25, justifyContent:'center'}} key={i} >
 									<Text style = {{fontSize:22, marginBottom:theme.height*0.025, marginTop:theme.height*0.025, alignSelf:'center', fontWeight:'bold', color:(this.state.color.find((c) => c === i) ?this.props.colors[0] :'#8f8f8f')}}>{i}</Text>
 								</View>
-							</TouchableRipple>
+							</Ripple>
 						)}
 
 				</View>

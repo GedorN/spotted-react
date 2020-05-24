@@ -5,10 +5,9 @@ import {
 	StyleSheet,
 } from 'react-native';
 
-import {
-	TouchableRipple
-} from 'react-native-paper'
 import theme from "../../../../../components/General/Theme";
+import Ripple from 'react-native-material-ripple';
+
 
 
 export default class CustomRadio extends React.Component {
@@ -41,7 +40,7 @@ export default class CustomRadio extends React.Component {
 					{
 						this.props.custom.options.map((i) =>
 							<View style = {{elevation: 2, backgroundColor: 'white', borderColor:(this.state.color === i ? this.props.colors[0] :'#8f8f8f'),borderWidth:(this.state.color === i? 4 : 2),borderRadius:25, marginTop:25,justifyContent:'center'}} key={i} >
-								<TouchableRipple rippleColor="rgba(143, 143, 143, .8)" onPress = {this.getOption.bind(this,i)}>
+								<Ripple rippleColor="rgba(143, 143, 143, .8)" onPress = {this.getOption.bind(this,i)}>
 									<Text style = {{
 										fontSize:22,
 										marginBottom:theme.height*0.025,
@@ -52,7 +51,7 @@ export default class CustomRadio extends React.Component {
 									>
 										{i}
 									</Text>
-								</TouchableRipple>
+								</Ripple>
 							</View>
 						)}
 				</View>

@@ -14,6 +14,9 @@ import {
 	Linking,
 } from 'react-native'
 
+import Ripple from 'react-native-material-ripple';
+
+
 import theme from "../../../../../components/General/Theme";
 import LikeAPrayerductViewer from "./LikeAPrayerductViewer";
 import moment from "moment";
@@ -77,11 +80,14 @@ export default class LikeARollingTicketViewer extends React.Component {
 
 	render() {
 		return (
-			<View style={{flex: 1}}>
-				<TouchableOpacity onPress = {() => this.setState({showModal : true})}
-					activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
-				>
-					<View style={styles.product_info}>
+			<View style={{flex: 1, borderRadius: 25}}>
+				<View style={styles.product_info}>
+					<Ripple
+						rippleOpacity={0.42}
+						rippleColor="rgba(143, 143, 143, .8)"
+				        onPress = {() => this.setState({showModal : true})}
+						activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
+					>
 						<View style = {styles.ticketHeader}>
 							<Image
 								style = {styles.ticketLogo}
@@ -129,9 +135,8 @@ export default class LikeARollingTicketViewer extends React.Component {
 								</View>
 							</View>
 						</View>
-					</View>
-
-				</TouchableOpacity>
+					</Ripple>
+				</View>
 				<Modal
 		            hardwareAccelerated={true}
 		            animationType='fade'
