@@ -111,7 +111,7 @@ export default class Store extends React.Component {
 								</View>
 							</TouchableOpacity>
 							<SevenBannerArmy url={this.state.banner}/>
-							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10}}>
+							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10,paddingLeft:theme.width*0.04}}>
 								{
 									this.state.categories.map(i =>
 										<View style={{margin: 5}} key={i.name}>
