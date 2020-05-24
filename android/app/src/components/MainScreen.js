@@ -102,6 +102,10 @@ export default class MainScreen extends React.Component {
 
 	_hideModal = () => {
 		this.setState({ showModal: false });
+	};
+
+	_hideModalAndRefresh = () => {
+		this.setState({ showModal: false });
 		this.homeScreen.setRefreshing();
 	};
 
@@ -301,7 +305,7 @@ export default class MainScreen extends React.Component {
 							onRequestClose={this._hideModal.bind(this)}
 							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 						>
-							<PostWrite close={this._hideModal.bind(this)} call={this.postCall.bind(this)} />
+							<PostWrite closeAndRefresh={this._hideModalAndRefresh.bind(this)} close={this._hideModal.bind(this)} call={this.postCall.bind(this)} />
 						</Modal>
 						<Modal
 							transparent={true}

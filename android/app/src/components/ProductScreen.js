@@ -217,7 +217,7 @@ export default class ProductScreen extends React.Component {
 
 	render() {
 		return (
-			<KeyboardAvoidingView style={{flex: 1}}>
+			<KeyboardAvoidingView behavior={'padding'} style={{zIndex: 0, flex: 1}}>
 				<View>
 					<View>
 		                <FlatList

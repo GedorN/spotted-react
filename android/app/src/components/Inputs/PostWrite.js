@@ -59,7 +59,7 @@ export default class PostWrite extends React.Component {
 			let urlArray = [];
 			let self = this;
 			let checkedImages = 0;
-			this.props.close();
+			this.props.closeAndRefresh();
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
 				console.log('before: ', this.state.postImages);
@@ -85,7 +85,7 @@ export default class PostWrite extends React.Component {
 			})
 		} else {
 			// caso a postagem não contenha imagem
-			this.props.close();
+			this.props.closeAndRefresh();
 			this.savePost(1);
 		}
 	}
