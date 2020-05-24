@@ -63,9 +63,9 @@ export default class ProductScreen extends React.Component {
 	}
 
 	renderPage(image, index) {
-        return (
-            <View key={index} style = {{ height:theme.height * 0.58}}>
-                <Image style={{ width: theme.width * 0.85, height:theme.height * 0.55, alignSelf:'center' }} source={{ uri: image }} />
+		return (
+            <View key={index} style = {{ height:theme.height * 0.58,width:theme.width * 0.8,alignSelf:'center'}}>
+                <Image style={{flex: 1, resizeMode: 'contain', width: theme.width * 0.85, height:theme.height * 0.55, alignSelf:'center' }} source={{ uri: image }} />
             </View>
         );
 	}
@@ -357,12 +357,12 @@ export default class ProductScreen extends React.Component {
 							{
 								!this.state.showLoading &&
 								<View>
-									<Text style = {{width:theme.width * 0.8,paddingRight:7,paddingLeft:7, alignSelf:'center',flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
+									<Text style = {{width:theme.width * 0.8,paddingRight:theme.width * 0.02,paddingLeft:theme.width * 0.02,paddingBottom: theme.width * 0.02,alignSelf:'center',flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
 										<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
 										{	this.state.product &&
 											this.state.product.customization.map(i =>
 										<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
-											{i.value?(' ' + i.label + ' ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
+											{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
 										</Text>
 										)}
 									</Text>
@@ -374,7 +374,7 @@ export default class ProductScreen extends React.Component {
 											</Text>
 										</View>
 									}
-									<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:10,marginBottom:7,marginTop:7}}>{'Selecione a forma de pagamento :'}</Text>
+									<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:theme.width * 0.02,marginBottom:theme.width * 0.02,marginTop:theme.width * 0.02}}>{'Selecione a forma de pagamento :'}</Text>
 									<TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
 										<View
 											style = {{

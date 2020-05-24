@@ -177,7 +177,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 								<Text style = {styles.modalLetter}>
 								{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' +this.props.ticket.product_price }</Text>
 								<TouchableOpacity onPress={this.copyText.bind(this)}>
-									<View style={{flexDirection: 'row', alignItems: 'flex-start', alignContent: 'center'}}>
+									<View style={{flexDirection: 'row', alignItems: 'flex-start', alignContent: 'center',marginTop:theme.height * 0.01}}>
 										<Image
 											style={{width: 18, height: 20, tintColor: '#8f8f8f'}}
 											source={require('../../../../../assets/images/copy-regular.png')}
