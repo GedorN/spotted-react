@@ -61,7 +61,9 @@ export default class Tickets extends React.Component {
 									voltar
 								</Text>
 							</TouchableOpacity>
-							<Text style = {{fontWeight:'bold',color:'#8f8f8f'}}>Acompanhe seus pedidos</Text>
+							<View style = {{width:theme.width * 0.95,alignSelf:'center',paddingLeft:theme.width * 0.04,marginTop:theme.height * 0.01}}>
+								<Text style = {{fontWeight:'bold',color:'#8f8f8f'}}>Acompanhe seus pedidos</Text>
+							</View>
 						</View>}
 						refreshControl={
 							<RefreshControl
@@ -86,5 +88,6 @@ export default class Tickets extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: 'white',
+		paddingTop:theme.height * 0.03
 	}
 })

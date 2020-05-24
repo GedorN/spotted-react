@@ -169,7 +169,8 @@ const styles = StyleSheet.create({
     container: {
     	alignItems: 'center',
         flex: 1,
-	    padding: 20
+		padding: 20,
+		paddingTop:theme.height * 0.05
     },
 	modalContainer: {
 		// height: 150,
