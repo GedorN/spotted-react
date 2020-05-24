@@ -64,7 +64,7 @@ export default class ProductScreen extends React.Component {
 
 	renderPage(image, index) {
 		return (
-            <View key={index} style = {{ height:theme.height * 0.58,width:theme.width * 0.8,alignSelf:'center'}}>
+            <View key={index} style = {{ height:theme.height * 0.58,width:theme.width * 0.8,alignSelf:'center',marginBottom:theme.height * 0.03}}>
                 <Image style={{flex: 1, resizeMode: 'contain', width: theme.width * 0.85, height:theme.height * 0.55, alignSelf:'center' }} source={{ uri: image }} />
             </View>
         );

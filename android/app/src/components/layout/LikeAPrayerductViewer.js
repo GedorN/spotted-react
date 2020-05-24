@@ -96,7 +96,7 @@ export default class LikeAPrayer extends React.Component{
 								{ this.props.product ? this.props.product.name : '' }
 							</Text>
 						</View>
-						<View style = {{width:theme.width * 0.43, height:theme.height * 0.25, alignSelf:'center'}}>
+						<View style = {{width:theme.width * 0.43, height:theme.height * 0.25, alignSelf:'center',paddingTop:theme.height*0.01,marginBottom:theme.height * 0.005}}>
 							<Image
 								style={{
 									flex: 1,
