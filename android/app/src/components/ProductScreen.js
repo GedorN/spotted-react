@@ -217,8 +217,8 @@ export default class ProductScreen extends React.Component {
 
 	render() {
 		return (
-			<KeyboardAvoidingView style={{zIndex: 0, flex: 1}} >
-				<View style={{flex: 1}}>
+			<KeyboardAvoidingView style={{flex: 1}}>
+				<View>
 					<View>
 		                <FlatList
 							ListHeaderComponent = {() =>
