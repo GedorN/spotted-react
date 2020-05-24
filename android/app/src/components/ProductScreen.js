@@ -325,9 +325,7 @@ export default class ProductScreen extends React.Component {
 									{
 										this.state.product &&
 										<View style = {{marginTop: theme.height*0.04}}>
-											<View sytle = {{width:theme.width * 0.95,alignSelf:'center'}}>
-												<Text style = {{alignSelf:'center', color:'#8f8f8f', padding: 4,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
-											</View>
+											<Text style = {{alignSelf:'center', color:'#8f8f8f', padding:4,paddingLeft:theme.width * 0.04,paddingRight:theme.width * 0.04,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
 											<View style = {styles.footer}>
 												{
 													this.state.errorMissingValues &&
