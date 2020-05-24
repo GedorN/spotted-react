@@ -80,6 +80,8 @@ export default class LikeAPrayer extends React.Component{
 							alignItems: 'center',
 							justifyContent: 'center',
 							backgroundColor: this.props.colors ? this.props.colors[0] : null,
+							paddingLeft:theme.width * 0.03,
+							paddingRight:theme.width * 0.03,
 						}}>
 							<Text style={{
 								textAlign: 'center',fontWeight:'bold',
