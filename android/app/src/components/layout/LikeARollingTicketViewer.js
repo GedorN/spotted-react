@@ -194,7 +194,8 @@ export default class LikeARollingTicketViewer extends React.Component {
 								<Text style = {{...styles.modalStatus,color:this.props.ticket.colors[0]}}>{'Status: ' + this.props.ticket.status}</Text>
 							</View>
 							<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
-								<View style = {{width:theme.width*0.5,height:theme.height * 0.3,alignSelf:'center',marginTop:theme.height * 0.02}}>
+								<View style = {{width:theme.width*0.5,height:theme.height * 0.3,alignSelf:'center',marginTop:theme.height * 0.02,
+								paddingBottom:theme.height * 0.02}}>
 									<Image
 											style = {styles.modalImage}
 											source ={{uri : this.props.ticket.image }}
@@ -203,8 +204,8 @@ export default class LikeARollingTicketViewer extends React.Component {
 							</TouchableOpacity>
 				            {
 					            this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
-								<View style = {{ marginTop: 12 }}>
-									<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
+								<View >
+									<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
 								</View>
 				            }
 
@@ -361,7 +362,7 @@ const styles = StyleSheet.create({
 		width: null,
 		height: null,
 		resizeMode:'contain',
-		flex:1
+		flex:1,
 	},
 	modalButton : {
 		borderRadius: 10,
