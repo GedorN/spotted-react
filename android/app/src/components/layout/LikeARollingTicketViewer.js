@@ -96,17 +96,19 @@ export default class LikeARollingTicketViewer extends React.Component {
 						</View>
 						<View style = {styles.product_info_body} >
 							<View style={{flexDirection: 'column'}}>
-								<View style = {{width:theme.width*0.27}}>
+								<View style = {{width:theme.width*0.27,alignSelf:'center'}}>
 									<Text style = {{...styles.productName, color: this.props.ticket.colors[0]}}
 												    ellipsizeMode='tail' numberOfLines={1}>
 										{ this.props.ticket? this.props.ticket.product_name : '' }
 									</Text>
 								</View>
 								<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
-									<Image
-										style = {styles.productImage}
-										source ={{uri : this.props.ticket.image }}
-									/>
+									<View style = {{width:theme.width * 0.3,height:theme.height * 0.17}}>
+										<Image
+											style = {styles.productImage}
+											source ={{uri : this.props.ticket.image }}
+										/>
+									</View>
 								</TouchableOpacity>
 							</View>
 							<View style = {{flexDirection:'column'}}>
@@ -192,10 +194,12 @@ export default class LikeARollingTicketViewer extends React.Component {
 								<Text style = {{...styles.modalStatus,color:this.props.ticket.colors[0]}}>{'Status: ' + this.props.ticket.status}</Text>
 							</View>
 							<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
-								<Image
-										style = {styles.modalImage}
-										source ={{uri : this.props.ticket.image }}
-									/>
+								<View style = {{width:theme.width*0.5,height:theme.height * 0.3,alignSelf:'center',marginTop:theme.height * 0.02}}>
+									<Image
+											style = {styles.modalImage}
+											source ={{uri : this.props.ticket.image }}
+										/>
+								</View>
 							</TouchableOpacity>
 				            {
 					            this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
@@ -243,10 +247,12 @@ const styles = StyleSheet.create({
 		justifyContent:'center'
 	},
 	productImage : {
-		width:100,
-		height:115,
+		width:null,
+		height:null,
 		marginLeft:theme.width * 0.02,
-		marginTop:theme.height * 0.02
+		marginTop:theme.height * 0.02,
+		resizeMode: 'contain',
+		flex:1
 	},
 	ticketHeader : {
 		height: theme.height *0.03,
@@ -352,10 +358,10 @@ const styles = StyleSheet.create({
 		marginTop:5
 	},
 	modalImage : {
-		width: 130,
-		height: 160,
-		marginLeft:theme.width * 0.02,
-		alignSelf:'center'
+		width: null,
+		height: null,
+		resizeMode:'contain',
+		flex:1
 	},
 	modalButton : {
 		borderRadius: 10,
