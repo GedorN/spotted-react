@@ -40,7 +40,7 @@ export default class ProductScreen extends React.Component {
 			customizationDetails: [],
 			description : '',
 			showAlert : false,
-			picPay : false,
+			picPay : true,
 			directlyToStore: false,
 			PicPayPrice : '',
 			payment: false,
@@ -75,7 +75,7 @@ export default class ProductScreen extends React.Component {
 	}
 
 	ticketsRegister = async () => {
-		if (this.state.directlyToStore ){
+		/* if (this.state.directlyToStore ){
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
 			let params = {};
@@ -104,8 +104,8 @@ export default class ProductScreen extends React.Component {
 				type: "success",
 				icon: 'success'
 			});
-		} else if (this.state.picPay ) {
-			console.log('VOu ir pelo pic',heimdallr.user_name.split(' ')[0], heimdallr.user_name.split(' ')[1], heimdallr.email );
+		}  */
+			console.warn('VOu ir pelo pic',heimdallr.user_name.split(' ')[0], heimdallr.user_name.split(' ')[1], heimdallr.email );
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
 			let params = {};
@@ -165,7 +165,7 @@ export default class ProductScreen extends React.Component {
 				    });
 			    }
 			);
-		}
+		
 
 	}
 
@@ -263,10 +263,11 @@ export default class ProductScreen extends React.Component {
 									</Carousel>
 
 									<View style = {styles.payContainer}>
-										<Text style = {{color:'#8f8f8f', fontWeight:'bold',fontSize:19,marginBottom:4}}>
-											{'Valor:'}
-										</Text>
-										<View style = {{flexDirection:'row'}}>
+											<Text style = {{fontWeight:'bold',fontSize:20}}>
+													{'Valor: R$ ' + this.state.PicPayPrice }
+											</Text>
+			
+										{/* <View style = {{flexDirection:'row'}}>
 											<Text style = {{fontWeight:'bold',fontSize:17}}>
 												{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
 											</Text>
@@ -275,10 +276,10 @@ export default class ProductScreen extends React.Component {
 												source = {{uri:this.state.product? this.state.product.logo : ''}}>
 
 											</Image>
-										</View>
+										</View> */}
 										<View style = {{flexDirection:'row',marginTop:5}}>
 											<Text style = {{fontWeight:'bold',fontSize:17}}>
-												{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+												{'Pago pelo '}
 											</Text>
 											<Image
 												style = {{width:61,height:20,marginLeft:3,marginTop:5}}
@@ -356,21 +357,22 @@ export default class ProductScreen extends React.Component {
 					showProgress={false}
 					title="Confirmação da compra"
 					titleStyle = {{fontWeight:'bold', width:theme.width * 0.8, marginTop:-(theme.height * 0.015),borderTopLeftRadius:6, borderTopRightRadius:6, paddingTop:14,paddingBottom:14,backgroundColor:this.state.product?this.state.product.colors[0]: null,color:this.state.product?this.state.product.colors[1]:'black'}}
-					contentContainerStyle = {{ padding:0, width:theme.width}}
+					contentContainerStyle = {{ padding:0, width:theme.width,paddingBottom:theme.height*0.01}}
 					customView = {
-						<View style = {{ padding: 10 }}>
+						<View style = {{ padding: theme.width * 0.025 }}>
 							{
 								!this.state.showLoading &&
 								<View>
-									<Text style = {{width:theme.width * 0.8,paddingRight:theme.width * 0.02,paddingLeft:theme.width * 0.02,paddingBottom: theme.width * 0.02,alignSelf:'center',flexDirection:'row',textAlign: 'justify',borderBottomColor:'#8f8f8f',borderBottomWidth:0.5}}>
-										<Text style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>{'Caracaterísticas escolhidas:'}</Text>
-										{	this.state.product &&
-											this.state.product.customization.map(i =>
-										<Text key = {i.label} style = {{color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
-											{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
-										</Text>
+										<Text style = {{fontWeight:'bold',fontSize:15,textAlign: 'justify', lineHeight: 25,marginLeft:theme.width * 0.007}}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
+										<Text style = {{ flexDirection:'row',marginTop:theme.height * 0.01}}>
+											{	this.state.product &&
+												this.state.product.customization.map(i =>
+											<Text key = {i.label} style = {{fontWeight:'bold',color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: 25}}>
+												{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
+											</Text>
 										)}
-									</Text>
+										</Text>
+								
 									{
 										this.state.payment === 'true' &&
 										<View style = {{backgroundColor:'red'}}>
@@ -379,8 +381,8 @@ export default class ProductScreen extends React.Component {
 											</Text>
 										</View>
 									}
-									<Text style = {{color:'#8f8f8f',fontWeight:'700',marginLeft:theme.width * 0.02,marginBottom:theme.width * 0.02,marginTop:theme.width * 0.02}}>{'Selecione a forma de pagamento :'}</Text>
-									<TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
+									<Text style = {{fontWeight:'bold',marginLeft:theme.width * 0.01,marginBottom:theme.width * 0.02,marginTop:theme.width * 0.04,fontSize:15}}>{'Informações:'}</Text>
+									{/* <TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
 										<View
 											style = {{
 												borderColor:'#8f8f8f',
@@ -412,18 +414,16 @@ export default class ProductScreen extends React.Component {
 											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'Seu telefone será enviado para ' + (this.state.product? this.state.product.sid : 'o reponsável') +
 											' entrar em contato e agendar hora e local para pagamento presencial.A compra será confirmada após essa etapa.'}</Text>
 										</View>
-									</TouchableOpacity>
-									<TouchableOpacity onPress = { () => this.setState({ picPay : true, directlyToStore: false })}>
+									</TouchableOpacity> */}
+									
 										<View
 											style = {{
 												borderColor:'#21c25e',
-												borderWidth:(this.state.picPay ? 3 : 1),
+												borderWidth:4,
 												paddingLeft:10,
 												paddingRight:7,
 												paddingTop:15,
 												paddingBottom:10,
-												marginLeft:5,
-												marginRight:5,
 												marginTop:10,
 												borderRadius:25
 											}}
@@ -442,10 +442,10 @@ export default class ProductScreen extends React.Component {
 													source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
 												</Image>
 											</View>
-											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'O pagamento é efetivado na hora, '+(this.state.product? this.state.product.sid : 'o reponsável')+
-															' receberá automaticamente o comprovante de seu pagamento e a confirmação da sua compra. Assim que seu produto chegar entrarão em contato.' }</Text>
+											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700',lineHeight:20}}>{'O pagamento é efetivado na hora, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
+															' receberá automaticamente o comprovante de seu pagamento e entrará em contato para marcar a entrega do produto.' }</Text>
 										</View>
-									</TouchableOpacity>
+								
 								</View>
 							}
 							{
@@ -470,8 +470,8 @@ export default class ProductScreen extends React.Component {
 					showCancelButton = {this.state.showCancelButton}
 					showConfirmButton={this.state.showConfirmButton}
 					confirmText="Confirmar"
-					confirmButtonColor={this.state.directlyToStore || this.state.picPay ? this.state.product.colors[0]:'#d0d0d0'}
-					confirmButtonTextStyle={{color: this.state.directlyToStore || this.state.picPay ? this.getTxtColor(this.state.product.colors[0]):'black'}}
+					confirmButtonColor={this.state.product?this.state.product.colors[0] : '#03fc77'}
+					confirmButtonTextStyle={ this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black'}
 					cancelText = "Cancelar"
 					onCancelPressed = {() => {
 						this.setState({ showAlert: false })
@@ -502,7 +502,9 @@ const styles = StyleSheet.create({
 
 	payContainer : {
 		width:theme.width * 0.9,
-		alignSelf:'center'
+		alignSelf:'center',
+		marginTop:theme.height*0.05,
+		marginLeft:theme.width * 0.02
 	},
 	descriptionContainer : {
 		width:theme.width * 0.92,
