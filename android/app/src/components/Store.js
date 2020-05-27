@@ -47,7 +47,8 @@ export default class Store extends React.Component {
 			(resolve) => {
 				if (resolve.docs.length > 0) {
 					console.log('que porra: ', resolve.docs.map((d) => d._data));
-					const mappedDocs =  resolve.docs.map((d) => d._data);
+					let mappedDocs =  resolve.docs.map((d) => d._data);
+					mappedDocs = mappedDocs.filter((i) => i.stock > 0);
 					this.setState({ products: mappedDocs, filteredProducts: mappedDocs });
 				}
 			}

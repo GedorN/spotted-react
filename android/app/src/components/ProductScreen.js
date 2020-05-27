@@ -56,7 +56,8 @@ export default class ProductScreen extends React.Component {
 		console.log('ih rapazinho', this.props.navigation.getParam('iid'));
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
-			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : (parseFloat(resolve.price) * 1.1).toFixed(2)});
+			resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
+			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price});
 		})
 
 
@@ -91,8 +92,12 @@ export default class ProductScreen extends React.Component {
 			params.payment = this.state.product.sid;
 			params.product_price = this.state.product.price;
 			params.referenceId = await heimdallr.getUID();
+			params.buyer_email = heimdallr.email;
+			params.buyer_phone= heimdallr.phone;
+			params.buyer_name = heimdallr.user_name;
 
 			heimdallr.saveTicketsRegister(params);
+
 			this.setState({showAlert : false, showLoading: true});
 			showMessage({
 				message: "Compra realizada com sucesso",

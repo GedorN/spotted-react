@@ -403,6 +403,13 @@ function HeimdallrLib() {
 				firebase.firestore().collection('tickets').add({
 					...item
 				});
+				firebase.firestore().collection('products').where('iid', '==', item.iid).get().then(
+					(res) => {
+						firebase.firestore().collection('products').doc(res.docs[0]._ref.path.split('/')[1]).set({
+							stock: res.docs[0].data().stock - 1
+						}, {merge: true});
+					}
+				)
 			} catch (e) {
 				console.warn("erro save tickets", e);
 				resolve();
@@ -590,6 +597,7 @@ function HeimdallrLib() {
                       this.user_name = user._user.displayName;
                       this.email = user._user.email;
                       console.log('this.token', this.user_id);
+                      this.getUserData(user);
                       u = user;
                   } else {
                       return false;
@@ -600,6 +608,16 @@ function HeimdallrLib() {
       }).then(function (resolve) {
           return u;
       })
+  }
+
+  this.getUserData = function (user) {
+	  firebase.firestore().collection('user').where('uid', '==', user._user.uid).get().then(
+		  (resolve) => {
+		  	console.log('resolve USER', resolve.docs[0].data().phone);
+		  	this.phone = resolve.docs[0].data().phone;
+		  	console.log(this.phone);
+		  }
+	  )
   }
 
   this.signIn = function (params) {
