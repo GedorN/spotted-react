@@ -38,6 +38,7 @@ export default class ProductScreen extends React.Component {
 			productImages: null,
 			customizationItems : [],
 			customizationDetails: [],
+			price_without_tax : null,
 			description : '',
 			showAlert : false,
 			picPay : true,
@@ -56,8 +57,9 @@ export default class ProductScreen extends React.Component {
 		console.log('ih rapazinho', this.props.navigation.getParam('iid'));
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
+			const original_price = resolve.price;
 			resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
-			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price});
+			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price, price_without_tax: original_price});
 		})
 
 
@@ -105,7 +107,6 @@ export default class ProductScreen extends React.Component {
 				icon: 'success'
 			});
 		}  */
-			console.warn('VOu ir pelo pic',heimdallr.user_name.split(' ')[0], heimdallr.user_name.split(' ')[1], heimdallr.email );
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
 			let params = {};
@@ -113,6 +114,8 @@ export default class ProductScreen extends React.Component {
 			params.date = await heimdallr.getServerTime();
 			params.iid = this.state.iidProduct;
 			params.image = this.state.productImages[0];
+			params.category = this.state.product.category;
+			params.category_name = this.state.product.category_name;
 			params.product_name = this.state.product.name;
 			params.status = 'Pendente';
 			params.store_name = this.state.product.sid;
@@ -122,6 +125,7 @@ export default class ProductScreen extends React.Component {
 			params.description = this.state.product.customization;
 			params.payment = 'PicPay';
 			params.product_price = this.state.PicPayPrice;
+			params.no_tax_value = this.state.price_without_tax;
 			params.referenceId = await heimdallr.getUID();
 
 
@@ -165,7 +169,7 @@ export default class ProductScreen extends React.Component {
 				    });
 			    }
 			);
-		
+
 
 	}
 
@@ -266,7 +270,7 @@ export default class ProductScreen extends React.Component {
 											<Text style = {{fontWeight:'bold',fontSize:20}}>
 													{'Valor: R$ ' + this.state.PicPayPrice }
 											</Text>
-			
+
 										{/* <View style = {{flexDirection:'row'}}>
 											<Text style = {{fontWeight:'bold',fontSize:17}}>
 												{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
@@ -372,7 +376,7 @@ export default class ProductScreen extends React.Component {
 											</Text>
 										)}
 										</Text>
-								
+
 									{
 										this.state.payment === 'true' &&
 										<View style = {{backgroundColor:'red'}}>
@@ -415,7 +419,7 @@ export default class ProductScreen extends React.Component {
 											' entrar em contato e agendar hora e local para pagamento presencial.A compra será confirmada após essa etapa.'}</Text>
 										</View>
 									</TouchableOpacity> */}
-									
+
 										<View
 											style = {{
 												borderColor:'#21c25e',
@@ -445,7 +449,7 @@ export default class ProductScreen extends React.Component {
 											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700',lineHeight:20}}>{'O pagamento é efetivado na hora, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
 															' receberá automaticamente o comprovante de seu pagamento e entrará em contato para marcar a entrega do produto.' }</Text>
 										</View>
-								
+
 								</View>
 							}
 							{
