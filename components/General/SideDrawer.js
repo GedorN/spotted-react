@@ -116,7 +116,7 @@ export default class SideDrawer extends React.Component {
 			                </View>
 		                </TouchableOpacity>
 	                }
-	                <TouchableOpacity style={{position: 'absolute', bottom: 2, paddingLeft: 22}}>
+	                <TouchableOpacity onPress={() => {this.props.navigation.push('AboutUs')}} style={{position: 'absolute', bottom: 2, paddingLeft: 22}}>
 		                <View >
 			                <Text> About us </Text>
 		                </View>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
 		height: 60,
 		marginBottom: 21,
 		width:theme.width * 0.7,
-	
+
 	},
     drawerHeader: {
         flex: 1,
