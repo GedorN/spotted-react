@@ -28,30 +28,28 @@ export default class AboutUs extends React.Component {
 					/>
 				</View>
 				<View style={styles.body}>
-					<Text>
-						Somos alunos do Curso de Sistemas de Informação. Desenvolvemos o Spotted como um meio melhor para conecatar a universidade e deixar seus serviços mais acessíveis. Esperamos que estajam gostando ;)
+					<Text style= {{textAlign:'justify'}}>
+						Somos alunos do Curso de Sistemas de Informação da UTFPR. Desenvolvemos o Spotted como um meio melhor para conectar a universidade e deixar seus serviços mais acessíveis. Esperamos que estajam gostando ;)
 					</Text>
-					<View style={{width: theme.width, alignItems: 'center', justifyContent: 'center'}}>
-						<Text style={{marginTop: 15}}>
-							Desenvolvedores/gerenciadores:
-						</Text>
-					</View>
+					<Text style={{marginTop: theme.height * 0.025,fontWeight:'bold',marginBottom:theme.height * 0.02 ,alignSelf:'center'}}>
+						Desenvolvedores e responsáveis pelo Spotted:
+					</Text>
 					<View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
 						<View style={{padding: 5, alignItems: 'center', justifyContent: 'center', width: theme.width * 0.5}} >
 							<Text style={{fontWeight: 'bold'}}>
 								Camila Antiqueira
 							</Text>
 							<Image style={styles.devImage} source={require('../../../../assets/images/ela.png')}/>
-							<Text>
-								Reclamações e críticas
+							<Text style = {{marginTop:theme.height * 0.005}}>
+								Reclamações e elogios
 							</Text>
 							<Text style={{fontWeight: 'bold'}}>
 								Contato:
 							</Text>
 							<Text style={{fontSize: 11}}>
-								camilaantiqueira93@gmail.com
+								contato@camilaantiqueira.dev
 							</Text>
-							<Text>
+							<Text style = {{marginTop:theme.height * 0.004}}>
 								(41) 98450-5660
 							</Text>
 
@@ -61,8 +59,8 @@ export default class AboutUs extends React.Component {
 								Gedor Neto
 							</Text>
 							<Image style={styles.devImage} source={require('../../../../assets/images/eu.png')}/>
-							<Text>
-								Elogios e sugestões para o Spotted
+							<Text style = {{marginTop:theme.height * 0.005}}>
+								Críticas e sugestões
 							</Text>
 							<Text style={{fontWeight: 'bold'}}>
 								Contato:
@@ -70,22 +68,18 @@ export default class AboutUs extends React.Component {
 							<Text style={{fontSize: 12}}>
 								contato@gedor.dev
 							</Text>
-							<Text>
+							<Text style = {{marginTop:theme.height * 0.004}}>
 								(41) 99804-6357
 							</Text>
 
 						</View>
 					</View>
-					<View style={{width: theme.width, alignItems: 'center', justifyContent: 'center', marginTop: 16}}>
-						<Text>
+						<Text style = {{ marginTop:theme.height * 0.03,alignSelf:'center'}}>
 							Agradecimentos especiais:
 						</Text>
-					</View>
-					<View style={{padding: 5}}>
-						<Text>
+						<Text style = {{alignSelf:'center',marginTop:theme.height * 0.01}}>
 							Anderson Candido: Idealização conjunta
 						</Text>
-					</View>
 				</View>
 			</View>
 		);
@@ -103,6 +97,8 @@ const styles = StyleSheet.create({
 	},
 	body: {
 		flexDirection: 'column',
+		margin:theme.width * 0.02,
+		marginTop:theme.height * 0.03
 	},
 	devImage: {
 		width: 50,
