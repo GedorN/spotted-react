@@ -9,9 +9,7 @@ import {
 
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
-import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 
-const width = Dimensions.get('screen').width;
 
 export default class Notification extends React.Component {
 	constructor (props) {
@@ -28,16 +26,16 @@ export default class Notification extends React.Component {
     goToUserProfile = () => {
 		 this.props.navigation.navigate('UserProfile', {
 			userId: this.props.uid_notification,
-		}); 
+		});
 
     }
-    
+
     goToPostDetails = () => {
         this.props.navigation.navigate('PostDetails',{
             pid:this.props.eid,
         })
     }
-    
+
     render = () => {
 		return (
             <View style = {this.props.visualized > 0 ? styles.postVisualized : styles.noVisualized}>
@@ -71,10 +69,10 @@ const styles = StyleSheet.create({
         paddingRight: 10,
         paddingBottom: 15,
         color: 'black',
-        flexDirection: 'row', 
+        flexDirection: 'row',
         borderWidth: 0.2,
         borderColor: 'rgba(59, 56, 50, 0.2)',
-        
+
     },
     noVisualized: {
         backgroundColor: '#e0e0eb',
@@ -86,10 +84,10 @@ const styles = StyleSheet.create({
         paddingRight:10,
         paddingBottom:15,
         color: 'black',
-        flexDirection: 'row', 
+        flexDirection: 'row',
         borderWidth:0.2,
         borderColor: 'rgba(59, 56, 50, 0.2)',
-        
+
     },
-        
+
 })

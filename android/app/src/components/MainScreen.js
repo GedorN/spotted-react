@@ -4,12 +4,9 @@ import {
 	Dimensions,
 	StyleSheet,
 	View,
-	Text,
 	TouchableOpacity,
 	Image,
-	Button,
 	StatusBar,
-	KeyboardAvoidingView,
 	Modal,
 } from 'react-native';
 
@@ -29,10 +26,8 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import SideDrawer from "../../../../components/General/SideDrawer";
 import theme from "../../../../components/General/Theme";
 import Settings from "./Settings";
-import Store from "./Store";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
-import {showMessage} from "react-native-flash-message";
 import {NavigationActions, StackActions} from "react-navigation";
 
 const width = Dimensions.get('screen').width;
@@ -78,16 +73,6 @@ export default class MainScreen extends React.Component {
 		}
 	};
 
-	// renderScene = ({ route, jumpTo }) => {
-	// 	switch (route.key) {
-	// 		case 'home':
-	// 			return <Home navigation={this.props.navigation}/>;
-	// 		case 'post':h
-	// 			return <PostWrite />;
-	// 		default:
-	// 			return <Home navigation={this.props.navigation}/>;
-	// 	}
-	// }
 	renderScene = BottomNavigation.SceneMap({
 		home: this.getHome,
 		post: PostWrite,
@@ -156,11 +141,6 @@ export default class MainScreen extends React.Component {
 		return null;
 	}
 
-
-	toggleOpen = () => {
-		this.setState({open: !this.state.open});
-	};
-
 	signUp = async (data) => {
 		if (!data.user || data.user === '' || !data.password || data.password === '') {
 			return false;
@@ -182,22 +162,6 @@ export default class MainScreen extends React.Component {
 		// heimdallr.signOut();
 		// this.forceUpdate();
 		this._drawer.open();
-	}
-
-	closeModal = () => {
-		this.setState({open: false});
-	}
-
-	checkUser = () => {
-		let login = heimdallr.checkUser();
-		login.then((resolve) => {
-			if (heimdallr.user_id) {
-				this.setState({isLogged: true});
-				if (heimdallr.email === 'spotted@utfpr.com') {
-					this.setState({ routes: anonymousRoutes });
-				}
-			}
-		})
 	}
 
 	logOut = () => {

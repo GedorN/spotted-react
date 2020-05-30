@@ -1,43 +1,19 @@
 import React from 'react';
 import {
-    Dimensions,
     StyleSheet,
     View,
     Text,
-    TextInput,
     Image,
-    TouchableOpacity,
-    PermissionsAndroid,
     FlatList,
     ActivityIndicator,
 	RefreshControl,
 } from 'react-native';
- // comentary 
-const images = [{
-	// Simplest usage.
-	url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460',
 
-	// width: number
-	// height: number
-	// Optional, if you know the image size, you can set the optimization performance
-
-	// You can pass props to <Image />.
-	props: {
-		// headers: ...
-	}
-}]
-
-import CameraRoll from '@react-native-community/cameraroll';
-import ImagePicker from 'react-native-image-picker';
 import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
-import UserImgProfile from '../../../../components/General/UserImgProfile';
-import UUIDGenerator from 'react-native-uuid-generator';
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
-import axios from 'react-native-axios'
 
-const width = Dimensions.get('screen').width;
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -55,32 +31,6 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
-  	// axios({
-	//     method: 'post',
-	//     url: 'https://appws.picpay.com/ecommerce/public/payments',
-	//     headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
-	//     data: {
-	// 	    "referenceId": "10260dfvcb30",
-	//   "callbackUrl": "http://www.spottedutfpr.com.br/callback",
-	// 	    "returnUrl": "http://www.sualoja.com.br/cliente/pedido/102030",
-	// 	    "value": 20,
-	// 	    "expiresAt": "2022-05-01T16:00:00-03:00",
-	// 	    "buyer": {
-	// 		    "firstName": "João",
-	// 		    "lastName": "Da Silva",
-	// 		    "document": "123.456.789-10",
-	// 		    "email": "teste@picpay.com",
-	// 		    "phone": "+55 27 12345-6789"
-	// 	    }
-	//     }
-    // }).then(
-    // 	(resolve) => {
-    // 		console.log('deu biooaooaoaoa guri: ', resolve);
-	//     },
-	//     (reject) => {
-    // 		console.log('tava esperando: ', reject);
-	//     }
-    // );
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);
@@ -194,10 +144,10 @@ export default class Home extends React.Component {
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
               renderItem={ ({item}) =>
-							<PostViewer text={item._data.text} anonymous = {item._data.anonymous?item._data.anonymous:'0'} pid={item._data.pid} uid={item._data.uid} images={item._data.images} 
-									user={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_name:'Anônimo'):item._data.user_name} 
-									userImage={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_image:null):item._data.user_image} 
-									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling} 
+							<PostViewer text={item._data.text} anonymous = {item._data.anonymous?item._data.anonymous:'0'} pid={item._data.pid} uid={item._data.uid} images={item._data.images}
+									user={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_name:'Anônimo'):item._data.user_name}
+									userImage={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_image:null):item._data.user_image}
+									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling}
 									closeAlert={this.confirmReport.bind(this)} />  }
               refreshControl={
 	              <RefreshControl

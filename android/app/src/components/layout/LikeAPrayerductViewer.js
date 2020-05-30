@@ -23,37 +23,6 @@ export default class LikeAPrayer extends React.Component{
 		console.log('produto recebido: ', this.props.product);
 	}
 
-	getTxtColor = (color) => {
-		if (!color) {
-			return 'black';
-		}
-		let c = color.substring(1);      // strip #
-		let rgb = parseInt(c, 16);   // convert rrggbb to decimal
-		let r = (rgb >> 16) & 0xff;  // extract red
-		let g = (rgb >>  8) & 0xff;  // extract green
-		let b = (rgb >>  0) & 0xff;  // extract blue
-		let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
-
-
-		if (luma < 40) {
-			return 'white'
-		} else {
-			return '#000000'
-		}
-
-	}
-
-	getFontSize = (txt) => {
-		if (!txt) {
-			return ;
-		}
-		if (txt.length > 25) {
-			return 11
-		} else {
-			return 16
-		}
-	}
-
 	goToProductScreen = () => {
 		try {
 			this.props.navigation.push('ProductScreen', {iid: this.props.product.iid});

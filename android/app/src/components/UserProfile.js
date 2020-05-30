@@ -1,30 +1,22 @@
 import React from 'react';
 import {
-	Dimensions,
 	StyleSheet,
 	View,
 	Text,
-	TextInput,
 	Image,
 	TouchableOpacity,
-	PermissionsAndroid,
 	FlatList,
 	ActivityIndicator,
 	RefreshControl,
 	Modal,
 } from 'react-native';
 
-import CameraRoll from '@react-native-community/cameraroll';
-import ImagePicker from 'react-native-image-picker';
 import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import UserImgProfile from '../../../../components/General/UserImgProfile';
-import UUIDGenerator from 'react-native-uuid-generator';
 import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
-import MainScreen from "./MainScreen";
 import moment from "moment";
-const width = Dimensions.get('screen').width;
 
 export default class UserProfile extends React.Component {
 	constructor(props) {
@@ -127,12 +119,6 @@ export default class UserProfile extends React.Component {
 				});
 			}
 		}
-	}
-
-	renderNoPosts = () => {
-		<View>
-			<Text>Sem postagens</Text>
-		</View>
 	}
 
 	renderFooter = () =>  {
@@ -267,4 +253,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-// user profile 
+// user profile

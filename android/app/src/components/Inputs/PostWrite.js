@@ -6,16 +6,13 @@ import {
 	TouchableOpacity,
 	Image,
 	PermissionsAndroid,
-	KeyboardAvoidingView,
 	Dimensions, StatusBar,
 } from 'react-native';
-import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
-import moment from 'moment-timezone';
 import {Text} from "react-native-paper";
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;

@@ -7,7 +7,6 @@
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
-import { functionTypeAnnotation } from '@babel/types';
 
 
 function HeimdallrLib() {

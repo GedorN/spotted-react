@@ -4,12 +4,9 @@ import {
 	View,
 	StyleSheet,
 	Text,
-	FlatList,
 	TouchableOpacity,
 	Image,
-	Alert,
 	Modal,
-	Button,
 	Clipboard,
 	Linking,
 } from 'react-native'
@@ -18,10 +15,8 @@ import Ripple from 'react-native-material-ripple';
 
 
 import theme from "../../../../../components/General/Theme";
-import LikeAPrayerductViewer from "./LikeAPrayerductViewer";
 import moment from "moment";
 import 'moment/locale/pt-br';
-import {ActivityIndicator} from "react-native-paper";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 
