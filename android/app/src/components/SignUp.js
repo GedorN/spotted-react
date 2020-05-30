@@ -532,8 +532,8 @@ export default  class SignUp extends React.Component {
 							</ScrollView>
 						</View>
 					 </View>
-					 
-					 </Modal> 
+
+					 </Modal>
 
 			</KeyboardAvoidingView>
 		);
@@ -567,7 +567,7 @@ const styles= StyleSheet.create({
 	agreementView:{
 		flexDirection:'row',
 		justifyContent:'center',
-		marginBottom:theme.height*0.01
+		marginBottom:theme.height*0.02
 	},
 	agreementText:{
 		color:'#8f8f8f',
@@ -603,7 +603,7 @@ const styles= StyleSheet.create({
 		shadowRadius: 3.84,
 		elevation: 5,
 		zIndex:0,
-		
+
 	},
 	agreemtModalText : {
 		textAlign:'justify',
