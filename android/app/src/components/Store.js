@@ -112,7 +112,7 @@ export default class Store extends React.Component {
 								</View>
 							</TouchableOpacity>
 							<SevenBannerArmy url={this.state.banner}/>
-							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10,paddingLeft:theme.width*0.04}}>
+							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
 								{
 									this.state.categories.map(i =>
 										<View style={{margin: 5}} key={i.name}>
@@ -129,26 +129,16 @@ export default class Store extends React.Component {
 							</View>
 							<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
 								<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.015}}>{'Produtos '}</Text>
-								<View style = {{width:theme.width * 0.4,height : theme.height * 0.08,marginBottom:theme.height * 0.02}}>
+								<View style = {{width:theme.width * 0.2, height : theme.height * 0.07, marginBottom:theme.height * 0.02}}>
 									<Image
-										source = {{ uri: this.state.logo}}
-										style = {{resizeMode: 'contain',flex:1,width:null,height:null}}>
+										source = {{ uri: this.state.logo }}
+										style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
 									</Image>
 								</View>
 							</View>
 						</View>
 					}
 				/>
-					{/*<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',}}>*/}
-					{/*	{*/}
-					{/*		this.state.products.map(p =>*/}
-					{/*			<LikeAPrayerductViewer*/}
-					{/*				product={p.data()}*/}
-					{/*				colors={this.state.colors ? this.state.colors : null}*/}
-					{/*			/>*/}
-					{/*		)*/}
-					{/*	}*/}
-					{/*</View>*/}
 			</View>
 		);
 	}
