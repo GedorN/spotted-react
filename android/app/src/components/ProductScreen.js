@@ -245,11 +245,11 @@ export default class ProductScreen extends React.Component {
 									</TouchableOpacity>
 									<View style = {styles.logoContainer}>
 										<Image
-											style = {{width:90,height:70,alignSelf:'center'}}
+											style = {{resizeMode:'contain',flex:1,width:null,height:null}}
 											source={{ uri:this.state.product? this.state.product.logo : null}}>
 										</Image>
 									</View>
-									<View style = {{marginTop:20,marginBottom:15,width:theme.width*0.9,alignSelf:'center'}}>
+									<View style = {{marginTop:theme.height*0.03,marginBottom:theme.height*0.04,width:theme.width*0.9,alignSelf:'center'}}>
 										<Text style = {styles.productName} >
 											{this.state.product? this.state.product.name : null}
 										</Text>
@@ -492,10 +492,9 @@ export default class ProductScreen extends React.Component {
 const styles = StyleSheet.create({
 	logoContainer : {
 		width:theme.width * 0.8,
-		height:theme.height * 0.12,
+		height:theme.height * 0.1,
 		alignSelf:'center',
-		justifyContent:'center'
-
+		justifyContent:'center',
 	},
 	productName : {
 		fontWeight:'bold',
