@@ -2,16 +2,13 @@ import React from 'react';
 import {
 	View,
 	Text,
-	Button,
 	StyleSheet,
-	Dimensions,
-	TextInput,
 	TouchableOpacity,
 	PermissionsAndroid,
 	Image,
 	KeyboardAvoidingView,
 	Modal,
-	ScrollView
+	Linking,
 } from 'react-native';
 
 import {
@@ -54,7 +51,6 @@ export default  class SignUp extends React.Component {
 			showConfirmCodeModal: false,
 			inputedWrongCode: false,
 			creatingAccount: false,
-			showModal:false,
 		};
 	}
 
@@ -423,7 +419,7 @@ export default  class SignUp extends React.Component {
 					<View style={styles.form}>
 						<View style = {styles.agreementView}>
 							<Text style = {styles.agreementText}>{'Ao criar conta você  concorda com nossos '}</Text>
-							<TouchableOpacity onPress = {() => this.setState({showModal:true})}>
+							<TouchableOpacity onPress = {() => Linking.openURL('https://spottedutfpr.com/privacy_policy')}>
 								<View style = {styles.agreementTouchView}>
 									<Text style = {styles.agreementWord}>{'termos'}</Text>
 								</View>
@@ -502,38 +498,6 @@ export default  class SignUp extends React.Component {
 						</View>
 					}
 				</Modal>
-
-				<Modal
-		            hardwareAccelerated={true}
-		            animationType='fade'
-		            transparent={true}
-		            visible={this.state.showModal}
-		            onRequestClose={() => {
-			            this.disableModal();
-		            }}
-					style={{ height: 50, width: theme.width * 0.5 }}
-					 >
-					 <View style={styles.agreementCenteredView}>
-					 	<View style={styles.agreementModalContainer}>
-						 	<TouchableOpacity onPress={() => this.setState({showModal:false})}>
-								<View style = {{width:theme.width * 0.15,height:theme.height*0.05,alignSelf:'flex-end'}}>
-									<Image
-										style = {{width: 15, height: 15,opacity:0.4, alignSelf: 'flex-end', tintColor: theme.primary}}
-										source = {require('../../../../assets/images/times-solid.png')}
-									/>
-								</View>
-							</TouchableOpacity>
-							<ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator = {false}>
-						 		<Text style = {styles.agreementModalTitle}>{'Termos e condições de uso do Spotted'}</Text>
-								<Text style = {styles.agreemtModalText}>{'  Ao criar uma conta no Spotted você estará concordando com os seguintes termos que visam cumprir as determinações da Lei Geral de Proteção de Dados.'}</Text>
-								<Text style = {styles.agreemtModalText}>{'  Os dados fornecidos pelos usuários do Spotted são reduzidos ao mínimo necessário para possibilitar a identificação do usuário , caso o mesmo deseje durante o uso do aplicativo e por razões técnicas necessárias na estruturação do Spotted. Portanto, para esses fins, são registrados apenas nome, e-mail, foto de perfil e telefone do usuário no momento da criação da conta. Caso seja de interesse do usuário excluir sua conta em algum momento, o mesmo poderá realizar tal ação sabendo que seus dados, inicialmente gravados, serão imediatamente apagados.'}</Text>
-								<Text style = {styles.agreemtModalText}>{'  O uso do aplicativo está restrito à maiores de 18 anos, e o Spotted não se responsabiliza caso um cidadão menor de idade venha a criar conta, visto que , ao realizar tal ação, o mesmo estará declarando estar ciente dos  presentes termos de uso e, portanto, da proibição por parte do Spotted da criação de contas por menores de idade. '}</Text>
-								<Text style = {styles.agreemtModalText}>{'  Os desenvolvedores do Spotted, Gedor José da Silva Neto e Camila Antiqueira, são também os donos e responsáveis pelo mesmo, e estão à disposição em possível necessidade de contato através dos e-mails: contato@gedor.dev e camilaantiqueira93@gmail.com .'}</Text>
-							</ScrollView>
-						</View>
-					 </View>
-
-					 </Modal>
 
 			</KeyboardAvoidingView>
 		);
