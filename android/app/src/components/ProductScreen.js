@@ -126,6 +126,8 @@ export default class ProductScreen extends React.Component {
 			params.payment = 'PicPay';
 			params.product_price = this.state.PicPayPrice;
 			params.no_tax_value = this.state.price_without_tax;
+			params.buyer_name = heimdallr.user_name;
+			params.buyer_phone = heimdallr.phone;
 			params.referenceId = await heimdallr.getUID();
 
 
