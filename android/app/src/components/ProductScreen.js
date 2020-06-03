@@ -128,6 +128,7 @@ export default class ProductScreen extends React.Component {
 			params.no_tax_value = this.state.price_without_tax;
 			params.buyer_name = heimdallr.user_name;
 			params.buyer_phone = heimdallr.phone;
+			params.buyer_email = heimdallr.email;
 			params.referenceId = await heimdallr.getUID();
 
 
