@@ -228,13 +228,15 @@ export default class MainScreen extends React.Component {
 						acceptPan={true}
 						negotiatePan={true}
 						panThreshold={0.25}
-						panOpenMask={0.1}
+						panOpenMask={0.08}
 					>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.openModal.bind(this)}>
+							<View style = {{width:theme.width * 0.2, height:theme.height * 0.07}}>
 								<Image source={require('../../../../assets/images/bars-solid.png')}
 									   style={{width: 25, height: 25, tintColor: theme.primary, marginTop:10,
 											marginLeft:10}}/>
+							</View>
 							</TouchableOpacity>
 							{/*<Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>*/}
 							{/*	Spotted*/}
@@ -377,6 +379,6 @@ const styles = StyleSheet.create({
 		width: 120,
 		height: 40,
 		alignSelf: 'center',
-		marginLeft: 90,
+		marginLeft: theme.width * 0.15
 	},
 });

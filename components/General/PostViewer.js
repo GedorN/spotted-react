@@ -333,7 +333,7 @@ export default class PostViewer extends React.Component {
 							</View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
-			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}> { this.props.text } </Text>
+			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.props.text}</Text>
 			              <View style = {{ height: this.getModalImagesLayout()? 230:0}}>
 			                  {this.getModalImagesLayout()}
 			              </View>
@@ -396,7 +396,7 @@ export default class PostViewer extends React.Component {
           width: width * 0.95,
 	      height: 40,
 	      zIndex: 99,
-					
+
       },
       postHeaderUserImage: {
           justifyContent: "flex-start",
