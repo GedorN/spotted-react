@@ -4,7 +4,9 @@ import {
 	StyleSheet,
 	Text,
 	FlatList,
-	Image, TouchableOpacity,
+	Image,
+	TouchableOpacity,
+	RefreshControl,
 } from "react-native";
 
 import ImNotTheOnlyChip from "./layout/ImNotTheOnlyChip";
@@ -25,7 +27,21 @@ export default class Store extends React.Component {
 			filteredProducts: [],
 			logo: null,
 			banner: null,
+			isRefreshing: false,
 		}
+	}
+
+	onRefresh = () => {
+		this.setState({ isRefreshing: true });
+		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
+			(resolve) => {
+				if (resolve.docs.length > 0) {
+					let mappedDocs =  resolve.docs.map((d) => d._data);
+					mappedDocs = mappedDocs.filter((i) => i.stock > 0);
+					this.setState({ products: mappedDocs, filteredProducts: mappedDocs, isRefreshing: false });
+				}
+			}
+		)
 	}
 
 	componentDidMount(): void {
@@ -88,6 +104,12 @@ export default class Store extends React.Component {
 					onScrollBeginDrag={() => {scrolling = false}}
 					keyExtractor={item => item.name}
 					data={this.state.filteredProducts}
+					refreshControl={
+						<RefreshControl
+							refreshing={this.state.isRefreshing}
+							onRefresh={this.onRefresh.bind(this)}
+						/>
+					}
 					renderItem={({item}) =>
 					<View style = {{width:theme.width*0.49,marginBottom:theme.width*0.07}}>
 						<LikeAPrayerductViewer
