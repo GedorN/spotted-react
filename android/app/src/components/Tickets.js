@@ -27,8 +27,6 @@ export default class Tickets extends React.Component {
 		heimdallr.checkTicketsStatus(heimdallr.user_id);
 		heimdallr.getUserTickets().then(
 			(resolve) => {
-
-				console.warn('tick: ', resolve);
 				this.setState({ tickets: resolve });
 			}
 		)

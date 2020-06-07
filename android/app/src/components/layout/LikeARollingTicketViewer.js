@@ -43,7 +43,6 @@ export default class LikeARollingTicketViewer extends React.Component {
 	}
 
 	goToProductScreen = () => {
-		console.warn('IID',this.props.ticket.iid);
 		if(this.state.showModal === true){
 			this.setState({showModal:false})
 		}

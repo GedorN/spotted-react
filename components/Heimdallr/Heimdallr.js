@@ -275,16 +275,19 @@ function HeimdallrLib() {
 
 	this.getProduct = function (iid) {
 		let product = null;
-		return new Promise ((resolve) => {
+		return new Promise ((resolve, reject) => {
 			firebase.firestore()
 			.collection('products')
-			.where('iid', '==', iid).get().then((result) => {
-				product =  result._docs[0]._data;
-				resolve();
-			})
-		}).then(function(resolve){
-			return product;
-		})
+			.where('iid', '==', iid).get().then(
+				(result) => {
+					if (!result._docs[0]) {
+						reject()
+					} else {
+						product =  result._docs[0]._data;
+						resolve(product);
+					}
+				})
+		});
 	}
 
 

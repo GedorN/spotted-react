@@ -50,17 +50,22 @@ export default class ProductScreen extends React.Component {
 			isRefreshing: false,
 			showConfirmButton: true,
 			showCancelButton : true,
+			initialLoad: true,
 		}
 	}
 
 	componentDidMount(): void {
-		console.log('ih rapazinho', this.props.navigation.getParam('iid'));
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
-		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
-			const original_price = resolve.price;
-			resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
-			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price, price_without_tax: original_price});
-		})
+		heimdallr.getProduct(this.state.iidProduct).then(
+			(resolve) => {
+				const original_price = resolve.price;
+				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
+				this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price, price_without_tax: original_price, initialLoad: false});
+			},
+			() => {
+				this.setState({initialLoad: false})
+			}
+		)
 
 
 	}
@@ -230,135 +235,159 @@ export default class ProductScreen extends React.Component {
 	render() {
 		return (
 			<KeyboardAvoidingView style={{flex: 1}}>
-				<View>
+				{
+					// caso exista o produto
+					this.state.product || this.state.initialLoad?
 					<View>
-		                <FlatList
-							ListHeaderComponent = {() =>
-								<View>
-									<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
-										<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
-											<Image
-												style={{width: 12, height: 12, marginTop:4}}
-												source={require('../../../../assets/images/arrow-left.png')}
-											/>
-											<Text style={{marginLeft: 5}}>
-												voltar
-											</Text>
-										</View>
-									</TouchableOpacity>
-									<View style = {styles.logoContainer}>
-										<Image
-											style = {{resizeMode:'contain',flex:1,width:null,height:null}}
-											source={{ uri:this.state.product? this.state.product.logo : null}}>
-										</Image>
-									</View>
-									<View style = {{marginTop:theme.height*0.03,marginBottom:theme.height*0.04,width:theme.width*0.9,alignSelf:'center'}}>
-										<Text style = {styles.productName} >
-											{this.state.product? this.state.product.name : null}
-										</Text>
-									</View>
-
-									<Carousel
-										activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
-										autoplay
-										autoplayTimeout={5000}
-										loop
-										index={0}
-										pageSize={theme.width}
-									>
-										{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
-									</Carousel>
-
-									<View style = {styles.payContainer}>
-											<Text style = {{fontWeight:'bold',fontSize:20}}>
-													{'Valor: R$ ' + this.state.PicPayPrice }
-											</Text>
-
-										{/* <View style = {{flexDirection:'row'}}>
-											<Text style = {{fontWeight:'bold',fontSize:17}}>
-												{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
-											</Text>
-											<Image
-												style = {{width:37,height:29,marginLeft:3}}
-												source = {{uri:this.state.product? this.state.product.logo : ''}}>
-
-											</Image>
-										</View> */}
-										<View style = {{flexDirection:'row',marginTop:5}}>
-											<Text style = {{fontWeight:'bold',fontSize:17}}>
-												{'Pago pelo '}
-											</Text>
-											<Image
-												style = {{width:61,height:20,marginLeft:3,marginTop:5}}
-												source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-											</Image>
-										</View>
-									</View>
-
-									<View style = {styles.descriptionContainer}>
-										<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
-										<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
-									</View>
-									<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
-										<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
-									</View>
-								</View>
-
-							}
-		                    data = {this.state.product ? this.state.product.customization : null}
-							refreshControl={
-								<RefreshControl
-									refreshing={this.state.isRefreshing}
-									onRefresh={this.onRefresh.bind(this)}
-								/>
-							}
-							renderItem={ ({item}) =>
-
-								<View style = {{alignSelf:'center'}} >
-									{
-										item.field === 'select' &&
-										<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
-									}
-									{
-										item.field === 'radio' &&
-										<CustomRadio selected={this.setRadioValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
-									}
-									{
-										item.field === 'textArea' &&
-										<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {item}/>
-									}
-
-								</View>
-							}
-							numColumns={1}
-		                    keyExtractor={item => item.label}
-							onEndReachedThreshold={0.3}
-							ListFooterComponent={ () =>
-								<View>
-									{
-										this.state.product &&
-										<View style = {{marginTop: theme.height*0.04}}>
-											<Text style = {{alignSelf:'center', color:'#8f8f8f', padding:4,paddingLeft:theme.width * 0.04,paddingRight:theme.width * 0.04,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
-											<View style = {styles.footer}>
-												{
-													this.state.errorMissingValues &&
-													<Text style={{color: 'red', marginBottom: 4}}> *Obrigatório o preenchimento de todos os campos </Text>
-												}
-												<FatBottomedButton
-													text = {'Comprar'}
-													backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-													color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
-													onTap = {this.buttonEnabled.bind(this)}
+						<View>
+			                <FlatList
+								ListHeaderComponent = {() =>
+									<View>
+										<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
+											<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+												<Image
+													style={{width: 12, height: 12, marginTop:4}}
+													source={require('../../../../assets/images/arrow-left.png')}
 												/>
+												<Text style={{marginLeft: 5}}>
+													voltar
+												</Text>
+											</View>
+										</TouchableOpacity>
+										<View style = {styles.logoContainer}>
+											<Image
+												style = {{resizeMode:'contain',flex:1,width:null,height:null}}
+												source={{ uri:this.state.product? this.state.product.logo : null}}>
+											</Image>
+										</View>
+										<View style = {{marginTop:theme.height*0.03,marginBottom:theme.height*0.04,width:theme.width*0.9,alignSelf:'center'}}>
+											<Text style = {styles.productName} >
+												{this.state.product? this.state.product.name : null}
+											</Text>
+										</View>
+
+										<Carousel
+											activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
+											autoplay
+											autoplayTimeout={5000}
+											loop
+											index={0}
+											pageSize={theme.width}
+										>
+											{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
+										</Carousel>
+
+										<View style = {styles.payContainer}>
+												<Text style = {{fontWeight:'bold',fontSize:20}}>
+														{'Valor: R$ ' + this.state.PicPayPrice }
+												</Text>
+
+											{/* <View style = {{flexDirection:'row'}}>
+												<Text style = {{fontWeight:'bold',fontSize:17}}>
+													{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
+												</Text>
+												<Image
+													style = {{width:37,height:29,marginLeft:3}}
+													source = {{uri:this.state.product? this.state.product.logo : ''}}>
+
+												</Image>
+											</View> */}
+											<View style = {{flexDirection:'row',marginTop:5}}>
+												<Text style = {{fontWeight:'bold',fontSize:17}}>
+													{'Pago pelo '}
+												</Text>
+												<Image
+													style = {{width:61,height:20,marginLeft:3,marginTop:5}}
+													source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+												</Image>
 											</View>
 										</View>
-									}
-								</View>
 
-							}
-		                />
-	                </View>
-				</View>
+										<View style = {styles.descriptionContainer}>
+											<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
+											<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
+										</View>
+										<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
+											<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
+										</View>
+									</View>
+
+								}
+			                    data = {this.state.product ? this.state.product.customization : null}
+								refreshControl={
+									<RefreshControl
+										refreshing={this.state.isRefreshing}
+										onRefresh={this.onRefresh.bind(this)}
+									/>
+								}
+								renderItem={ ({item}) =>
+
+									<View style = {{alignSelf:'center'}} >
+										{
+											item.field === 'select' &&
+											<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+										}
+										{
+											item.field === 'radio' &&
+											<CustomRadio selected={this.setRadioValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+										}
+										{
+											item.field === 'textArea' &&
+											<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {item}/>
+										}
+
+									</View>
+								}
+								numColumns={1}
+			                    keyExtractor={item => item.label}
+								onEndReachedThreshold={0.3}
+								ListFooterComponent={ () =>
+									<View>
+										{
+											this.state.product &&
+											<View style = {{marginTop: theme.height*0.04}}>
+												<Text style = {{alignSelf:'center', color:'#8f8f8f', padding:4,paddingLeft:theme.width * 0.04,paddingRight:theme.width * 0.04,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
+												<View style = {styles.footer}>
+													{
+														this.state.errorMissingValues &&
+														<Text style={{color: 'red', marginBottom: 4}}> *Obrigatório o preenchimento de todos os campos </Text>
+													}
+													<FatBottomedButton
+														disabled={this.state.product.stock <= 0}
+														text = {'Comprar'}
+														backgroundColor = {this.state.product? this.state.product.colors[0] : null}
+														color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
+														onTap = {this.buttonEnabled.bind(this)}
+													/>
+												</View>
+											</View>
+										}
+									</View>
+
+								}
+			                />
+		                </View>
+					</View>
+						:
+					//	caso não exista
+						!this.state.initialLoad &&
+						<View>
+							<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
+								<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+									<Image
+										style={{width: 12, height: 12, marginTop:4}}
+										source={require('../../../../assets/images/arrow-left.png')}
+									/>
+									<Text style={{marginLeft: 5}}>
+										voltar
+									</Text>
+								</View>
+							</TouchableOpacity>
+							<Text style={{padding: 5, marginTop: 10, fontWeight: 'bold'}}>
+								Está produto não está mais diponível (´;︵;`)
+							</Text>
+						</View>
+				}
 				<AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}
