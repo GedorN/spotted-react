@@ -54,7 +54,6 @@ export default class ProductScreen extends React.Component {
 			newCoupon: null,
 			placeholderCoupon : 'Código promocional',
 			discountApplied : false,
-			validCoupon : true,
 			warning : null,
 			texInputCode : '',
 			storeCoupons : null,
@@ -181,7 +180,7 @@ export default class ProductScreen extends React.Component {
 						heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
 						heimdallr.saveUserCoupon(this.state.userCouponsRegister);
 					}
-					this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true});
+					this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
 					showMessage({
 						message: "Compra realizada com sucesso",
 						type: "success",
@@ -223,13 +222,11 @@ export default class ProductScreen extends React.Component {
 				} else {
 					heimdallr.getUserCoupons().then((resolve) => {
 						userCoupons = resolve;
-						if (!userCoupons || (userCoupons && !userCoupons.find((item) => item.hash === this.state.newCoupon.hash && item.store_code === 'spotted' && coupon === item.id))) {
+						if (!userCoupons || (userCoupons && !userCoupons.find((item) => coupon === item.id))) {
 							if (!userCoupons) {
 								userCoupons = [];
 							}
-							let appliedCoupon = this.state.newCoupon;
-							appliedCoupon.store_code = this.state.product.sid;
-							userCoupons.push(appliedCoupon);
+							userCoupons.push(this.state.newCoupon);
 							let index = coupons.indexOf(coupon);
 							coupons[index].quantity  = coupons[index].quantity - 1;
 							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true,ticketStore:'spotted'});
@@ -259,10 +256,8 @@ export default class ProductScreen extends React.Component {
 						} else {
 							heimdallr.getUserCoupons().then((resolve) => {
 								userCoupons = resolve;
-								if (!resolve || (resolve && !userCoupons.find((item) => item.hash === this.state.newCoupon.hash && item.store_code === this.state.product.sid && coupon.id === item.id))) {
-									let appliedCoupon = this.state.newCoupon;
-									appliedCoupon.store_code = this.state.product.sid;
-									userCoupons.push(appliedCoupon);
+								if (!resolve || (resolve && !userCoupons.find((item) => coupon.id === item.id))) {
+									userCoupons.push(this.state.newCoupon);
 									let index = coupons.indexOf(coupon);
 									coupons[index].quantity  = coupons[index].quantity - 1;
 									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid});
@@ -333,7 +328,7 @@ export default class ProductScreen extends React.Component {
 	}
 
 	setPromotionalCode = () => {
-		this.setState({ settingPromotionalCode: true });
+		this.setState({ settingPromotionalCode: true, warning: null, discountApplied: false });
 		let coupons = null;
 		let coupon = null;
 
@@ -342,7 +337,7 @@ export default class ProductScreen extends React.Component {
 			coupons = result;
 			coupon =  coupons.find((item) => (item.hash === this.state.texInputCode));
 
-			if (coupon && this.state.validCoupon){
+			if (coupon){
 				if (coupon.quantity === 0){
 					this.setState({warning : 'Cupom esgotado', settingPromotionalCode: false, discountApplied : false});
 				}  else if (!coupon.active){
@@ -350,8 +345,7 @@ export default class ProductScreen extends React.Component {
 				}  else {
 					heimdallr.getUserCoupons().then((resolve) => {
 						let userCoupons = resolve;
-						if (!userCoupons || !userCoupons.find((item) => item.hash === this.state.texInputCode && item.store_code === 'spotted' && coupon.id === item.id)) {
-							// TODO por que salvar store_code?
+						if (!userCoupons || (userCoupons && !userCoupons.find((item) => coupon.id === item.id))) {
 							let discount = ((coupon.value / 100) * this.state.PicPayPrice);
 							this.setState({discountPicPayPrice : ((this.state.PicPayPrice - discount).toFixed(2)), discountApplied : true, newCoupon : coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false});
 						} else {
@@ -376,7 +370,7 @@ export default class ProductScreen extends React.Component {
 						} else {
 							heimdallr.getUserCoupons().then((resolve) => {
 								let userCoupons = resolve;
-								if (userCoupons ||  !userCoupons.find((item) => item.hash === this.state.texInputCode && item.store_code === this.state.product.sid && coupon.id === item.id)) {
+								if (!userCoupons ||  (userCoupons && !userCoupons.find((item) => coupon.id === item.id))) {
 									if(coupon.type === 0){
 										let discount = ((coupon.value / 100) * this.state.PicPayPrice);
 										const no_tax_discount = ((coupon.value / 100) * this.state.price_without_tax);

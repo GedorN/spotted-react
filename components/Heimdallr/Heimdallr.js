@@ -336,7 +336,6 @@ function HeimdallrLib() {
 				const store = firebase.firestore()
 				.collection('coupons').doc(store_code)
 				.get().then((result) => {
-					console.warn("coupons collection",result.data().coupons);
 					docs = result.data() ? result.data().coupons : null;
 					resolve();
 				}).catch((e) => {
@@ -389,7 +388,6 @@ function HeimdallrLib() {
 				const store = firebase.firestore()
 				.collection('user').where('uid', '==', this.user_id)
 				.get().then((result) => {
-					console.warn("coupons user collection",result);
 					docs = result && result.docs[0] && result.docs[0].data() ? result.docs[0].data().coupons : null;
 					resolve(docs);
 				}).catch((e) => {
