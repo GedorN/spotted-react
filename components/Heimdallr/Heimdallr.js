@@ -337,7 +337,7 @@ function HeimdallrLib() {
 				.collection('coupons').doc(store_code)
 				.get().then((result) => {
 					console.warn("coupons collection",result.data().coupons);
-					docs = result.data() ? result.data().coupons : [];
+					docs = result.data() ? result.data().coupons : null;
 					resolve();
 				}).catch((e) => {
 					console.warn("erro",e);
@@ -345,19 +345,17 @@ function HeimdallrLib() {
 		}).then(function (resolve) {
 			 return docs;
 		})
-	} 
+	}
 
 	this.StoreCoupons = function (saveCoupons,store){
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			try {
-
-						firebase.firestore().collection('coupons').doc(store).set({
-						coupons:saveCoupons
-						}, {merge : true});
-					
+				firebase.firestore().collection('coupons').doc(store).set({
+					coupons:saveCoupons
+				}, {merge : true});
 			 } catch (e) {
 				 console.warn('peguei: ', e);
-				 resolve();
+				 reject();
 			 }
 			 resolve();
 		})
@@ -366,19 +364,18 @@ function HeimdallrLib() {
 
 	this.saveUserCoupon = function (userCoupons){
 
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			try {
-
 				firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 					(res) => {
 						firebase.firestore().collection('user').doc(res.docs[0]._ref.path.split('/')[1]).set({
-						coupons:userCoupons
+							coupons:userCoupons
 						}, {merge : true});
 					}
 				)
 			 } catch (e) {
 				 console.warn('peguei: ', e);
-				 resolve();
+				 reject();
 			 }
 			 resolve();
 		})
@@ -393,14 +390,12 @@ function HeimdallrLib() {
 				.collection('user').where('uid', '==', this.user_id)
 				.get().then((result) => {
 					console.warn("coupons user collection",result);
-					docs = result;
-					resolve();
+					docs = result && result.docs[0] && result.docs[0].data() ? result.docs[0].data().coupons : null;
+					resolve(docs);
 				}).catch((e) => {
 					console.warn("erro",e);
 				});
-		}).then(function (resolve) {
-			 return docs;
-		})
+		});
 	}
 
   this.sendVerificationMessage = async (number) => {

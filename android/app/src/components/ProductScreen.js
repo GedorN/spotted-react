@@ -23,7 +23,6 @@ import CustomizationTextArea from './CustomizationTexArea';
 import AwesomeAlert from "react-native-awesome-alerts";
 import CustomSelect from "./custom/CustomSelect";
 import CustomRadio from "./custom/CustomRadio";
-import TextArea from "./Inputs/TextArea";
 import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import axios from 'react-native-axios';
@@ -52,11 +51,11 @@ export default class ProductScreen extends React.Component {
 			showConfirmButton: true,
 			showCancelButton : true,
 			initialLoad: true,
-			newCoupon: null, 
+			newCoupon: null,
 			placeholderCoupon : 'Código promocional',
 			discountApplied : false,
 			validCoupon : true,
-			warning : '',
+			warning : null,
 			texInputCode : '',
 			storeCoupons : null,
 			userCouponsRegister : null,
@@ -64,6 +63,9 @@ export default class ProductScreen extends React.Component {
 			ticketStore : null,
 			storePrice : null,
 			spottedPrice : null,
+			settingPromotionalCode: false,
+			discountPicPayPrice: null,
+			discountPriceWithoutTax: null,
 		}
 	}
 
@@ -73,7 +75,7 @@ export default class ProductScreen extends React.Component {
 			(resolve) => {
 				const original_price = resolve.price;
 				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
-				this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price, 
+				this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price,
 				price_without_tax: original_price,storePrice : original_price, spottedPrice : resolve.price, initialLoad: false});
 			},
 			() => {
@@ -94,6 +96,9 @@ export default class ProductScreen extends React.Component {
 	}
 
 	ticketsRegister = async () => {
+		if (this.state.showLoading) {
+			return ;
+		}
 		/* if (this.state.directlyToStore ){
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
@@ -141,8 +146,8 @@ export default class ProductScreen extends React.Component {
 			params.url = 'PicPay';
 			params.description = this.state.product.customization;
 			params.payment = 'PicPay';
-			params.product_price = this.state.PicPayPrice;
-			params.no_tax_value = this.state.price_without_tax;
+			params.product_price = this.state.discountApplied ? this.state.discountPicPayPrice : this.state.PicPayPrice;
+			params.no_tax_value = this.state.discountApplied ? this.state.discountPriceWithoutTax : this.state.price_without_tax;
 			params.buyer_name = heimdallr.user_name;
 			params.buyer_phone = heimdallr.phone;
 			params.buyer_email = heimdallr.email;
@@ -156,7 +161,7 @@ export default class ProductScreen extends React.Component {
 			    data: {
 				    "referenceId": params.referenceId,
 				    "callbackUrl": "http://www.spottedutfpr.com.br/callback",
-				    "value": this.state.PicPayPrice,
+				    "value": params.product_price,
 				    "expiresAt": "2022-05-01T16:00:00-03:00",
 				    "buyer": {
 					    "firstName": heimdallr.user_name.split(' ')[0],
@@ -172,7 +177,7 @@ export default class ProductScreen extends React.Component {
 					params.url = resolve.data.paymentUrl;
 					heimdallr.saveTicketsRegister(params);
 					Linking.openURL(resolve.data.paymentUrl);
-					if(this.state.couponApply === true){
+					if(this.state.discountApplied){
 						heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
 						heimdallr.saveUserCoupon(this.state.userCouponsRegister);
 					}
@@ -184,7 +189,6 @@ export default class ProductScreen extends React.Component {
 					});
 			    },
 			    (reject) => {
-					console.log('tava esperando: ', reject);
 				    this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true});
 				    showMessage({
 					    message: "Erro ao realizar a compra",
@@ -202,80 +206,81 @@ export default class ProductScreen extends React.Component {
 		let coupon = null;
 		let userCoupons = null;
 		let coupons = null;
-	
-	
-		
+
+
+
 		heimdallr.getCoupons('spotted').then((res) => {
-			coupons = res;
-			coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash));
-			if (coupon){
-				if(coupon.quantity === 0){
-					this.setState({price_without_tax : this.state.storePrice, PicPayPrice : this.state.spottedPrice,warning:'Cupom esgotado'});
-				}
-				else if(coupon.active === false){
-					this.setState({price_without_tax : this.state.storePrice, PicPayPrice : this.state.spottedPrice,warning:'Cupom fora da validade'});
-				}
-				else{
+			if (res && res.find((item) => (item.hash === this.state.newCoupon.hash))) {
+				coupons = res;
+				coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash));
+				if(coupon && coupon.quantity === 0){
+					this.setState({discountApplied: false, warning:'Cupom esgotado'});
+					this.ticketsRegister();
+
+				} else if(coupon.active === false){
+					this.setState({discountApplied: false, warning:'Cupom fora da validade'});
+					this.ticketsRegister();
+				} else {
 					heimdallr.getUserCoupons().then((resolve) => {
-							
-						userCoupons = resolve._docs[0]._data.coupons;
-									
-						if(userCoupons.find((item) => item.hash === this.state.newCoupon.hash && item.store_code === 'spotted' && coupon === item.id)){
-										
-							this.setState({price_without_tax : this.state.storePrice, PicPayPrice : this.state.spottedPrice, warning:'Cupom já utilizado'});
-						}
-						else{
-										
-							userCoupons.push(this.state.newCoupon);
+						userCoupons = resolve;
+						if (!userCoupons || (userCoupons && !userCoupons.find((item) => item.hash === this.state.newCoupon.hash && item.store_code === 'spotted' && coupon === item.id))) {
+							if (!userCoupons) {
+								userCoupons = [];
+							}
+							let appliedCoupon = this.state.newCoupon;
+							appliedCoupon.store_code = this.state.product.sid;
+							userCoupons.push(appliedCoupon);
 							let index = coupons.indexOf(coupon);
 							coupons[index].quantity  = coupons[index].quantity - 1;
-							this.setState({userCouponsRegister : userCoupons,storeCoupons : coupons,couponApply : true,ticketStore:'spotted'});
-							this.ticketsRegister(); 
+							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true,ticketStore:'spotted'});
+							this.ticketsRegister();
+						} else {
+							this.setState({discountApplied: false, warning:'Cupom já utilizado'});
+							return ;
 						}
 					});
 
 				}
-			}
-			else{
-					
-					heimdallr.getCoupons( this.state.product.sid).then((resolve) => {
-						coupons = resolve;
-						coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash && item.quantity > 0 && item.active === true ));
-						if (coupon){
-
-							if(coupon.quantity === 0){
-								this.setState({price_without_tax : this.state.storePrice, PicPayPrice : this.state.spottedPrice,warning:'Cupom esgotado'});
-							}
-							else if(coupon.active === false){
-								this.setState({price_without_tax : this.state.storePrice, PicPayPrice : this.state.spottedPrice,warning:'Cupom fora da validade'});
-							}
-							else{
-
-								heimdallr.getUserCoupons().then((resolve) => {
-									userCoupons = resolve._docs[0]._data.coupons;
-									
-									if(userCoupons.find((item) => item.hash === this.state.newCoupon.hash && item.store_code === this.state.product.sid && coupon.id === item.id)){
-										
-										this.setState({price_without_tax : this.state.storePrice, PicPayPrice : this.state.spottedPrice, warning:'Cupom já utilizado'});
-									}
-									else{
-										
-										userCoupons.push(this.state.newCoupon);
-										let index = coupons.indexOf(coupon);
-										coupons[index].quantity  = coupons[index].quantity - 1;
-										this.setState({userCouponsRegister : userCoupons,storeCoupons : coupons,couponApply : true,ticketStore:this.state.product.sid});
-										this.ticketsRegister(); 
-									}
-								});
-			
-							}
+			} else {
+				heimdallr.getCoupons( this.state.product.sid).then((res) => {
+					if (!res) {
+						this.setState({discountApplied: false, warning:'Código inválido'});
+						this.ticketsRegister();
+					}
+					coupons = res;
+					coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash && item.quantity > 0 && item.active === true ));
+					if (coupon) {
+						if (coupon.quantity === 0) {
+							this.setState({discountApplied: false, warning:'Cupom esgotado'});
+							this.ticketsRegister();
+						}  else if(coupon.active === false) {
+							this.setState({discountApplied: false, warning:'Cupom fora da validade'});
+							this.ticketsRegister();
+						} else {
+							heimdallr.getUserCoupons().then((resolve) => {
+								userCoupons = resolve;
+								if (!resolve || (resolve && !userCoupons.find((item) => item.hash === this.state.newCoupon.hash && item.store_code === this.state.product.sid && coupon.id === item.id))) {
+									let appliedCoupon = this.state.newCoupon;
+									appliedCoupon.store_code = this.state.product.sid;
+									userCoupons.push(appliedCoupon);
+									let index = coupons.indexOf(coupon);
+									coupons[index].quantity  = coupons[index].quantity - 1;
+									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid});
+									this.ticketsRegister();
+								} else {
+									this.setState({discountApplied: false, warning:'Cupom já utilizado'});
+									this.ticketsRegister();
+								}
+							});
 						}
-						else {
-							this.setState({price_without_tax : this.state.storePrice, PicPayPrice : this.state.spottedPrice, warning:'Código inválido'});
-						}
-					})}
-				})
-				
+					}
+					else {
+						this.setState({discountApplied:false, warning:'Código inválido'});
+						this.ticketsRegister();
+					}
+				})}
+			})
+
 	}
 
 
@@ -328,7 +333,7 @@ export default class ProductScreen extends React.Component {
 	}
 
 	setPromotionalCode = () => {
-	
+		this.setState({ settingPromotionalCode: true });
 		let coupons = null;
 		let coupon = null;
 
@@ -337,77 +342,64 @@ export default class ProductScreen extends React.Component {
 			coupons = result;
 			coupon =  coupons.find((item) => (item.hash === this.state.texInputCode));
 
-			if(this.state.validCoupon === false){
-				this.setState({warning : 'Cupom já aplicado'});
-			}
-			else if (coupon && this.state.validCoupon === true){
-				if(coupon.quantity === 0){
-					this.setState({warning : 'Cupom esgotado'});
-				}
-				else if(coupon.active === false){
-					this.setState({warning : 'Cupom fora da validade'});
-				}
-				else{
+			if (coupon && this.state.validCoupon){
+				if (coupon.quantity === 0){
+					this.setState({warning : 'Cupom esgotado', settingPromotionalCode: false, discountApplied : false});
+				}  else if (!coupon.active){
+					this.setState({warning : 'Cupom fora da validade', settingPromotionalCode: false, discountApplied : false});
+				}  else {
 					heimdallr.getUserCoupons().then((resolve) => {
-						let userCoupons = resolve._docs[0]._data.coupons;
-						
-						if(userCoupons.find((item) => item.hash === this.state.texInputCode && item.store_code === 'spotted' && coupon.id === item.id)){
-					
-							this.setState({warning : 'Código já utilizado'});
-						}
-						else{
-	
+						let userCoupons = resolve;
+						if (!userCoupons || !userCoupons.find((item) => item.hash === this.state.texInputCode && item.store_code === 'spotted' && coupon.id === item.id)) {
+							// TODO por que salvar store_code?
 							let discount = ((coupon.value / 100) * this.state.PicPayPrice);
-							this.setState({PicPayPrice : ((this.state.PicPayPrice - discount).toFixed(2)), discountApplied : true,validCoupon : false, newCoupon : coupon, warning: ''});
-					
+							this.setState({discountPicPayPrice : ((this.state.PicPayPrice - discount).toFixed(2)), discountApplied : true, newCoupon : coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false});
+						} else {
+							this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false});
 						}
 					});
 				}
-			}
-			else {
-					heimdallr.getCoupons( this.state.product.sid).then((resolve) => {
-						
-						coupons = resolve;
-						coupon =  coupons.find((item) => (item.hash === this.state.texInputCode));
-						
-						if (coupon && this.state.validCoupon === true){
-							if(coupon.quantity === 0){
-								this.setState({warning : 'Cupom esgotado'});
-							}
-							else if(coupon.active === false){
-								this.setState({warning : 'Cupom fora da validade'});
-							}
-							else{
-								heimdallr.getUserCoupons().then((resolve) => {
-									let userCoupons = resolve._docs[0]._data.coupons;
-									
-									if(userCoupons.find((item) => item.hash === this.state.texInputCode && item.store_code === this.state.product.sid && coupon.id === item.id)){
-								
-										this.setState({warning : 'Código já utilizado'});
-									}
-									else{
-											
-											if(coupon.type === 0){
-												let discount = ((coupon.value / 100) * this.state.PicPayPrice);
-												no_tax_discount = ((coupon.value / 100) * this.state.price_without_tax);
-												this.setState({PicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true,validCoupon : false, newCoupon : coupon, price_without_tax : (this.state.price_without_tax - no_tax_discount), warning : '' });
-											}
-											else {
-												this.setState({PicPayPrice: (this.state.price_without_tax - coupon.value), discountApplied : true,validCoupon : false, newCoupon : coupon,price_without_tax : (this.state.price_without_tax - coupon.value), warning : '' });
-											}
-									}
-								});
+			} else {
+				heimdallr.getCoupons( this.state.product.sid ).then((resolve) => {
+					if (!result) {
+						this.setState({warning:'Código inválido', settingPromotionalCode: false, discountApplied : false});
+						return ;
+					}
+					coupons = resolve;
+					coupon =  coupons.find((item) => (item.hash === this.state.texInputCode));
 
-							}
-						}	
-						else {
-							this.setState({warning:'Código inválido'});						
+					if (coupon) {
+						if(coupon.quantity === 0){
+							this.setState({warning : 'Cupom esgotado', settingPromotionalCode: false, discountApplied : false});
+						} else if (!coupon.active) {
+							this.setState({warning : 'Cupom fora da validade', settingPromotionalCode: false, discountApplied : false});
+						} else {
+							heimdallr.getUserCoupons().then((resolve) => {
+								let userCoupons = resolve;
+								if (userCoupons ||  !userCoupons.find((item) => item.hash === this.state.texInputCode && item.store_code === this.state.product.sid && coupon.id === item.id)) {
+									if(coupon.type === 0){
+										let discount = ((coupon.value / 100) * this.state.PicPayPrice);
+										const no_tax_discount = ((coupon.value / 100) * this.state.price_without_tax);
+										this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true, newCoupon : coupon, discountPriceWithoutTax : (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
+									}
+									else {
+										this.setState({discountPicPayPrice: (this.state.price_without_tax - coupon.value), discountApplied : true, newCoupon : coupon,discountPriceWithoutTax : (this.state.price_without_tax - coupon.value), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
+									}
+								} else{
+									this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false});
+								}
+							});
+
 						}
+					}
+					else {
+						this.setState({warning:'Código inválido', settingPromotionalCode: false, discountApplied : false});
+					}
 				})
 
 			}
 		})
-		
+
 	}
 
 	receivePromotionalCode = (value) => {
@@ -603,17 +595,23 @@ export default class ProductScreen extends React.Component {
 									}
 									<View style ={{marginTop:theme.height * 0.01,marginBottom:theme.height * 0.005}}>
 										<View style ={{flexDirection : 'row',alignItems:'flex-end'}}>
-											<TextArea
-													ref = {input => (this.postTextInput = input)} 
-													placeholderText = {this.state.placeholderCoupon} 
-													customizationCallback = {this.receivePromotionalCode.bind(this)}
+											<TextInput
+													placeholderText = {this.state.placeholderCoupon}
+													style={{borderBottomWidth: 1, borderBottomColor: '#8f8f8f', height: 40}}
+													onChangeText = {this.receivePromotionalCode.bind(this)}
 													width = {theme.width*0.57}
 												/>
-												<TouchableOpacity 
-												style = {{zIndex : 1}}
-												onPress = {this.setPromotionalCode.bind(this)}>
+												<TouchableOpacity
+													disabled={this.state.settingPromotionalCode}
+													style = {{zIndex : 1}}
+													onPress = {this.setPromotionalCode.bind(this)}
+												>
 													<View style = {{zIndex:1,backgroundColor:this.state.product?this.state.product.colors[0]: null,padding:theme.width * 0.02,borderRadius:7,marginLeft:theme.width*0.02}}>
-														<Text style = {{color:'white'}}>{'OK'}</Text>
+														{
+															this.state.settingPromotionalCode ?
+															<ActivityIndicator size="small" color={'white'} /> :
+															<Text style = {{color:'white'}}>{'OK'}</Text>
+														}
 													</View>
 												</TouchableOpacity>
 										</View>
@@ -674,14 +672,49 @@ export default class ProductScreen extends React.Component {
 													flexDirection:'row',
 												}}
 											>
-												<Text
-													style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-													>{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
-												</Text>
-												<Image
-													style = {{width:61,height:20,marginLeft:3,marginTop:0}}
-													source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-												</Image>
+												{
+													this.state.discountApplied ?
+													<View style={{ flexDirection: 'column'}}>
+														<View style={{ flexDirection: 'row'}}>
+															<Text
+																style = {{ fontWeight:'bold', fontSize:15, marginBottom:7, textDecorationLine: 'line-through', textDecorationStyle: 'solid' }}
+															>
+																{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+
+															</Text>
+															<Image
+																style = {{width:61,height:20,marginLeft:3,marginTop:0}}
+																source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+															</Image>
+														</View>
+														<View style={{ flexDirection: 'row'}}>
+															<Text
+																style = {{ fontWeight:'bold', fontSize:15, marginBottom:7, marginLeft: 4, textDecoration: 'none' }}
+															>
+																{'R$ ' + this.state.discountPicPayPrice + ' - Pago pelo '}
+															</Text>
+															<Image
+																style = {{width:61,height:20,marginLeft:3,marginTop:0}}
+																source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+															</Image>
+														</View>
+
+													</View>
+
+														:
+													<View style={{ flexDirection: 'row'}}>
+														<Text
+															style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
+														>
+															{'R$ ' + this.state.PicPayPrice + ' - Pago pelo '}
+														</Text>
+														<Image
+															style = {{width:61,height:20,marginLeft:3,marginTop:0}}
+															source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+														</Image>
+													</View>
+												}
+
 											</View>
 											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700',lineHeight:20}}>{'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
 															' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }</Text>
