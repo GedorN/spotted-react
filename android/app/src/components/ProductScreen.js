@@ -91,7 +91,7 @@ export default class ProductScreen extends React.Component {
         );
 	}
 	openAlert = () =>{
-		this.setState({showAlert : true});
+		this.setState({showAlert : true, warning: null, discountApplied: false});
 	}
 
 	ticketsRegister = async () => {
