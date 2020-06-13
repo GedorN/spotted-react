@@ -397,7 +397,7 @@ export default class ProductScreen extends React.Component {
 	}
 
 	receivePromotionalCode = (value) => {
-		this.setState({texInputCode : value});
+		this.state.texInputCode = value;
 	}
 
 
@@ -590,7 +590,7 @@ export default class ProductScreen extends React.Component {
 									<View style ={{marginTop:theme.height * 0.01,marginBottom:theme.height * 0.005}}>
 										<View style ={{flexDirection : 'row',alignItems:'flex-end'}}>
 											<TextInput
-													placeholderText = {this.state.placeholderCoupon}
+													placeholder = {this.state.placeholderCoupon}
 													style={{borderBottomWidth: 1, borderBottomColor: '#8f8f8f', height: 40}}
 													onChangeText = {this.receivePromotionalCode.bind(this)}
 													width = {theme.width*0.57}
