@@ -179,6 +179,7 @@ export default class ProductScreen extends React.Component {
 					if(this.state.discountApplied){
 						heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
 						heimdallr.saveUserCoupon(this.state.userCouponsRegister);
+						this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
 					}
 					this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
 					showMessage({
@@ -214,11 +215,10 @@ export default class ProductScreen extends React.Component {
 				coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash));
 				if(coupon && coupon.quantity === 0){
 					this.setState({discountApplied: false, warning:'Cupom esgotado',discountPicPayPrice: this.state.PicPayPrice});
-					/* this.ticketsRegister(); */
 
 				} else if(coupon.active === false){
 					this.setState({discountApplied: false, warning:'Cupom fora da validade',discountPicPayPrice: this.state.PicPayPrice});
-				/* 	this.ticketsRegister(); */
+
 				} else {
 					heimdallr.getUserCoupons().then((resolve) => {
 						userCoupons = resolve;
@@ -242,21 +242,24 @@ export default class ProductScreen extends React.Component {
 				heimdallr.getCoupons( this.state.product.sid).then((res) => {
 					if (!res) {
 						this.setState({discountApplied: false, warning:'Código inválido'});
-						this.ticketsRegister();
+						
 					}
-					coupons = res;
-					coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash && item.quantity > 0 && item.active === true ));
-					if (coupon) {
+					else if (res && res.find((item) => (item.hash === this.state.newCoupon.hash))) {
+						coupons = res;
+						coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash));
 						if (coupon.quantity === 0) {
-							this.setState({discountApplied: false, warning:'Cupom esgotado'});
-							this.ticketsRegister();
+							this.setState({discountApplied: false, warning:'Cupom esgotado',discountPicPayPrice : null});
+							
 						}  else if(coupon.active === false) {
-							this.setState({discountApplied: false, warning:'Cupom fora da validade'});
-							this.ticketsRegister();
+							this.setState({discountApplied: false, warning:'Cupom fora da validade',discountPicPayPrice : null});
+							
 						} else {
 							heimdallr.getUserCoupons().then((resolve) => {
 								userCoupons = resolve;
-								if (!resolve || (resolve && !userCoupons.find((item) => coupon.id === item.id))) {
+								if (!userCoupons || (userCoupons && !userCoupons.find((item) => coupon.id === item.id))) {
+									if (!userCoupons) {
+										userCoupons = [];
+									}
 									userCoupons.push(this.state.newCoupon);
 									let index = coupons.indexOf(coupon);
 									coupons[index].quantity  = coupons[index].quantity - 1;
@@ -264,14 +267,14 @@ export default class ProductScreen extends React.Component {
 									this.ticketsRegister();
 								} else {
 									this.setState({discountApplied: false, warning:'Cupom já utilizado'});
-									this.ticketsRegister();
+									
 								}
 							});
 						}
 					}
 					else {
 						this.setState({discountApplied:false, warning:'Código inválido'});
-						this.ticketsRegister();
+						
 					}
 				})}
 			})
@@ -328,7 +331,7 @@ export default class ProductScreen extends React.Component {
 	}
 
 	setPromotionalCode = () => {
-		this.setState({ settingPromotionalCode: true, warning: null, discountApplied: false });
+		this.setState({ settingPromotionalCode: true, warning: null, discountApplied: false});
 		let coupons = null;
 		let coupon = null;
 
@@ -618,7 +621,7 @@ export default class ProductScreen extends React.Component {
 										
 									{
 										this.state.warning != null && 
-										<Text style = {{fontWeight:'bold',marginBottom:theme.height * 0.01}}>{this.state.warning}</Text>
+										<Text style = {{fontWeight:'bold',marginTop:theme.height * 0.02,marginLeft:theme.width * 0.01,color:this.state.product? this.state.product.colors[0] : 'black'}}>{this.state.warning}</Text>
 									}
 									<Text style = {{fontWeight:'bold',marginLeft:theme.width * 0.01,marginBottom:theme.width * 0.02,marginTop:theme.width * 0.04,fontSize:15}}>{'Informações:'}</Text>
 									{/* <TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
