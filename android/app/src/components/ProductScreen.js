@@ -487,7 +487,7 @@ export default class ProductScreen extends React.Component {
 													<View style = {{zIndex:1,backgroundColor:this.state.product?this.state.product.colors[0]: null,padding:theme.width * 0.03,borderRadius:7,marginLeft:theme.width*0.02}}>
 														{
 															this.state.settingPromotionalCode ?
-															<ActivityIndicator size="small" color={'white'} /> :
+															<ActivityIndicator size="small" color={(this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')} /> :
 															<Text style = {{color:(this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black'), fontWeight:'bold'}}>{'OK'}</Text>
 														}
 													</View>
@@ -503,9 +503,12 @@ export default class ProductScreen extends React.Component {
 											<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
 											<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
 										</View>
-										<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
-											<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
-										</View>
+										{
+											this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
+											<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
+												<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
+											</View>
+										}
 									</View>
 
 								}
@@ -542,7 +545,13 @@ export default class ProductScreen extends React.Component {
 										{
 											this.state.product &&
 											<View style = {{marginTop: theme.height*0.04}}>
-												<Text style = {{alignSelf:'center', color:'#8f8f8f', padding:4,paddingLeft:theme.width * 0.04,paddingRight:theme.width * 0.04,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
+											{
+												this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
+												<View style = {{borderColor : '#8f8f8f', borderBottomWidth:1}}>
+													<Text style = {{alignSelf:'center', color:'#8f8f8f', padding:4,paddingLeft:theme.width * 0.04,paddingRight:theme.width * 0.04,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
+												</View>
+											
+											}
 												<View style = {styles.footer}>
 													{
 														this.state.errorMissingValues &&
@@ -782,7 +791,6 @@ const styles = StyleSheet.create({
 		alignSelf:'center',
 		marginBottom:theme.height*0.04,
 		borderTopColor:'#8f8f8f',
-		borderTopWidth:1,
 		paddingLeft:theme.width*0.06,
 		paddingRight:theme.width*0.06,
 		paddingTop:theme.height*0.03
