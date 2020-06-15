@@ -743,12 +743,20 @@ function HeimdallrLib() {
 		    .collection('user')
 		    .where('uid', '==', userId).get().then((result) => {
 		    	console.log('veio o user: ', result);
-		    	user = result._docs[0]._data;
+					if(result._docs.length > 0){
+						user = result._docs[0]._data;
+					}
+					else{
+						user = null;
+					}
 		    	resolve();
 	    })
 	  }).then(function (resolve) {
 		  return user;
-	  })
+	  }).catch((error) => {
+			console.log("erro usuário",error);
+		
+		});
   }
 
   this.getUserColletion = function (limit, uid) {

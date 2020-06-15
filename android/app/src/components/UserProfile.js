@@ -34,17 +34,20 @@ export default class UserProfile extends React.Component {
 			userImage: '',
 			userImageUrl: [],
 			scrolling: false,
+			findUser : true,
 		};
 	}
 
 	componentDidMount = () => {
 		const user_id = this.props.navigation.getParam('userId');
 		if (user_id) {
+		
 			console.log('navigation: ', this.props);
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
-					this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
-					heimdallr.getUserColletion(10, this.state.userId).then(
+					if(resolve != null){
+						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
+						heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
 							console.log('peguei de volta', resolve);
 							if(!resolve || resolve.length === 0){
@@ -60,9 +63,13 @@ export default class UserProfile extends React.Component {
 							this.setState({userId:this.props.navigation.getParam('userId')});
 						}
 					);
+					}
+					else{
+						this.setState({findUser :false});
+					}
 				},
 				(reject) => {
-					console.log('Deu ruim: ', reject);
+					console.warn('Deu ruim: ', reject);
 				});
 		} else {
 			// const hue = heimdallr.test(heimdallr.user_id, 100);
@@ -175,56 +182,74 @@ export default class UserProfile extends React.Component {
 
 	render() {
 		return (
+			
 			<View style={{}}>
-				<Modal
-					visible={this.state.showImage}
-					transparent={true}
-					onRequestClose={() => {
-						this.setState({ showImage: false });
-					}}
-				>
-					<ImageViewer
-						imageUrls={this.state.userImageUrl? this.state.userImageUrl: null}
-						swipeDownThreshold={0.5}
-						enableSwipeDown={true}
-						onSwipeDown={() => {this.setState({ showImage: false })}}
-					/>
-				</Modal>
-				<FlatList
-					data = {this.state.posts}
-					onScrollEndDrag={() => this.setState({ scrolling: false })}
-					onScrollBeginDrag={() => this.setState({ scrolling: true })}
-					renderItem={ ({item}) =>
-							<PostViewer text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
-					}
-					ListHeaderComponent={() =>
-						<View style={styles.profileHeader}>
-							<Image
-								style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
-								source={require('../../../../assets/images/simbol.png')}
+				
+				{ this.state.findUser ? 
+					<View>
+						<Modal
+							visible={this.state.showImage}
+							transparent={true}
+							onRequestClose={() => {
+								this.setState({ showImage: false });
+							}}
+						>
+							<ImageViewer
+								imageUrls={this.state.userImageUrl? this.state.userImageUrl: null}
+								swipeDownThreshold={0.5}
+								enableSwipeDown={true}
+								onSwipeDown={() => {this.setState({ showImage: false })}}
 							/>
-							<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
-								<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
-							</TouchableOpacity>
-							<View>
-								<Text style={{marginTop: 5}}>{this.state.userName}</Text>
+						</Modal>
+						<FlatList
+						data = {this.state.posts}
+						onScrollEndDrag={() => this.setState({ scrolling: false })}
+						onScrollBeginDrag={() => this.setState({ scrolling: true })}
+						renderItem={ ({item}) =>
+								<PostViewer text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+						}
+						ListHeaderComponent={() =>
+							<View style={styles.profileHeader}>
+								<Image
+									style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
+									source={require('../../../../assets/images/simbol.png')}
+								/>
+								<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
+									<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
+								</TouchableOpacity>
+								<View>
+									<Text style={{marginTop: 5}}>{this.state.userName}</Text>
+								</View>
 							</View>
-						</View>
-					}
-					refreshControl={
-						<RefreshControl
-							refreshing={this.state.isRefreshing}
-							onRefresh={this.onRefresh.bind(this)}
-						/>
-					}
-					keyExtractor={item => item.pid}
-					onEndReachedThreshold={0.3}
-					onEndReached={({ distanceFromEnd }) => {
-						this.pullMorePosts(distanceFromEnd);
-					}}
-					ListFooterComponent={ this.renderFooter.bind(this)}
-
-				/>
+						}
+						refreshControl={
+							<RefreshControl
+								refreshing={this.state.isRefreshing}
+								onRefresh={this.onRefresh.bind(this)}
+							/>
+						}
+						keyExtractor={item => item.pid}
+						onEndReachedThreshold={0.3}
+						onEndReached={({ distanceFromEnd }) => {
+							this.pullMorePosts(distanceFromEnd);
+						}}
+						ListFooterComponent={ this.renderFooter.bind(this)}
+	
+					/>
+					</View>
+					 :
+					 <View style = {{alignSelf:'center'/* , borderColor:'black',borderWidth:1 */ ,marginTop:theme.height * 0.04,alignItems:'center'}}>
+						 <Image
+										style={{width: theme.width * 0.7, height: theme.height * 0.25, marginTop:4 ,opacity:0.5,marginBottom:theme.height * 0.04}}
+										source={require('../../../../assets/images/mask-solid.png')}
+									/>
+						 
+						 <Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>Ih, o usuário vazou,</Text>
+						 <Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>ou mudou de nome.</Text>
+						 <Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01}}t>Mas o usuário sempre volta </Text>
+					 </View>
+				}
+			
 			</View>
 		);
 	}
