@@ -609,14 +609,16 @@ export default class ProductScreen extends React.Component {
 								<View>
 										<Text style = {{fontWeight:'bold',fontSize:15,textAlign: 'justify', lineHeight: 25,marginLeft:theme.width * 0.007}}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
 										{this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-											<Text style = {{ flexDirection:'row',marginTop:theme.height * 0.01}}>
-											{	
-												this.state.product.customization.map(i =>
-											<Text key = {i.label} style = {{fontWeight:'bold',color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
-												{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
-											</Text>
-										)}
-											</Text>
+											
+												<Text style = {{ flexDirection:'row',marginTop:theme.height * 0.01,textAlign:'justify'}}>
+												{	
+													this.state.product.customization.map(i =>
+												<Text key = {i.label} style = {{fontWeight:'bold',color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
+													{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
+												</Text>
+												)}
+												</Text>
+											
 										}
 										
 									{
@@ -667,7 +669,8 @@ export default class ProductScreen extends React.Component {
 												paddingTop:15,
 												paddingBottom:10,
 												marginTop:10,
-												borderRadius:25
+												borderRadius:25,
+												
 											}}
 										>
 											<View
@@ -694,8 +697,8 @@ export default class ProductScreen extends React.Component {
 													}
 
 											</View>
-											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700',lineHeight:20}}>{'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
-															' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }</Text>
+											<Text style = {{textAlign: 'justify',flexWrap: 'wrap',color:'#8f8f8f',fontWeight:'700',lineHeight:20}}>{'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
+															' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo. receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }</Text>
 										</View>
 
 								</View>
