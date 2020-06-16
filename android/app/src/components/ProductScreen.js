@@ -85,8 +85,8 @@ export default class ProductScreen extends React.Component {
 
 	renderPage(image, index) {
 		return (
-            <View key={index} style = {{ height:theme.height * 0.58,width:theme.width * 0.8,alignSelf:'center',marginBottom:theme.height * 0.03}}>
-                <Image style={{flex: 1, resizeMode: 'contain', width: theme.width * 0.85, height:theme.height * 0.55, alignSelf:'center' }} source={{ uri: image }} />
+            <View key={index} style = {{ height:theme.height * 0.50,width:theme.width * 0.8,alignSelf:'center',marginBottom:theme.height * 0.03}}>
+                <Image style={{flex: 1, resizeMode: 'contain', width: theme.width * 0.75, height:theme.height * 0.45, alignSelf:'center'}} source={{ uri: image }} />
             </View>
         );
 	}
@@ -438,18 +438,18 @@ export default class ProductScreen extends React.Component {
 												{this.state.product? this.state.product.name : null}
 											</Text>
 										</View>
-
-										<Carousel
-											activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
-											autoplay
-											autoplayTimeout={5000}
-											loop
-											index={0}
-											pageSize={theme.width}
-										>
-											{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
-										</Carousel>
-
+										<View style = {{alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.55}}>
+											<Carousel
+												activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
+												autoplay
+												autoplayTimeout={5000}
+												loop
+												index={0}
+												pageSize={theme.width * 0.8}
+											>
+												{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
+											</Carousel>
+										</View>
 										<View style = {styles.payContainer}>
 												<Text style = {{fontWeight:'bold',fontSize:20}}>
 														{'Valor: R$ ' + (this.state.discountApplied ? this.state.discountPicPayPrice : this.state.PicPayPrice) }

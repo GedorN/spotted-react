@@ -461,13 +461,15 @@ export default class PostDetails extends React.Component {
 										</View>
 										<View style={styles.body}>
 											<View style={styles.post}>
-												<Text style={{marginTop:10}}> {this.state.post ? this.state.post.data().text : null} </Text>
-												<View >
+												<View style = {{width:theme.width * 0.77,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'center'}}>
+													<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}> {this.state.post ? this.state.post.data().text : null} </Text>
+												</View>
+												<View style = {{marginLeft:theme.width * 0.01}}>
 													{this.getModalImagesLayout()}
 												</View>
 											</View>
 										</View>
-										<Text style={{color: 'gray', fontSize: 8}}> {this.state.post ? this.state.post.data().date : null} </Text>
+										<Text style={{color: 'gray', fontSize: 8,marginLeft:theme.width * 0.02}}> {this.state.post ? this.state.post.data().date : null} </Text>
 									</View>
 								</View>
 							}
@@ -556,7 +558,6 @@ const styles = StyleSheet.create({
 	colContainer: {
 		flexDirection: 'column',
 		alignItems: 'flex-start',
-		// padding: 10,
 		borderTopWidth: 0.2,
 		borderColor: 'rgba(59, 56, 50, 0.2)',
 		flex: 1,
@@ -583,12 +584,11 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 0,
 		width: width * 0.7,
 		marginLeft:10,
-
-		
 	},
 	body: {
 		flexDirection: 'column',
-		marginBottom:40,
+		marginBottom:theme.height * 0.02,
+		width:theme.width * 0.81,
 	},
 	postHeader: {
 		justifyContent: 'space-between',
@@ -615,10 +615,10 @@ const styles = StyleSheet.create({
 	},
 	post: {
 		alignSelf: 'flex-start',
-		width: width * 0.7,
+		width: width * 0.8,
 		padding: 2,
-		marginLeft: 12,
 		borderRadius: 8,
 		color: 'black',
+		alignSelf:'flex-end',
 	}
 });

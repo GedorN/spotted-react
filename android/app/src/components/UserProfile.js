@@ -9,6 +9,7 @@ import {
 	ActivityIndicator,
 	RefreshControl,
 	Modal,
+	
 } from 'react-native';
 
 import PostViewer from "../../../../components/General/PostViewer";
@@ -210,13 +211,28 @@ export default class UserProfile extends React.Component {
 						}
 						ListHeaderComponent={() =>
 							<View style={styles.profileHeader}>
+								<View style = {{alignSelf:'flex-start'}}>
+									<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+										<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
+											<Image
+												style={{width: 12, height: 12, marginTop:4}}
+												source={require('../../../../assets/images/arrow-left.png')}
+											/>
+											<Text style={{marginLeft: 5}}>
+												voltar
+											</Text>
+										</View>
+									</TouchableOpacity>
+								</View>
 								<Image
 									style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
 									source={require('../../../../assets/images/simbol.png')}
 								/>
-								<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
-									<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
-								</TouchableOpacity>
+								<View style = {{marginTop:-(theme.height * 0.03)}}>
+									<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
+										<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
+									</TouchableOpacity>
+								</View>
 								<View>
 									<Text style={{marginTop: 5}}>{this.state.userName}</Text>
 								</View>
@@ -238,15 +254,29 @@ export default class UserProfile extends React.Component {
 					/>
 					</View>
 					 :
-					 <View style = {{alignSelf:'center'/* , borderColor:'black',borderWidth:1 */ ,marginTop:theme.height * 0.04,alignItems:'center'}}>
-						 <Image
-										style={{width: theme.width * 0.7, height: theme.height * 0.25, marginTop:4 ,opacity:0.5,marginBottom:theme.height * 0.04}}
-										source={require('../../../../assets/images/mask-solid.png')}
-									/>
+					 <View>
+						<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+							<View style={{flexDirection: 'row', marginTop: theme.height * 0.01,  paddingLeft: theme.width * 0.02,width:theme.width * 0.2,height:theme.height * 0.04}}>
+								<Image
+									style={{width: 12, height: 12, marginTop:4}}
+									source={require('../../../../assets/images/arrow-left.png')}
+								/>
+								<Text style={{marginLeft: 5}}>
+									voltar
+								</Text>
+							</View>
+						</TouchableOpacity>
 						 
-						 <Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>Ih, o usuário vazou,</Text>
-						 <Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>ou mudou de nome.</Text>
-						 <Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01}}t>Mas o usuário sempre volta </Text>
+						<View style = {{alignSelf:'center'/* , borderColor:'black',borderWidth:1 */ ,marginTop:theme.height * 0.04,alignItems:'center'}}>
+							<Image
+											style={{width: theme.width * 0.7, height: theme.height * 0.25, marginTop:4 ,opacity:0.5,marginBottom:theme.height * 0.04}}
+											source={require('../../../../assets/images/mask-solid.png')}
+										/>
+							
+							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>Ih, o usuário vazou,</Text>
+							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>ou mudou de nome.</Text>
+							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01}}t>Mas o usuário sempre volta </Text>
+						</View>
 					 </View>
 				}
 			
