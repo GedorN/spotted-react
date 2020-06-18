@@ -228,7 +228,7 @@ export default class MainScreen extends React.Component {
 						acceptPan={true}
 						negotiatePan={true}
 						panThreshold={0.25}
-						panOpenMask={0.08}
+						panOpenMask={0.05}
 					>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.openModal.bind(this)}>

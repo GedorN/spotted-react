@@ -492,7 +492,7 @@ export default class PostDetails extends React.Component {
 						/>
 						{
 							heimdallr.email !== 'spotted@utfpr.com' &&
-							<View style={{height: theme.height * 0.04, flexDirection: 'row', alignItems: 'flex-end'}}>
+							<View style={{height: theme.height * 0.02, flexDirection: 'row', alignItems: 'flex-end'}}>
 								<Text style = {{opacity: 0.5, fontSize: 13, marginLeft: 15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
 							</View>
 						}
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
 		borderColor: 'rgba(59, 56, 50, 0.2)',
 		flex: 1,
 		width:theme.width*0.99,
-		
+
 	},
 	rowContainer: {
 		width: width,
@@ -614,7 +614,6 @@ const styles = StyleSheet.create({
 		zIndex: 1,
 	},
 	post: {
-		alignSelf: 'flex-start',
 		width: width * 0.8,
 		padding: 2,
 		borderRadius: 8,

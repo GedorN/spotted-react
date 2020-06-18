@@ -242,17 +242,17 @@ export default class ProductScreen extends React.Component {
 				heimdallr.getCoupons( this.state.product.sid).then((res) => {
 					if (!res) {
 						this.setState({discountApplied: false, warning:'Código inválido'});
-						
+
 					}
 					else if (res && res.find((item) => (item.hash === this.state.newCoupon.hash))) {
 						coupons = res;
 						coupon =  coupons.find((item) => (item.hash === this.state.newCoupon.hash));
 						if (coupon.quantity === 0) {
 							this.setState({discountApplied: false, warning:'Cupom esgotado',discountPicPayPrice : null});
-							
+
 						}  else if(coupon.active === false) {
 							this.setState({discountApplied: false, warning:'Cupom fora da validade',discountPicPayPrice : null});
-							
+
 						} else {
 							heimdallr.getUserCoupons().then((resolve) => {
 								userCoupons = resolve;
@@ -267,14 +267,14 @@ export default class ProductScreen extends React.Component {
 									this.ticketsRegister();
 								} else {
 									this.setState({discountApplied: false, warning:'Cupom já utilizado'});
-									
+
 								}
 							});
 						}
 					}
 					else {
 						this.setState({discountApplied:false, warning:'Código inválido'});
-						
+
 					}
 				})}
 			})
@@ -438,7 +438,7 @@ export default class ProductScreen extends React.Component {
 												{this.state.product? this.state.product.name : null}
 											</Text>
 										</View>
-										<View style = {{alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.55}}>
+										<View style = {{alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.45}}>
 											<Carousel
 												activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
 												autoplay
@@ -553,7 +553,7 @@ export default class ProductScreen extends React.Component {
 												<View style = {{borderColor : '#8f8f8f', borderBottomWidth:1}}>
 													<Text style = {{alignSelf:'center', color:'#8f8f8f', padding:4,paddingLeft:theme.width * 0.04,paddingRight:theme.width * 0.04,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
 												</View>
-											
+
 											}
 												<View style = {styles.footer}>
 													{
@@ -609,20 +609,20 @@ export default class ProductScreen extends React.Component {
 								<View>
 										<Text style = {{fontWeight:'bold',fontSize:15,textAlign: 'justify', lineHeight: 25,marginLeft:theme.width * 0.007}}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
 										{this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-											
+
 												<Text style = {{ flexDirection:'row',marginTop:theme.height * 0.01,textAlign:'justify'}}>
-												{	
+												{
 													this.state.product.customization.map(i =>
 												<Text key = {i.label} style = {{fontWeight:'bold',color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
 													{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
 												</Text>
 												)}
 												</Text>
-											
+
 										}
-										
+
 									{
-										this.state.warning != null && 
+										this.state.warning != null &&
 										<Text style = {{fontWeight:'bold',marginTop:theme.height * 0.02,marginLeft:theme.width * 0.01,color:this.state.product? this.state.product.colors[0] : 'black'}}>{this.state.warning}</Text>
 									}
 									<Text style = {{fontWeight:'bold',marginLeft:theme.width * 0.01,marginBottom:theme.width * 0.02,marginTop:theme.width * 0.04,fontSize:15}}>{'Informações:'}</Text>
@@ -670,7 +670,7 @@ export default class ProductScreen extends React.Component {
 												paddingBottom:10,
 												marginTop:10,
 												borderRadius:25,
-												
+
 											}}
 										>
 											<View
@@ -678,8 +678,8 @@ export default class ProductScreen extends React.Component {
 													flexDirection:'column',
 												}}
 											>
-											
-												
+
+
 													<View style={{ flexDirection: 'row'}}>
 														<Text
 															style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
