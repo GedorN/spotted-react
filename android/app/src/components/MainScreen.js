@@ -127,6 +127,14 @@ export default class MainScreen extends React.Component {
 		heimdallr.getNotificationsNumber(this);
 	}
 
+	_checkRoute = (route) => {
+		// console.warn(route);
+		if (route.route.key === 'home' && this.state.index === 0) {
+			this.homeScreen.onRefresh();
+			this.homeScreen.scrollToTop();
+		}
+	}
+
 	getBadge = (prop) => {
 		if (prop.route.key === 'notifications') {
 
@@ -260,6 +268,7 @@ export default class MainScreen extends React.Component {
 							sceneAnimationEnabled={false}
 							shifting={false}
 							labeled={false}
+							onTabPress={this._checkRoute}
 						/>
 						<Modal
 							statusBarTranslucent={false}

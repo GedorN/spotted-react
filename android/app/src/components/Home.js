@@ -47,6 +47,10 @@ export default class Home extends React.Component {
   	});
   }
 
+  scrollToTop = () => {
+	  this.flatList.scrollToIndex({index: 0, animated: true});
+  }
+
   setRefreshing = () => {
 	  this.setState({ isRefreshing: true });
   }
@@ -141,6 +145,7 @@ export default class Home extends React.Component {
       <View style={{}}>
 	      <FlatList
               data = {this.state.posts}
+              ref={flatList => {this.flatList = flatList}}
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
               renderItem={ ({item}) =>
