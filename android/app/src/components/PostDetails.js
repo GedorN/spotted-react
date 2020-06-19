@@ -352,7 +352,6 @@ export default class PostDetails extends React.Component {
 
 
 			const params = {};
-			this.postTextInput.clear();
 			const comment = this.state.commentText;
 			this.setState({ commentText: null });
 			params.pid = this.state.post.data().pid;
@@ -507,26 +506,14 @@ export default class PostDetails extends React.Component {
 
 						heimdallr.email !== 'spotted@utfpr.com' &&
 						<View style={styles.commentContainer}>
-							<TextInput
-								style={styles.textInput}
-								capitalize='sentences'
-								onFocus={this._openCommentaryWriter.bind(this)}
-								placeholder={this.state.anonymousText}
-								multiline
-								onChangeText={text => this.setState({commentText: text})}
-								ref={input => (this.postTextInput = input)}
-							/>
-							<TouchableOpacity onPress={this.getAnonymous.bind(this)}>
-								<Image
-								   style={{width: 44, height: 35, marginLeft: 5, marginBottom:5, opacity: !this.state.anonymousUser ? 0.5 : 1}}
-								   source={require('../../../../assets/images/mask-solid.png')}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity onPress={this.addCommentary.bind(this)}>
-								<Image
-									style={{width: 30, height: 30, marginLeft: 5, marginBottom:5}}
-									source={require('../../../../assets/images/send.png')}
-								/>
+							<TouchableOpacity onPress={this._openCommentaryWriter.bind(this)}>
+								<View style ={{flexDirection:'row', justifyContent:'space-around',width:theme.width * 0.5}}>
+									<Text style = {{opacity:0.7,fontSize:15,alignSelf:'center',marginTop:theme.height * 0.01}}>Adicionar comentário</Text>
+										<Image
+											style={{width: 35, height: 30,alignSelf:'center'}}
+											source={require('../../../../assets/images/comment-regular.png')}
+											/>
+								</View>
 							</TouchableOpacity>
 						</View>
 					}
@@ -620,7 +607,6 @@ const styles = StyleSheet.create({
 	},
 	commentContainer: {
 		position: 'absolute',
-		alignItems: 'flex-end',
 		width: width,
 		bottom: 0,
 		alignSelf: 'flex-end',
@@ -631,6 +617,7 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		padding: 5,
 		zIndex: 1,
+		justifyContent:'center'
 	},
 	post: {
 		width: width * 0.8,
