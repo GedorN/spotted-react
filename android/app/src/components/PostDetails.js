@@ -14,6 +14,8 @@ import {
 	Modal,
 } from 'react-native';
 
+import { FAB } from 'react-native-paper';
+
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
@@ -434,7 +436,7 @@ export default class PostDetails extends React.Component {
 				</TouchableOpacity>
 				<View style={styles.colContainer}>
 					<View
-						style={{height: height - 150, width: theme.width * 0.98 }}
+						style={{height: height - 110, width: theme.width * 0.98 }}
 					>
 						<FlatList
 							ListHeaderComponent = {() =>
@@ -505,17 +507,14 @@ export default class PostDetails extends React.Component {
 					{
 
 						heimdallr.email !== 'spotted@utfpr.com' &&
-						<View style={styles.commentContainer}>
-							<TouchableOpacity onPress={this._openCommentaryWriter.bind(this)}>
-								<View style ={{flexDirection:'row', justifyContent:'space-around',width:theme.width * 0.5}}>
-									<Text style = {{opacity:0.7,fontSize:15,alignSelf:'center',marginTop:theme.height * 0.01}}>Adicionar comentário</Text>
-										<Image
-											style={{width: 35, height: 30,alignSelf:'center'}}
-											source={require('../../../../assets/images/comment-regular.png')}
-											/>
-								</View>
-							</TouchableOpacity>
-						</View>
+
+						<FAB
+						style={styles.fab}
+						small
+						icon={require('../../../../assets/images/comment-regular.png')}
+						onPress={this._openCommentaryWriter.bind(this)}
+					  />
+						
 					}
 				</View>
 				<RBSheet
@@ -585,12 +584,6 @@ const styles = StyleSheet.create({
 		alignItems: 'flex-start',
 		height: 30
 	},
-	textInput: {
-		height: 40,
-		borderBottomWidth: 0,
-		width: width * 0.7,
-		marginLeft:10,
-	},
 	body: {
 		flexDirection: 'column',
 		marginBottom:theme.height * 0.02,
@@ -605,25 +598,19 @@ const styles = StyleSheet.create({
 		alignContent: 'center',
 		width: width * 0.70,
 	},
-	commentContainer: {
-		position: 'absolute',
-		width: width,
-		bottom: 0,
-		alignSelf: 'flex-end',
-		borderTopWidth: 0.5,
-		borderColor: theme.primary,
-		height: 50,
-		flexDirection: 'row',
-		backgroundColor: 'white',
-		padding: 5,
-		zIndex: 1,
-		justifyContent:'center'
-	},
 	post: {
 		width: width * 0.8,
 		padding: 2,
 		borderRadius: 8,
 		color: 'black',
 		alignSelf:'flex-end',
+	},
+	fab : {
+		position:'absolute',
+		backgroundColor:theme.primary,
+		marginTop:theme.height * 0.75,
+		marginLeft:theme.width * 0.74,
+		padding:5,
+		
 	}
 });
