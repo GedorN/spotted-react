@@ -514,7 +514,7 @@ export default class PostDetails extends React.Component {
 						icon={require('../../../../assets/images/comment-regular.png')}
 						onPress={this._openCommentaryWriter.bind(this)}
 					  />
-						
+
 					}
 				</View>
 				<RBSheet
@@ -605,12 +605,12 @@ const styles = StyleSheet.create({
 		color: 'black',
 		alignSelf:'flex-end',
 	},
-	fab : {
-		position:'absolute',
-		backgroundColor:theme.primary,
-		marginTop:theme.height * 0.75,
-		marginLeft:theme.width * 0.74,
-		padding:5,
-		
+	fab: {
+		position: 'absolute',
+		backgroundColor: theme.primary,
+		marginTop: theme.height * 0.75,
+		marginLeft: theme.width * 0.80,
+		padding: 5,
+
 	}
 });
