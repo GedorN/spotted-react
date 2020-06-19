@@ -9,7 +9,9 @@ import {
 	TouchableOpacity,
 	FlatList,
 	ActivityIndicator,
-	KeyboardAvoidingView, RefreshControl, Modal,
+	KeyboardAvoidingView,
+	RefreshControl,
+	Modal,
 } from 'react-native';
 
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -24,6 +26,7 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
+import CommentaryWriter from "./Inputs/CommentaryWriter";
 
 
 const width = Dimensions.get('screen').width;
@@ -51,6 +54,7 @@ export default class PostDetails extends React.Component {
 			indexImage: 0,
 			creatingComment: false,
 			postId: '',
+			showCommentaryModal: false,
 		};
 	}
 
@@ -111,6 +115,10 @@ export default class PostDetails extends React.Component {
 			userId: this.state.post.data().uid,
 		});
 	}
+
+	_hideModal = () => {
+		this.setState({ showCommentaryModal: false });
+	};
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
@@ -388,6 +396,10 @@ export default class PostDetails extends React.Component {
 		this.setState({showAlert : true});
 	}
 
+	_openCommentaryWriter = () => {
+		this.setState({ showCommentaryModal: true });
+	}
+
 
 
 	render() {
@@ -423,7 +435,7 @@ export default class PostDetails extends React.Component {
 				</TouchableOpacity>
 				<View style={styles.colContainer}>
 					<View
-						style={{height: height - 160, width: theme.width * 0.98 }}
+						style={{height: height - 150, width: theme.width * 0.98 }}
 					>
 						<FlatList
 							ListHeaderComponent = {() =>
@@ -490,12 +502,6 @@ export default class PostDetails extends React.Component {
 							}}
 							ListFooterComponent={ this.renderFooter.bind(this)}
 						/>
-						{
-							heimdallr.email !== 'spotted@utfpr.com' &&
-							<View style={{height: theme.height * 0.02, flexDirection: 'row', alignItems: 'flex-end'}}>
-								<Text style = {{opacity: 0.5, fontSize: 13, marginLeft: 15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
-							</View>
-						}
 					</View>
 					{
 
@@ -504,6 +510,7 @@ export default class PostDetails extends React.Component {
 							<TextInput
 								style={styles.textInput}
 								capitalize='sentences'
+								onFocus={this._openCommentaryWriter.bind(this)}
 								placeholder={this.state.anonymousText}
 								multiline
 								onChangeText={text => this.setState({commentText: text})}
@@ -548,6 +555,18 @@ export default class PostDetails extends React.Component {
 						this.setState({ showAlert: false })
 					}}
 				/>
+				<Modal
+					statusBarTranslucent={false}
+					transparent={true}
+					hardwareAccelerated={true}
+					animationType='slide'
+					visible={this.state.showCommentaryModal}
+					onDismiss={this._hideModal}
+					onRequestClose={this._hideModal.bind(this)}
+					contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+				>
+					<CommentaryWriter close={this._hideModal.bind(this)} context={this}/>
+				</Modal>
 			</KeyboardAvoidingView>
 		);
 	}

@@ -274,7 +274,7 @@ export default class MainScreen extends React.Component {
 							statusBarTranslucent={false}
 							transparent={true}
 							hardwareAccelerated={true}
-							animationType='fade'
+							animationType='slide'
 							visible={this.state.showModal}
 							onDismiss={this._hideModal}
 							onRequestClose={this._hideModal.bind(this)}
