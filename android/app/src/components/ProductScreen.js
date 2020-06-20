@@ -676,6 +676,7 @@ export default class ProductScreen extends React.Component {
 											<View
 												style = {{
 													flexDirection:'column',
+													flexWrap: 'wrap'
 												}}
 											>
 
@@ -697,7 +698,7 @@ export default class ProductScreen extends React.Component {
 													}
 
 											</View>
-											<Text style = {{textAlign: 'justify',flexWrap: 'wrap',color:'#8f8f8f',fontWeight:'700',lineHeight:20}}>{'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
+											<Text style = {{textAlign: 'justify',flexWrap: 'wrap',color:'#8f8f8f',fontWeight:'700',lineHeight:20,paddingBottom:theme.height * 0.01}}>{'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
 															' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }</Text>
 										</View>
 
