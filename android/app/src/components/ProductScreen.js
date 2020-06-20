@@ -810,6 +810,7 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		color:'#8f8f8f',
 		fontWeight:'700',
-		paddingBottom: theme.height * 0.01
+		paddingBottom: theme.height * 0.01,
+		textAlign:'justify'
 	}
 });
