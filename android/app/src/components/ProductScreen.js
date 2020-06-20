@@ -13,6 +13,7 @@ import {
 	TextInput,
 	KeyboardAvoidingView,
 	Linking,
+	ScrollView
 } from 'react-native';
 
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
@@ -403,7 +404,9 @@ export default class ProductScreen extends React.Component {
 		this.state.texInputCode = value;
 	}
 
-
+	disableModal = () => {
+		this.setState({ showAlert: false });
+	}
 
 	render() {
 		return (
@@ -596,16 +599,34 @@ export default class ProductScreen extends React.Component {
 							</Text>
 						</View>
 				}
-				<AwesomeAlert
-					show={this.state.showAlert}
-					showProgress={false}
-					title="Confirmação da compra"
-					titleStyle = {{fontWeight:'bold', width:theme.width * 0.8, marginTop:-(theme.height * 0.015),borderTopLeftRadius:6, borderTopRightRadius:6, paddingTop:14,paddingBottom:14,backgroundColor:this.state.product?this.state.product.colors[0]: null,color:this.state.product?this.state.product.colors[1]:'black'}}
-					contentContainerStyle = {{ padding:0, width:theme.width,paddingBottom:theme.height*0.01}}
-					customView = {
-						<View style = {{ height: theme.height * 0.40, padding: theme.width * 0.025 }}>
+				<Modal
+		            hardwareAccelerated={true}
+		            animationType='fade'
+		            transparent={true}
+		            visible={this.state.showAlert}
+		            onRequestClose={() => {
+			            this.disableModal();
+		            }}
+		            style={{ height: 50, width: theme.width * 0.5 }}
+	            >
+		            <View style={styles.centeredView}>
+
+			            <View style={styles.modalContainer}>
+							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.product?this.state.product.colors[0]: null}}>
+								<TouchableOpacity onPress={() => {this.disableModal()}}>
+								<View style = {{width:theme.width * 0.15,height:theme.height*0.05,alignSelf:'flex-end'}}>
+									<Image
+										style = {{width: 15, height: 15,opacity:0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black')}}
+										source = {require('../../../../assets/images/times-solid.png')}
+									/>
+								</View>
+								</TouchableOpacity>
+								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black')}}>{'Confirmação da compra'}</Text>
+							</View>
+							<View style = {{ height: theme.height * 0.57, marginTop: theme.height * 0.1 }}>
 							{
 								!this.state.showLoading &&
+								<ScrollView style = {{height: theme.height * 0.5, marginTop:0}} showsVerticalScrollIndicator = {false}>
 								<View>
 										<Text style = {{fontWeight:'bold',fontSize:15,textAlign: 'justify', lineHeight: 25,marginLeft:theme.width * 0.007}}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
 										{this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
@@ -626,76 +647,39 @@ export default class ProductScreen extends React.Component {
 										<Text style = {{fontWeight:'bold',marginTop:theme.height * 0.02,marginLeft:theme.width * 0.01,color:this.state.product? this.state.product.colors[0] : 'black'}}>{this.state.warning}</Text>
 									}
 									<Text style = {{fontWeight:'bold',marginLeft:theme.width * 0.01,marginBottom:theme.width * 0.02,marginTop:theme.width * 0.04,fontSize:15}}>{'Informações:'}</Text>
-									{/* <TouchableOpacity onPress = { () => this.setState({ picPay : false, directlyToStore: true })}>
-										<View
-											style = {{
-												borderColor:'#8f8f8f',
-												borderWidth:(this.state.directlyToStore ? 3 : 1),
-												paddingLeft:10,
-												paddingRight:7,
-												paddingTop:15,
-												paddingBottom:10,
-												marginLeft:5,
-												marginRight:5,
-												marginTop:10,
-												borderRadius:25
-											}}
-										>
-											<View
-												style = {{
-													flexDirection:'row',
-												}}
-											>
-												<Text
-													style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-													>{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago diretamente para '}
-												</Text>
-												<Image
-													style = {{width:37,height:29,marginLeft:3}}
-													source = {{uri:this.state.product? this.state.product.logo : null}}>
-												</Image>
-											</View>
-											<Text style = {{textAlign: 'justify',color:'#8f8f8f',fontWeight:'700'}}>{'Seu telefone será enviado para ' + (this.state.product? this.state.product.sid : 'o reponsável') +
-											' entrar em contato e agendar hora e local para pagamento presencial.A compra será confirmada após essa etapa.'}</Text>
-										</View>
-									</TouchableOpacity> */}
-
+								
 										<View
 											style = {{
 												borderColor:'#21c25e',
 												borderWidth:4,
-												paddingLeft:10,
-												paddingRight:7,
+												paddingLeft:15,
+												paddingRight:15,
 												paddingTop:15,
 												paddingBottom:10,
-												marginTop:10,
+												marginTop:15,
 												borderRadius:25,
 
 											}}
 										>
-											<View
-												style = {{
-													flexDirection:'column',
-													flexWrap: 'wrap'
-												}}
-											>
-
-
-													<View style={{ flexDirection: 'row'}}>
-														<Text
-															style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-														>
-															{'R$ ' +(this.state.discountPicPayPrice != null ? this.state.discountPicPayPrice : this.state.PicPayPrice) + ' - Pago pelo '}
-														</Text>
-														<Image
-															style = {{width:61,height:20,marginLeft:3,marginTop:0}}
-															source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-														</Image>
-													</View>
-													{
-														this.state.discountApplied &&
+											<View style = {{ flexDirection:'column', flexWrap: 'wrap' }}>
+												<View style={{ flexDirection: 'row'}}>
+													<Text
+														style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
+													>
+														{'R$ ' +(this.state.discountPicPayPrice != null ? this.state.discountPicPayPrice : this.state.PicPayPrice) + ' - Pago pelo '}
+													</Text>
+													<Image
+														style = {{width:61,height:20,marginLeft:3,marginTop:0}}
+														source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+													</Image>
+												</View>
+												{
+													this.state.discountApplied &&
+													<View>
 														<Text style ={{fontWeight:'bold', marginBottom:theme.height*0.01}}>{'Valor com desconto'}</Text>
-													}
+													</View>
+													
+												}
 
 											</View>
 											<View style={{flexDirection:'row'}}>
@@ -704,39 +688,43 @@ export default class ProductScreen extends React.Component {
 												</Text>
 											</View>
 										</View>
+										<View style = { styles.modalButtons }>
+											<TouchableOpacity onPress = { this.disableModal.bind(this) }>
+												<View style = { styles.cancelButton }>
+														<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing:0.2 }}>{ 'Cancelar' }</Text>
+												</View>
+											</TouchableOpacity>
+											<TouchableOpacity onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
+												<View style = {{...styles.confirmButton, backgroundColor: this.state.product? this.state.product.colors[0] : 'green' }}>
+														<Text style = {{ fontWeight: 'bold', letterSpacing:0.2, color:heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black') }}>{ 'Confirmar' }</Text>
+												</View>
+											</TouchableOpacity>
+										</View>
 
 								</View>
+								</ScrollView>
 							}
 							{
 								this.state.showLoading &&
-								<View>
+								<View style = {{marginTop: theme.height * 0.05}}>
 									<ActivityIndicator size="large" color={this.state.product? this.state.product.colors[0] : theme.primary} />
-									<View style={{flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap'}}>
-										<Text style={{fontStyle: 'italic'}}>
+									<View style={{flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap', justifyContent: 'center',marginTop:theme.height * 0.05 }}>
+										<Text style={{fontStyle: 'italic', fontWeight: 'bold', fontSize: 25, color: '#8f8f8f'}}>
 											HOOOOOOLD!
 										</Text>
-										<Text style={{wordWrap: 'break-word' }}>
+										<Text style={{fontWeight: 'bold', fontSize: 25, textAlign: 'center', marginTop: theme.height * 0.05, lineHeight: 50 }}>
 											Estamos preparando o seu pedido ;)
 										</Text>
 									</View>
 								</View>
 							}
 						</View>
+			            </View>
+		            </View>
+	            </Modal>
 
-					}
-					closeOnTouchOutside={true}
-					closeOnHardwareBackPress={false}
-					showCancelButton = {this.state.showCancelButton}
-					showConfirmButton={this.state.showConfirmButton}
-					confirmText="Confirmar"
-					confirmButtonColor={this.state.product?this.state.product.colors[0] : '#03fc77'}
-					confirmButtonTextStyle={ this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black'}
-					cancelText = "Cancelar"
-					onCancelPressed = {() => {
-						this.setState({ showAlert: false })
-					}}
-					onConfirmPressed={this.state.discountApplied ? this.discountedTickets : this.ticketsRegister}
-				/>
+
+			
 				<FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
 			</KeyboardAvoidingView>
 		)
@@ -811,6 +799,68 @@ const styles = StyleSheet.create({
 		color:'#8f8f8f',
 		fontWeight:'700',
 		paddingBottom: theme.height * 0.01,
-		textAlign:'justify'
+		textAlign:'justify',
+		letterSpacing : 0.5,
+		lineHeight: 25,
+
+	},
+	modalHeader : {
+		flexDirection: 'column',
+		width: theme.width * 0.9,
+		borderTopLeftRadius:20,
+		borderTopRightRadius:20,
+		padding:20,position:'absolute',
+		marginLeft:0.001
+	},
+	modalContainer: {
+		width: theme.width * 0.9,
+		height: theme.height * 0.72, 
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 25,
+		paddingBottom:20,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		zIndex:0,
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: -(theme.height * 0.1),
+		paddingTop:theme.height * 0.1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	modalButtons: {
+		flexDirection: 'row',
+		marginTop: theme.height * 0.04,
+		justifyContent: 'center',
+		marginBottom:theme.height * 0.01 
+	},
+	cancelButton: {
+		paddingTop: 14, 
+		paddingBottom: 14,
+		width:theme.width * 0.25,
+		elevation: 2,
+		backgroundColor: '#8f8f8f',
+		borderRadius: 12,
+		marginRight: theme.width * 0.02,
+	    flexDirection:'row',
+		justifyContent: 'center'
+	},
+	confirmButton: {
+		paddingTop: 14,
+		paddingBottom: 14,
+		width:theme.width * 0.25,
+		elevation: 2,
+		borderRadius: 12,
+		flexDirection: 'row',
+		justifyContent: 'center'
 	}
+	
 });
