@@ -603,7 +603,7 @@ export default class ProductScreen extends React.Component {
 					titleStyle = {{fontWeight:'bold', width:theme.width * 0.8, marginTop:-(theme.height * 0.015),borderTopLeftRadius:6, borderTopRightRadius:6, paddingTop:14,paddingBottom:14,backgroundColor:this.state.product?this.state.product.colors[0]: null,color:this.state.product?this.state.product.colors[1]:'black'}}
 					contentContainerStyle = {{ padding:0, width:theme.width,paddingBottom:theme.height*0.01}}
 					customView = {
-						<View style = {{ padding: theme.width * 0.025 }}>
+						<View style = {{ height: theme.height * 0.40, padding: theme.width * 0.025 }}>
 							{
 								!this.state.showLoading &&
 								<View>
@@ -698,8 +698,11 @@ export default class ProductScreen extends React.Component {
 													}
 
 											</View>
-											<Text style = {{textAlign: 'justify',flexWrap: 'wrap',color:'#8f8f8f',fontWeight:'700',lineHeight:20,paddingBottom:theme.height * 0.01}}>{'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável')+
-															' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }</Text>
+											<View style={{flexDirection:'row'}}>
+												<Text style={styles.buyConfirmText}>
+													{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
+												</Text>
+											</View>
 										</View>
 
 								</View>
@@ -742,58 +745,58 @@ export default class ProductScreen extends React.Component {
 
 
 const styles = StyleSheet.create({
-	logoContainer : {
-		width:theme.width * 0.8,
-		height:theme.height * 0.1,
-		alignSelf:'center',
-		justifyContent:'center',
+	logoContainer: {
+		width: theme.width * 0.8,
+		height: theme.height * 0.1,
+		alignSelf: 'center',
+		justifyContent: 'center',
 	},
-	productName : {
-		fontWeight:'bold',
-		fontSize:25,
-		alignSelf:'center',
-		textAlign:'justify'
+	productName: {
+		fontWeight: 'bold',
+		fontSize: 25,
+		alignSelf: 'center',
+		textAlign: 'justify'
 	},
 
-	payContainer : {
-		width:theme.width * 0.9,
-		alignSelf:'center',
-		marginTop:theme.height*0.05,
-		marginLeft:theme.width * 0.02
+	payContainer: {
+		width: theme.width * 0.9,
+		alignSelf: 'center',
+		marginTop: theme.height*0.05,
+		marginLeft: theme.width * 0.02
 	},
-	descriptionContainer : {
-		width:theme.width * 0.92,
-		alignSelf:'center',
-		paddingLeft:15,
-		paddingRight:17,
+	descriptionContainer: {
+		width: theme.width * 0.92,
+		alignSelf: 'center',
+		paddingLeft: 15,
+		paddingRight: 17,
 		marginTop: theme.height * 0.03,
-		borderRadius:25,
-		paddingBottom:20,
-		paddingTop:20,
-		elevation:3,
+		borderRadius: 25,
+		paddingBottom: 20,
+		paddingTop: 20,
+		elevation: 3,
 		backgroundColor: 'white',
 	},
-	description : {
-		flex:1,
-		fontSize:15,
+	description: {
+		flex: 1,
+		fontSize: 15,
 		textAlign: 'justify',
 		lineHeight: 25,
 	},
-	descriptionWord : {
-		fontWeight:'bold',
-		fontSize:16,
-		marginBottom:theme.height * 0.004
+	descriptionWord: {
+		fontWeight: 'bold',
+		fontSize: 16,
+		marginBottom: theme.height * 0.004
 	},
-	productDetails : {
-		borderBottomColor:'#8f8f8f',
-		borderBottomWidth:0.8,
+	productDetails: {
+		borderBottomColor: '#8f8f8f',
+		borderBottomWidth: 0.8,
 		width: theme.width * 0.8,
-		paddingRight:10,
-		paddingLeft:10,
-		paddingBottom:5,
-		paddingTop:5
+		paddingRight: 10,
+		paddingLeft: 10,
+		paddingBottom: 5,
+		paddingTop: 5
 	},
-	footer : {
+	footer: {
 		width: theme.width,
 		alignSelf:'center',
 		marginBottom:theme.height*0.04,
@@ -801,5 +804,12 @@ const styles = StyleSheet.create({
 		paddingLeft:theme.width*0.06,
 		paddingRight:theme.width*0.06,
 		paddingTop:theme.height*0.03
+	},
+	buyConfirmText: {
+		flex: 1,
+		flexWrap: 'wrap',
+		color:'#8f8f8f',
+		fontWeight:'700',
+		paddingBottom: theme.height * 0.01
 	}
 });
