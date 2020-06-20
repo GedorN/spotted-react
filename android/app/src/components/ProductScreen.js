@@ -839,7 +839,7 @@ const styles = StyleSheet.create({
 	},
 	modalButtons: {
 		flexDirection: 'row',
-		marginTop: theme.height * 0.04,
+		marginTop: theme.height * 0.07,
 		justifyContent: 'center',
 		marginBottom:theme.height * 0.01 
 	},
