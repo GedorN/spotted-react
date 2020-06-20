@@ -192,6 +192,8 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginTop: 22,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		paddingTop: theme.height * 0.1,
+		marginTop: -(theme.height * 0.1),
 	},
 	textTitle: {
 		fontSize: 16,

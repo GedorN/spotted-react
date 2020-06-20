@@ -97,7 +97,7 @@ export default class Store extends React.Component {
 
 	render() {
 		return (
-			<ScrollView style={styles.container}>
+			<ScrollView style={styles.container} showsVerticalScrollIndicator = {false}>
 				<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
 					<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
 						<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>

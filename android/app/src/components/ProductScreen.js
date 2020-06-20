@@ -417,6 +417,7 @@ export default class ProductScreen extends React.Component {
 					<View>
 						<View>
 			                <FlatList
+								showsVerticalScrollIndicator={false}
 								ListHeaderComponent = {() =>
 									<View>
 										<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
