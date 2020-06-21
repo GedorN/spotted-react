@@ -420,156 +420,145 @@ export default class ProductScreen extends React.Component {
 								showsVerticalScrollIndicator={false}
 								ListHeaderComponent = {() =>
 									<View>
-										<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
-											<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+										<TouchableOpacity onPress={() => { this.props.navigation.goBack() } }>
+											<View style={{ flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10 }}>
 												<Image
-													style={{width: 12, height: 12, marginTop:4}}
+													style={{ width: 12, height: 12, marginTop:4 }}
 													source={require('../../../../assets/images/arrow-left.png')}
 												/>
-												<Text style={{marginLeft: 5}}>
+												<Text style={{ marginLeft: 5 }}>
 													voltar
 												</Text>
 											</View>
 										</TouchableOpacity>
-										<View style = {styles.logoContainer}>
+										<View style = { styles.logoContainer }>
 											<Image
-												style = {{resizeMode:'contain',flex:1,width:null,height:null}}
-												source={{ uri:this.state.product? this.state.product.logo : null}}>
+												style = {{ resizeMode: 'contain', flex: 1, width: null, height: null }}
+												source={{ uri:this.state.product ? this.state.product.logo : null }}>
 											</Image>
 										</View>
-										<View style = {{marginTop:theme.height*0.03,marginBottom:theme.height*0.04,width:theme.width*0.9,alignSelf:'center'}}>
-											<Text style = {styles.productName} >
+										<View style = {{ marginTop: theme.height*0.03, marginBottom: theme.height*0.04, width: theme.width*0.9, alignSelf: 'center' }}>
+											<Text style = { styles.productName } >
 												{this.state.product? this.state.product.name : null}
 											</Text>
 										</View>
-										<View style = {{alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.45}}>
+										<View style = {{ alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.45 }}>
 											<Carousel
-												activePageIndicatorStyle = {{backgroundColor:this.state.product ? this.state.product.colors[0] : 'black'}}
+												activePageIndicatorStyle = {{ backgroundColor:this.state.product ? this.state.product.colors[0] : 'black' }}
 												autoplay
-												autoplayTimeout={5000}
+												autoplayTimeout={ 5000 }
 												loop
-												index={0}
-												pageSize={theme.width * 0.8}
+												index={ 0 }
+												pageSize={ theme.width * 0.8 }
 											>
-												{this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null}
+												{ this.state.productImages? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null }
 											</Carousel>
 										</View>
-										<View style = {styles.payContainer}>
-												<Text style = {{fontWeight:'bold',fontSize:20}}>
-														{'Valor: R$ ' + (this.state.discountApplied ? this.state.discountPicPayPrice : this.state.PicPayPrice) }
-												</Text>
-
-											{/* <View style = {{flexDirection:'row'}}>
-												<Text style = {{fontWeight:'bold',fontSize:17}}>
-													{'R$ ' + (this.state.product ? this.state.product.price : '') + ' - Pago para '}
-												</Text>
+										<View style = { styles.payContainer }>
+											<Text style = {{ fontWeight: 'bold', fontSize: 20 }}>
+													{ 'Valor: R$ ' + (this.state.discountApplied ? this.state.discountPicPayPrice : this.state.PicPayPrice) }
+											</Text>
+											<View style = {{ flexDirection: 'row', marginTop: 5 }}>
+												<Text style = {{ fontWeight: 'bold', fontSize: 17 }}>{ 'Pago pelo ' }</Text>
 												<Image
-													style = {{width:37,height:29,marginLeft:3}}
-													source = {{uri:this.state.product? this.state.product.logo : ''}}>
-
-												</Image>
-											</View> */}
-											<View style = {{flexDirection:'row',marginTop:5}}>
-												<Text style = {{fontWeight:'bold',fontSize:17}}>
-													{'Pago pelo '}
-												</Text>
-												<Image
-													style = {{width:61,height:20,marginLeft:3,marginTop:5}}
+													style = {{ width: 61, height: 20, marginLeft: 3, marginTop: 5 }}
 													source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
 												</Image>
 											</View>
 										</View>
-										<View style ={{flexDirection : 'row',alignItems:'flex-end',alignSelf:'center', marginTop:theme.height * 0.03,marginBottom:theme.height * 0.02}}>
+										<View style ={ styles.cuponView }>
 											<TextInput
-													placeholder = {this.state.placeholderCoupon}
-													style={{borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40}}
-													onChangeText = {this.receivePromotionalCode.bind(this)}
-													width = {theme.width*0.68}
+													placeholder = { this.state.placeholderCoupon }
+													style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
+													onChangeText = { this.receivePromotionalCode.bind(this) }
+													width = { theme.width*0.68 } 
 												/>
 												<TouchableOpacity
-													disabled={this.state.settingPromotionalCode}
-													style = {{zIndex : 1}}
-													onPress = {this.setPromotionalCode.bind(this)}
+													disabled={ this.state.settingPromotionalCode }
+													style = {{ zIndex: 1 }}
+													onPress = { this.setPromotionalCode.bind(this) }
 												>
-													<View style = {{zIndex:1,backgroundColor:this.state.product?this.state.product.colors[0]: null,padding:theme.width * 0.03,borderRadius:7,marginLeft:theme.width*0.02}}>
+													<View style = {{ ...styles.cuponInput, backgroundColor:this.state.product ? this.state.product.colors[0] : null }}>
 														{
 															this.state.settingPromotionalCode ?
-															<ActivityIndicator size="small" color={(this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')} /> :
-															<Text style = {{color:(this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black'), fontWeight:'bold'}}>{'OK'}</Text>
+															<ActivityIndicator size="small" color = {( this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black' )} /> :
+															<Text style = {{ color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black'), fontWeight: 'bold' }}>{ 'OK' }</Text>
 														}
 													</View>
 												</TouchableOpacity>
 										</View>
 										{
 											this.state.warning != null &&
-											<View style = {{width:theme.width * 0.78,alignSelf:'center'/* ,borderColor:'black',borderWidth:1 */}}>
-												<Text style = {{fontWeight:'bold'}}>{this.state.warning}</Text>
+											<View style = {{ width: theme.width * 0.78, alignSelf: 'center' }}>
+												<Text style = {{ fontWeight: 'bold' }}> { this.state.warning } </Text>
 											</View>
 										}
-										<View style = {styles.descriptionContainer}>
-											<Text style = {styles.descriptionWord}>{'Descrição:'}</Text>
-											<Text style = {styles.description}> {this.state.product ? this.state.product.description : null} </Text>
+										<View style = { styles.descriptionContainer }>
+											<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
+											<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
 										</View>
 										{
 											this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-											<View style = {{marginTop:theme.height * 0.04, padding:20, backgroundColor:this.state.product ? this.state.product.colors[0] : null,elevation: 8, }}>
-												<Text style = {{alignSelf:'center', fontSize: 24 , fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black')}}>{'Opções de Personalização'}</Text>
+											<View style = {{ ...styles.customizationView, backgroundColor: this.state.product ? this.state.product.colors[0] : null }}>
+												<Text style = {{ ...styles.customizationTitle, color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black') }}>{'Opções de Personalização'}</Text>
 											</View>
 										}
 									</View>
 
 								}
-			                    data = {this.state.product ? this.state.product.customization : null}
-								refreshControl={
+			                    data = { this.state.product ? this.state.product.customization : null } 
+								refreshControl = {
 									<RefreshControl
-										refreshing={this.state.isRefreshing}
-										onRefresh={this.onRefresh.bind(this)}
+										refreshing = { this.state.isRefreshing }
+										onRefresh = { this.onRefresh.bind(this) }
 									/>
 								}
 								renderItem={ ({item}) =>
 
-									<View style = {{alignSelf:'center'}} >
+									<View style = {{ alignSelf: 'center' }} >
 										{
 											item.field === 'select' &&
-											<CustomSelect selected={this.setSelectValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+											<CustomSelect selected = { this.setSelectValue.bind(this) } colors = { this.state.product.colors } custom = { item }/>
 										}
 										{
 											item.field === 'radio' &&
-											<CustomRadio selected={this.setRadioValue.bind(this)} colors = {this.state.product.colors} custom = {item}/>
+											<CustomRadio selected = { this.setRadioValue.bind(this) } colors = { this.state.product.colors } custom = { item }/>
 										}
 										{
 											item.field === 'textArea' &&
-											<CustomizationTextArea  customizationCallback={this.setTextValue.bind(this)}  item = {item}/>
+											<CustomizationTextArea  customizationCallback = { this.setTextValue.bind(this) }  item = { item }/>
 										}
 
 									</View>
 								}
-								numColumns={1}
-			                    keyExtractor={item => item.label}
-								onEndReachedThreshold={0.3}
-								ListFooterComponent={ () =>
+								numColumns = { 1 }
+			                    keyExtractor = { item => item.label }
+								onEndReachedThreshold = { 0.3 }
+								ListFooterComponent = { () =>
 									<View>
 										{
 											this.state.product &&
-											<View style = {{marginTop: theme.height*0.04}}>
-											{
-												this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-												<View style = {{borderColor : '#8f8f8f', borderBottomWidth:1}}>
-													<Text style = {{alignSelf:'center', color:'#8f8f8f', padding:4,paddingLeft:theme.width * 0.04,paddingRight:theme.width * 0.04,textAlign:'center'}}>{'Após preencher as opções confirme a compra:'}</Text>
-												</View>
+											<View style = {{ marginTop: theme.height*0.04 }}>
+												{
+													this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
+													<View style = {{ borderColor: '#8f8f8f', borderBottomWidth: 1 }}>
+														<Text style = { styles.footerText }> { 'Após preencher as opções confirme a compra:' } </Text>
+													</View>
 
-											}
-												<View style = {styles.footer}>
+												}
+												<View style = { styles.footer }>
 													{
 														this.state.errorMissingValues &&
-														<Text style={{color: 'red', marginBottom: 4}}> *Obrigatório o preenchimento de todos os campos </Text>
+														<Text style={{ color: 'red', marginBottom: 4 }}> *Obrigatório o preenchimento de todos os campos </Text>
 													}
 													<FatBottomedButton
 														disabled={this.state.product.stock <= 0}
 														text = {'Comprar'}
-														backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-														color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
-														onTap = {this.buttonEnabled.bind(this)}
+														backgroundColor = { this.state.product ? this.state.product.colors[0] : null }
+														color = { this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }
+														borderWidth = { 0.1 } 
+														height = { 54 }
+														onTap = { this.buttonEnabled.bind(this) }
 													/>
 												</View>
 											</View>
@@ -580,152 +569,128 @@ export default class ProductScreen extends React.Component {
 			                />
 		                </View>
 					</View>
-						:
+					:
 					//	caso não exista
-						!this.state.initialLoad &&
-						<View>
-							<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
-								<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
-									<Image
-										style={{width: 12, height: 12, marginTop:4}}
-										source={require('../../../../assets/images/arrow-left.png')}
-									/>
-									<Text style={{marginLeft: 5}}>
-										voltar
-									</Text>
-								</View>
-							</TouchableOpacity>
-							<Text style={{padding: 5, marginTop: 10, fontWeight: 'bold'}}>
-								Está produto não está mais diponível (´;︵;`)
-							</Text>
-						</View>
+					!this.state.initialLoad &&
+					<View>
+						<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
+							<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+								<Image
+									style={{width: 12, height: 12, marginTop:4}}
+									source={require('../../../../assets/images/arrow-left.png')}
+								/>
+								<Text style={{marginLeft: 5}}>
+									voltar
+								</Text>
+							</View>
+						</TouchableOpacity>
+						<Text style={{padding: 5, marginTop: 10, fontWeight: 'bold'}}>
+							Está produto não está mais diponível (´;︵;`)
+						</Text>
+					</View>
 				}
 				<Modal
 		            hardwareAccelerated={true}
 		            animationType='fade'
 		            transparent={true}
 		            visible={this.state.showAlert}
-		            onRequestClose={() => {
-			            this.disableModal();
-		            }}
+		            onRequestClose={() => { this.disableModal() }}
 		            style={{ height: 50, width: theme.width * 0.5 }}
 	            >
 		            <View style={styles.centeredView}>
-
 			            <View style={styles.modalContainer}>
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.product?this.state.product.colors[0]: null}}>
 								<TouchableOpacity onPress={() => {this.disableModal()}}>
-								<View style = {{width:theme.width * 0.15,height:theme.height*0.05,alignSelf:'flex-end'}}>
-									<Image
-										style = {{width: 15, height: 15,opacity:0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black')}}
-										source = {require('../../../../assets/images/times-solid.png')}
-									/>
-								</View>
+									<View style = {{width:theme.width * 0.15,height:theme.height*0.05,alignSelf:'flex-end'}}>
+										<Image
+											style = {{width: 15, height: 15,opacity:0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black')}}
+											source = {require('../../../../assets/images/times-solid.png')}
+										/>
+									</View>
 								</TouchableOpacity>
 								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black')}}>{'Confirmação da compra'}</Text>
 							</View>
-							<View style = {{ height: theme.height * 0.57, marginTop: theme.height * 0.1 }}>
-							{
-								!this.state.showLoading &&
-								<ScrollView style = {{height: theme.height * 0.5, marginTop:0}} showsVerticalScrollIndicator = {false}>
-								<View>
-										<Text style = {{fontWeight:'bold',fontSize:15,textAlign: 'justify', lineHeight: 25,marginLeft:theme.width * 0.007}}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
-										{this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-
+							<View style = {{ height: theme.height * 0.55, marginTop: theme.height * 0.1 }}>
+								{
+									!this.state.showLoading &&
+									<ScrollView style = {{height: theme.height * 0.5, marginTop:0}} showsVerticalScrollIndicator = {false}>
+										<View>
+											<Text style = {{fontWeight:'bold',fontSize:15,textAlign: 'justify', lineHeight: 25,marginLeft:theme.width * 0.007}}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
+											{
+												this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
 												<Text style = {{ flexDirection:'row',marginTop:theme.height * 0.01,textAlign:'justify'}}>
 												{
 													this.state.product.customization.map(i =>
-												<Text key = {i.label} style = {{fontWeight:'bold',color:'#8f8f8f',fontSize:15,textAlign: 'justify', lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
-													{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
-												</Text>
-												)}
-												</Text>
-
-										}
-
-									{
-										this.state.warning != null &&
-										<Text style = {{fontWeight:'bold',marginTop:theme.height * 0.02,marginLeft:theme.width * 0.01,color:this.state.product? this.state.product.colors[0] : 'black'}}>{this.state.warning}</Text>
-									}
-									<Text style = {{fontWeight:'bold',marginLeft:theme.width * 0.01,marginBottom:theme.width * 0.02,marginTop:theme.width * 0.04,fontSize:15}}>{'Informações:'}</Text>
-								
-										<View
-											style = {{
-												borderColor:'#21c25e',
-												borderWidth:4,
-												paddingLeft:15,
-												paddingRight:15,
-												paddingTop:15,
-												paddingBottom:10,
-												marginTop:15,
-												borderRadius:25,
-
-											}}
-										>
-											<View style = {{ flexDirection:'column', flexWrap: 'wrap' }}>
-												<View style={{ flexDirection: 'row'}}>
-													<Text
-														style = {{fontWeight:'bold',fontSize:15,marginBottom:7}}
-													>
-														{'R$ ' +(this.state.discountPicPayPrice != null ? this.state.discountPicPayPrice : this.state.PicPayPrice) + ' - Pago pelo '}
+													<Text key = { i.label } style = {{ ...styles.detailsText, lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
+														{ i.value ? (' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')) : '' }
 													</Text>
-													<Image
-														style = {{width:61,height:20,marginLeft:3,marginTop:0}}
-														source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
-													</Image>
-												</View>
-												{
-													this.state.discountApplied &&
-													<View>
-														<Text style ={{fontWeight:'bold', marginBottom:theme.height*0.01}}>{'Valor com desconto'}</Text>
-													</View>
-													
+													)
 												}
-
-											</View>
-											<View style={{flexDirection:'row'}}>
-												<Text style={styles.buyConfirmText}>
-													{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
 												</Text>
+											}
+											{
+												this.state.warning != null &&
+												<Text style = {{fontWeight:'bold',marginTop:theme.height * 0.02,marginLeft:theme.width * 0.01,color:this.state.product? this.state.product.colors[0] : 'black'}}>{this.state.warning}</Text>
+											}
+											<Text style = { styles.information }>{ 'Informações:' }</Text>
+											<View style = { styles.picPayView }>
+												<View style = {{ flexDirection: 'column', flexWrap: 'wrap' }}>
+													<View style ={{ flexDirection: 'row' }}>
+														<Text style = {{ fontWeight:'bold',fontSize:15,marginBottom:7 }} >
+															{'R$ ' +(this.state.discountPicPayPrice != null ? this.state.discountPicPayPrice : this.state.PicPayPrice) + ' - Pago pelo '}
+														</Text>
+														<Image
+															style = {{width:61,height:20,marginLeft:3,marginTop:0}}
+															source = {{uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc'}}>
+														</Image>
+													</View>
+													{
+														this.state.discountApplied &&
+														<View>
+															<Text style ={{fontWeight:'bold', marginBottom:theme.height*0.01}}>{'Valor com desconto'}</Text>
+														</View>
+														
+													}
+												</View>
+												<View style = {{ flexDirection: 'row' }}>
+													<Text style = { styles.buyConfirmText }>
+														{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+ (this.state.product? this.state.product.sid : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
+													</Text>
+												</View>
+											</View>
+											<View style = { styles.modalButtons }>
+												<TouchableOpacity onPress = { this.disableModal.bind(this) }>
+													<View style = { styles.cancelButton }>
+														<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing: 0.2 }}>{ 'Cancelar' }</Text>
+													</View>
+												</TouchableOpacity>
+												<TouchableOpacity onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
+													<View style = {{ ...styles.confirmButton, backgroundColor: this.state.product ? this.state.product.colors[0] : 'green' }}>
+														<Text style = {{ fontWeight: 'bold', letterSpacing: 0.2, color: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0] : 'black') }}>{ 'Confirmar' }</Text>
+													</View>
+												</TouchableOpacity>
 											</View>
 										</View>
-										<View style = { styles.modalButtons }>
-											<TouchableOpacity onPress = { this.disableModal.bind(this) }>
-												<View style = { styles.cancelButton }>
-														<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing:0.2 }}>{ 'Cancelar' }</Text>
-												</View>
-											</TouchableOpacity>
-											<TouchableOpacity onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
-												<View style = {{...styles.confirmButton, backgroundColor: this.state.product? this.state.product.colors[0] : 'green' }}>
-														<Text style = {{ fontWeight: 'bold', letterSpacing:0.2, color:heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black') }}>{ 'Confirmar' }</Text>
-												</View>
-											</TouchableOpacity>
+									</ScrollView>
+								}
+								{
+									this.state.showLoading &&
+									<View style = {{ marginTop: theme.height*0.05 }}>
+										<ActivityIndicator size = "large" color = { this.state.product ? this.state.product.colors[0] : theme.primary } />
+										<View style={{ flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap', justifyContent: 'center', marginTop: theme.height * 0.05 }}>
+											<Text style={{ fontStyle: 'italic', fontWeight: 'bold', fontSize: 25, color: '#8f8f8f'}}>
+												HOOOOOOLD!
+											</Text>
+											<Text style={{ fontWeight: 'bold', fontSize: 25, textAlign: 'center', marginTop: theme.height * 0.05, lineHeight: 50 }}>
+												Estamos preparando o seu pedido ;)
+											</Text>
 										</View>
-
-								</View>
-								</ScrollView>
-							}
-							{
-								this.state.showLoading &&
-								<View style = {{marginTop: theme.height * 0.05}}>
-									<ActivityIndicator size="large" color={this.state.product? this.state.product.colors[0] : theme.primary} />
-									<View style={{flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap', justifyContent: 'center',marginTop:theme.height * 0.05 }}>
-										<Text style={{fontStyle: 'italic', fontWeight: 'bold', fontSize: 25, color: '#8f8f8f'}}>
-											HOOOOOOLD!
-										</Text>
-										<Text style={{fontWeight: 'bold', fontSize: 25, textAlign: 'center', marginTop: theme.height * 0.05, lineHeight: 50 }}>
-											Estamos preparando o seu pedido ;)
-										</Text>
 									</View>
-								</View>
-							}
-						</View>
+								}
+							</View>
 			            </View>
 		            </View>
 	            </Modal>
-
-
-			
 				<FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
 			</KeyboardAvoidingView>
 		)
@@ -794,6 +759,14 @@ const styles = StyleSheet.create({
 		paddingRight:theme.width*0.06,
 		paddingTop:theme.height*0.03
 	},
+	footerText: {
+		alignSelf: 'center',
+		color: '#8f8f8f',
+		padding: 4,
+		paddingLeft:theme.width * 0.04,
+		paddingRight:theme.width * 0.04,
+		textAlign:'center'
+	},
 	buyConfirmText: {
 		flex: 1,
 		flexWrap: 'wrap',
@@ -805,6 +778,39 @@ const styles = StyleSheet.create({
 		lineHeight: 25,
 
 	},
+	customizationView: {
+		marginTop: theme.height * 0.04,
+		padding: 20, 
+		elevation: 8, 
+	},
+	customizationTitle: {
+		alignSelf:'center',
+		fontSize: 24 ,
+		fontWeight: 'bold',
+	},
+	picPayView: {
+		borderColor:'#21c25e',
+		borderWidth:4,
+		paddingLeft:15,
+		paddingRight:15,
+		paddingTop:15,
+		paddingBottom:10,
+		marginTop:15,
+		borderRadius:25,
+	},	
+	cuponView: {
+		flexDirection: 'row',
+		alignItems: 'flex-end',
+		alignSelf: 'center', 
+		marginTop: theme.height * 0.03,
+		marginBottom:theme.height * 0.02
+	},
+	cuponInput: {
+		zIndex: 1,
+		padding: theme.width * 0.03,
+		borderRadius: 7,
+		marginLeft: theme.width*0.02
+	},
 	modalHeader : {
 		flexDirection: 'column',
 		width: theme.width * 0.9,
@@ -815,7 +821,7 @@ const styles = StyleSheet.create({
 	},
 	modalContainer: {
 		width: theme.width * 0.9,
-		height: theme.height * 0.72, 
+		height: theme.height * 0.69, 
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 25,
@@ -837,20 +843,34 @@ const styles = StyleSheet.create({
 		paddingTop:theme.height * 0.1,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 	},
+	detailsText: {
+		fontWeight:'bold', 
+		color:'#8f8f8f', 
+		fontSize:15, 
+		textAlign: 'justify', 
+	},
+	information: {
+		fontWeight: 'bold',
+		marginLeft: theme.width * 0.01,
+		marginBottom: theme.width * 0.02,
+		marginTop: theme.width * 0.04,
+		fontSize: 15
+	},
 	modalButtons: {
 		flexDirection: 'row',
-		marginTop: theme.height * 0.07,
-		justifyContent: 'center',
-		marginBottom:theme.height * 0.01 
+		marginTop: theme.height * 0.04,
+		justifyContent: 'space-between',
+		marginBottom:theme.height * 0.02,
+		width: theme.width * 0.53,
+		alignSelf: 'center',
 	},
 	cancelButton: {
 		paddingTop: 14, 
 		paddingBottom: 14,
 		width:theme.width * 0.25,
 		elevation: 2,
-		backgroundColor: '#8f8f8f',
+		backgroundColor: '#bdbcbb',
 		borderRadius: 12,
-		marginRight: theme.width * 0.02,
 	    flexDirection:'row',
 		justifyContent: 'center'
 	},
@@ -862,6 +882,7 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		flexDirection: 'row',
 		justifyContent: 'center'
-	}
+	},
+
 	
 });
