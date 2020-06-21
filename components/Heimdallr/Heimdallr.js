@@ -275,16 +275,19 @@ function HeimdallrLib() {
 
 	this.getProduct = function (iid) {
 		let product = null;
-		return new Promise ((resolve) => {
+		return new Promise ((resolve, reject) => {
 			firebase.firestore()
 			.collection('products')
-			.where('iid', '==', iid).get().then((result) => {
-				product =  result._docs[0]._data;
-				resolve();
-			})
-		}).then(function(resolve){
-			return product;
-		})
+			.where('iid', '==', iid).get().then(
+				(result) => {
+					if (!result._docs[0]) {
+						reject()
+					} else {
+						product =  result._docs[0]._data;
+						resolve(product);
+					}
+				})
+		});
 	}
 
 
@@ -324,6 +327,72 @@ function HeimdallrLib() {
 			)
 		}).then(function (res) {
 			return docs.data;
+		});
+	}
+
+	this.getCoupons = (store_code) => {
+		let docs = null;
+		return new Promise((resolve) => {
+				const store = firebase.firestore()
+				.collection('coupons').doc(store_code)
+				.get().then((result) => {
+					docs = result.data() ? result.data().coupons : null;
+					resolve();
+				}).catch((e) => {
+					console.warn("erro",e);
+				});
+		}).then(function (resolve) {
+			 return docs;
+		})
+	}
+
+	this.StoreCoupons = function (saveCoupons,store){
+		return new Promise((resolve, reject) => {
+			try {
+				firebase.firestore().collection('coupons').doc(store).set({
+					coupons:saveCoupons
+				}, {merge : true});
+			 } catch (e) {
+				 console.warn('peguei: ', e);
+				 reject();
+			 }
+			 resolve();
+		})
+
+	}
+
+	this.saveUserCoupon = function (userCoupons){
+
+		return new Promise((resolve, reject) => {
+			try {
+				firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+					(res) => {
+						firebase.firestore().collection('user').doc(res.docs[0]._ref.path.split('/')[1]).set({
+							coupons:userCoupons
+						}, {merge : true});
+					}
+				)
+			 } catch (e) {
+				 console.warn('peguei: ', e);
+				 reject();
+			 }
+			 resolve();
+		})
+	}
+
+
+	this.getUserCoupons = function (){
+
+		let docs = null;
+		return new Promise((resolve) => {
+				const store = firebase.firestore()
+				.collection('user').where('uid', '==', this.user_id)
+				.get().then((result) => {
+					docs = result && result.docs[0] && result.docs[0].data() ? result.docs[0].data().coupons : null;
+					resolve(docs);
+				}).catch((e) => {
+					console.warn("erro",e);
+				});
 		});
 	}
 
@@ -674,12 +743,20 @@ function HeimdallrLib() {
 		    .collection('user')
 		    .where('uid', '==', userId).get().then((result) => {
 		    	console.log('veio o user: ', result);
-		    	user = result._docs[0]._data;
+					if(result._docs.length > 0){
+						user = result._docs[0]._data;
+					}
+					else{
+						user = null;
+					}
 		    	resolve();
 	    })
 	  }).then(function (resolve) {
 		  return user;
-	  })
+	  }).catch((error) => {
+			console.log("erro usuário",error);
+		
+		});
   }
 
   this.getUserColletion = function (limit, uid) {

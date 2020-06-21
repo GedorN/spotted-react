@@ -135,8 +135,8 @@ android {
         applicationId "com.triade.spotted"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.0"
+        versionCode 3145734
+        versionName "2.2"
 
         // Needed to support API<21, though there is a small chance proguard shrinks things sufficiently
         multiDexEnabled true
@@ -161,7 +161,7 @@ android {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
+            universalApk true  // If true, also generate a universal APK
             include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }

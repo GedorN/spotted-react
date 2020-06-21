@@ -4,7 +4,10 @@ import {
 	StyleSheet,
 	Text,
 	FlatList,
-	Image, TouchableOpacity,
+	Image,
+	TouchableOpacity,
+	RefreshControl,
+	ScrollView,
 } from "react-native";
 
 import ImNotTheOnlyChip from "./layout/ImNotTheOnlyChip";
@@ -25,7 +28,21 @@ export default class Store extends React.Component {
 			filteredProducts: [],
 			logo: null,
 			banner: null,
+			isRefreshing: false,
 		}
+	}
+
+	onRefresh = () => {
+		this.setState({ isRefreshing: true });
+		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
+			(resolve) => {
+				if (resolve.docs.length > 0) {
+					let mappedDocs =  resolve.docs.map((d) => d._data);
+					mappedDocs = mappedDocs.filter((i) => i.stock > 0);
+					this.setState({ products: mappedDocs, filteredProducts: mappedDocs, isRefreshing: false });
+				}
+			}
+		)
 	}
 
 	componentDidMount(): void {
@@ -80,7 +97,45 @@ export default class Store extends React.Component {
 
 	render() {
 		return (
-			<View style={styles.container}>
+			<ScrollView style={styles.container} showsVerticalScrollIndicator = {false}>
+				<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
+					<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
+						<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+							<Image
+								style={{width: 12, height: 12, marginTop:4}}
+								source={require('../../../../assets/images/arrow-left.png')}
+							/>
+							<Text style={{marginLeft: 5}}>
+								voltar
+							</Text>
+						</View>
+					</TouchableOpacity>
+					<SevenBannerArmy url={this.state.banner}/>
+					<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
+						{
+							this.state.categories.map(i =>
+								<View style={{margin: 5}} key={i.name}>
+									<ImNotTheOnlyChip
+										selected={this.state.filteredCategories}
+										text={i.name}
+										id={i.key}
+										colors={this.state.colors ? this.state.colors : null}
+										cbFunction={this.chipPressed.bind(this)}
+									/>
+								</View>
+							)
+						}
+					</View>
+					<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
+						<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.015}}>{'Produtos '}</Text>
+						<View style = {{width:theme.width * 0.2, height : theme.height * 0.07, marginBottom:theme.height * 0.02}}>
+							<Image
+								source = {{ uri: this.state.logo }}
+								style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
+							</Image>
+						</View>
+					</View>
+				</View>
 				<FlatList
 					numColumns={2}
 					showsVerticalScrollIndicator={false}
@@ -88,6 +143,12 @@ export default class Store extends React.Component {
 					onScrollBeginDrag={() => {scrolling = false}}
 					keyExtractor={item => item.name}
 					data={this.state.filteredProducts}
+					refreshControl={
+						<RefreshControl
+							refreshing={this.state.isRefreshing}
+							onRefresh={this.onRefresh.bind(this)}
+						/>
+					}
 					renderItem={({item}) =>
 					<View style = {{width:theme.width*0.49,marginBottom:theme.width*0.07}}>
 						<LikeAPrayerductViewer
@@ -98,48 +159,8 @@ export default class Store extends React.Component {
 						/>
 					</View>
 					}
-					ListHeaderComponent={({item}) =>
-						<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
-							<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
-								<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
-									<Image
-										style={{width: 12, height: 12, marginTop:4}}
-										source={require('../../../../assets/images/arrow-left.png')}
-									/>
-									<Text style={{marginLeft: 5}}>
-										voltar
-									</Text>
-								</View>
-							</TouchableOpacity>
-							<SevenBannerArmy url={this.state.banner}/>
-							<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
-								{
-									this.state.categories.map(i =>
-										<View style={{margin: 5}} key={i.name}>
-											<ImNotTheOnlyChip
-												selected={this.state.filteredCategories}
-												text={i.name}
-												id={i.key}
-												colors={this.state.colors ? this.state.colors : null}
-												cbFunction={this.chipPressed.bind(this)}
-											/>
-										</View>
-									)
-								}
-							</View>
-							<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
-								<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.015}}>{'Produtos '}</Text>
-								<View style = {{width:theme.width * 0.2, height : theme.height * 0.07, marginBottom:theme.height * 0.02}}>
-									<Image
-										source = {{ uri: this.state.logo }}
-										style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
-									</Image>
-								</View>
-							</View>
-						</View>
-					}
 				/>
-			</View>
+			</ScrollView>
 		);
 	}
 }

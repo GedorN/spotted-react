@@ -9,6 +9,7 @@ import {
 	Modal,
 	Clipboard,
 	Linking,
+	ScrollView
 } from 'react-native'
 
 import Ripple from 'react-native-material-ripple';
@@ -43,7 +44,6 @@ export default class LikeARollingTicketViewer extends React.Component {
 	}
 
 	goToProductScreen = () => {
-		console.warn('IID',this.props.ticket.iid);
 		if(this.state.showModal === true){
 			this.setState({showModal:false})
 		}
@@ -158,52 +158,59 @@ export default class LikeARollingTicketViewer extends React.Component {
 								</TouchableOpacity>
 								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.props.ticket.colors[0])}}>{'Detalhes do pedido'}</Text>
 							</View>
-							<View style = {{marginTop:theme.height*0.08}}>
-								<Text style = {{fontWeight:'bold',fontSize:15,marginBottom:4}}>
-								{'Produto : ' + this.props.ticket.product_name }</Text>
-								<Text style = {{flexDirection:'row',textAlign: 'justify' ,marginBottom:10}}>
-								{
-									this.props.ticket.description.map(i =>
-										<Text key = {i.label} style = {styles.modalProduct}>
-										{i.value?(' ' + i.label + ' - ' + i.value + (this.props.ticket.description.indexOf(i) === (this.props.ticket.description.length - 1) ? '.' : ',')):''}
-										</Text>
-										)
-								}
-								</Text>
-								<Text style = {styles.modalLetter}>{'Data: ' +this.state.ticketDate }</Text>
-								<Text style = {styles.modalLetter}>
-								{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' +this.props.ticket.product_price }</Text>
-								<TouchableOpacity onPress={this.copyText.bind(this)}>
-									<View style={{flexDirection: 'row', alignItems: 'flex-start', alignContent: 'center',marginTop:theme.height * 0.01}}>
-										<Image
-											style={{width: 18, height: 20, tintColor: '#8f8f8f'}}
-											source={require('../../../../../assets/images/copy-regular.png')}
-										/>
-										<Text style = {{fontSize:12, color:'#8f8f8f', marginLeft: 4}}>{this.props.ticket.referenceId}</Text>
+							<View>
+								<ScrollView style = {{height: theme.height * 0.6, marginTop:theme.height * 0.08}}
+									showsVerticalScrollIndicator = {false}>
+									<View style = {{marginTop:theme.height*0.02}}>
+										<Text style = {{fontWeight:'bold',fontSize:15,marginBottom:4}}>
+										{'Produto : ' + this.props.ticket.product_name }</Text>
+										{
+											this.props.ticket && this.props.ticket.description && this.props.ticket.description.length > 0 &&
+											<Text style = {{flexDirection:'row',textAlign: 'justify' ,marginBottom:10}}>
+											{
+												this.props.ticket.description.map(i =>
+													<Text key = {i.label} style = {styles.modalProduct}>
+													{i.value?(' ' + i.label + ' - ' + i.value + (this.props.ticket.description.indexOf(i) === (this.props.ticket.description.length - 1) ? '.' : ',')):''}
+													</Text>
+													)
+											}
+											</Text>
+										}
+										<Text style = {styles.modalLetter}>{'Data: ' +this.state.ticketDate }</Text>
+										<Text style = {styles.modalLetter}>
+										{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' +this.props.ticket.product_price }</Text>
+										<TouchableOpacity onPress={this.copyText.bind(this)}>
+											<View style={{flexDirection: 'row', alignItems: 'flex-start', alignContent: 'center',marginTop:theme.height * 0.01}}>
+												<Image
+													style={{width: 18, height: 20, tintColor: '#8f8f8f'}}
+													source={require('../../../../../assets/images/copy-regular.png')}
+												/>
+												<Text style = {{fontSize:12, color:'#8f8f8f', marginLeft: 4}}>{this.props.ticket.referenceId}</Text>
+											</View>
+										</TouchableOpacity>
+										{
+											this.state.copiedText &&
+											<Text style={{fontSize: 12, color: 'green', alignSelf: 'center'}}> copiado</Text>
+										}
+										<Text style = {{...styles.modalStatus,color:this.props.ticket.colors[0]}}>{'Status: ' + this.props.ticket.status}</Text>
 									</View>
-								</TouchableOpacity>
-								{
-									this.state.copiedText &&
-									<Text style={{fontSize: 12, color: 'green', alignSelf: 'center'}}> copiado</Text>
-								}
-								<Text style = {{...styles.modalStatus,color:this.props.ticket.colors[0]}}>{'Status: ' + this.props.ticket.status}</Text>
+									<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
+										<View style = {{width:theme.width*0.5,height:theme.height * 0.3,alignSelf:'center',marginTop:theme.height * 0.02,
+										paddingBottom:theme.height * 0.02}}>
+											<Image
+													style = {styles.modalImage}
+													source ={{uri : this.props.ticket.image }}
+												/>
+										</View>
+									</TouchableOpacity>
+									{
+										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
+										<View >
+											<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
+										</View>
+									}
+								</ScrollView>
 							</View>
-							<TouchableOpacity  onPress = {this.goToProductScreen.bind(this)}>
-								<View style = {{width:theme.width*0.5,height:theme.height * 0.3,alignSelf:'center',marginTop:theme.height * 0.02,
-								paddingBottom:theme.height * 0.02}}>
-									<Image
-											style = {styles.modalImage}
-											source ={{uri : this.props.ticket.image }}
-										/>
-								</View>
-							</TouchableOpacity>
-				            {
-					            this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
-								<View >
-									<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
-								</View>
-				            }
-
 			            </View>
 		            </View>
 	            </Modal>
@@ -306,6 +313,7 @@ const styles = StyleSheet.create({
 	},
 	modalContainer: {
 		width: theme.width * 0.9,
+		height: theme.height * 0.75, 
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 35,
@@ -325,6 +333,8 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginTop: 22,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		paddingTop: theme.height * 0.1,
+		marginTop: -(theme.height * 0.1)
 	},
 	modalLetter: {
 		fontWeight:'bold',

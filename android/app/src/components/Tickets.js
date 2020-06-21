@@ -27,8 +27,6 @@ export default class Tickets extends React.Component {
 		heimdallr.checkTicketsStatus(heimdallr.user_id);
 		heimdallr.getUserTickets().then(
 			(resolve) => {
-
-				console.warn('tick: ', resolve);
 				this.setState({ tickets: resolve });
 			}
 		)
@@ -52,14 +50,16 @@ export default class Tickets extends React.Component {
 				<FlatList
 					ListHeaderComponent = {() =>
 						<View>
-							<TouchableOpacity style={{flexDirection: 'row', marginTop: 7,  paddingLeft: 10}} onPress={() => {this.props.navigation.goBack()}}>
-								<Image
-									style={{width: 12, height: 12, marginTop:4}}
-									source={require('../../../../assets/images/arrow-left.png')}
-								/>
-								<Text style={{marginLeft: 5}}>
-									voltar
-								</Text>
+							<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+								<View style={{flexDirection: 'row', marginTop: 7,  paddingLeft: theme.width * 0.05,width:theme.width * 0.2,height:theme.height * 0.04}}>
+									<Image
+										style={{width: 12, height: 12, marginTop:4}}
+										source={require('../../../../assets/images/arrow-left.png')}
+									/>
+									<Text style={{marginLeft: 5}}>
+										voltar
+									</Text>
+								</View>
 							</TouchableOpacity>
 							<View style = {{width:theme.width * 0.95,alignSelf:'center',paddingLeft:theme.width * 0.04,marginTop:theme.height * 0.01}}>
 								<Text style = {{fontWeight:'bold',color:'#8f8f8f'}}>Acompanhe seus pedidos</Text>

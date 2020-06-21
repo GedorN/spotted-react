@@ -44,8 +44,11 @@ export default class NotificationScreen extends React.Component {
     	this.getData();
     }
 
-    getData = () => {
-    	console.log('fui chamado');
+    getData = (context) => {
+    	if (context) {
+    		context.setState({ numberBadge: null });
+	    }
+        heimdallr.badge = null;
 	    this.setState({ pulling: true });
 	    heimdallr.getUserNotifications( heimdallr.user_id, this.state.pulledNotifications).then(
 		    (resolve) => {
@@ -55,12 +58,7 @@ export default class NotificationScreen extends React.Component {
 		    }
 	    );
 
-	    heimdallr.resetNotifications(heimdallr.user_id).then(
-		    (resolve) => {
-		    	heimdallr.badge = null;
-			    console.log("reset notifications from Notification", resolve);
-		    }
-	    )
+	    heimdallr.resetNotifications(heimdallr.user_id);
     }
 
     onRefresh = () => {
@@ -102,8 +100,8 @@ export default class NotificationScreen extends React.Component {
 		}
 		return <View></View>;
 	}
-    
-    
+
+
 
     render() {
         return (
@@ -146,7 +144,7 @@ const styles = StyleSheet.create({
         marginTop:5,
         borderRadius: 8,
         color: 'black',
-        flexDirection: 'row', 
+        flexDirection: 'row',
         borderBottomWidth: 0.2,
         borderColor: 'rgba(59, 56, 50, 0.2)',
         paddingBottom: 15,
@@ -155,6 +153,6 @@ const styles = StyleSheet.create({
     	width: theme.width * 0.8,
 		backgroundColor: 'red',
 	}
-        
+
 })
 

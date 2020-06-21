@@ -9,8 +9,12 @@ import {
 	TouchableOpacity,
 	FlatList,
 	ActivityIndicator,
-	KeyboardAvoidingView, RefreshControl, Modal,
+	KeyboardAvoidingView,
+	RefreshControl,
+	Modal,
 } from 'react-native';
+
+import { FAB } from 'react-native-paper';
 
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import UserImgProfile from "../../../../components/General/UserImgProfile";
@@ -24,6 +28,7 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
+import CommentaryWriter from "./Inputs/CommentaryWriter";
 
 
 const width = Dimensions.get('screen').width;
@@ -51,6 +56,7 @@ export default class PostDetails extends React.Component {
 			indexImage: 0,
 			creatingComment: false,
 			postId: '',
+			showCommentaryModal: false,
 		};
 	}
 
@@ -111,6 +117,10 @@ export default class PostDetails extends React.Component {
 			userId: this.state.post.data().uid,
 		});
 	}
+
+	_hideModal = () => {
+		this.setState({ showCommentaryModal: false });
+	};
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
@@ -344,7 +354,6 @@ export default class PostDetails extends React.Component {
 
 
 			const params = {};
-			this.postTextInput.clear();
 			const comment = this.state.commentText;
 			this.setState({ commentText: null });
 			params.pid = this.state.post.data().pid;
@@ -388,6 +397,10 @@ export default class PostDetails extends React.Component {
 		this.setState({showAlert : true});
 	}
 
+	_openCommentaryWriter = () => {
+		this.setState({ showCommentaryModal: true });
+	}
+
 
 
 	render() {
@@ -423,7 +436,7 @@ export default class PostDetails extends React.Component {
 				</TouchableOpacity>
 				<View style={styles.colContainer}>
 					<View
-						style={{height: height - 160, width: theme.width * 0.98 }}
+						style={{height: height - 110, width: theme.width * 0.98 }}
 					>
 						<FlatList
 							ListHeaderComponent = {() =>
@@ -461,13 +474,15 @@ export default class PostDetails extends React.Component {
 										</View>
 										<View style={styles.body}>
 											<View style={styles.post}>
-												<Text style={{marginTop:10}}> {this.state.post ? this.state.post.data().text : null} </Text>
-												<View >
+												<View style = {{width:theme.width * 0.77,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'center'}}>
+													<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}> {this.state.post ? this.state.post.data().text : null} </Text>
+												</View>
+												<View style = {{marginLeft:theme.width * 0.01}}>
 													{this.getModalImagesLayout()}
 												</View>
 											</View>
 										</View>
-										<Text style={{color: 'gray', fontSize: 8}}> {this.state.post ? this.state.post.data().date : null} </Text>
+										<Text style={{color: 'gray', fontSize: 8,marginLeft:theme.width * 0.02}}> {this.state.post ? this.state.post.data().date : null} </Text>
 									</View>
 								</View>
 							}
@@ -488,38 +503,18 @@ export default class PostDetails extends React.Component {
 							}}
 							ListFooterComponent={ this.renderFooter.bind(this)}
 						/>
-						{
-							heimdallr.email !== 'spotted@utfpr.com' &&
-							<View style={{height: theme.height * 0.04, flexDirection: 'row', alignItems: 'flex-end'}}>
-								<Text style = {{opacity: 0.5, fontSize: 13, marginLeft: 15}}>{'Para comentar como anônimo clique na máscara.'}</Text>
-							</View>
-						}
 					</View>
 					{
 
 						heimdallr.email !== 'spotted@utfpr.com' &&
-						<View style={styles.commentContainer}>
-							<TextInput
-								style={styles.textInput}
-								capitalize='sentences'
-								placeholder={this.state.anonymousText}
-								multiline
-								onChangeText={text => this.setState({commentText: text})}
-								ref={input => (this.postTextInput = input)}
-							/>
-							<TouchableOpacity onPress={this.getAnonymous.bind(this)}>
-								<Image
-								   style={{width: 44, height: 35, marginLeft: 5, marginBottom:5, opacity: !this.state.anonymousUser ? 0.5 : 1}}
-								   source={require('../../../../assets/images/mask-solid.png')}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity onPress={this.addCommentary.bind(this)}>
-								<Image
-									style={{width: 30, height: 30, marginLeft: 5, marginBottom:5}}
-									source={require('../../../../assets/images/send.png')}
-								/>
-							</TouchableOpacity>
-						</View>
+
+						<FAB
+						style={styles.fab}
+						small
+						icon={require('../../../../assets/images/comment-regular.png')}
+						onPress={this._openCommentaryWriter.bind(this)}
+					  />
+
 					}
 				</View>
 				<RBSheet
@@ -546,6 +541,18 @@ export default class PostDetails extends React.Component {
 						this.setState({ showAlert: false })
 					}}
 				/>
+				<Modal
+					statusBarTranslucent={false}
+					transparent={true}
+					hardwareAccelerated={true}
+					animationType='slide'
+					visible={this.state.showCommentaryModal}
+					onDismiss={this._hideModal}
+					onRequestClose={this._hideModal.bind(this)}
+					contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+				>
+					<CommentaryWriter close={this._hideModal.bind(this)} context={this}/>
+				</Modal>
 			</KeyboardAvoidingView>
 		);
 	}
@@ -556,12 +563,11 @@ const styles = StyleSheet.create({
 	colContainer: {
 		flexDirection: 'column',
 		alignItems: 'flex-start',
-		// padding: 10,
 		borderTopWidth: 0.2,
 		borderColor: 'rgba(59, 56, 50, 0.2)',
 		flex: 1,
 		width:theme.width*0.99,
-		
+
 	},
 	rowContainer: {
 		width: width,
@@ -578,17 +584,10 @@ const styles = StyleSheet.create({
 		alignItems: 'flex-start',
 		height: 30
 	},
-	textInput: {
-		height: 40,
-		borderBottomWidth: 0,
-		width: width * 0.7,
-		marginLeft:10,
-
-		
-	},
 	body: {
 		flexDirection: 'column',
-		marginBottom:40,
+		marginBottom:theme.height * 0.02,
+		width:theme.width * 0.81,
 	},
 	postHeader: {
 		justifyContent: 'space-between',
@@ -599,26 +598,19 @@ const styles = StyleSheet.create({
 		alignContent: 'center',
 		width: width * 0.70,
 	},
-	commentContainer: {
-		position: 'absolute',
-		alignItems: 'flex-end',
-		width: width,
-		bottom: 0,
-		alignSelf: 'flex-end',
-		borderTopWidth: 0.5,
-		borderColor: theme.primary,
-		height: 50,
-		flexDirection: 'row',
-		backgroundColor: 'white',
-		padding: 5,
-		zIndex: 1,
-	},
 	post: {
-		alignSelf: 'flex-start',
-		width: width * 0.7,
+		width: width * 0.8,
 		padding: 2,
-		marginLeft: 12,
 		borderRadius: 8,
 		color: 'black',
+		alignSelf:'flex-end',
+	},
+	fab: {
+		position: 'absolute',
+		backgroundColor: theme.primary,
+		marginTop: theme.height * 0.75,
+		marginLeft: theme.width * 0.80,
+		padding: 5,
+
 	}
 });

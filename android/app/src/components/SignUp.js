@@ -25,7 +25,7 @@ import theme from "../../../../components/General/Theme";
 import ImageResizer from "react-native-image-resizer";
 import { TextInputMask } from 'react-native-masked-text';
 import {NavigationActions, StackActions} from "react-navigation";
-
+var interval = null;
 
 
 export default  class SignUp extends React.Component {
@@ -49,12 +49,14 @@ export default  class SignUp extends React.Component {
 			confirmationFunction: null,
 			codeInput: null,
 			showConfirmCodeModal: false,
+			countdownToReset: 30,
 			inputedWrongCode: false,
 			creatingAccount: false,
 		};
 	}
 
 	async componentDidMount(): void {
+
 		// c.confirm('123456').then(
 		// 	(resolve) => {
 		// 		console.log('ai jesuis: ', resolve);
@@ -106,12 +108,23 @@ export default  class SignUp extends React.Component {
 		if (!fieldsOK) {
 			return ;
 		}
+		clearInterval(interval);
+		interval = setInterval(() => {
+			const time = this.state.countdownToReset;
+			if (time > 0) {
+				this.setState({ countdownToReset: this.state.countdownToReset - 1 });
+			} else {
+				this.setState({ countdownToReset: 30 });
+				this.sendVerificationMessage();
+			}
+		}, 1000);
 		this.setState({ showErrorMessage: false, showNameErrorMessage: false, showErrorPasswordLength: false, showEmailAlreadyInUse: false, showEmailBadlyFormatted: false  });
 		const func = await heimdallr.sendVerificationMessage('+55' + this.state.phone.replace('(', '').replace(')', '').replace('-', '').replace(' ', ''));
 		this.setState({ confirmationFunction: func });
 		this.setState({ showConfirmCodeModal: true });
 		heimdallr.checkUser().then((result) => {
 			if (result) {
+				clearInterval(interval);
 				this.setState({ creatingAccount: true });
 				heimdallr.deleteConectedUser().then(
 					(success) => {
@@ -178,14 +191,7 @@ export default  class SignUp extends React.Component {
 		console.log('tá salvando?');
 		result.then(
 			(resolve) => {
-				try {
-					console.log('voltou>: ', resolve);
 					this.saveUser(resolve);
-
-
-				} catch (e) {
-					console.log('mas que merda:', e);
-				}
 			},
 			(reject) => {
 				heimdallr.saveData('reject_updadte', JSON.stringify(reject));
@@ -334,6 +340,11 @@ export default  class SignUp extends React.Component {
 		this.setState({birth: date});
 	}
 
+	closeCodeModal = () => {
+		this.setState({ showConfirmCodeModal: false, countdownToReset: 30 });
+		clearInterval(interval);
+	}
+
 
 	render(){
 		return (
@@ -441,13 +452,14 @@ export default  class SignUp extends React.Component {
 					animationType='fade'
 					transparent={true}
 					visible={this.state.showConfirmCodeModal}
+					onRequestClose={this.closeCodeModal.bind(this)}
 					style={{height: 50}}
 				>
 					{
 						!this.state.creatingAccount &&
 						<View style={styles.centeredView}>
 							<View style={styles.modalContainer}>
-								<TouchableOpacity onPress={() => {this.setState({ showConfirmCodeModal: false })}}>
+								<TouchableOpacity onPress={this.closeCodeModal.bind(this)}>
 									<View style={{alignSelf: 'flex-end'}}>
 										<Image style={{width: 15, height: 15}} source={require('../../../../assets/images/times-solid.png')}/>
 									</View>
@@ -476,11 +488,11 @@ export default  class SignUp extends React.Component {
 									borderBottomWidth={1}
 								/>
 								<View style={{flexDirection: 'row'}}>
-									<View style={{flex: 1, padding: 5}}>
-										<FatBottomedButton text='Reenviar' color={theme.primary} onTap={this.sendVerificationMessage.bind(this)}
-										/>
-									</View>
-									<View style={{flex: 1, padding: 5}}>
+									<View style={{flex: 1, padding: 5, flexDirection: 'column'}}>
+										{
+											this.state.confirmationFunction &&
+											<Text style={{padding: 5}}> Tempo para reenviar código: { this.state.countdownToReset }s </Text>
+										}
 										<FatBottomedButton text='Confirmar' backgroundColor={theme.primary} color={'white'} onTap={this.confirmCode.bind(this)}
 										/>
 									</View>

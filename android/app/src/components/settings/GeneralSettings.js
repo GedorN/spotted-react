@@ -223,17 +223,17 @@ export default class GeneralSettings extends  React.Component {
 		return (
 			<View>
 				<View style={{zIndex: 0}}>
-					<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
-						<View style={{flexDirection: 'row', height: 20, width: 50}}>
-							<Image
-								style={{width: 20, height: 20, marginRight: 10}}
-								source={require('../../../../../assets/images/arrow-left.png')}
-							/>
-							<Text>
-								voltar
-							</Text>
-						</View>
-					</TouchableOpacity>
+				<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+								<View style={{flexDirection: 'row', marginTop: 7,width:theme.width * 0.2,height:theme.height * 0.04}}>
+									<Image
+										style={{width: 12, height: 12, marginTop:4}}
+										source={require('../../../../../assets/images/arrow-left.png')}
+									/>
+									<Text style={{marginLeft: 5}}>
+										voltar
+									</Text>
+								</View>
+				</TouchableOpacity>
 				</View>
 				<View style={{flexDirection:'column', marginTop: 10}}>
 					<Text>

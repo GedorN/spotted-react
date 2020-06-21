@@ -66,7 +66,7 @@ export default class MainScreen extends React.Component {
 			this.setState({ showModal: true });
 			this.setState({ index: 0 });
 		} else if (index == 3 && this.notifications) {
-			this.notifications.getData();
+			this.notifications.getData(this);
 			this.setState({ index });
 		} else {
 			this.setState({ index })
@@ -125,6 +125,14 @@ export default class MainScreen extends React.Component {
 
 
 		heimdallr.getNotificationsNumber(this);
+	}
+
+	_checkRoute = (route) => {
+		// console.warn(route);
+		if (route.route.key === 'home' && this.state.index === 0) {
+			this.homeScreen.onRefresh();
+			this.homeScreen.scrollToTop();
+		}
 	}
 
 	getBadge = (prop) => {
@@ -228,7 +236,7 @@ export default class MainScreen extends React.Component {
 						acceptPan={true}
 						negotiatePan={true}
 						panThreshold={0.25}
-						panOpenMask={0.08}
+						panOpenMask={0.05}
 					>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.openModal.bind(this)}>
@@ -260,12 +268,13 @@ export default class MainScreen extends React.Component {
 							sceneAnimationEnabled={false}
 							shifting={false}
 							labeled={false}
+							onTabPress={this._checkRoute}
 						/>
 						<Modal
 							statusBarTranslucent={false}
 							transparent={true}
 							hardwareAccelerated={true}
-							animationType='fade'
+							animationType='slide'
 							visible={this.state.showModal}
 							onDismiss={this._hideModal}
 							onRequestClose={this._hideModal.bind(this)}
