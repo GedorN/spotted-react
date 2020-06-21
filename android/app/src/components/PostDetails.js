@@ -21,6 +21,7 @@ import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
 import OptionsMenu from "react-native-options-menu";
 import CommentaryViewer from "./CommentaryViewer";
+import Video from 'react-native-video';
 import moment from "moment";
 import 'moment/locale/pt-br';
 
@@ -144,8 +145,21 @@ export default class PostDetails extends React.Component {
 			return ;
 		}
 		if (this.state.post && this.state.post.data().images) {
-
-			if (this.state.post.data().images.length === 1) {
+			if (this.state.post.data().video) {
+				return (
+					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+						<View style={{ flexDirection: 'row'}}>
+							<View style={{width: 280, height: 200}}>
+								<Video
+									repeat={true}
+									source={{uri: this.state.post.data().images[0]}}
+									style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+								/>
+							</View>
+						</View>
+					</View>
+				)
+			} else if (this.state.post.data().images.length === 1) {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
 						<View style={{ flexDirection: 'row'}}>

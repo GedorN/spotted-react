@@ -17,6 +17,7 @@ import UserImgProfile from "./UserImgProfile";
 import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
 import ReportModal from "./ReportModal";
+import Video from 'react-native-video';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod from "../../android/app/src/components/Inputs/ReportGod";
@@ -70,8 +71,20 @@ export default class PostViewer extends React.Component {
     getModalImagesLayout = () => {
       // console.log('%c calculando...', 'color: green');
     if (this.props.images) {
-
-        if (this.props.images.length === 1) {
+        console.log('oal', this.props);
+    	if (this.props.video) {
+		    return (
+			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+				    <View style={{ flexDirection: 'row'}}>
+					    <Video
+						    repeat={true}
+						    source={{uri: this.props.images[0]}}
+						    style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+					    />
+				    </View>
+			    </View>
+		    )
+	    } else if (this.props.images.length === 1) {
           return (
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
               <View style={{ flexDirection: 'row'}}>
@@ -296,41 +309,42 @@ export default class PostViewer extends React.Component {
 			          <UserImgProfile circular height={45} width={45} uri={this.props.userImage}/>
 			      </TouchableOpacity>
 			  </View>
-			  <View style={{flexDirection: 'column'}}>
+				<View style={{flexDirection: 'column'}}>
 					<View style = {{flexDirection: 'row'}}>
-								<View style={styles.postHeader}>
-									<View style={{ flexDirection: 'row', alignItems: 'center'}}>
-											<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
-													<Text
-															style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
-													>
-															{this.props.user}
-													</Text>
-											</TouchableOpacity>
-										{this.props.elapsed_time &&
-												<Image
-													style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
-													source={require('../../assets/images/circle-solid.png') }
-												/>
-										}
-											<Text style= {{marginTop:35}}>
-												{ this.props.elapsed_time }
-											</Text>
-									</View>
-								</View>
-								<TouchableOpacity
-										style = {{width:theme.width * 0.14, alignSelf:'flex-end',height:theme.width * 0.08,flexDirection:'column',justifyContent:'flex-end'}}
-										onPress={() => this.RBSheet.open()}>
-										<View
-											style={{width: 40, height: theme.height * 0.1, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+						<View style={styles.postHeader}>
+							<View style={{ flexDirection: 'row', alignItems: 'center'}}>
+								<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
+										<Text
+												style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
 										>
-											<Image
-												style={{width: 20, height: 12}}
-												source={require('../../assets/images/ellipsis-h-solid.png')}
-											/>
-										</View>
-									</TouchableOpacity>
+												{this.props.user}
+										</Text>
+								</TouchableOpacity>
+								{
+									this.props.elapsed_time &&
+									<Image
+										style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
+										source={require('../../assets/images/circle-solid.png') }
+									/>
+								}
+									<Text style= {{marginTop:35}}>
+										{ this.props.elapsed_time }
+									</Text>
 							</View>
+						</View>
+						<TouchableOpacity
+								style = {{width:theme.width * 0.14, alignSelf:'flex-end',height:theme.width * 0.08,flexDirection:'column',justifyContent:'flex-end'}}
+								onPress={() => this.RBSheet.open()}>
+								<View
+									style={{width: 40, height: theme.height * 0.1, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+								>
+									<Image
+										style={{width: 20, height: 12}}
+										source={require('../../assets/images/ellipsis-h-solid.png')}
+									/>
+								</View>
+						</TouchableOpacity>
+					</View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
 			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.props.text}</Text>
@@ -351,7 +365,7 @@ export default class PostViewer extends React.Component {
 			              </TouchableOpacity>
 			          </View>
 			      </View>
-			  </View>
+			    </View>
 			</View>
 		    <RBSheet
 			    ref={ref => {

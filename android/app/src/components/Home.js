@@ -153,7 +153,10 @@ export default class Home extends React.Component {
 									user={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_name:'Anônimo'):item._data.user_name}
 									userImage={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_image:null):item._data.user_image}
 									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling}
-									closeAlert={this.confirmReport.bind(this)} />  }
+									video={item._data.video ? true : false}
+								    closeAlert={this.confirmReport.bind(this)}
+							/>
+              }
               refreshControl={
 	              <RefreshControl
 		              refreshing={this.state.isRefreshing}

@@ -134,6 +134,11 @@ const collections = {
                 type: 'array',
                 required: false,
             },
+	        {
+	        	desc: 'video',
+		        type: 'boolean',
+		        required: false,
+	        },
             {
                 desc: 'anonymous',
                 type: 'boolean'
