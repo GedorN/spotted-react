@@ -158,7 +158,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 								</TouchableOpacity>
 								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.props.ticket.colors[0])}}>{'Detalhes do pedido'}</Text>
 							</View>
-							<View>
+							<View style = {{ height: theme.height * 0.69}}>
 								<ScrollView style = {{height: theme.height * 0.6, marginTop:theme.height * 0.08}}
 									showsVerticalScrollIndicator = {false}>
 									<View style = {{marginTop:theme.height*0.02}}>
@@ -205,7 +205,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 									</TouchableOpacity>
 									{
 										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
-										<View >
+										<View style = {{ marginBottom: theme.height * 0.02}}>
 											<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
 										</View>
 									}
