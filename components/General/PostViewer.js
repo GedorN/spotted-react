@@ -79,7 +79,7 @@ export default class PostViewer extends React.Component {
 					    <Video
 						    repeat={true}
 						    source={{uri: this.props.images[0]}}
-						    style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+						    style={{width: 280, height: 200, borderRadius: 10}}
 					    />
 				    </View>
 			    </View>

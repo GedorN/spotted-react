@@ -153,7 +153,7 @@ export default class PostDetails extends React.Component {
 								<Video
 									repeat={true}
 									source={{uri: this.state.post.data().images[0]}}
-									style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+									style={{width: 280, height: 200, borderRadius: 10}}
 								/>
 							</View>
 						</View>

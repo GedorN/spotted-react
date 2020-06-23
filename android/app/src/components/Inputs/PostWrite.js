@@ -217,7 +217,7 @@ export default class PostWrite extends React.Component {
 							<Video
 								repeat={true}
 								source={{uri: this.state.postImages[0].path}}
-								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
@@ -403,7 +403,7 @@ export default class PostWrite extends React.Component {
 							</TouchableOpacity>
 							<Text style = {{marginTop:14,marginLeft:11, opacity: !this.state.anonymousUser ? 0.5 : 1, width:theme.width *0.55,
 								fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
-							<TouchableOpacity disabled={this.state.postImages.length === 4} onPress={this.sendImagePropt.bind(this)}>
+							<TouchableOpacity disabled={this.state.postImages.length === 4 || this.state.videoIncluded} onPress={this.sendImagePropt.bind(this)}>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}
 									style={{
