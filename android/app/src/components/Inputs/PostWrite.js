@@ -215,6 +215,7 @@ export default class PostWrite extends React.Component {
 					<View style={{ flexDirection: 'row'}}>
 						<View style={{width: 280, height: 200}}>
 							<Video
+								resizeMode={'cover'}
 								repeat={true}
 								source={{uri: this.state.postImages[0].path}}
 								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'black'}}

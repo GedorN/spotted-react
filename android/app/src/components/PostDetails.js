@@ -151,6 +151,7 @@ export default class PostDetails extends React.Component {
 						<View style={{ flexDirection: 'row'}}>
 							<View style={{width: 280, height: 200}}>
 								<Video
+									resizeMode={'cover'}
 									repeat={true}
 									source={{uri: this.state.post.data().images[0]}}
 									style={{width: 280, height: 200, borderRadius: 10}}
@@ -380,7 +381,6 @@ export default class PostDetails extends React.Component {
 			heimdallr.getUID().then((uuid) => {
 				params.cid = uuid;
 
-				heimdallr.saveComment(params);
 				const data = {};
 				data.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
 				data.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
@@ -389,8 +389,8 @@ export default class PostDetails extends React.Component {
 				data.cid = uuid;
 				let posts = this.state.comments;
 				posts.push(data);
-				this.setState({ comments: posts });
-				this.setState({ creatingComment: false });
+				this.setState({ comments: posts, creatingComment: false });
+				heimdallr.saveComment(params);
 			})
 
 			this.triggerNotification(comment);
