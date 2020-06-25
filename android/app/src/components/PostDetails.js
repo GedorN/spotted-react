@@ -406,6 +406,8 @@ export default class PostDetails extends React.Component {
 				this.setState({ comments: posts });
 				this.setState({ creatingComment: false, reportAlert: false });
 
+				heimdallr.saveComment(params);
+
 				this.triggerNotification(comment, uuid);
 			})
 
