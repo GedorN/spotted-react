@@ -18,6 +18,8 @@ import UserImgProfile from '../../../../components/General/UserImgProfile';
 import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
 import moment from "moment";
+import AwesomeAlert from "react-native-awesome-alerts";
+
 
 export default class UserProfile extends React.Component {
 	constructor(props) {
@@ -36,6 +38,10 @@ export default class UserProfile extends React.Component {
 			userImageUrl: [],
 			scrolling: false,
 			findUser : true,
+			showAlert: false,
+			deletePost: '',
+			showDeleteAlert: false,
+			showConfirmDelete: false
 		};
 	}
 
@@ -180,6 +186,23 @@ export default class UserProfile extends React.Component {
 		);
 	}
 
+	confirmReport = (deleteAction, pid) => {
+		if(deleteAction){
+			this.setState({ showDeleteAlert: true, deletePost: pid });
+		}
+		else{
+			this.setState({ showAlert: true });
+		}
+	}
+
+	deletePost = () => {
+		this.setState({ showDeleteAlert: false, showConfirmDelete: true });
+		heimdallr.deletePost('post',this.state.deletePost);
+		heimdallr.deletePostComments('comment',this.state.deletePost);
+		heimdallr.deleteUserPost('user_posts',this.state.deletePost,heimdallr.user_id);
+		heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
+	}
+
 
 	render() {
 		return (
@@ -207,7 +230,7 @@ export default class UserProfile extends React.Component {
 						onScrollEndDrag={() => this.setState({ scrolling: false })}
 						onScrollBeginDrag={() => this.setState({ scrolling: true })}
 						renderItem={ ({item}) =>
-								<PostViewer text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} video={item.video ? true : false} scrolling={this.state.scrolling} />
+								<PostViewer closeAlert={this.confirmReport.bind(this)}  video={item.video ? true : false} text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
 						}
 						ListHeaderComponent={() =>
 							<View style={styles.profileHeader}>
@@ -282,7 +305,58 @@ export default class UserProfile extends React.Component {
 						</View>
 					 </View>
 				}
+				<AwesomeAlert
+					show={this.state.showDeleteAlert}
+					showProgress={false}
+					title= {"Tem certeza que deseja excluir ? "}
+					titleStyle = {{fontSize: 15, justifyContent: 'center'}}
+					message= {"Após confirmada essa ação não poderá ser desfeita."}
+					messageStyle = {{fontSize: 13}} 
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showCancelButton = {true}
+			  		cancelText = {"Não"}
+					showConfirmButton={true}
+					confirmText= {"Sim"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						 this.deletePost();
+					}}
+					onCancelPressed={() => {
+						this.setState({ showDeleteAlert: false })
+					}}
+				/>
 
+				<AwesomeAlert
+					show={this.state.showConfirmDelete}
+					showProgress={false}
+					title= {"Postagem excluída!"}
+					titleStyle = {{marginBottom:5}}
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showConfirmButton={true}
+					confirmText= {"OK"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						this.setState({ showConfirmDelete: false }) 
+					}}
+				/>
+
+				<AwesomeAlert
+					show={this.state.showAlert}
+					showProgress={false}
+					title= {"Denúncia realizada"}
+		      		message= {"Nossos criadores irão analisar a postagem denunciada"}
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showConfirmButton={true}
+					confirmText= {"OK"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						this.setState({ showAlert: false }) 
+					}}
+				/>
+					
 			</View>
 		);
 	}

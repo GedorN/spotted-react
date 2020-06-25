@@ -58,6 +58,12 @@ export default class PostDetails extends React.Component {
 			creatingComment: false,
 			postId: '',
 			showCommentaryModal: false,
+			userId: '',
+			reportAlert: true,
+			deletePost: '',
+			deleteComment: false,
+			commentId: '',
+			showConfirmDelete: false,
 		};
 	}
 
@@ -71,8 +77,14 @@ export default class PostDetails extends React.Component {
 	}
 
 	componentDidMount = () => {
+		console.warn('ID POSTDETAILS',this.props.navigation.getParam('pid'));
 		this.setState({ pulling: true });
 		this.state.postId =  this.props.navigation.getParam('pid');
+		this.state.userId = this.props.navigation.getParam('userId');
+		if (this.props.navigation.getParam('userId') === heimdallr.user_id){
+			this.setState({reportAlert : false});
+		}
+		console.warn("STATE USER ID POSTDETAISL", this.props.navigation.getParam('userId'));
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
 			console.log('details', moment(resolve[0].data().date).locale('pt-br').format('LLLL'));
@@ -104,6 +116,7 @@ export default class PostDetails extends React.Component {
 
 	}
 
+	
 
 	disableModal () {
 		this.setState({ showImages: false });
@@ -335,7 +348,7 @@ export default class PostDetails extends React.Component {
 		return <View></View>;
 	}
 
-	triggerNotification = async (comment) => {
+	triggerNotification = async (comment, cid) => {
 		if(heimdallr.user_id != this.state.post.data().uid){
 			const notifications = {};
 			notifications.eid = this.state.post.data().pid;
@@ -345,6 +358,7 @@ export default class PostDetails extends React.Component {
 			notifications.user_image = heimdallr.user_image;
 			notifications.anonymous =  this.state.anonymousUser;
 			notifications.content = comment;
+			notifications.cid = cid;
 			notifications.date = await heimdallr.getServerTime();
 			notifications.visualized = 0;
 			notifications.entity = "commentary";
@@ -389,11 +403,12 @@ export default class PostDetails extends React.Component {
 				data.cid = uuid;
 				let posts = this.state.comments;
 				posts.push(data);
-				this.setState({ comments: posts, creatingComment: false });
-				heimdallr.saveComment(params);
+				this.setState({ comments: posts });
+				this.setState({ creatingComment: false, reportAlert: false });
+
+				this.triggerNotification(comment, uuid);
 			})
 
-			this.triggerNotification(comment);
 		}
 
 	}
@@ -402,17 +417,52 @@ export default class PostDetails extends React.Component {
 		this.props.navigation.goBack();
 	}
 
-	closeAlert = () => {
+	closeAlert = (deleteAction) => {
+
 		this.RBSheet.close();
-		this.setState({ showAlert: true });
+
+		if(deleteAction){
+			this.setState({ showDeleteAlert: true });
+		}
+		else{
+			this.setState({ showAlert: true });
+		}
 	}
 
-	comentaryCallback = (alertState) => {
-		this.setState({showAlert : true});
+	comentaryCallback = (deleteAction, cid) => {
+
+		if(deleteAction){
+			this.setState({  showDeleteAlert: true, deleteComment: true, commentId: cid });
+		}
+		else{
+			this.setState({ showAlert: true });
+		}
+		
 	}
+
 
 	_openCommentaryWriter = () => {
+
 		this.setState({ showCommentaryModal: true });
+	}
+
+	deletePost = () => {
+
+		this.setState({ showDeleteAlert: false, showConfirmDelete: true });
+
+		if(this.state.deleteComment){
+			heimdallr.deleteCommentary('comment',this.state.postId, this.state.commentId);
+			heimdallr.deleteCommentNotification('notification', this.state.commentId, this.state.post.data().uid);
+			this.setState({ deleteComment: false });
+		}
+		else{
+			heimdallr.deletePost('post',this.state.postId);
+			heimdallr.deletePostComments('comment',this.state.postId);
+			heimdallr.deleteUserPost('user_posts',this.state.postId,heimdallr.user_id);
+			heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.postId);
+			this.setState({ deleteComment: false });
+		}
+		
 	}
 
 
@@ -535,24 +585,60 @@ export default class PostDetails extends React.Component {
 					ref={ref => {
 						this.RBSheet = ref;
 					}}
-					height={300}
+					height={this.state.reportAlert ? 300 : 150}
 					animationType={'slide'}
 					duration={250}
+					
 				>
-					<ReportGod  close={this.closeAlert.bind(this)} idEntity={this.state.postId} typeEntity = {'post'}/>
+					<ReportGod  close={this.closeAlert.bind(this)} idEntity={this.state.postId} typeEntity = {'post'} userId = {this.state.userId}/>
 				</RBSheet>
 				<AwesomeAlert
-					show={this.state.showAlert}
+					show={this.state.showDeleteAlert}
 					showProgress={false}
-					title="Denúncia realizada"
-					message="Nossos criadores irão analisar a postagem denunciada"
+					title= {"Tem certeza que deseja excluir ? "}
+					titleStyle = {{fontSize: 15, justifyContent: 'center'}}
+					message= {"Após confirmada essa ação não poderá ser desfeita."}
+					messageStyle = {{fontSize: 13}} 
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showCancelButton = {true}
+			  		cancelText = {"Não"}
+					showConfirmButton={true}
+					confirmText= {"Sim"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						 this.deletePost();
+					}}
+					onCancelPressed={() => {
+						this.setState({ showDeleteAlert: false })
+					}}
+				/>
+				<AwesomeAlert
+					show={this.state.showConfirmDelete}
+					showProgress={false}
+					title= {"Postagem excluída!"}
+					titleStyle = {{marginBottom:5}}
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showConfirmButton={true}
-					confirmText="OK"
+					confirmText= {"OK"}
 					confirmButtonColor={'green'}
 					onConfirmPressed={() => {
-						this.setState({ showAlert: false })
+						this.setState({ showConfirmDelete: false }) 
+					}}
+				/>
+				<AwesomeAlert
+					show={this.state.showAlert}
+					showProgress={false}
+					title= {"Denúncia realizada"}
+		      		message= {"Nossos criadores irão analisar a postagem denunciada"}
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showConfirmButton={true}
+					confirmText= {"OK"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						this.setState({ showAlert: false }) 
 					}}
 				/>
 				<Modal
@@ -625,6 +711,7 @@ const styles = StyleSheet.create({
 		marginTop: theme.height * 0.75,
 		marginLeft: theme.width * 0.80,
 		padding: 5,
+	
 
 	}
 });

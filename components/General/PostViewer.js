@@ -34,12 +34,17 @@ export default class PostViewer extends React.Component {
 	    indexImage: 0,
 	    opacityValue: 0.7,
 	    opacityValueScrolling: 1,
-	    opacity: new Animated.Value(0),
+		opacity: new Animated.Value(0),
+		reportAlert: true,
     };
   }
 
   componentDidMount =() =>  {
-      // console.log('haha: ', this.props);
+	  // console.log('haha: ', this.props);
+	  if(this.props.uid === heimdallr.user_id){
+		  this.setState({reportAlert: false});
+	  }
+
 	  if (this.props.images) {
 	  	this.props.images.forEach((img) => {
             let images = this.state.galleryObj;
@@ -274,16 +279,17 @@ export default class PostViewer extends React.Component {
   }
 
   goToComments = () => {
-  	this.props.navigation.push('PostDetails', {
-  		pid: this.props.pid,
-			userImage: this.props.userImage,
-			anonymous: this.props.anonymous?this.props.anonymous:'0',
+	this.props.navigation.push('PostDetails', {
+	pid: this.props.pid,
+	userImage: this.props.userImage,
+	anonymous: this.props.anonymous?this.props.anonymous:'0',
+	userId: this.props.uid,
     });
   }
 
-	closeAlert = () => {
+	closeAlert = (deleteAction) => {
 		this.RBSheet.close();
-		this.props.closeAlert();
+		this.props.closeAlert(deleteAction, this.props.pid);
 	}
 
   render () {
@@ -372,11 +378,11 @@ export default class PostViewer extends React.Component {
 			    ref={ref => {
 				    this.RBSheet = ref;
 			    }}
-			    height={300}
+			    height={this.state.reportAlert ? 300 : 150}
 			    animationType={'slide'}
 			    duration={250}
 		    >
-			    <ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'}/>
+			    <ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'} userId = {this.props.uid}/>
 		    </RBSheet>
 	    </TouchableOpacity>
     );

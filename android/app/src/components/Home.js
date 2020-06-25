@@ -26,7 +26,10 @@ export default class Home extends React.Component {
 	    endPulling: false,
 	    isRefreshing: false,
 	    scrolling: false,
-	    showAlert: false,
+		showAlert: false,
+		deletePost: '',
+		showDeleteAlert: false,
+		showConfirmDelete: false
     };
   }
 
@@ -135,8 +138,22 @@ export default class Home extends React.Component {
   };
 
 
-	confirmReport = () => {
-		this.setState({ showAlert: true });
+	confirmReport = (deleteAction, pid) => {
+
+		if(deleteAction){
+			this.setState({ showDeleteAlert: true, deletePost: pid });
+		}
+		else{
+			this.setState({ showAlert: true});
+		}
+	}
+
+	deletePost = () => {
+		this.setState({ showDeleteAlert: false, showConfirmDelete: true });
+		heimdallr.deletePost('post',this.state.deletePost);
+		heimdallr.deletePostComments('comment',this.state.deletePost);
+		heimdallr.deleteUserPost('user_posts',this.state.deletePost,heimdallr.user_id);
+		heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
 	}
 
 
@@ -171,20 +188,56 @@ export default class Home extends React.Component {
               ListFooterComponent={ this.renderFooter.bind(this)}
 
           />
-	      <AwesomeAlert
-		      show={this.state.showAlert}
-		      showProgress={false}
-		      title="Denúncia realizada"
-		      message="Nossos criadores irão analisar a postagem denunciada"
-		      closeOnTouchOutside={true}
-		      closeOnHardwareBackPress={false}
-		      showConfirmButton={true}
-		      confirmText="OK"
-		      confirmButtonColor={'green'}
-		      onConfirmPressed={() => {
-			      this.setState({ showAlert: false })
-		      }}
 
+			<AwesomeAlert
+				show={this.state.showDeleteAlert}
+				showProgress={false}
+				title= {"Tem certeza que deseja excluir ? "}
+				titleStyle = {{fontSize: 15, justifyContent: 'center'}}
+				message= {"Após confirmada essa ação não poderá ser desfeita."}
+				messageStyle = {{fontSize: 13}} 
+				closeOnTouchOutside={true}
+				closeOnHardwareBackPress={false}
+				showCancelButton = {true}
+				cancelText = {"Não"}
+				showConfirmButton={true}
+				confirmText= {"Sim"}
+				confirmButtonColor={'green'}
+				onConfirmPressed={() => {
+						this.deletePost();
+				}}
+				onCancelPressed={() => {
+					this.setState({ showDeleteAlert: false })
+				}}
+	
+			/>
+			<AwesomeAlert
+				show={this.state.showConfirmDelete}
+				showProgress={false}
+				title= {"Postagem excluída!"}
+				titleStyle = {{marginBottom:5}}
+				closeOnTouchOutside={true}
+				closeOnHardwareBackPress={false}
+				showConfirmButton={true}
+				confirmText= {"OK"}
+				confirmButtonColor={'green'}
+				onConfirmPressed={() => {
+					this.setState({ showConfirmDelete: false }) 
+				}}
+	      />
+	      <AwesomeAlert
+				show={this.state.showAlert}
+				showProgress={false}
+				title= {"Denúncia realizada"}
+				message= {"Nossos criadores irão analisar a postagem denunciada"}
+				closeOnTouchOutside={true}
+				closeOnHardwareBackPress={false}
+				showConfirmButton={true}
+				confirmText= {"OK"}
+				confirmButtonColor={'green'}
+				onConfirmPressed={() => {
+					this.setState({ showAlert: false }) 
+				}}
 	      />
 
       </View>

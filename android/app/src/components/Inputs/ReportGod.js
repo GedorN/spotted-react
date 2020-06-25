@@ -25,7 +25,7 @@ export default class ReportGod extends React.Component {
 	}
 
 	makeReport = async (idReport) => {
-		this.props.close();
+		this.props.close(false);
 		if(this.props.typeEntity === 'comentario'){
 			let params = {};
 			params.pid = this.props.pid;
@@ -48,40 +48,65 @@ export default class ReportGod extends React.Component {
 
 	}
 
+	deletePost = async () => {
+	
+		if(this.props.typeEntity === 'comentario'){
 
+			this.props.close(true, this.props.idEntity);
+		}
+		else{
+			this.props.close(true);
+		}
+	}
+
+			
 	render() {
 		return (
 			<View style={styles.container}>
-				<Text
-					style={{fontSize: 18, fontWeight: 'bold'}}
-				>Denúncia de conteúdo impróprio </Text>
-				<Text
-					style={{fontSize: 16, marginTop: 5}}
-				>A postagem possui conteúdo: </Text>
-				<TouchableOpacity onPress={this.makeReport.bind(this, 2)}>
-					<View style={styles.listItem}>
-						<Image style={styles.listImage} source={require('../../../../../assets/images/pig.png')}/>
-						<Text> Pornográfico </Text>
+				{
+					heimdallr.user_id === this.props.userId &&
+					<View>
+						<View style = {{ paddingBottom: 20, paddingTop: 10}}>
+							<Text style={styles.deleteTitle}>Ações</Text>
+						</View>
+						<TouchableOpacity onPress={this.deletePost.bind(this)}>
+							<View style = {styles.deleteView}>
+								<Image style= {styles.deleteIcon} source={require('../../../../../assets/images/plus-circle.png')}/>
+								<Text style={{fontSize: 14, fontWeight: 'bold'}}>Excluir postagem</Text>
+							</View>
+						</TouchableOpacity>
 					</View>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={this.makeReport.bind(this, 3)}>
-					<View style={styles.listItem}>
-						<Image style={styles.listImage} source={require('../../../../../assets/images/bully.png')}/>
-						<Text> Ofensivo </Text>
+				}
+				{
+					heimdallr.user_id != this.props.userId &&
+					<View>
+						<Text style={styles.reportTitle}>A postagem possui conteúdo: </Text>
+						<TouchableOpacity onPress={this.makeReport.bind(this, 2)}>
+							<View style={styles.listItem}>
+								<Image style={styles.listImage} source={require('../../../../../assets/images/pig.png')}/>
+								<Text> Pornográfico </Text>
+							</View>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={this.makeReport.bind(this, 3)}>
+							<View style={styles.listItem}>
+								<Image style={styles.listImage} source={require('../../../../../assets/images/bully.png')}/>
+								<Text> Ofensivo </Text>
+							</View>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={this.makeReport.bind(this, 1)}>
+							<View style={styles.listItem}>
+								<Image style={styles.listImage} source={require('../../../../../assets/images/horror.png')}/>
+								<Text> Violento </Text>
+							</View>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={this.makeReport.bind(this, 4)}>
+							<View style={styles.listItem}>
+								<Image style={styles.listImage} source={require('../../../../../assets/images/flag.png')}/>
+								<Text> Outros... </Text>
+							</View>
+						</TouchableOpacity>
 					</View>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={this.makeReport.bind(this, 1)}>
-					<View style={styles.listItem}>
-						<Image style={styles.listImage} source={require('../../../../../assets/images/horror.png')}/>
-						<Text> Violento </Text>
-					</View>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={this.makeReport.bind(this, 4)}>
-					<View style={styles.listItem}>
-						<Image style={styles.listImage} source={require('../../../../../assets/images/flag.png')}/>
-						<Text> Outros... </Text>
-					</View>
-				</TouchableOpacity>
+				}
 			</View>
 		);
 	}
@@ -89,7 +114,8 @@ export default class ReportGod extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		padding: 10
+		padding: 10,
+		height:200,
 	},
 	listImage: {
 		width: 25,
@@ -99,6 +125,30 @@ const styles = StyleSheet.create({
 	listItem: {
 		flexDirection: 'row',
 		alignContent: 'center',
-		margin: 10,
+		margin: 15,
+	},
+	reportTitle: {
+		fontSize: 16, 
+		marginTop: 5, 
+		fontWeight: 'bold', 
+		paddingBottom: 15
+	},
+	deleteTitle: {
+		fontSize: 16,
+		fontWeight: 'bold', 
+		color: '#8f8f8f'
+	},
+	deleteView: {
+		padding: 5, 
+		paddingBottom: 20, 
+		paddingTop: 10, 
+		flexDirection: 'row',
+		margin: 5
+	},
+	deleteIcon: {
+		opacity: 0.5,
+		width: 25,
+		height: 25,
+		marginRight: 15
 	}
 })

@@ -12,6 +12,7 @@ import theme from "../../../../components/General/Theme";
 import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod  from './Inputs/ReportGod';
 import AwesomeAlert from "react-native-awesome-alerts";
+import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 
 
 const width = Dimensions.get('screen').width;
@@ -20,8 +21,19 @@ export default class CommentaryViewer extends React.Component {
 	constructor (props) {
 		super(props);
 		this.state = {
+			reportAlert: true,
 		};
 	}
+
+
+
+	componentDidMount = () => {
+
+		if(this.props.user_id === heimdallr.user_id){
+			this.setState({reportAlert: false})
+		}
+	}
+
 	goToUserProfile = () => {
 		 this.props.navigation.push('UserProfile', {
 			userId: this.props.user_id,
@@ -33,9 +45,9 @@ export default class CommentaryViewer extends React.Component {
 		this.props.navigation.goBack();
 	}
 
-	closeAlert = () => {
+	closeAlert = (deleteAction, cid) => {
 		this.RBSheet.close();
-		this.props.commentaryCallback();
+		this.props.commentaryCallback(deleteAction, cid);
 	}
 
 
@@ -81,11 +93,11 @@ export default class CommentaryViewer extends React.Component {
 					ref={ref => {
 						this.RBSheet = ref;
 					}}
-					height={300}
+					height={this.state.reportAlert ? 300 : 150}
 					animationType={'slide'}
 					duration={250}
 				>
-					<ReportGod  close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid}/>
+					<ReportGod  close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid} userId = {this.props.user_id}/>
 				</RBSheet>
 			</View>
 		);

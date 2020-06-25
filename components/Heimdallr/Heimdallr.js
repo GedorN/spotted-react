@@ -892,9 +892,138 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.deletePost = function (collection, pid) {
+
+		let document = null;
+
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).where('pid', '==', pid).get().then(
+				(result) => {
+					document = result._docs[0]._ref.id;
+				}
+			).then((resolve) => {
+				firebase.firestore().collection(collection).doc(document).delete();
+
+			}).catch(function(error){
+				console.log('Error removing document',error);
+			})
+		})
+	}
+
+	this.deletePostComments = function (collection,pid){
+		firebase.firestore().collection(collection).doc(pid).delete().then(function(){
+			console.log("post comments deleted");
+		}).catch(function(error) {
+			console.log("Error removing document: ", error);
+		})
+	}
+
+	this.deletePostNotifications = function (collection,userId,pid){
+		let docs = null;
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).doc(userId).get().then(
+				(result) => {
+					docs = result.data().notifications.filter(item => item.eid != pid);
+					firebase.firestore().collection('notification').doc(userId).set(
+						{
+							notifications: docs
+						},
+						{
+							merge: true
+						}
+					);
+
+				}
+			)
+		}).catch(function(error){
+			console.log("error get commentary",error);
+		})
+	}
+	
+
+	this.deleteUserPost = function (collection, pid, userId) {
+		let docs = [];
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).doc(userId).get().then(
+				(result) => {
+					let post = null;
+					let index = null;
+					let removed = null;
+					post = result.data().posts.find((item) => item.pid === pid); 
+					index = result.data().posts.indexOf(post);
+					removed = result.data().posts.splice(index,1);
+					firebase.firestore().collection('user_posts').doc(userId).set(
+						{
+							posts: result.data().posts
+						},
+						{
+							merge: true
+						}
+					);
+				})
+		}).catch(function(error){
+			console.log("error get commentary",error);
+		})
+	}
+
+	this.deleteCommentNotification = function (collection, cid, userId){
+		let docs = [];
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).doc(userId).get().then(
+				(result) => {
+					let notification = null;
+					let index = null;
+					let removed = null;
+					notification = result.data().notifications.find((item) => item.cid === cid); 
+					index = result.data().notifications.indexOf(notification);
+					removed = result.data().notifications.splice(index,1);
+					firebase.firestore().collection('notification').doc(userId).set(
+						{
+							notifications: result.data().notifications
+						},
+						{
+							merge: true
+						}
+					);
+
+				}
+			)
+		}).catch(function(error){
+			console.log("error get commentary",error);
+		})
+	}
+
+
+	this.deleteCommentary = function (collection, pid, cid) {
+		let docs = [];
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).doc(pid).get().then(
+				(result) => {
+					let commentary = null;
+					let index = null;
+					let removed = null;
+					commentary = result.data().comments.find((item) => item.cid === cid); 
+					index = result.data().comments.indexOf(commentary);
+					removed = result.data().comments.splice(index,1);
+					firebase.firestore().collection('comment').doc(pid).set(
+						{
+							comments: result.data().comments
+						},
+						{
+							merge: true
+						}
+					);
+
+				}
+			)
+		}).catch(function(error){
+			console.log("error get commentary",error);
+		})
+	}
+
 	this.saveSpecificColletion = function (collection,params) {
   	console.log('params.uid',params.uid);
-		return new Promise((resolve) => {
+		return new Promise((resolve) => { 
 			firebase.firestore().collection(collection).doc(params.uid).get().then(
 				(result) => {
 					console.log('result', result.data());
