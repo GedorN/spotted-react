@@ -469,7 +469,7 @@ export default class ProductScreen extends React.Component {
 													placeholder = { this.state.placeholderCoupon }
 													style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
 													onChangeText = { this.receivePromotionalCode.bind(this) }
-													width = { theme.width*0.68 } 
+													width = { theme.width*0.68 }
 												/>
 												<TouchableOpacity
 													disabled={ this.state.settingPromotionalCode }
@@ -581,7 +581,7 @@ export default class ProductScreen extends React.Component {
 							</View>
 						</TouchableOpacity>
 						<Text style={{ padding: 5, marginTop: 10, fontWeight: 'bold' }}>
-							Está produto não está mais diponível (´;︵;`)
+							Esta produto não está mais diponível (´;︵;`)
 						</Text>
 					</View>
 				}
@@ -598,7 +598,7 @@ export default class ProductScreen extends React.Component {
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.product?this.state.product.colors[0]: null}}>
 								<TouchableOpacity onPress={() => {this.disableModal()}}>
 									<View style = {{ width: theme.width * 0.15, height: theme.height*0.05, alignSelf: 'flex-end' }}>
-										<Image 
+										<Image
 											style = {{ width: 15, height: 15, opacity: 0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black') }}
 											source = {require('../../../../assets/images/times-solid.png')}
 										/>
@@ -614,7 +614,7 @@ export default class ProductScreen extends React.Component {
 											<Text style = {{ fontWeight: 'bold', fontSize: 15, textAlign: 'justify', lineHeight: 25, marginLeft: theme.width * 0.007, letterSpacing: 0.5 }}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
 											{
 												this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-												<View style = {{ flexDirection: 'row'}}> 
+												<View style = {{ flexDirection: 'row'}}>
 													<Text style = {{ flexDirection:'row', marginTop: theme.height * 0.01, textAlign: 'justify' }}>
 													{
 														this.state.product.customization.map(i =>
@@ -648,7 +648,7 @@ export default class ProductScreen extends React.Component {
 															<View>
 																<Text style ={{ fontWeight: 'bold', marginBottom: theme.height*0.01, letterSpacing: 0.5}}>{'Valor com desconto'}</Text>
 															</View>
-															
+
 														}
 													</View>
 													<View style={{flexDirection:'row'}}>
@@ -779,11 +779,11 @@ const styles = StyleSheet.create({
 		paddingBottom:10,
 		marginTop:15,
 		borderRadius:25,
-	},	
+	},
 	cuponView: {
 		flexDirection: 'row',
 		alignItems: 'flex-end',
-		alignSelf: 'center', 
+		alignSelf: 'center',
 		marginTop: theme.height * 0.03,
 		marginBottom:theme.height * 0.02
 	},
@@ -802,7 +802,7 @@ const styles = StyleSheet.create({
 		marginLeft:0.001
 	},
 	modalContainer: {
-		width: theme.width * 0.9, 
+		width: theme.width * 0.9,
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 25,
@@ -827,10 +827,10 @@ const styles = StyleSheet.create({
 	modalButtons: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginBottom:theme.height * 0.01 
+		marginBottom:theme.height * 0.01
 	},
 	cancelButton: {
-		paddingTop: 14, 
+		paddingTop: 14,
 		paddingBottom: 14,
 		width:theme.width * 0.32,
 		elevation: 2,
@@ -853,16 +853,16 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		marginLeft: theme.width * 0.01,
 		marginBottom: theme.width * 0.02,
-		letterSpacing: 0.5, 
+		letterSpacing: 0.5,
 		marginTop: theme.width * 0.04,
-		fontSize: 15 
+		fontSize: 15
 	},
 	paymentText: {
 		fontWeight:'bold',
 		fontSize: 15,
 		marginBottom: 7,
-		letterSpacing: 0.5 
+		letterSpacing: 0.5
 	}
 
-	
+
 });

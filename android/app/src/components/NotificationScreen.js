@@ -91,9 +91,9 @@ export default class NotificationScreen extends React.Component {
 	}
 
     renderFooter = () => {
-		if (this.state.notifications && this.state.notifications > 0 && !this.state.endPulling) {
+	    if (this.state.notifications && this.state.notifications.length > 0 && !this.state.endPulling) {
 			return (
-				<View style={{marginBottom: 70}}>
+				<View style={{marginBottom: 20}}>
 					<ActivityIndicator size="large" color="#0000ff" />
 				</View>
 			);
@@ -127,7 +127,7 @@ export default class NotificationScreen extends React.Component {
 							this.pullMoreNotifications(distanceFromEnd);
 						}}
 						ListFooterComponent={ this.renderFooter.bind(this)}
-                        />
+                />
 
             </View>
         )

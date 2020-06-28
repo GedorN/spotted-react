@@ -24,14 +24,14 @@ export default class Notification extends React.Component {
     }
 
     goToUserProfile = () => {
-		 this.props.navigation.navigate('UserProfile', {
+		 this.props.navigation.push('UserProfile', {
 			userId: this.props.uid_notification,
 		});
 
     }
 
     goToPostDetails = () => {
-        this.props.navigation.navigate('PostDetails',{
+        this.props.navigation.push('PostDetails',{
             pid:this.props.eid,
         })
     }

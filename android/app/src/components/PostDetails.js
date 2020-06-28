@@ -64,6 +64,7 @@ export default class PostDetails extends React.Component {
 			deletePost: '',
 			deleteComment: false,
 			commentId: '',
+			removedPost: false,
 		};
 	}
 
@@ -85,6 +86,10 @@ export default class PostDetails extends React.Component {
 		}
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
+			if (resolve.length === 0) {
+				this.setState({ removedPost: true });
+				return ;
+			}
 			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
 			this.setState( { post: resolve[0] });
 			if (resolve[0].data().images) {
@@ -496,32 +501,41 @@ export default class PostDetails extends React.Component {
 						</Text>
 					</View>
 				</TouchableOpacity>
-				<View style={styles.colContainer}>
-					<View
-						style={{height: height - 110, width: theme.width * 0.98 }}
-					>
-						<FlatList
-							ListHeaderComponent = {() =>
-								<View style={styles.rowContainer}>
-									<View style={styles.postHeaderUserImage}>
-										<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
-											<UserImgProfile circular height={45} width={45} uri={this.state.post?(this.state.anonymousProfile == '0'? this.state.post.data().user_image : null) : null}/>
-										</TouchableOpacity>
-									</View>
-									<View style={{flexDirection: 'column'}}>
-										<View style={{flexDirection:'row'}}>
-											<View style={styles.postHeader}>
-												<View style={{flexDirection: 'row', alignItems: 'center'}}>
-													<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
-														<Text
-															style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
-														>
-															{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
-														</Text>
-													</TouchableOpacity>
+				{
+					this.state.removedPost &&
+					<Text style={{ padding: 5, marginTop: 10, fontWeight: 'bold' }}>
+						Esta post não está mais diponível (´;︵;`)
+					</Text>
+
+				}
+				{
+					!this.state.removedPost &&
+					<View style={styles.colContainer}>
+						<View
+							style={{height: height - 110, width: theme.width * 0.98 }}
+						>
+							<FlatList
+								ListHeaderComponent = {() =>
+									<View style={styles.rowContainer}>
+										<View style={styles.postHeaderUserImage}>
+											<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
+												<UserImgProfile circular height={45} width={45} uri={this.state.post?(this.state.anonymousProfile == '0'? this.state.post.data().user_image : null) : null}/>
+											</TouchableOpacity>
+										</View>
+										<View style={{flexDirection: 'column'}}>
+											<View style={{flexDirection:'row'}}>
+												<View style={styles.postHeader}>
+													<View style={{flexDirection: 'row', alignItems: 'center'}}>
+														<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
+															<Text
+																style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+															>
+																{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
+															</Text>
+														</TouchableOpacity>
+													</View>
 												</View>
-											</View>
-											<TouchableOpacity
+												<TouchableOpacity
 													style = {{width:theme.width * 0.14,height:theme.height * 0.048,flexDirection:'column',justifyContent:'flex-end'}}
 													onPress={() => this.RBSheet.open()}>
 													<View
@@ -532,53 +546,54 @@ export default class PostDetails extends React.Component {
 															source={require('../../../../assets/images/ellipsis-h-solid.png')}
 														/>
 													</View>
-											</TouchableOpacity>
-										</View>
-										<View style={styles.body}>
-											<View style={styles.post}>
-												<View style = {{width:theme.width * 0.77,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'center'}}>
-													<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}> {this.state.post ? this.state.post.data().text : null} </Text>
-												</View>
-												<View style = {{marginLeft:theme.width * 0.01}}>
-													{this.getModalImagesLayout()}
+												</TouchableOpacity>
+											</View>
+											<View style={styles.body}>
+												<View style={styles.post}>
+													<View style = {{width:theme.width * 0.77,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'center'}}>
+														<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}> {this.state.post ? this.state.post.data().text : null} </Text>
+													</View>
+													<View style = {{marginLeft:theme.width * 0.01}}>
+														{this.getModalImagesLayout()}
+													</View>
 												</View>
 											</View>
+											<Text style={{color: 'gray', fontSize: 8,marginLeft:theme.width * 0.02}}> {this.state.post ? this.state.post.data().date : null} </Text>
 										</View>
-										<Text style={{color: 'gray', fontSize: 8,marginLeft:theme.width * 0.02}}> {this.state.post ? this.state.post.data().date : null} </Text>
 									</View>
-								</View>
-							}
-							refreshControl={
-								<RefreshControl
-									refreshing={this.state.isRefreshing}
-									onRefresh={this.onRefresh.bind(this)}
-								/>
-							}
-							data = {this.state.comments}
-							renderItem={ ({item}) =>
-								< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
-							}
-							keyExtractor={item => item.cid}
-							onEndReachedThreshold={0.3}
-							onEndReached={ ({ distanceFromEnd }) => {
-								this.pullMoreCommentaries(distanceFromEnd);
-							}}
-							ListFooterComponent={ this.renderFooter.bind(this)}
-						/>
+								}
+								refreshControl={
+									<RefreshControl
+										refreshing={this.state.isRefreshing}
+										onRefresh={this.onRefresh.bind(this)}
+									/>
+								}
+								data = {this.state.comments}
+								renderItem={ ({item}) =>
+									< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+								}
+								keyExtractor={item => item.cid}
+								onEndReachedThreshold={0.3}
+								onEndReached={ ({ distanceFromEnd }) => {
+									this.pullMoreCommentaries(distanceFromEnd);
+								}}
+								ListFooterComponent={ this.renderFooter.bind(this)}
+							/>
+						</View>
+						{
+
+							heimdallr.email !== 'spotted@utfpr.com' &&
+
+							<FAB
+								style={styles.fab}
+								small
+								icon={require('../../../../assets/images/comment-regular.png')}
+								onPress={this._openCommentaryWriter.bind(this)}
+							/>
+
+						}
 					</View>
-					{
-
-						heimdallr.email !== 'spotted@utfpr.com' &&
-
-						<FAB
-						style={styles.fab}
-						small
-						icon={require('../../../../assets/images/comment-regular.png')}
-						onPress={this._openCommentaryWriter.bind(this)}
-					  />
-
-					}
-				</View>
+				}
 				<RBSheet
 					ref={ref => {
 						this.RBSheet = ref;
