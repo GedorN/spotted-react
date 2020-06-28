@@ -29,7 +29,6 @@ export default class Home extends React.Component {
 		showAlert: false,
 		deletePost: '',
 		showDeleteAlert: false,
-		showConfirmDelete: false
     };
   }
 
@@ -137,23 +136,29 @@ export default class Home extends React.Component {
 	  )
   };
 
+  confirmPostRm =(pid) => {
+	  this.setState({ showDeleteAlert: true, deletePost: pid });
+  }
 
-	confirmReport = (deleteAction, pid) => {
 
-		if(deleteAction){
-			this.setState({ showDeleteAlert: true, deletePost: pid });
-		}
-		else{
+	confirmReport = () => {
 			this.setState({ showAlert: true});
-		}
 	}
 
 	deletePost = () => {
-		this.setState({ showDeleteAlert: false, showConfirmDelete: true });
-		heimdallr.deletePost('post',this.state.deletePost);
-		heimdallr.deletePostComments('comment',this.state.deletePost);
-		heimdallr.deleteUserPost('user_posts',this.state.deletePost,heimdallr.user_id);
-		heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
+		this.setState({ isRefreshing: true });
+		heimdallr.deletePost(this.state.deletePost).then(
+			() => {
+				this.onRefresh();
+			},
+			() => {
+				this.setState({ isRefreshing: false });
+			}
+		);
+		this.setState({ showDeleteAlert: false});
+		heimdallr.deleteUserPost(this.state.deletePost);
+		// heimdallr.deletePostComments('comment',this.state.deletePost);
+		// heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
 	}
 
 
@@ -172,6 +177,7 @@ export default class Home extends React.Component {
 									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling}
 									video={item._data.video ? true : false}
 								    closeAlert={this.confirmReport.bind(this)}
+						            confirmPostRm={this.confirmPostRm.bind(this)}
 							/>
               }
               refreshControl={
@@ -195,7 +201,7 @@ export default class Home extends React.Component {
 				title= {"Tem certeza que deseja excluir ? "}
 				titleStyle = {{fontSize: 15, justifyContent: 'center'}}
 				message= {"Após confirmada essa ação não poderá ser desfeita."}
-				messageStyle = {{fontSize: 13}} 
+				messageStyle = {{fontSize: 13}}
 				closeOnTouchOutside={true}
 				closeOnHardwareBackPress={false}
 				showCancelButton = {true}
@@ -209,22 +215,8 @@ export default class Home extends React.Component {
 				onCancelPressed={() => {
 					this.setState({ showDeleteAlert: false })
 				}}
-	
+
 			/>
-			<AwesomeAlert
-				show={this.state.showConfirmDelete}
-				showProgress={false}
-				title= {"Postagem excluída!"}
-				titleStyle = {{marginBottom:5}}
-				closeOnTouchOutside={true}
-				closeOnHardwareBackPress={false}
-				showConfirmButton={true}
-				confirmText= {"OK"}
-				confirmButtonColor={'green'}
-				onConfirmPressed={() => {
-					this.setState({ showConfirmDelete: false }) 
-				}}
-	      />
 	      <AwesomeAlert
 				show={this.state.showAlert}
 				showProgress={false}
@@ -236,7 +228,7 @@ export default class Home extends React.Component {
 				confirmText= {"OK"}
 				confirmButtonColor={'green'}
 				onConfirmPressed={() => {
-					this.setState({ showAlert: false }) 
+					this.setState({ showAlert: false })
 				}}
 	      />
 

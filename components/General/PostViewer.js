@@ -21,9 +21,11 @@ import Video from 'react-native-video';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod from "../../android/app/src/components/Inputs/ReportGod";
+import PostOptions from "../../android/app/src/components/Inputs/PostOptions";
 
 import theme from "./Theme";
 import AwesomeAlert from "react-native-awesome-alerts";
+import PostDetails from "../../android/app/src/components/PostDetails";
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
@@ -287,9 +289,14 @@ export default class PostViewer extends React.Component {
     });
   }
 
-	closeAlert = (deleteAction) => {
+	closeAlert = () => {
 		this.RBSheet.close();
-		this.props.closeAlert(deleteAction, this.props.pid);
+		this.props.closeAlert();
+	}
+
+	deletePost = () => {
+		this.RBSheet.close();
+		this.props.confirmPostRm(this.props.pid);
 	}
 
   render () {
@@ -382,7 +389,8 @@ export default class PostViewer extends React.Component {
 			    animationType={'slide'}
 			    duration={250}
 		    >
-			    <ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'} userId = {this.props.uid}/>
+			    {/*<ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'} userId = {this.props.uid}/>*/}
+			    <PostOptions deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.props.uid}/>
 		    </RBSheet>
 	    </TouchableOpacity>
     );

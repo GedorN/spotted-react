@@ -12,6 +12,7 @@ import theme from "../../../../components/General/Theme";
 import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod  from './Inputs/ReportGod';
 import AwesomeAlert from "react-native-awesome-alerts";
+import PostOptions from "./Inputs/PostOptions";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 
 
@@ -37,7 +38,7 @@ export default class CommentaryViewer extends React.Component {
 	goToUserProfile = () => {
 		 this.props.navigation.push('UserProfile', {
 			userId: this.props.user_id,
-		}); 
+		});
 
 	}
 
@@ -45,9 +46,14 @@ export default class CommentaryViewer extends React.Component {
 		this.props.navigation.goBack();
 	}
 
-	closeAlert = (deleteAction, cid) => {
+	deletePost = (deleteAction, cid) => {
 		this.RBSheet.close();
-		this.props.commentaryCallback(deleteAction, cid);
+		this.props.deleteCommentary(cid);
+	}
+
+	closeAlert = () => {
+		this.RBSheet.close();
+		this.props.commentaryCallback();
 	}
 
 
@@ -83,7 +89,7 @@ export default class CommentaryViewer extends React.Component {
 										</View>
 							</TouchableOpacity>
 						</View>
-						
+
 					</View>
 					<View style={{width: theme.width * 0.75,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'flex-end'}}>
 						<Text>{ this.props.text }</Text>
@@ -97,7 +103,8 @@ export default class CommentaryViewer extends React.Component {
 					animationType={'slide'}
 					duration={250}
 				>
-					<ReportGod  close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid} userId = {this.props.user_id}/>
+					{/*<ReportGod  close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid} userId = {this.props.user_id}/>*/}
+					<PostOptions  deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid} userId = {this.props.user_id}/>
 				</RBSheet>
 			</View>
 		);
@@ -123,6 +130,6 @@ const styles  = StyleSheet.create({
 	userNameText: {
 		fontWeight: 'bold',
 		marginLeft: 16,
-		
+
 	},
 });

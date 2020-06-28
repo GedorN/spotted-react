@@ -41,7 +41,6 @@ export default class UserProfile extends React.Component {
 			showAlert: false,
 			deletePost: '',
 			showDeleteAlert: false,
-			showConfirmDelete: false
 		};
 	}
 
@@ -56,7 +55,6 @@ export default class UserProfile extends React.Component {
 						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
 						heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
-							console.log('peguei de volta', resolve);
 							if(!resolve || resolve.length === 0){
 								this.setState({ endPulling: true });
 							}
@@ -79,14 +77,10 @@ export default class UserProfile extends React.Component {
 					console.warn('Deu ruim: ', reject);
 				});
 		} else {
-			// const hue = heimdallr.test(heimdallr.user_id, 100);
-			var before = Date.now();
-			console.log('navigation: ', this.props);
 			this.state.userId = heimdallr.user_id;
 			this.state.userImage = heimdallr.user_image;
 			this.state.userName = heimdallr.user_name;
 			this.state.userImageUrl = [{url: heimdallr.user_image}];
-			console.log('Profile: ', this.state.userId);
 			heimdallr.getUserColletion(100, this.state.userId).then(
 				(resolve) => {
 					if(!resolve || resolve.length === 0){
@@ -99,8 +93,6 @@ export default class UserProfile extends React.Component {
 
 						}
 					});
-					var after = Date.now() - before;
-					console.log(`o mais foda levou: ${after}`);
 					this.setState({ posts: resolve });
 				}
 			);
@@ -179,28 +171,29 @@ export default class UserProfile extends React.Component {
 						doc.elapsed_time = heimdallr.getElapsedTime(time);
 					}
 				});
-				console.log('peguei esses caras aqui', resolve);
-				this.setState({ posts: resolve });
+				this.setState({ posts: resolve, isRefreshing: false });
 
 			}
 		);
 	}
 
+	deletePostConfirm = (pid) => {
+		this.setState({ showDeleteAlert: true, deletePost: pid });
+
+	}
+
 	confirmReport = (deleteAction, pid) => {
-		if(deleteAction){
-			this.setState({ showDeleteAlert: true, deletePost: pid });
-		}
-		else{
-			this.setState({ showAlert: true });
-		}
+		this.setState({ showAlert: true });
 	}
 
 	deletePost = () => {
-		this.setState({ showDeleteAlert: false, showConfirmDelete: true });
-		heimdallr.deletePost('post',this.state.deletePost);
-		heimdallr.deletePostComments('comment',this.state.deletePost);
-		heimdallr.deleteUserPost('user_posts',this.state.deletePost,heimdallr.user_id);
-		heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
+		this.setState({ showDeleteAlert: false, isRefreshing: true });
+		heimdallr.deletePost(this.state.deletePost);
+		heimdallr.deleteUserPost(this.state.deletePost).then(
+			() => {
+				this.onRefresh();
+			}
+		);
 	}
 
 
@@ -230,7 +223,7 @@ export default class UserProfile extends React.Component {
 						onScrollEndDrag={() => this.setState({ scrolling: false })}
 						onScrollBeginDrag={() => this.setState({ scrolling: true })}
 						renderItem={ ({item}) =>
-								<PostViewer closeAlert={this.confirmReport.bind(this)}  video={item.video ? true : false} text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+								<PostViewer confirmPostRm={this.deletePostConfirm.bind(this)} closeAlert={this.confirmReport.bind(this)}  video={item.video ? true : false} text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
 						}
 						ListHeaderComponent={() =>
 							<View style={styles.profileHeader}>
@@ -311,7 +304,7 @@ export default class UserProfile extends React.Component {
 					title= {"Tem certeza que deseja excluir ? "}
 					titleStyle = {{fontSize: 15, justifyContent: 'center'}}
 					message= {"Após confirmada essa ação não poderá ser desfeita."}
-					messageStyle = {{fontSize: 13}} 
+					messageStyle = {{fontSize: 13}}
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showCancelButton = {true}
@@ -328,21 +321,6 @@ export default class UserProfile extends React.Component {
 				/>
 
 				<AwesomeAlert
-					show={this.state.showConfirmDelete}
-					showProgress={false}
-					title= {"Postagem excluída!"}
-					titleStyle = {{marginBottom:5}}
-					closeOnTouchOutside={true}
-					closeOnHardwareBackPress={false}
-					showConfirmButton={true}
-					confirmText= {"OK"}
-					confirmButtonColor={'green'}
-					onConfirmPressed={() => {
-						this.setState({ showConfirmDelete: false }) 
-					}}
-				/>
-
-				<AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}
 					title= {"Denúncia realizada"}
@@ -353,10 +331,10 @@ export default class UserProfile extends React.Component {
 					confirmText= {"OK"}
 					confirmButtonColor={'green'}
 					onConfirmPressed={() => {
-						this.setState({ showAlert: false }) 
+						this.setState({ showAlert: false })
 					}}
 				/>
-					
+
 			</View>
 		);
 	}

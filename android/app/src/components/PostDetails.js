@@ -30,6 +30,7 @@ import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
 import CommentaryWriter from "./Inputs/CommentaryWriter";
+import PostOptions from "./Inputs/PostOptions";
 
 
 const width = Dimensions.get('screen').width;
@@ -63,7 +64,6 @@ export default class PostDetails extends React.Component {
 			deletePost: '',
 			deleteComment: false,
 			commentId: '',
-			showConfirmDelete: false,
 		};
 	}
 
@@ -77,17 +77,14 @@ export default class PostDetails extends React.Component {
 	}
 
 	componentDidMount = () => {
-		console.warn('ID POSTDETAILS',this.props.navigation.getParam('pid'));
 		this.setState({ pulling: true });
 		this.state.postId =  this.props.navigation.getParam('pid');
 		this.state.userId = this.props.navigation.getParam('userId');
 		if (this.props.navigation.getParam('userId') === heimdallr.user_id){
-			this.setState({reportAlert : false});
+			this.state.reportAlert = false;
 		}
-		console.warn("STATE USER ID POSTDETAISL", this.props.navigation.getParam('userId'));
 		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
 		result.then((resolve) => {
-			console.log('details', moment(resolve[0].data().date).locale('pt-br').format('LLLL'));
 			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
 			this.setState( { post: resolve[0] });
 			if (resolve[0].data().images) {
@@ -97,7 +94,6 @@ export default class PostDetails extends React.Component {
 					this.setState({ galleryObj: images });
 				});
 			}
-			console.log('que post é esse? ', this.state.post);
 			this.forceUpdate();
 			this.setState({ pulling: false });
 			this.setState({ anonymousProfile: this.state.post.data().anonymous });
@@ -116,7 +112,7 @@ export default class PostDetails extends React.Component {
 
 	}
 
-	
+
 
 	disableModal () {
 		this.setState({ showImages: false });
@@ -419,27 +415,22 @@ export default class PostDetails extends React.Component {
 		this.props.navigation.goBack();
 	}
 
-	closeAlert = (deleteAction) => {
-
+	deletePostConfirm = () => {
 		this.RBSheet.close();
-
-		if(deleteAction){
-			this.setState({ showDeleteAlert: true });
-		}
-		else{
-			this.setState({ showAlert: true });
-		}
+		this.setState({ showDeleteAlert: true });
 	}
 
-	comentaryCallback = (deleteAction, cid) => {
+	closeAlert = () => {
+		this.RBSheet.close();
+		this.setState({ showAlert: true });
+	}
 
-		if(deleteAction){
-			this.setState({  showDeleteAlert: true, deleteComment: true, commentId: cid });
-		}
-		else{
-			this.setState({ showAlert: true });
-		}
-		
+	commentaryDelete = (cid) => {
+		this.setState({  showDeleteAlert: true, deleteComment: true, commentId: cid });
+	}
+
+	comentaryCallback = () => {
+		this.setState({ showAlert: true });
 	}
 
 
@@ -450,21 +441,26 @@ export default class PostDetails extends React.Component {
 
 	deletePost = () => {
 
-		this.setState({ showDeleteAlert: false, showConfirmDelete: true });
+		this.setState({ showDeleteAlert: false });
 
 		if(this.state.deleteComment){
-			heimdallr.deleteCommentary('comment',this.state.postId, this.state.commentId);
-			heimdallr.deleteCommentNotification('notification', this.state.commentId, this.state.post.data().uid);
-			this.setState({ deleteComment: false });
+			heimdallr.deleteCommentary(this.state.postId, this.state.commentId).then(
+				() => {
+					let comments = this.state.comments;
+					comments.splice((c) => c.cid === this.state.commentId, 1);
+					this.setState({ deleteComment: false, comments: comments });
+				}
+			);
 		}
 		else{
-			heimdallr.deletePost('post',this.state.postId);
-			heimdallr.deletePostComments('comment',this.state.postId);
-			heimdallr.deleteUserPost('user_posts',this.state.postId,heimdallr.user_id);
-			heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.postId);
-			this.setState({ deleteComment: false });
+			heimdallr.deletePost(this.state.postId);
+			heimdallr.deleteUserPost(this.state.postId).then(
+				() => {
+					this.props.navigation.push('Home');
+				}
+			);
 		}
-		
+
 	}
 
 
@@ -560,7 +556,7 @@ export default class PostDetails extends React.Component {
 							}
 							data = {this.state.comments}
 							renderItem={ ({item}) =>
-								< CommentaryViewer commentaryCallback = {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+								< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
 							}
 							keyExtractor={item => item.cid}
 							onEndReachedThreshold={0.3}
@@ -590,9 +586,10 @@ export default class PostDetails extends React.Component {
 					height={this.state.reportAlert ? 300 : 150}
 					animationType={'slide'}
 					duration={250}
-					
+
 				>
-					<ReportGod  close={this.closeAlert.bind(this)} idEntity={this.state.postId} typeEntity = {'post'} userId = {this.state.userId}/>
+					{/*<ReportGod  close={this.closeAlert.bind(this)} idEntity={this.state.postId} typeEntity = {'post'} userId = {this.state.userId}/>*/}
+					<PostOptions deletePost={this.deletePostConfirm.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.state.userId} />
 				</RBSheet>
 				<AwesomeAlert
 					show={this.state.showDeleteAlert}
@@ -600,7 +597,7 @@ export default class PostDetails extends React.Component {
 					title= {"Tem certeza que deseja excluir ? "}
 					titleStyle = {{fontSize: 15, justifyContent: 'center'}}
 					message= {"Após confirmada essa ação não poderá ser desfeita."}
-					messageStyle = {{fontSize: 13}} 
+					messageStyle = {{fontSize: 13}}
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showCancelButton = {true}
@@ -616,20 +613,6 @@ export default class PostDetails extends React.Component {
 					}}
 				/>
 				<AwesomeAlert
-					show={this.state.showConfirmDelete}
-					showProgress={false}
-					title= {"Postagem excluída!"}
-					titleStyle = {{marginBottom:5}}
-					closeOnTouchOutside={true}
-					closeOnHardwareBackPress={false}
-					showConfirmButton={true}
-					confirmText= {"OK"}
-					confirmButtonColor={'green'}
-					onConfirmPressed={() => {
-						this.setState({ showConfirmDelete: false }) 
-					}}
-				/>
-				<AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}
 					title= {"Denúncia realizada"}
@@ -640,7 +623,7 @@ export default class PostDetails extends React.Component {
 					confirmText= {"OK"}
 					confirmButtonColor={'green'}
 					onConfirmPressed={() => {
-						this.setState({ showAlert: false }) 
+						this.setState({ showAlert: false })
 					}}
 				/>
 				<Modal
@@ -713,7 +696,7 @@ const styles = StyleSheet.create({
 		marginTop: theme.height * 0.75,
 		marginLeft: theme.width * 0.80,
 		padding: 5,
-	
+
 
 	}
 });

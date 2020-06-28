@@ -755,7 +755,7 @@ function HeimdallrLib() {
 		  return user;
 	  }).catch((error) => {
 			console.log("erro usuário",error);
-		
+
 		});
   }
 
@@ -892,21 +892,24 @@ function HeimdallrLib() {
 		})
 	}
 
-	this.deletePost = function (collection, pid) {
-
-		let document = null;
-
-		return new Promise((resolve) => {
-			firebase.firestore().collection(collection).where('pid', '==', pid).get().then(
+	this.deletePost = function (pid) {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('post').where('pid', '==', pid).get().then(
 				(result) => {
-					document = result._docs[0]._ref.id;
-				}
-			).then((resolve) => {
-				firebase.firestore().collection(collection).doc(document).delete();
 
-			}).catch(function(error){
-				console.log('Error removing document',error);
-			})
+					firebase.firestore().collection('post').doc(result._docs[0]._ref.id).delete().then(
+						() => {
+							resolve();
+						},
+						() => {
+							reject();
+						}
+					);
+				},
+				(error) => {
+					reject(error);
+				}
+			)
 		})
 	}
 
@@ -939,30 +942,29 @@ function HeimdallrLib() {
 			console.log("error get commentary",error);
 		})
 	}
-	
 
-	this.deleteUserPost = function (collection, pid, userId) {
+
+	this.deleteUserPost = function (pid) {
 		let docs = [];
-		return new Promise((resolve) => {
-			firebase.firestore().collection(collection).doc(userId).get().then(
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('user_posts').doc(this.user_id).get().then(
 				(result) => {
-					let post = null;
-					let index = null;
-					let removed = null;
-					post = result.data().posts.find((item) => item.pid === pid); 
-					index = result.data().posts.indexOf(post);
-					removed = result.data().posts.splice(index,1);
-					firebase.firestore().collection('user_posts').doc(userId).set(
-						{
-							posts: result.data().posts
+					const post = result.data().posts.find((item) => item.pid === pid);
+					const index = result.data().posts.indexOf(post);
+					const removed = result.data().posts.splice(index,1);
+					firebase.firestore().collection('user_posts').doc(this.user_id).set(
+						{ posts: result.data().posts }, {merge: true}).then(
+						()=> {
+							resolve();
 						},
-						{
-							merge: true
+						(error) => {
+							reject(error);
 						}
 					);
 				})
 		}).catch(function(error){
 			console.log("error get commentary",error);
+			reject();
 		})
 	}
 
@@ -974,7 +976,7 @@ function HeimdallrLib() {
 					let notification = null;
 					let index = null;
 					let removed = null;
-					notification = result.data().notifications.find((item) => item.cid === cid); 
+					notification = result.data().notifications.find((item) => item.cid === cid);
 					index = result.data().notifications.indexOf(notification);
 					removed = result.data().notifications.splice(index,1);
 					firebase.firestore().collection('notification').doc(userId).set(
@@ -994,26 +996,28 @@ function HeimdallrLib() {
 	}
 
 
-	this.deleteCommentary = function (collection, pid, cid) {
+	this.deleteCommentary = function (pid, cid) {
 		let docs = [];
-		return new Promise((resolve) => {
-			firebase.firestore().collection(collection).doc(pid).get().then(
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('comment').doc(pid).get().then(
 				(result) => {
-					let commentary = null;
-					let index = null;
-					let removed = null;
-					commentary = result.data().comments.find((item) => item.cid === cid); 
-					index = result.data().comments.indexOf(commentary);
-					removed = result.data().comments.splice(index,1);
+					let commentary = result.data().comments.find((item) => item.cid === cid);
+					let index = result.data().comments.indexOf(commentary);
+					let removed = result.data().comments.splice(index,1);
 					firebase.firestore().collection('comment').doc(pid).set(
-						{
-							comments: result.data().comments
+						{ comments: result.data().comments }, { merge: true }
+					).then(
+						() => {
+							resolve();
 						},
-						{
-							merge: true
+						() => {
+							reject();
 						}
 					);
 
+				},
+				() => {
+					reject();
 				}
 			)
 		}).catch(function(error){
@@ -1023,7 +1027,7 @@ function HeimdallrLib() {
 
 	this.saveSpecificColletion = function (collection,params) {
   	console.log('params.uid',params.uid);
-		return new Promise((resolve) => { 
+		return new Promise((resolve) => {
 			firebase.firestore().collection(collection).doc(params.uid).get().then(
 				(result) => {
 					console.log('result', result.data());
