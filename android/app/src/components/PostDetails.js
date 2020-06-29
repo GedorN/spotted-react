@@ -570,7 +570,7 @@ export default class PostDetails extends React.Component {
 								}
 								data = {this.state.comments}
 								renderItem={ ({item}) =>
-									< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+									< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  images = {item.images} video = {item.video} commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
 								}
 								keyExtractor={item => item.cid}
 								onEndReachedThreshold={0.3}
@@ -651,7 +651,7 @@ export default class PostDetails extends React.Component {
 					onRequestClose={this._hideModal.bind(this)}
 					contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 				>
-					<CommentaryWriter close={this._hideModal.bind(this)} context={this}/>
+					<CommentaryWriter close={this._hideModal.bind(this)} refresh = {this.onRefresh.bind(this)} pullCommentaries = {this.pullMoreCommentaries.bind(this)} context={this} navigation = {this.props.navigation}/>
 				</Modal>
 			</KeyboardAvoidingView>
 		);
