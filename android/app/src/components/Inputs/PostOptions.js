@@ -29,7 +29,7 @@ export default class PostOptions extends React.Component {
 	deletePost = async () => {
 
 		if(this.props.typeEntity === 'comentario'){
-			this.props.deletePost(true, this.props.idEntity);
+			this.props.deletePost(this.props.idEntity);
 		}
 		else {
 			this.props.deletePost(true);

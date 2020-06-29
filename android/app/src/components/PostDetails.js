@@ -389,21 +389,21 @@ export default class PostDetails extends React.Component {
 			params.pid = this.state.post.data().pid;
 			params.comment = comment;
 			params.date = await heimdallr.getServerTime();
-			params.user_image = heimdallr.user_image;
-			params.user_name = heimdallr.user_name;
+			params.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
+			params.user_name =!this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
 			params.anonymous =  this.state.anonymousUser;
 			params.id_user = heimdallr.user_id;
 			heimdallr.getUID().then((uuid) => {
 				params.cid = uuid;
 
-				const data = {};
-				data.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
-				data.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
-				data.comment = comment;
-				data.anonymous =  this.state.anonymousUser;
-				data.cid = uuid;
+				// const data = {};
+				// data.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
+				// data.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
+				// data.comment = comment;
+				// data.anonymous =  this.state.anonymousUser;
+				// data.cid = uuid;
 				let posts = this.state.comments;
-				posts.push(data);
+				posts.push(params);
 				this.setState({ comments: posts });
 				this.setState({ creatingComment: false, reportAlert: false });
 
@@ -452,7 +452,7 @@ export default class PostDetails extends React.Component {
 			heimdallr.deleteCommentary(this.state.postId, this.state.commentId).then(
 				() => {
 					let comments = this.state.comments;
-					comments.splice((c) => c.cid === this.state.commentId, 1);
+					comments.splice(comments.findIndex((c) => c.cid === this.state.commentId), 1);
 					this.setState({ deleteComment: false, comments: comments });
 				}
 			);

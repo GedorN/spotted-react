@@ -29,7 +29,6 @@ export default class CommentaryViewer extends React.Component {
 
 
 	componentDidMount = () => {
-
 		if(this.props.user_id === heimdallr.user_id){
 			this.setState({reportAlert: false})
 		}
@@ -46,7 +45,7 @@ export default class CommentaryViewer extends React.Component {
 		this.props.navigation.goBack();
 	}
 
-	deletePost = (deleteAction, cid) => {
+	deletePost = (cid) => {
 		this.RBSheet.close();
 		this.props.deleteCommentary(cid);
 	}
