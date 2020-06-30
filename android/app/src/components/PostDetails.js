@@ -375,24 +375,13 @@ export default class PostDetails extends React.Component {
 		}
 	}
 
-	addCommentary = async () => {
-		if (!this.state.commentText || this.state.commentText === '') {
-			return ;
-		}
+	addCommentary = async (params) => {
 		if (!this.state.creatingComment) {
+			console.log('agora vai');
 			this.setState({ creatingComment: true });
 
 
-			const params = {};
-			const comment = this.state.commentText;
-			this.setState({ commentText: null });
 			params.pid = this.state.post.data().pid;
-			params.comment = comment;
-			params.date = await heimdallr.getServerTime();
-			params.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
-			params.user_name =!this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
-			params.anonymous =  this.state.anonymousUser;
-			params.id_user = heimdallr.user_id;
 			heimdallr.getUID().then((uuid) => {
 				params.cid = uuid;
 
@@ -409,7 +398,7 @@ export default class PostDetails extends React.Component {
 
 				heimdallr.saveComment(params);
 
-				this.triggerNotification(comment, uuid);
+				this.triggerNotification(params.comment, uuid);
 			})
 
 		}
@@ -651,7 +640,7 @@ export default class PostDetails extends React.Component {
 					onRequestClose={this._hideModal.bind(this)}
 					contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 				>
-					<CommentaryWriter close={this._hideModal.bind(this)} refresh = {this.onRefresh.bind(this)} pullCommentaries = {this.pullMoreCommentaries.bind(this)} context={this} navigation = {this.props.navigation}/>
+					<CommentaryWriter close={this._hideModal.bind(this)} refresh = {this.onRefresh.bind(this)} pullCommentaries = {this.pullMoreCommentaries.bind(this)} saveComment={this.addCommentary.bind(this)} pid={this.state.post ? this.state.post.data().pid : null} uid={this.state.post ? this.state.post.data().uid : null}/>
 				</Modal>
 			</KeyboardAvoidingView>
 		);

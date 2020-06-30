@@ -119,6 +119,10 @@ function HeimdallrLib() {
 							{
 								merge: true
 							}
+						).then(
+							(res) => {
+								resolve(res);
+							}
 						);
 					}
 				)
@@ -144,9 +148,7 @@ function HeimdallrLib() {
 				resolve();
 			}
 
-		}).then(function (resolve) {
-			return returnValue;
-		})
+		});
 	}
 
 	this.saveNotification = function (params) {

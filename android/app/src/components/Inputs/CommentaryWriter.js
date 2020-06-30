@@ -4,12 +4,15 @@ import {
 	TextInput,
 	TouchableOpacity,
 	View,
-	StyleSheet, 
+	StyleSheet,
 	Dimensions,
 	PermissionsAndroid,
 	StatusBar,
-	ActivityIndicator
+	ActivityIndicator,
+	Text
 } from 'react-native';
+
+import {ProgressBar} from "react-native-paper";
 
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
@@ -17,7 +20,6 @@ import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
 import Video from 'react-native-video';
-import {Text} from "react-native-paper";
 
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
@@ -122,12 +124,10 @@ export default class CommentaryWriter extends React.Component {
 		/* Essa condição é equivalente ao conceito de barreira (só que com uma implementação muito mais simples)
 		 * Espera até que todas as fotos tenham sido enviadas para continuar
 		 * */
-		if (sendedImages >= 1) {
-			let self = this;
+		if (this.state.postImages.length === 0 ) {
+			console.log('estou aqui hehe');
 			const params = {};
-
-			params.pid = self.props.context.state.post.data().pid;
-			params.comment = self.state.postText;
+			params.comment = this.state.postText;
 			params.date = await heimdallr.getServerTime();
 			params.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
 			params.user_name =!this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
@@ -138,16 +138,41 @@ export default class CommentaryWriter extends React.Component {
 
 			heimdallr.getUID().then((uuid) => {
 				params.cid = uuid;
+				console.log('olha como vai', params);
 				/* this.props.call(); */
-				let result =heimdallr.saveComment(params);
-				result.then((resolve) => {
+				this.props.saveComment(params);
+			});
+
+		} else if (sendedImages >= 1) {
+			const params = {};
+
+			params.pid = this.props.pid;
+			params.comment = this.state.postText;
+			params.date = await heimdallr.getServerTime();
+			params.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
+			params.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
+			params.anonymous =  this.state.anonymousUser;
+			params.id_user = heimdallr.user_id;
+			params.images = this.state.postImages;
+			params.video = this.state.videoIncluded;
+
+			heimdallr.getUID().then((uuid) => {
+				params.cid = uuid;
+
+				heimdallr.saveComment(params).then((resolve) => {
+					if (!this.state.videoIncluded) {
+						const message = `${this.state.postText ? this.state.postText.substring(0, 34) + ' ' : ''}📷 Imagem`
+						this.triggerNotification(message, uuid)
+					} else {
+						const message = `${this.state.postText ? this.state.postText.substring(0, 34) + ' ' : ''}🎞 GIF`
+						this.triggerNotification(message, uuid)
+					}
 					console.log('result: ', resolve);
+					this.props.refresh();
+					this.props.close();
 				});
 			});
 
-			self.props.refresh();
-			self.props.pullCommentaries();
-			self.props.close();
 		} else {
 			console.log(sendedImages, ' has already sended...');
 		}
@@ -155,10 +180,11 @@ export default class CommentaryWriter extends React.Component {
 
 
 	doPost = () => {
-		if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0) {
+		if (!this.state.postText && this.state.postImages.length === 0) {
 			console.log('nothing to do...');
 			return ;
 		}
+
 		this.setState({activity: true});
 		/* caso a postagem possua ao menos uma foto */
 		let posImagesLenght = this.state.postImages.length;
@@ -177,14 +203,14 @@ export default class CommentaryWriter extends React.Component {
 					let constant = propCo > 1 ? 0.8 : 1;
 					ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
 						(resolve) => {
-							let link = heimdallr.uploadImage(resolve.uri);
-							link.then(function (resolve) {
-								checkedImages ++;
-								console.log('URL resolve: ', resolve);
-								urlArray.push(resolve);
-								self.state.postImages = urlArray;
-								/* Save the post*/
-								self.savePost(checkedImages / posImagesLenght);
+							heimdallr.uploadImage(resolve.uri).then(
+								(result) => {
+									checkedImages ++;
+									console.log('URL resolve: ', result);
+									urlArray.push(result);
+									this.state.postImages = urlArray;
+									/* Save the post*/
+									this.savePost(checkedImages / posImagesLenght);
 							})
 
 						},
@@ -205,12 +231,38 @@ export default class CommentaryWriter extends React.Component {
 			})
 		} else {
 			// caso a postagem não contenha imagem
-			/* this.props.close(); */
+			this.props.close();
 			this.savePost(1);
 		}
 	}
 
-	
+	triggerNotification = async (comment, cid) => {
+		if(heimdallr.user_id != this.props.uid){
+			const notifications = {};
+			notifications.eid = this.props.pid;
+			notifications.uid = this.props.uid;
+			notifications.uid_notification = heimdallr.user_id;
+			notifications.user_name = heimdallr.user_name;
+			notifications.user_image = heimdallr.user_image;
+			notifications.anonymous =  this.state.anonymousUser;
+			notifications.content = comment;
+			notifications.cid = cid;
+			notifications.date = await heimdallr.getServerTime();
+			notifications.visualized = 0;
+			notifications.entity = "commentary";
+			heimdallr.incrementNotification(this.props.uid);
+
+			heimdallr.getUID().then((uuid) => {
+				notifications.nid = uuid;
+				let result = heimdallr.saveNotification(notifications);
+				result.then((resolve) => {
+					console.log("notification received", resolve);
+				});
+			})
+		}
+	}
+
+
 
 	getModalImagesLayout() {
 		/*
@@ -366,6 +418,7 @@ export default class CommentaryWriter extends React.Component {
 			<View style={styles.container}>
 				<View>
 					<View>
+						<ProgressBar size="large" visible={this.state.activity} indeterminate color={theme.primary}/>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.props.close}>
 								<Image
@@ -374,12 +427,7 @@ export default class CommentaryWriter extends React.Component {
 								/>
 							</TouchableOpacity>
 						</View>
-						{/*<UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>*/}
 						<View>
-							{
-								this.state.activity &&
-								<ActivityIndicator size="large" color={theme.primary}/>
-							}
 							<TextInput
 								style={{width: width + 10,
 									borderBottomWidth: 0.7,

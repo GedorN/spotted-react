@@ -4,7 +4,7 @@ import {
 	View,
 	TouchableOpacity,
 	Text,
-	Dimensions, 
+	Dimensions,
 	Image,
 	Modal,
 	Animated,
@@ -36,7 +36,6 @@ export default class CommentaryViewer extends React.Component {
 			opacityValue: 0.7,
 			opacityValueScrolling: 1,
 			opacity: new Animated.Value(0),
-			reportAlert: true,
 		};
 	}
 
@@ -80,7 +79,7 @@ export default class CommentaryViewer extends React.Component {
 		let splited = img.split('?');
 		return (splited[0] + '_100x100?' + splited[1]);
 	}
-  
+
 	onLoadImage = event => {
 	    Animated.timing(this.state.opacity, {
 		    toValue: 1,
@@ -95,12 +94,12 @@ export default class CommentaryViewer extends React.Component {
 		  if (this.props.video) {
 			  return (
 				  <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
-					  <View style={{ flexDirection: 'row'}}>
+					  <View style={{ flexDirection: 'row', width: width * 0.75, height: 230}}>
 						  <Video
 							  resizeMode={'cover'}
 							  repeat={true}
 							  source={{uri: this.props.images[0]}}
-							  style={{width: 280, height: 200, borderRadius: 10}}
+							  style={{width: width * 0.75, height: 230, borderRadius: 10}}
 						  />
 					  </View>
 				  </View>
@@ -282,7 +281,7 @@ export default class CommentaryViewer extends React.Component {
 		  return ;
 	  }
 	}
-  
+
 
 	render = () => {
 		return (
