@@ -317,9 +317,13 @@ export default class CommentaryViewer extends React.Component {
 						</View>
 
 					</View>
-					<View style={{width: theme.width * 0.75,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'flex-end'}}>
-						<Text>{ this.props.text }</Text>
-					</View>
+					{
+						this.props.text != '' &&
+						<View style={{width: theme.width * 0.75,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'flex-end'}}>
+							<Text>{ this.props.text }</Text>
+						</View>
+
+					}
 					{
 						this.props.images && this.props.images.length > 0 &&
 						<View style = {{ height: this.getModalImagesLayout()? 230:0, marginBottom: 5, width: theme.width * 0.75, alignSelf: 'flex-end', paddingBottom: 10, paddingTop: 10 }}>

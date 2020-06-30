@@ -417,21 +417,22 @@ export default class CommentaryWriter extends React.Component {
 		return (
 			<View style={styles.container}>
 				<View>
-					<View>
+					<View style = {{ width: width }}>
 						<ProgressBar size="large" visible={this.state.activity} indeterminate color={theme.primary}/>
-						<View style={styles.header}>
-							<TouchableOpacity onPress={this.props.close}>
-								<Image
-									source={require('../../../../../assets/images/times-solid.png')}
-									style={{width: 20, height: 20,marginRight:5}}
-								/>
-							</TouchableOpacity>
+						<View style = {{ width: width * 0.98, alignSelf: 'center' }}>
+							<View style={styles.header}>
+								<TouchableOpacity onPress={this.props.close}>
+									<Image
+										source={require('../../../../../assets/images/times-solid.png')}
+										style={{width: 20, height: 20,marginRight:5}}
+									/>
+								</TouchableOpacity>
+							</View>
 						</View>
-						<View>
+						<View style = {{ borderColor: 'grey', borderBottomWidth: 0.7 }}>
 							<TextInput
-								style={{width: width + 10,
-									borderBottomWidth: 0.7,
-									borderColor: 'grey',
+								style={{width: width * 0.9,
+									alignSelf:'center',
 									height: this.state.postImages.length > 0 ? height * 0.406 : height * 0.70,
 								}}
 								onChangeText={text => this.setState({postText: text})}
@@ -499,8 +500,9 @@ const styles = StyleSheet.create({
 		zIndex: 99999
 	},
 	header: {
-		width: width,
+		width: width * 0.2,
 		height: 20,
+		alignSelf:'flex-end',
 		justifyContent: 'flex-end',
 		alignItems: 'flex-end',
 		alignContent: 'center',
