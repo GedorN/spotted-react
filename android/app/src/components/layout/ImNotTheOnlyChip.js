@@ -62,7 +62,7 @@ export default class ImNotTheOnlyChip extends React.Component {
 				}}>
 					<Text
 						style={{
-							color: this.props.colors && this.state.pressed ? this.getTxtColor(this.props.colors[0]) : 'black'
+							color: this.props.colors && this.state.pressed ? this.props.colors[1] : 'black'
 						}}
 					> {this.props.text} </Text>
 				</View>

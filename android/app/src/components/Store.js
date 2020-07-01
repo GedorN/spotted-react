@@ -127,12 +127,14 @@ export default class Store extends React.Component {
 						}
 					</View>
 					<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
-						<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.015}}>{'Produtos '}</Text>
-						<View style = {{width:theme.width * 0.2, height : theme.height * 0.07, marginBottom:theme.height * 0.02}}>
-							<Image
-								source = {{ uri: this.state.logo }}
-								style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
-							</Image>
+						<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.05}}>{'Produtos '}</Text>
+						<View style = {{width:theme.width * 0.4, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: 5}}>
+							<View style = {{width:theme.width * 0.35, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: -20}}>
+								<Image
+									source = {{ uri: this.state.logo }}
+									style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
+								</Image>
+							</View>
 						</View>
 					</View>
 				</View>

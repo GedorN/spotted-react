@@ -479,8 +479,8 @@ export default class ProductScreen extends React.Component {
 													<View style = {{ ...styles.cuponInput, backgroundColor:this.state.product ? this.state.product.colors[0] : null }}>
 														{
 															this.state.settingPromotionalCode ?
-															<ActivityIndicator size = "small" color = {( this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black' )} /> :
-															<Text style = {{ color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black'), fontWeight: 'bold' }}>{ 'OK' }</Text>
+															<ActivityIndicator size = "small" color = {(this.state.product ? this.state.product.colors[1] : null)} /> :
+															<Text style = {{ color:(this.state.product ? this.state.product.colors[1] : null), fontWeight: 'bold' }}>{ 'OK' }</Text>
 														}
 													</View>
 												</TouchableOpacity>
@@ -498,7 +498,7 @@ export default class ProductScreen extends React.Component {
 										{
 											this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
 											<View style = {{ marginTop: theme.height * 0.04, padding:20, backgroundColor: this.state.product ? this.state.product.colors[0] : null, elevation: 8, }}>
-												<Text style = {{ alignSelf:'center', fontSize: 24, fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black') }}>{'Opções de Personalização'}</Text>
+												<Text style = {{ alignSelf:'center', fontSize: 24, fontWeight: 'bold', color: (this.state.product ? this.state.product.colors[1] : null) }}>{'Opções de Personalização'}</Text>
 											</View>
 										}
 									</View>
@@ -553,7 +553,7 @@ export default class ProductScreen extends React.Component {
 														disabled={this.state.product.stock <= 0}
 														text = {'Comprar'}
 														backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-														color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
+														color = { this.state.product ? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
 														onTap = {this.buttonEnabled.bind(this)}
 													/>
 												</View>
@@ -604,7 +604,7 @@ export default class ProductScreen extends React.Component {
 										/>
 									</View>
 								</TouchableOpacity>
-								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0] : 'black') }}>{'Confirmação da compra'}</Text>
+								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: (this.state.product ? this.state.product.colors[1] : null)}}>{'Confirmação da compra'}</Text>
 							</View>
 							<View style = {{ height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.57 : theme.height * 0.55), marginTop: theme.height * 0.1 }}>
 								{
@@ -665,7 +665,7 @@ export default class ProductScreen extends React.Component {
 													</TouchableOpacity>
 													<TouchableOpacity onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
 														<View style = {{ ...styles.confirmButton, backgroundColor: this.state.product? this.state.product.colors[0] : 'green' }}>
-															<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color:heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black') }}>{ 'Confirmar' }</Text>
+															<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color: (this.state.product ? this.state.product.colors[1] : null) }}>{ 'Confirmar' }</Text>
 														</View>
 													</TouchableOpacity>
 												</View>
@@ -772,7 +772,7 @@ const styles = StyleSheet.create({
 	},
 	picPayView: {
 		borderColor:'#21c25e',
-		borderWidth:4,
+		borderWidth:2,
 		paddingLeft:15,
 		paddingRight:15,
 		paddingTop:15,
