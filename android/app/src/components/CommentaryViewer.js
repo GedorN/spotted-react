@@ -282,10 +282,29 @@ export default class CommentaryViewer extends React.Component {
 	  }
 	}
 
+	disableModal () {
+		this.setState({ showImages: false });
+	}
+
 
 	render = () => {
 		return (
 			<View style={styles.container}>
+				<Modal
+					visible={this.state.showImages}
+					transparent={true}
+					onRequestClose={() => {
+						this.disableModal();
+					}}
+				>
+					<ImageViewer
+						imageUrls={this.state.galleryObj}
+						index={this.state.indexImage}
+						swipeDownThreshold={0.5}
+						enableSwipeDown={true}
+						onSwipeDown={() => {this.setState({ showImages: false })}}
+					/>
+				</Modal>
 				<View style={styles.body}>
 					<View style = {{flexDirection:'row'}}>
 						<TouchableOpacity  onPress={this.props.anonymous? null : this.goToUserProfile.bind(this)}>

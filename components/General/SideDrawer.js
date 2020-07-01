@@ -89,13 +89,43 @@ export default class SideDrawer extends React.Component {
 		                <View style={styles.item}>
 				                <Image source={require('../../assets/images/cac_logo.png')}
 			                       style={{
-				                       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
+				                       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
 				                       width: 40,
 				                       height: 32,
 				                       marginRight: 13,
 			                       }}
 			                />
 			                <Text> Loja CAC </Text>
+		                </View>
+	                </TouchableOpacity>
+	                <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+	                                  onPress={() => {this.props.navigation.push('Store', {store : 'maleficoz'})}}>
+		                <View style={styles.item}>
+			                <Image source={require('../../assets/images/maleficoz_logo.png')}
+			                       style={{
+				                       resizeMode: 'contain',
+				                       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
+				                       width: 40,
+				                       height: 35,
+				                       marginRight: 13,
+			                       }}
+			                />
+			                <Text> Loja MALEFICOZ </Text>
+		                </View>
+	                </TouchableOpacity>
+	                <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+	                                  onPress={() => {this.props.navigation.push('Store', {store : 'maleficoz'})}}>
+		                <View style={styles.item}>
+			                <Image source={require('../../assets/images/avalanche_logo.png')}
+			                       style={{
+				                       resizeMode: 'contain',
+				                       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
+				                       width: 40,
+				                       height: 32,
+				                       marginRight: 13,
+			                       }}
+			                />
+			                <Text> Loja AVALANCHE </Text>
 		                </View>
 	                </TouchableOpacity>
 	                {
