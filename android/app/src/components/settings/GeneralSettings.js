@@ -8,11 +8,11 @@ import {
 	Image,
 	PermissionsAndroid,
 	Modal,
+	TextInput
 } from 'react-native'
 
 import {
 	ActivityIndicator,
-	TextInput,
 } from 'react-native-paper'
 
 import { showMessage, hideMessage } from "react-native-flash-message";
@@ -247,37 +247,36 @@ export default class GeneralSettings extends  React.Component {
 				</View>
 				<View style={{marginTop: 20}}>
 					<TextInput
-						label='Nome'
-						autoCompleteType={'username'}
-						textContentType={'name'}
-						value={this.state.userName}
-						onChangeText={userName => this.setState({ userName })}
-						mode='outlined'
-						selectionColor={theme.primary}
-						theme={{ colors: { primary: theme.primary, underlineColor:'transparent',}}}
-					/>
-				</View>
-				<View style={{marginTop: 10}}>
-					<TextInput
-						disabled={true}
-						label='Email (você não pode alterar)'
-						autoCompleteType={'username'}
-						textContentType={'name'}
-						value={this.state.email}
-						onChangeText={email => this.setState({ email })}
-						mode='outlined'
-						selectionColor={theme.primary}
-						editable={false}
-						theme={{ colors: { primary: theme.primary, underlineColor:'transparent',}}}
-					/>
+							placeholder = {this.state.userName}
+							style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
+							value = {this.state.userName}
+							onChangeText = { userName => this.setState({ userName }) }
+							width = { theme.width*0.9 }
+						/>
+					<View style = {{ width: theme.width * 0.87, alignSelf: 'center', marginTop: 7 }}>
+						<Text style = {{ opacity: 0.8, fontSize: 11 }}>Nome</Text>
+					</View>
 				</View>
 				<View style={{marginTop: 20}}>
+					<TextInput
+							placeholder = {this.state.email}
+							editable = {false}
+							style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
+							value = {this.state.email}
+							onChangeText = { email => this.setState({ email }) }
+							width = { theme.width*0.9 }
+						/>
+					<View  style = {{ width: theme.width * 0.87, alignSelf: 'center', marginTop:7}}>
+						<Text style = {{ opacity: 0.4, fontSize: 11 }}>Você não pode alterar</Text>
+					</View>
+				</View>
+				<View style={{marginTop: 40}}>
 					<FatBottomedButton text='Alterar senha' color={theme.primary} onTap={this.props.changePassword} />
 				</View>
 				<View style={{marginTop: 20}}>
 					<FatBottomedButton text='Salvar' color={'white'} backgroundColor={theme.primary} onTap={() => this.saveEdition()} />
 				</View>
-				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.9}}>
+				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.88}}>
 					<TouchableOpacity onPress={() => {this.setState({ showAlert: true })}}>
 						<Text style={{color: theme.primary}}>
 							Excluir conta

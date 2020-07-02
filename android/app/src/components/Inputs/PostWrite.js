@@ -362,18 +362,19 @@ export default class PostWrite extends React.Component {
 					<View>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.props.close}>
-								<Image
-									source={require('../../../../../assets/images/times-solid.png')}
-									style={{width: 20, height: 20,marginRight:5}}
-								/>
+								<View style = {{ width: width * 0.1, height: height * 0.03, marginTop: height * 0.005 }}>
+									<Image
+										source={require('../../../../../assets/images/times-solid.png')}
+										style={{width: 20, height: 20,marginRight:5}}
+									/>
+								</View>
 							</TouchableOpacity>
 						</View>
 						{/*<UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>*/}
-						<View>
+						<View style = {{borderColor: 'grey', borderBottomWidth: 0.7, marginTop: height * 0.02 }}>
 							<TextInput
-								style={{width: width + 10,
-									borderBottomWidth: 0.7,
-									borderColor: 'grey',
+								style={{width: width * 0.9,
+									alignSelf:'center',
 									height: this.state.postImages.length > 0 ? height * 0.406 : height * 0.70,
 								}}
 								onChangeText={text => this.setState({postText: text})}
@@ -442,9 +443,7 @@ const styles = StyleSheet.create({
 	header: {
 		width: width,
 		height: 20,
-		justifyContent: 'flex-end',
 		alignItems: 'flex-end',
-		alignContent: 'center',
 		padding: 4,
 		marginTop: 10,
 	},

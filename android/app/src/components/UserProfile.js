@@ -247,7 +247,7 @@ export default class UserProfile extends React.Component {
 									style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
 									source={require('../../../../assets/images/simbol.png')}
 								/>
-								<View style = {{marginTop:-(theme.height * 0.03)}}>
+								<View style = {{ marginTop: -(this.props.navigation.getParam('userId') ? theme.height * 0.03 : theme.height * 0.01 ) }}>
 									<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
 										<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
 									</TouchableOpacity>

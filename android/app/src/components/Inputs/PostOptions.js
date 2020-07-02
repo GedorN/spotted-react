@@ -80,7 +80,6 @@ const styles= StyleSheet.create({
 		margin: 5
 	},
 	deleteIcon: {
-		tintColor: '#491021',
 		opacity: 0.5,
 		width: 25,
 		height: 25,

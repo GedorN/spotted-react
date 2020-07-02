@@ -156,10 +156,10 @@ export default class LikeARollingTicketViewer extends React.Component {
 									/>
 								</View>
 								</TouchableOpacity>
-								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.props.ticket.colors[0])}}>{'Detalhes do pedido'}</Text>
+								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: this.props.ticket.colors[1] }}>{'Detalhes do pedido'}</Text>
 							</View>
-							<View style = {{ height: theme.height * 0.69}}>
-								<ScrollView style = {{height: theme.height * 0.6, marginTop:theme.height * 0.08}}
+							<View style = {{ height: theme.height * 0.7 }}>
+								<ScrollView style = {{height: theme.height * 0.6, marginTop:theme.height * 0.07}}
 									showsVerticalScrollIndicator = {false}>
 									<View style = {{marginTop:theme.height*0.02}}>
 										<Text style = {{fontWeight:'bold',fontSize:15,marginBottom:4}}>
@@ -206,7 +206,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 									{
 										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
 										<View style = {{ marginBottom: theme.height * 0.02}}>
-											<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
+											<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={this.props.ticket.colors[1]} onTap={this.redirectToPay.bind(this)}/>
 										</View>
 									}
 								</ScrollView>
@@ -258,22 +258,23 @@ const styles = StyleSheet.create({
 		flex:1
 	},
 	ticketHeader : {
-		height: theme.height *0.03,
-		width: theme.width * 0.89,
-		marginTop: theme.height *  0.01
+		height: theme.height *0.05,
+		width: theme.width * 0.4,
+		marginTop: theme.height *  0.01,
+		alignSelf: 'center',
+		marginTop:theme.height * 0.015
 	},
 	ticketLogo : {
-		width: 40,
-		height: 30,
-		marginLeft: theme.width * 0.02,
-		alignSelf: 'center',
-		marginTop: theme.height * 0.012
+		resizeMode: 'contain', 
+		flex: 1,
+		width: null,
+		height: null,
 	},
 	ticketDetails : {
 		marginLeft:10,
 		flexDirection:'row',
 		height:theme.height*0.11,
-		marginTop:theme.height*0.04
+		marginTop:theme.height*0.03
 	},
 	ticketLetter : {
 		fontSize:15,
@@ -308,7 +309,7 @@ const styles = StyleSheet.create({
 	productName : {
 		fontSize:15,
 		alignSelf:'center',
-		marginTop:theme.height * 0.04,
+		marginTop:theme.height * 0.03,
 		fontWeight:'bold',
 	},
 	modalContainer: {
@@ -346,7 +347,8 @@ const styles = StyleSheet.create({
 		width: theme.width * 0.9,
 		borderTopLeftRadius:20,
 		borderTopRightRadius:20,
-		padding:20,position:'absolute',
+		padding:20,
+		position:'absolute',
 		marginLeft:0.001
 	},
 	modalProduct : {
