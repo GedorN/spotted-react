@@ -244,19 +244,20 @@ function HeimdallrLib() {
 	        .doc(heimdallr.user_id)
 		    .get().then((result) => {
 		    	console.log('result not; ', result);
-		    	if (result && result.data().notifications.length > 0) {
+		    	if (result && result.data() && result.data().notifications && result.data().notifications.length > 0) {
 			        // console.log('user notification: ', result.docs[0].data());
 			        // docs = result.docs.sort((a, b) => {
 				    //     console.log('a:', a.data().date );
 				    //     return b.data().date - a.data().date;
-			        // });
+					// });
+					
 			        resolve(result.data().notifications.slice(0, limit));
 			    } else {
-		    		console.log('null');
+		    		console.warn('null');
 		    		resolve(null);
 			    }
 	        }).catch ((e) => {
-	            console.log('notifications error: ', e);
+				console.warn('notifications error: ', e);
             });
     })
 	}

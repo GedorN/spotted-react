@@ -31,7 +31,7 @@ export default class NotificationScreen extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
-            notifications:null,
+            notifications:[],
             isRefreshing: false,
             endPulling: false,
             pulledNotifications: 10,
@@ -52,9 +52,9 @@ export default class NotificationScreen extends React.Component {
 	    this.setState({ pulling: true });
 	    heimdallr.getUserNotifications( heimdallr.user_id, this.state.pulledNotifications).then(
 		    (resolve) => {
-		    	console.log('devolve dessa forma: ', resolve);
-			    this.setState({notifications: resolve});
-			    this.setState({ pulling: false });
+				console.log('devolve dessa forma: ', resolve);
+					this.setState({notifications: resolve});
+				
 		    }
 	    );
 
@@ -65,8 +65,7 @@ export default class NotificationScreen extends React.Component {
 		this.setState({ isRefreshing: true });
 		let result = heimdallr.getUserNotifications(heimdallr.user_id,10);
 		result.then( (resolve) => {
-			this.setState({ notifications: resolve });
-			this.setState({ isRefreshing: false });
+			this.setState({ notifications: resolve, isRefreshing: false  });
 		});
     }
 
@@ -106,7 +105,9 @@ export default class NotificationScreen extends React.Component {
     render() {
         return (
             <View stle={styles.container}>
-                <FlatList
+				{
+					 this.state.notifications != null && this.state.notifications.length > 0 &&
+					<FlatList
                     data = {this.state.notifications}
                     renderItem={ ({item}) =>
 					<Notification
@@ -127,8 +128,14 @@ export default class NotificationScreen extends React.Component {
 							this.pullMoreNotifications(distanceFromEnd);
 						}}
 						ListFooterComponent={ this.renderFooter.bind(this)}
-                />
-
+                	/>
+				}
+				{
+					this.state.notifications === null &&
+					<View style = {{width: theme.width * 0.9, alignSelf: 'center', marginTop: theme.height * 0.025}}>
+						<Text style = {{ fontWeight: 'bold', color: '#8f8f8f', lineHeight: 25}}>Não há notificações no momento, mas  em breve poderá ter,  ou poderá não ter. </Text>
+					</View>
+				}
             </View>
         )
     }
