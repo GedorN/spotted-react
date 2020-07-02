@@ -281,6 +281,7 @@ export default class PostViewer extends React.Component {
   }
 
   goToComments = () => {
+  	heimdallr.sendEvent('post_click');
 	this.props.navigation.push('PostDetails', {
 	pid: this.props.pid,
 	userImage: this.props.userImage,

@@ -73,6 +73,7 @@ export default class ProductScreen extends React.Component {
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 		heimdallr.getProduct(this.state.iidProduct).then(
 			(resolve) => {
+				heimdallr.sendEvent(`${resolve.sid}_product_click`)
 				const original_price = resolve.price;
 				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
 				this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price,
@@ -232,6 +233,7 @@ export default class ProductScreen extends React.Component {
 							coupons[index].quantity  = coupons[index].quantity - 1;
 							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true,ticketStore:'spotted'});
 							this.ticketsRegister();
+							heimdallr.sendEvent(`spotted_ticket_apply`)
 						} else {
 							this.setState({discountApplied: false, warning:'Cupom já utilizado', discountPicPayPrice : this.state.PicPayPrice});
 							return ;
@@ -266,6 +268,7 @@ export default class ProductScreen extends React.Component {
 									coupons[index].quantity  = coupons[index].quantity - 1;
 									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid});
 									this.ticketsRegister();
+									heimdallr.sendEvent(`${this.state.product.sid}_ticket_apply`)
 								} else {
 									this.setState({discountApplied: false, warning:'Cupom já utilizado'});
 
@@ -327,6 +330,7 @@ export default class ProductScreen extends React.Component {
 		if (this.state.product.customization.map((p) => p.value).some((fp) => {return fp === undefined})) {
 			this.setState( { errorMissingValues: true });
 		} else {
+			heimdallr.sendEvent('buy_press');
 			this.openAlert();
 		}
 	}
@@ -596,7 +600,9 @@ export default class ProductScreen extends React.Component {
 		            <View style = {styles.centeredView}>
 			            <View style = {{ ...styles.modalContainer, height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.72 : theme.height * 0.69) }}>
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.product?this.state.product.colors[0]: null}}>
-								<TouchableOpacity onPress={() => {this.disableModal()}}>
+								<TouchableOpacity
+									onPressIn={() => heimdallr.sendEvent('buy_cancel')}
+									onPress={() => {this.disableModal()}}>
 									<View style = {{ width: theme.width * 0.15, height: theme.height*0.05, alignSelf: 'flex-end' }}>
 										<Image
 											style = {{ width: 15, height: 15, opacity: 0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black') }}
@@ -658,7 +664,9 @@ export default class ProductScreen extends React.Component {
 													</View>
 												</View>
 												<View style = {{ ...styles.modalButtons,  marginTop: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0 ? theme.height * 0.07 : theme.height * 0.05)}}>
-													<TouchableOpacity onPress = { this.disableModal.bind(this) }>
+													<TouchableOpacity
+														onPressIn={() => heimdallr.sendEvent('buy_cancel')}
+														onPress = { this.disableModal.bind(this) }>
 														<View style = { styles.cancelButton }>
 															<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing: 0.5 }}>{ 'Cancelar' }</Text>
 														</View>

@@ -125,6 +125,7 @@ export default class CommentaryWriter extends React.Component {
 		 * Espera até que todas as fotos tenham sido enviadas para continuar
 		 * */
 		if (this.state.postImages.length === 0 ) {
+			heimdallr.sendEvent('commentary_write')
 			console.log('estou aqui hehe');
 			const params = {};
 			params.comment = this.state.postText;
@@ -144,6 +145,7 @@ export default class CommentaryWriter extends React.Component {
 			});
 
 		} else if (sendedImages >= 1) {
+			heimdallr.sendEvent('commentary_write')
 			const params = {};
 
 			params.pid = this.props.pid;

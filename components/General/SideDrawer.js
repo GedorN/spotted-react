@@ -56,7 +56,8 @@ export default class SideDrawer extends React.Component {
                 </View>
                 <View style={styles.content}>
                     <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-                          onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
+                                      onPressIn={() => heimdallr.sendEvent('config_menu_click')}
+                                      onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
 	                    <View style={styles.item}>
 							<View style = {{ width: 57 }}>
 								<Image source={require('../../assets/images/user-cog-solid.png')}
@@ -72,7 +73,7 @@ export default class SideDrawer extends React.Component {
 	                    </View>
                     </TouchableOpacity>
 					<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-					                  onPressIn={() => {heimdallr.checkTicketsStatus()}}
+					                  onPressIn={() => {heimdallr.checkTicketsStatus(); heimdallr.sendEvent('tickts_menu_click')}}
 					                  onPress={() => {this.props.navigation.push('Tickets',  {navigation: this.props.navigation})}}>
 		                <View style={styles.item}>
 							<View style = {{ width: 57 }}>
@@ -89,6 +90,7 @@ export default class SideDrawer extends React.Component {
 		                </View>
 	                </TouchableOpacity>
 	                <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+	                                  onPressIn={() => heimdallr.sendEvent('cac_store_click')}
 	                                  onPress={() => {this.props.navigation.push('Store', {store : 'cac'})}}>
 		                <View style={styles.item}>
 							<View style = {{ width: 57 }}>
@@ -105,6 +107,7 @@ export default class SideDrawer extends React.Component {
 		                </View>
 	                </TouchableOpacity>
 	                <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+	                                  onPressIn={() => heimdallr.sendEvent('maleficoz_store_click')}
 	                                  onPress={() => {this.props.navigation.push('Store', {store : 'maleficoz'})}}>
 		                <View style={styles.item}>
 							<View style = {{ width: 57 }}>
@@ -116,7 +119,7 @@ export default class SideDrawer extends React.Component {
 										height: 47,
 										marginRight: 13,
 										marginLeft: -3
-										
+
 									}}
 								/>
 							</View>
@@ -124,6 +127,7 @@ export default class SideDrawer extends React.Component {
 		                </View>
 	                </TouchableOpacity>
 	                <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+	                                  onPressIn={() => heimdallr.sendEvent('avalanche_store_click')}
 	                                  onPress={() => {this.props.navigation.push('Store', {store : 'avalanche'})}}>
 		                <View style={styles.item}>
 							<View style = {{ width: 57 }}>
@@ -158,7 +162,10 @@ export default class SideDrawer extends React.Component {
 			                </View>
 		                </TouchableOpacity>
 	                }
-	                <TouchableOpacity onPress={() => {this.props.navigation.push('AboutUs')}} style={{position: 'absolute', bottom: 2, paddingLeft: 22}}>
+	                <TouchableOpacity
+		                onPressIn={() => heimdallr.sendEvent('aboutUs_click')}
+		                onPress={() => {this.props.navigation.push('AboutUs')}}
+		                style={{position: 'absolute', bottom: 2, paddingLeft: 22}}>
 		                <View >
 			                <Text> About us </Text>
 		                </View>

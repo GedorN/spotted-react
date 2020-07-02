@@ -895,6 +895,7 @@ function HeimdallrLib() {
 	}
 
 	this.deletePost = function (pid) {
+  	    this.sendEvent('delete_post');
 		return new Promise((resolve, reject) => {
 			firebase.firestore().collection('post').where('pid', '==', pid).get().then(
 				(result) => {
@@ -999,6 +1000,7 @@ function HeimdallrLib() {
 
 
 	this.deleteCommentary = function (pid, cid) {
+		this.sendEvent('delete_comment');
 		let docs = [];
 		return new Promise((resolve, reject) => {
 			firebase.firestore().collection('comment').doc(pid).get().then(
@@ -1047,6 +1049,10 @@ function HeimdallrLib() {
 				}
 			)
 		})
+	}
+
+	this.sendEvent = function (eventName) {
+	    firebase.analytics().logEvent(eventName);
 	}
 
   this.saveCollection = function (collection, params) {

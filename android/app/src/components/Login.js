@@ -61,6 +61,7 @@ export default class Login extends React.Component {
     }
 
 	anonymousLogin = async () => {
+		heimdallr.sendEvent('anonymous_login');
 		this.setState({ showAlert: false });
 		this.setState({ showConfirmCodeModal: true });
 		const params = {};
@@ -190,7 +191,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		marginTop: 22,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 		paddingTop: theme.height * 0.1,
 		marginTop: -(theme.height * 0.1),

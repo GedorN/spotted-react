@@ -30,6 +30,9 @@ export default class UsersSearch extends React.Component {
 	}
 
 	changeText = (text) => {
+		if (!text || text === '') {
+			heimdallr.sendEvent('searching_user');
+		}
 		if(this.state.unicSearch){
 			let users = heimdallr.getCollection('user');
 			users.then((resolve) => {
@@ -43,7 +46,7 @@ export default class UsersSearch extends React.Component {
 
 		}
 
-	
+
 		console.log("digitado",text);
 		this.setState({ search: text });
 		console.log('carai: ', this.state.allUsers.filter((i) => i._data.name.includes(text)));
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
 		width: width*0.85,
 		marginLeft: 17,
 		marginTop:20,
-		
+
 	},
 	headerSearch: {
 		flexDirection: 'row',

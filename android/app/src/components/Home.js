@@ -33,6 +33,7 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
+  	heimdallr.sendEvent('app_open');
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);
@@ -62,6 +63,7 @@ export default class Home extends React.Component {
 	    console.log('interval?', distanceFromEnd);
 	    console.log('state before: ', this.state);
 	    if (!this.state.pulling) {
+	    	heimdallr.sendEvent('pulling_more_posts');
 	        console.log('int pullling');
 	        this.setState({ pulling: true });
 		    console.log('chegou');
