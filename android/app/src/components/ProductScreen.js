@@ -336,6 +336,9 @@ export default class ProductScreen extends React.Component {
 	}
 
 	setPromotionalCode = () => {
+		if (!this.state.texInputCode) {
+			return ;
+		}
 		this.setState({ settingPromotionalCode: true, warning: null, discountApplied: false});
 		let coupons = null;
 		let coupon = null;
