@@ -168,7 +168,7 @@ export default class PostDetails extends React.Component {
 									resizeMode={'cover'}
 									repeat={true}
 									source={{uri: this.state.post.data().images[0]}}
-									style={{width: 280, height: 200, borderRadius: 10}}
+									style={{width: width * 0.80, height: 235, borderRadius: 10}}
 								/>
 							</View>
 						</View>

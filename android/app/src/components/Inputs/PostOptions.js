@@ -47,7 +47,7 @@ export default class PostOptions extends React.Component {
 						</View>
 						<TouchableOpacity onPress={this.deletePost.bind(this)}>
 							<View style = {styles.deleteView}>
-								<Image style= {styles.deleteIcon} source={require('../../../../../assets/images/minus.png')}/>
+								<Image style= {styles.deleteIcon} source={require('../../../../../assets/images/minus-circle-solid.png')}/>
 								<Text style={{fontSize: 14, fontWeight: 'bold'}}>Excluir postagem</Text>
 							</View>
 						</TouchableOpacity>

@@ -76,7 +76,6 @@ export default class PostViewer extends React.Component {
     }
 
     getModalImagesLayout = () => {
-      // console.log('%c calculando...', 'color: green');
     if (this.props.images) {
         console.log('oal', this.props);
     	if (this.props.video) {
@@ -87,7 +86,7 @@ export default class PostViewer extends React.Component {
 						    resizeMode={'cover'}
 						    repeat={true}
 						    source={{uri: this.props.images[0]}}
-						    style={{width: 280, height: 200, borderRadius: 10}}
+						    style={{width: width * 0.80, height: 235, borderRadius: 10}}
 					    />
 				    </View>
 			    </View>

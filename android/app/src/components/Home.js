@@ -9,6 +9,8 @@ import {
 	RefreshControl,
 } from 'react-native';
 
+
+import Ripple from "react-native-material-ripple";
 import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import moment from "moment";
