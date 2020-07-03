@@ -209,6 +209,18 @@ export default class LikeARollingTicketViewer extends React.Component {
 											<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={this.props.ticket.colors[1]} onTap={this.redirectToPay.bind(this)}/>
 										</View>
 									}
+									{
+										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Entregue' &&
+										<View style = {{ marginBottom: theme.height * 0.02}}>
+											<Text style = {styles.textStatus}> Seu pedido foi entregue!  </Text>
+										</View>	
+									}
+									{
+										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pago' &&
+										<View style = {{ marginBottom: theme.height * 0.02}}>
+											<Text style = {styles.textStatus}> O pagamento foi efetivado, você pode retirar seu produto agora, a não ser que não queira, ou que ainda não tenha chego. </Text>
+										</View>	
+									}
 								</ScrollView>
 							</View>
 			            </View>
@@ -377,5 +389,11 @@ const styles = StyleSheet.create({
 		alignContent:'center',
 		alignItems:'center',
 		justifyContent:'center'
+	},
+	textStatus: {
+		color: '#8f8f8f', 
+		alignSelf: 'center',
+		textAlign: 'justify', 
+		lineHeight: 20 
 	}
 });

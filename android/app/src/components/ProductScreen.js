@@ -499,10 +499,13 @@ export default class ProductScreen extends React.Component {
 												<Text style = {{ fontWeight: 'bold' }}> { this.state.warning } </Text>
 											</View>
 										}
-										<View style = { styles.descriptionContainer }>
-											<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
-											<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
-										</View>
+										{
+											this.state.product && this.state.product.description != "" &&
+											<View style = { styles.descriptionContainer }>
+												<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
+												<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
+											</View>
+										}
 										{
 											this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
 											<View style = {{ marginTop: theme.height * 0.04, padding:20, backgroundColor: this.state.product ? this.state.product.colors[0] : null, elevation: 8, }}>
@@ -552,7 +555,7 @@ export default class ProductScreen extends React.Component {
 												</View>
 
 											}
-												<View style = { styles.footer }>
+												<View style ={{ ...styles.footer, paddingTop:(this.state.product && this.state.product.description != "" ? theme.height*0.03 : theme.height * 0.01) }}>
 													{
 														this.state.errorMissingValues &&
 														<Text style={{ color: 'red', marginBottom: 4 }}> *Obrigatório o preenchimento de todos os campos </Text>
@@ -661,7 +664,7 @@ export default class ProductScreen extends React.Component {
 
 														}
 													</View>
-													<View style={{flexDirection:'row'}}>
+													<View style={{ flexDirection:'row', height: theme.height * 0.24 }}>
 														<Text style={styles.buyConfirmText}>
 															{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
 														</Text>
