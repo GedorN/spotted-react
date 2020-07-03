@@ -563,7 +563,7 @@ export default class PostDetails extends React.Component {
 								}
 								keyExtractor={item => item.cid}
 								onEndReachedThreshold={0.3}
-								showsHorizontalScrollIndicator={false}
+								showsVerticalScrollIndicator={false}
 								onEndReached={ ({ distanceFromEnd }) => {
 									this.pullMoreCommentaries(distanceFromEnd);
 								}}

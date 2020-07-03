@@ -422,6 +422,7 @@ export default class ProductScreen extends React.Component {
 						<View>
 			                <FlatList
 								showsVerticalScrollIndicator={false}
+								keyboardShouldPersistTaps={'handled'}
 								ListHeaderComponent = {() =>
 									<View>
 										<TouchableOpacity onPress={() => { this.props.navigation.goBack() } }>
@@ -665,13 +666,14 @@ export default class ProductScreen extends React.Component {
 												</View>
 												<View style = {{ ...styles.modalButtons,  marginTop: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0 ? theme.height * 0.07 : theme.height * 0.05)}}>
 													<TouchableOpacity
+														activeOpacity={0.8}
 														onPressIn={() => heimdallr.sendEvent('buy_cancel')}
 														onPress = { this.disableModal.bind(this) }>
 														<View style = { styles.cancelButton }>
 															<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing: 0.5 }}>{ 'Cancelar' }</Text>
 														</View>
 													</TouchableOpacity>
-													<TouchableOpacity onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
+													<TouchableOpacity activeOpacity={0.8} onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
 														<View style = {{ ...styles.confirmButton, backgroundColor: this.state.product? this.state.product.colors[0] : 'green' }}>
 															<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color: (this.state.product ? this.state.product.colors[1] : null) }}>{ 'Confirmar' }</Text>
 														</View>
