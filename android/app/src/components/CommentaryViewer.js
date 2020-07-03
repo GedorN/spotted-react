@@ -90,7 +90,6 @@ export default class CommentaryViewer extends React.Component {
 	getModalImagesLayout = () => {
 		// console.log('%c calculando...', 'color: green');
 	  if (this.props.images) {
-		  console.log('oal', this.props);
 		  if (this.props.video) {
 			  return (
 				  <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
@@ -101,6 +100,22 @@ export default class CommentaryViewer extends React.Component {
 							  source={{uri: this.props.images[0]}}
 							  style={{width: width * 0.75, height: 230, borderRadius: 10}}
 						  />
+					  </View>
+				  </View>
+			  )
+		  } else if (this.props.gif) {
+			  return (
+				  <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+					  <View style={{ flexDirection: 'row'}}>
+						  <View style={{width: width * 0.75, height: 230}}>
+							  <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+								  <Image
+									  source={{uri: this.props.images[0]}}
+									  resizeMode={'cover'}
+									  style={{width: width * 0.75, height: 230, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)', overlayColor: 'white'}}
+								  />
+							  </TouchableOpacity>
+						  </View>
 					  </View>
 				  </View>
 			  )
@@ -377,7 +392,8 @@ const styles  = StyleSheet.create({
 		paddingBottom: 5,
 		paddingLeft: 20,
 		borderColor: 'rgba(59, 56, 50, 0.2)',
-		borderBottomWidth: 0.18
+		borderBottomWidth: 0.18,
+		backgroundColor: 'white'
 	},
 	body: {
 		flexDirection: 'column',

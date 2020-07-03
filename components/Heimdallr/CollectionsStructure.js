@@ -95,6 +95,11 @@ const collections = {
 		        type: 'boolean',
 		        required: false,
 	        },
+			{
+				desc: 'gif',
+				type: 'boolean',
+				required: false,
+			},
             {
                 desc: 'anonymous',
                 type: 'boolean'
@@ -144,6 +149,11 @@ const collections = {
                 type: 'array',
                 required: false,
             },
+	        {
+		        desc: 'gif',
+		        type: 'boolean',
+		        required: false,
+	        },
 	        {
 	        	desc: 'video',
 		        type: 'boolean',

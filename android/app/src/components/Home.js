@@ -180,6 +180,7 @@ export default class Home extends React.Component {
 									userImage={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_image:null):item._data.user_image}
 									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling}
 									video={item._data.video ? true : false}
+						            gif={item._data.gif ? true : false}
 								    closeAlert={this.confirmReport.bind(this)}
 						            confirmPostRm={this.confirmPostRm.bind(this)}
 							/>

@@ -6,7 +6,9 @@ import {
 	TouchableOpacity,
 	Image,
 	PermissionsAndroid,
-	Dimensions, StatusBar,
+	Dimensions,
+	StatusBar,
+	Keyboard,
 } from 'react-native';
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
@@ -27,6 +29,7 @@ export default class PostWrite extends React.Component {
 			anonymousUser: false,
 			anonymousText: "Postar como anônimo ?",
 			videoIncluded: false,
+			gifIncluded: false,
 		};
 	}
 
@@ -44,7 +47,7 @@ export default class PostWrite extends React.Component {
 				newImg.push(images[i]);
 			}
 		}
-		this.setState({postImages: newImg, videoIncluded: false});
+		this.setState({postImages: newImg, videoIncluded: false, gifIncluded: false});
 	}
 
 	doPost = () => {
@@ -63,7 +66,13 @@ export default class PostWrite extends React.Component {
 			this.props.closeAndRefresh();
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
-				if (img.type !== 'video/mp4') {
+				if (this.state.gifIncluded) {
+					checkedImages ++;
+					urlArray.push(img.path);
+					self.state.postImages = urlArray;
+					/* Save the post*/
+					self.savePost(checkedImages / posImagesLenght);
+				} else if (img.type !== 'video/mp4') {
 					console.log('before: ', this.state.postImages);
 					let propCo =  900000 / img.fileSize;
 					let quality = propCo > 1 ? 100 : 100 * propCo;
@@ -131,6 +140,7 @@ export default class PostWrite extends React.Component {
 			params.user_name = heimdallr.user_name;
 			params.anonymous = this.state.anonymousUser;
 			params.user_image = heimdallr.user_image;
+			params.gif = this.state.gifIncluded;
 			params.comments = 0;
 			params.video = this.state.videoIncluded;
 			heimdallr.getUID().then((uuid) => {
@@ -187,14 +197,13 @@ export default class PostWrite extends React.Component {
 						console.log('User tapped custom button: ', response.customButton);
 					} else {
 						if (response.type === 'video/mp4') {
-							this.setState({postImages: [response], showModal: true, videoIncluded: true});
+							this.setState({postImages: [response], videoIncluded: true});
 						} else {
 							console.log('Imagem escolhida');
 							let images = this.state.postImages;
 							images.push(response);
 							this.setState({postImages: images});
 							console.log('Imagem: ', response);
-							this.setState({showModal: true});
 						}
 					}
 				});
@@ -204,6 +213,12 @@ export default class PostWrite extends React.Component {
 		} catch (err) {
 			console.warn(err);
 		}
+	}
+
+	_onImageChange = (event) => {
+		const {linkUri, data} = event.nativeEvent;
+		Keyboard.dismiss();
+		this.setState({ postImages: [{path: linkUri}], gifIncluded: true });
 	}
 
 	getModalImagesLayout() {
@@ -228,7 +243,23 @@ export default class PostWrite extends React.Component {
 					</View>
 				</View>
 			)
-		} else if (this.state.postImages.length === 1) {
+		} else if (this.state.gifIncluded) {
+			return (
+				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+					<View style={{ flexDirection: 'row'}}>
+						<View style={{width: 280, height: 200}}>
+							<Image
+								source={{uri: this.state.postImages[0].path}}
+								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+							/>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
+								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			)
+		}else if (this.state.postImages.length === 1) {
 			return (
 				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 					<View style={{ flexDirection: 'row'}}>
@@ -378,6 +409,7 @@ export default class PostWrite extends React.Component {
 									height: this.state.postImages.length > 0 ? height * 0.406 : height * 0.70,
 								}}
 								onChangeText={text => this.setState({postText: text})}
+								onImageChange={this._onImageChange}
 								autoCapitalize="sentences"
 								multiline
 								textAlignVertical="top"
@@ -406,7 +438,7 @@ export default class PostWrite extends React.Component {
 							</TouchableOpacity>
 							<Text style = {{marginTop:14,marginLeft:11, opacity: !this.state.anonymousUser ? 0.5 : 1, width:theme.width *0.55,
 								fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
-							<TouchableOpacity disabled={this.state.postImages.length === 4 || this.state.videoIncluded} onPress={this.sendImagePropt.bind(this)}>
+							<TouchableOpacity disabled={this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded} onPress={this.sendImagePropt.bind(this)}>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}
 									style={{
@@ -415,7 +447,7 @@ export default class PostWrite extends React.Component {
 										alignSelf:'flex-end',
 										marginLeft:theme.width *0.08,
 										marginTop:7,
-										opacity: this.state.postImages.length === 4 ? 0.4 : 1
+										opacity: this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded ? 0.4 : 1
 									}}
 								/>
 							</TouchableOpacity>

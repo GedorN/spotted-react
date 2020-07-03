@@ -174,6 +174,23 @@ export default class PostDetails extends React.Component {
 						</View>
 					</View>
 				)
+			} else if(this.state.post.data().gif) {
+				return (
+					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+						<View style={{ flexDirection: 'row'}}>
+							<View style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)'}}>
+								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+									<Image
+										source={{uri: this.state.post.data().images[0]}}
+										resizeMode={'cover'}
+										style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)', overlayColor: 'white'}}
+									/>
+								</TouchableOpacity>
+							</View>
+						</View>
+					</View>
+				)
+
 			} else if (this.state.post.data().images.length === 1) {
 				return (
 					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
@@ -559,7 +576,7 @@ export default class PostDetails extends React.Component {
 								}
 								data = {this.state.comments}
 								renderItem={ ({item}) =>
-									< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  images = {item.images} video = {item.video} commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+									< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  images = {item.images} video = {item.video} gif={item.gif} commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
 								}
 								keyExtractor={item => item.cid}
 								onEndReachedThreshold={0.3}

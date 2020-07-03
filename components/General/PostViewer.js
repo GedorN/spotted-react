@@ -77,7 +77,6 @@ export default class PostViewer extends React.Component {
 
     getModalImagesLayout = () => {
     if (this.props.images) {
-        console.log('oal', this.props);
     	if (this.props.video) {
 		    return (
 			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
@@ -91,7 +90,23 @@ export default class PostViewer extends React.Component {
 				    </View>
 			    </View>
 		    )
-	    } else if (this.props.images.length === 1) {
+	    } else if (this.props.gif) {
+		    return (
+			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+				    <View style={{ flexDirection: 'row'}}>
+					    <View style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)'}}>
+						    <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+							    <Image
+								    source={{uri: this.props.images[0]}}
+								    resizeMode={'cover'}
+								    style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)', overlayColor: 'white'}}
+							    />
+						    </TouchableOpacity>
+					    </View>
+				    </View>
+			    </View>
+		    )
+	    }else if (this.props.images.length === 1) {
           return (
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
               <View style={{ flexDirection: 'row'}}>
@@ -404,35 +419,36 @@ export default class PostViewer extends React.Component {
           padding: 10,
           borderTopWidth: 0.2,
           borderColor: 'rgba(59, 56, 50, 0.2)',
+	      backgroundColor: 'white'
       },
       body: {
-					flexDirection: 'column',
-					marginTop:10,
+		flexDirection: 'column',
+		marginTop:10,
       },
       postHeader: {
         justifyContent: 'space-between',
         flexDirection: 'row',
-				height: 15,
-				fontWeight: 'bold',
-				alignItems: 'center',
-				alignContent: 'center',
-				width: width * 0.70,
+		height: 15,
+		fontWeight: 'bold',
+		alignItems: 'center',
+		alignContent: 'center',
+		width: width * 0.70,
       },
       postFooter: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          alignContent: 'center',
-          width: width * 0.95,
+	      flexDirection: 'row',
+	      alignItems: 'center',
+	      alignContent: 'center',
+	      width: width * 0.95,
 	      height: 40,
 	      zIndex: 99,
 
       },
       postHeaderUserImage: {
-          justifyContent: "flex-start",
-          alignContent: 'flex-start',
-          padding: 0,
-          alignItems: 'flex-start',
-          height: 30
+	      justifyContent: "flex-start",
+	      alignContent: 'flex-start',
+	      padding: 0,
+	      alignItems: 'flex-start',
+	      height: 30
       },
       post: {
           alignSelf: 'flex-start',
