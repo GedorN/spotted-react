@@ -80,8 +80,8 @@ export default class PostViewer extends React.Component {
         console.log('oal', this.props);
     	if (this.props.video) {
 		    return (
-			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
-				    <View style={{ flexDirection: 'row'}}>
+			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+				    <View  style={{width: width * 0.80, height: 235}}>
 					    <Video
 						    resizeMode={'cover'}
 						    repeat={true}

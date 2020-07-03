@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
 		height: 60,
 		marginBottom: 21,
 		width:theme.width * 0.7,
-
+		zIndex: 100,
 	},
     drawerHeader: {
         flex: 1,

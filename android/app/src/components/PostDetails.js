@@ -161,9 +161,9 @@ export default class PostDetails extends React.Component {
 		if (this.state.post && this.state.post.data().images) {
 			if (this.state.post.data().video) {
 				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
 						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: 280, height: 200}}>
+							<View style={{width: width * 0.80, height: 235}}>
 								<Video
 									resizeMode={'cover'}
 									repeat={true}
