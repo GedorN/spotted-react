@@ -389,7 +389,7 @@ export default class ProductScreen extends React.Component {
 										this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true, newCoupon : coupon, discountPriceWithoutTax : (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
 									}
 									else {
-										this.setState({discountPicPayPrice: (this.state.price_without_tax - coupon.value), discountApplied : true, newCoupon : coupon,discountPriceWithoutTax : (this.state.price_without_tax - coupon.value), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
+										this.setState({discountPicPayPrice: (this.state.PicPayPrice - coupon.value), discountApplied : true, newCoupon : coupon,discountPriceWithoutTax : (this.state.price_without_tax - coupon.value), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
 									}
 								} else{
 									this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false});
@@ -650,7 +650,7 @@ export default class ProductScreen extends React.Component {
 													<View style = {{ flexDirection:'column', flexWrap: 'wrap' }}>
 														<View style={{ flexDirection: 'row' }}>
 															<Text style = {styles.paymentText} >
-																{'R$ ' +(this.state.discountPicPayPrice != null ? this.state.discountPicPayPrice : this.state.PicPayPrice) + ' - Pago pelo '}
+																{'R$ ' +(this.state.discountPicPayPrice != null ? this.state.discountPicPayPrice.toFixed(2).toString().replace(".", ",") : this.state.PicPayPrice) + ' - Pago pelo '}
 															</Text>
 															<Image
 																style = {{ width: 61, height: 20, marginLeft: 3, marginTop:0}}
