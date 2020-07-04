@@ -213,13 +213,13 @@ export default class LikeARollingTicketViewer extends React.Component {
 										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Entregue' &&
 										<View style = {{ marginBottom: theme.height * 0.02}}>
 											<Text style = {styles.textStatus}> Seu pedido foi entregue!  </Text>
-										</View>	
+										</View>
 									}
 									{
 										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pago' &&
 										<View style = {{ marginBottom: theme.height * 0.02}}>
-											<Text style = {styles.textStatus}> O pagamento foi efetivado, você pode retirar seu produto agora, a não ser que não queira, ou que ainda não tenha chego. </Text>
-										</View>	
+											<Text style = {styles.textStatus}> O pagamento foi efetivado, você já pode entrar em contato com a entidade para retirar o seu pedido. </Text>
+										</View>
 									}
 								</ScrollView>
 							</View>
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
 		marginTop:theme.height * 0.015
 	},
 	ticketLogo : {
-		resizeMode: 'contain', 
+		resizeMode: 'contain',
 		flex: 1,
 		width: null,
 		height: null,
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
 	},
 	modalContainer: {
 		width: theme.width * 0.9,
-		height: theme.height * 0.75, 
+		height: theme.height * 0.75,
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 35,
@@ -391,9 +391,9 @@ const styles = StyleSheet.create({
 		justifyContent:'center'
 	},
 	textStatus: {
-		color: '#8f8f8f', 
+		color: '#8f8f8f',
 		alignSelf: 'center',
-		textAlign: 'justify', 
-		lineHeight: 20 
+		textAlign: 'justify',
+		lineHeight: 20
 	}
 });

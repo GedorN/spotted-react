@@ -412,11 +412,15 @@ export default class ProductScreen extends React.Component {
 										this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true, newCoupon : coupon, discountPriceWithoutTax : (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
 									}
 									else {
-										let finalValue = (this.state.PicPayPrice - coupon.value);
+										let tempDiscountPriceWithoutTax = parseFloat(parseFloat(this.state.price_without_tax) - parseFloat(coupon.value)).toFixed(2);
+										let finalValue = parseFloat(parseFloat(this.state.PicPayPrice) - parseFloat(coupon.value)).toFixed(2);
 										if (finalValue <= 0) {
 											finalValue = 0
 										}
-										this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon,discountPriceWithoutTax : (this.state.price_without_tax - coupon.value), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
+										if (tempDiscountPriceWithoutTax <= 0) {
+											tempDiscountPriceWithoutTax = 0;
+										}
+										this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon, discountPriceWithoutTax :tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
 									}
 								} else{
 									this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false});
@@ -692,7 +696,7 @@ export default class ProductScreen extends React.Component {
 
 														}
 													</View>
-													<View style={{ flexDirection:'row' }}>
+													<View style={{ flex: 1, flexDirection: 'row' }}>
 														<Text style={styles.buyConfirmText}>
 															{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
 														</Text>
@@ -804,24 +808,22 @@ const styles = StyleSheet.create({
 		paddingTop:theme.height*0.03
 	},
 	buyConfirmText: {
+		flex: 1,
 		flexWrap: 'wrap',
 		color:'#8f8f8f',
 		fontWeight:'700',
-		paddingBottom: theme.height * 0.01,
 		textAlign:'justify',
 		letterSpacing : 0.5,
 		lineHeight: 25,
 
 	},
 	picPayView: {
+		flex: 1,
 		borderColor:'#21c25e',
-		borderWidth:2,
-		paddingLeft:15,
-		paddingRight:15,
-		paddingTop:15,
-		paddingBottom:10,
-		marginTop:15,
-		borderRadius:25,
+		borderWidth: 2,
+		padding: 8,
+		borderRadius: 25,
+		flexWrap: 'wrap',
 	},
 	cuponView: {
 		flexDirection: 'row',
