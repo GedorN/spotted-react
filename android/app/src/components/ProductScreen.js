@@ -327,6 +327,7 @@ export default class ProductScreen extends React.Component {
 
 
 	buttonEnabled = () => {
+		this.setState({});
 		if (this.state.product.customization.map((p) => p.value).some((fp) => {return fp === undefined})) {
 			this.setState( { errorMissingValues: true });
 		} else {
@@ -664,7 +665,7 @@ export default class ProductScreen extends React.Component {
 
 														}
 													</View>
-													<View style={{ flexDirection:'row', height: theme.height * 0.24 }}>
+													<View style={{ flexDirection:'row' }}>
 														<Text style={styles.buyConfirmText}>
 															{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
 														</Text>
@@ -776,7 +777,6 @@ const styles = StyleSheet.create({
 		paddingTop:theme.height*0.03
 	},
 	buyConfirmText: {
-		flex: 1,
 		flexWrap: 'wrap',
 		color:'#8f8f8f',
 		fontWeight:'700',

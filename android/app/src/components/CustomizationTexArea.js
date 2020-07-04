@@ -41,9 +41,8 @@ export default class CustomizationTextArea extends React.Component {
 	                        <TextInput
 	                            style = {{borderColor:'#8f8f8f',borderWidth:2, width:theme.width*0.9,opacity: 0.7,borderRadius:10,fontSize:14,fontWeight:'500',paddingLeft:10}}
 	                            placeholder = {this.state.option === null ? 'Digite o que deseja' : this.state.option}
-	                            onChangeText = {text => this.setState({option :text})}
+	                            onChangeText = {(text) => {this.setState({option :text}); this.setOption()}}
 	                            value = {this.state.option}
-	                            onEndEditing = {this.setOption.bind(this)}
 	                        />
 	                    </View>
                     }
