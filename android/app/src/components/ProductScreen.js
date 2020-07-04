@@ -532,7 +532,7 @@ export default class ProductScreen extends React.Component {
 											</View>
 										}
 										{
-											this.state.product && this.state.product.description != "" &&
+											this.state.product && this.state.product.description != "" && this.state.product.description != null &&
 											<View style = { styles.descriptionContainer }>
 												<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
 												<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
@@ -587,7 +587,7 @@ export default class ProductScreen extends React.Component {
 												</View>
 
 											}
-												<View style ={{ ...styles.footer, paddingTop:(this.state.product && this.state.product.description != "" ? theme.height*0.03 : theme.height * 0.01) }}>
+												<View style ={{ ...styles.footer, paddingTop:(this.state.product && this.state.product.description != "" && this.state.product.description != null ? theme.height*0.03 : theme.height * 0.01) }}>
 													{
 														this.state.errorMissingValues &&
 														<Text style={{ color: 'red', marginBottom: 4 }}> *Obrigatório o preenchimento de todos os campos </Text>
@@ -677,29 +677,31 @@ export default class ProductScreen extends React.Component {
 												<Text style = {{ fontWeight:'bold', letterSpacing: 0.5, marginTop: theme.height * 0.02, marginLeft:theme.width * 0.01, color: this.state.product? this.state.product.colors[0] : 'black' }}>{this.state.warning}</Text>
 											}
 											<Text style = { styles.information }>{'Informações:'}</Text>
-												<View style = { styles.picPayView}  >
-													<View style = {{ flexDirection:'column', flexWrap: 'wrap' }}>
-														<View style={{ flexDirection: 'row' }}>
-															<Text style = {styles.paymentText} >
-																{'R$ ' +(this.state.discountPicPayPrice != null ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace(".", ",") : this.state.PicPayPrice) + ' - Pago pelo '}
-															</Text>
-															<Image
-																style = {{ width: 61, height: 20, marginLeft: 3, marginTop:0}}
-																source = {{ uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc' }}>
-															</Image>
-														</View>
-														{
-															this.state.discountApplied &&
-															<View>
-																<Text style ={{ fontWeight: 'bold', marginBottom: theme.height*0.01, letterSpacing: 0.5}}>{'Valor com desconto'}</Text>
+												<View style = { styles.picPayView }  >
+													<View style = {{ margin: 20, flexWrap: 'wrap'}}>
+														<View style = {{ flexDirection:'column', flexWrap: 'wrap'}}>
+															<View style={{ flexDirection: 'row' }}>
+																<Text style = {styles.paymentText} >
+																	{'R$ ' +(this.state.discountPicPayPrice != null ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace(".", ",") : this.state.PicPayPrice) + ' - Pago pelo '}
+																</Text>
+																<Image
+																	style = {{ width: 61, height: 20, marginLeft: 3, marginTop:0}}
+																	source = {{ uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc' }}>
+																</Image>
 															</View>
+															{
+																this.state.discountApplied &&
+																<View>
+																	<Text style ={{ fontWeight: 'bold', marginBottom: theme.height*0.01, letterSpacing: 0.5}}>{'Valor com desconto'}</Text>
+																</View>
 
-														}
-													</View>
-													<View style={{ flex: 1, flexDirection: 'row' }}>
-														<Text style={styles.buyConfirmText}>
-															{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
-														</Text>
+															}
+														</View>
+														<View style={{ flexDirection:'row' }}>
+															<Text style={styles.buyConfirmText}>
+																{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
+															</Text>
+														</View>
 													</View>
 												</View>
 												<View style = {{ ...styles.modalButtons,  marginTop: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0 ? theme.height * 0.07 : theme.height * 0.05)}}>
@@ -818,12 +820,10 @@ const styles = StyleSheet.create({
 
 	},
 	picPayView: {
-		flex: 1,
 		borderColor:'#21c25e',
 		borderWidth: 2,
-		padding: 8,
+		marginTop:15,
 		borderRadius: 25,
-		flexWrap: 'wrap',
 	},
 	cuponView: {
 		flexDirection: 'row',

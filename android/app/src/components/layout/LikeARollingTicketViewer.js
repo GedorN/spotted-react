@@ -218,8 +218,12 @@ export default class LikeARollingTicketViewer extends React.Component {
 									{
 										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pago' &&
 										<View style = {{ marginBottom: theme.height * 0.02}}>
-											<Text style = {styles.textStatus}> O pagamento foi efetivado, você já pode entrar em contato com a entidade para retirar o seu pedido. </Text>
-										</View>
+											<Text style = {{ flexDirection: 'row', textAlign: 'justify' }}>
+												<Text style = {styles.textStatus}>{'O pagamento foi efetivado, você já pode entrar em contato com '}</Text>
+												<Text style = {styles.textStatus}>{this.props.ticket.store_name}</Text>
+												<Text style = {styles.textStatus}>{' para retirar seu pedido.'}</Text>
+											</Text>
+										</View>	
 									}
 								</ScrollView>
 							</View>
