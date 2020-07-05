@@ -58,7 +58,7 @@ export default class SideDrawer extends React.Component {
                 <View style={styles.content}>
 					<ScrollView contentContainerStyle= {styles.scrollview}
 								showsVerticalScrollIndicator = {false}>
-						<View>
+						<View style={{height: '95%'}}>
 							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
 							                  onPressIn={() => heimdallr.sendEvent('config_menu_click')}
 							                  onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
@@ -245,7 +245,6 @@ const styles = StyleSheet.create({
 		marginRight: 21,
 	},
 	scrollview: {
-    	height: '100%',
     	flexDirection: 'column',
     	justifyContent: 'space-between',
 		marginTop: 0,
