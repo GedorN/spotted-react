@@ -307,7 +307,15 @@ export default class ProductScreen extends React.Component {
 
 	setSelectValue(item) {
 		if (this.state.product.customization.find((i) => (i.label === item.label)).value) {
-			this.state.product.customization.find((i) => (i.label === item.label)).value.push(item.value)
+			const index = this.state.product.customization.find((i) => (i.label === item.label)).value.indexOf(item.value);
+			if (index >= 0) {
+				this.state.product.customization.find((i) => (i.label === item.label)).value.splice(index, 1);
+				if (this.state.product.customization.find((i) => (i.label === item.label)).value.length === 0 ) {
+					this.state.product.customization.find((i) => (i.label === item.label)).value = undefined;
+				}
+			} else {
+				this.state.product.customization.find((i) => (i.label === item.label)).value.push(item.value)
+			}
 		} else {
 			this.state.product.customization.find((i) => (i.label === item.label)).value = [item.value];
 		}

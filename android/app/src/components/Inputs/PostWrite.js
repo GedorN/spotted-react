@@ -452,7 +452,7 @@ export default class PostWrite extends React.Component {
 								/>
 							</TouchableOpacity>
 						</View>
-						<View style={{marginTop:15, width: width * 0.9, marginLeft: 25}}>
+						<View style={{marginTop:5, width: width * 0.9, marginLeft: 25}}>
 							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
