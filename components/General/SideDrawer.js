@@ -47,35 +47,46 @@ export default class SideDrawer extends React.Component {
             <View style={styles.container}>
                 <View style={styles.drawerHeader}>
 	                <View style={{flexDirection: 'column', alignItems: 'center', flex: 1}}>
-	                    <UserImgProfile circular height={100} width={100} uri={heimdallr.user_image} style={styles.userImage} />
-	                    <Text
-	                        style={styles.userName}
-	                    >
-	                        {heimdallr.user_name}
-	                    </Text>
+		                <TouchableOpacity
+			                style={{alignSelf: 'flex-end'}}
+			                disabled={heimdallr.email === 'spotted@utfpr.com'}
+                            onPressIn={() => heimdallr.sendEvent('config_menu_click')}
+                            onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}
+		                >
+			                <Image source={require('../../assets/images/cog-solid.png')}
+			                       style={{
+			                            alignSelf: 'flex-end',
+				                       tintColor: 'gray',
+				                       width: 23,
+				                       height: 23,
+				                       marginRight: 13,
+			                       }}
+			                />
+		                </TouchableOpacity>
+		                <TouchableOpacity
+			                disabled={heimdallr.email === 'spotted@utfpr.com'}
+			                onPressIn={() => heimdallr.sendEvent('config_menu_click')}
+			                onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}
+		                >
+	                        <UserImgProfile circular height={100} width={100} uri={heimdallr.user_image} style={styles.userImage} />
+		                </TouchableOpacity>
+		                <TouchableOpacity
+			                disabled={heimdallr.email === 'spotted@utfpr.com'}
+			                onPressIn={() => heimdallr.sendEvent('config_menu_click')}
+			                onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}
+		                >
+		                    <Text
+		                        style={styles.userName}
+		                    >
+		                        {heimdallr.user_name}
+		                    </Text>
+		                </TouchableOpacity>
 	                </View>
                 </View>
                 <View style={styles.content}>
 					<ScrollView contentContainerStyle= {styles.scrollview}
 								showsVerticalScrollIndicator = {false}>
-						<View style={{height: '95%'}}>
-							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-							                  onPressIn={() => heimdallr.sendEvent('config_menu_click')}
-							                  onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
-								<View style={styles.item}>
-									<View style = {{ width: 57 }}>
-										<Image source={require('../../assets/images/user-cog-solid.png')}
-										       style={{
-											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
-											       width: 35,
-											       height: 27,
-											       marginRight: 13,
-										       }}
-										/>
-									</View>
-									<Text> Configurações </Text>
-								</View>
-							</TouchableOpacity>
+						<View >
 							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
 							                  onPressIn={() => {heimdallr.checkTicketsStatus(); heimdallr.sendEvent('tickts_menu_click')}}
 							                  onPress={() => {this.props.navigation.push('Tickets',  {navigation: this.props.navigation})}}>

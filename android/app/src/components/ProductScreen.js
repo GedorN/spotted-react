@@ -471,10 +471,9 @@ export default class ProductScreen extends React.Component {
 										<TouchableOpacity onPress={() => { this.props.navigation.goBack() } }>
 											<View style={{ flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10 }}>
 												<Image
-													style={{ width: 12, height: 12, marginTop:4 }}
-													source={require('../../../../assets/images/arrow-left.png')}
+													style={{ width: 30, height: 30, marginTop:4, opacity: 0.6 }}
+													source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
 												/>
-												<Text style={{ marginLeft: 5 }}>voltar</Text>
 											</View>
 										</TouchableOpacity>
 										<View style = { styles.logoContainer }>
@@ -714,14 +713,17 @@ export default class ProductScreen extends React.Component {
 												</View>
 												<View style = {{ ...styles.modalButtons,  marginTop: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0 ? theme.height * 0.07 : theme.height * 0.05)}}>
 													<TouchableOpacity
-														activeOpacity={0.8}
+														activeOpacity={1}
 														onPressIn={() => heimdallr.sendEvent('buy_cancel')}
 														onPress = { this.disableModal.bind(this) }>
 														<View style = { styles.cancelButton }>
 															<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing: 0.5 }}>{ 'Cancelar' }</Text>
 														</View>
 													</TouchableOpacity>
-													<TouchableOpacity activeOpacity={0.8} onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
+													<TouchableOpacity
+														activeOpacity={1}
+														onPressIn={() => heimdallr.sendEvent(`${this.state.product.sid}_buy_confirm`)}
+														onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
 														<View style = {{ ...styles.confirmButton, backgroundColor: this.state.product? this.state.product.colors[0] : 'green' }}>
 															<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color: (this.state.product ? this.state.product.colors[1] : null) }}>{ 'Confirmar' }</Text>
 														</View>
