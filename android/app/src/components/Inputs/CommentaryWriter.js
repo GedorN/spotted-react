@@ -462,7 +462,7 @@ export default class CommentaryWriter extends React.Component {
 								</TouchableOpacity>
 							</View>
 						</View>
-						<View style = {{ borderColor: 'grey', borderBottomWidth: 0.7 }}>
+						<View style = {{ borderColor: '#f2f2f2', borderBottomWidth: 2 }}>
 							<TextInput
 								style={{width: width * 0.9,
 									alignSelf:'center',
@@ -480,39 +480,29 @@ export default class CommentaryWriter extends React.Component {
 						<View style={{alignSelf:'center'}}>
 							{this.getModalImagesLayout()}
 						</View>
-						<View style = {{flexDirection:"row", height: 45 , marginTop: this.state.postImages.length > 0 ? 10 : 2}}>
+						<View style = {{ ...styles.postIcons, marginTop: this.state.postImages.length > 0 ? 10 : 2 }}>
 							<TouchableOpacity
 								onPress = {this.getAnonymous.bind(this)}
-								style =
-									{{
-										width: 45,
-										height: 45,
-										marginTop: 3,
-										marginLeft: theme.width * 0.08}}
-							>
+								style = {{ width: 45, height: 45, marginTop: 3 }}>
 								<Image
 									source={require('../../../../../assets/images/mask-solid.png')}
-									style = {{ width: 50, height: 40, alignSelf: 'flex-start', opacity: 1}}
+									style = {{ width: 50, height: 40, opacity: 1}}
 								/>
-
 							</TouchableOpacity>
-							<Text style = {{marginTop:14,marginLeft:11, opacity: !this.state.anonymousUser ? 0.5 : 1, width:theme.width *0.55,
-								fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
+							<Text style = {{ ...styles.anonymousText, opacity: !this.state.anonymousUser ? 0.5 : 1, fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
 							<TouchableOpacity disabled={this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded} onPress={this.sendImagePropt.bind(this)}>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}
 									style={{
 										width: 35,
 										height: 30,
-										alignSelf:'flex-end',
-										marginLeft:theme.width *0.08,
-										marginTop:7,
+										marginTop:9,
 										opacity: this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded ? 0.4 : 1
 									}}
 								/>
 							</TouchableOpacity>
 						</View>
-						<View style={{marginTop:15, width: width * 0.9, marginLeft: 25}}>
+						<View style={{marginTop:5, width: width * 0.9, alignSelf: 'center' }}>
 							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Comentar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
@@ -555,5 +545,17 @@ const styles = StyleSheet.create({
 		// borderColor: theme.primary,
 		// height: this.state.postImages.length > 0 ? 300 : 500,
 	},
+	postIcons: {
+		flexDirection:"row",
+		height: 45 ,
+		width: theme.width * 0.9,
+		alignSelf: 'center',
+		justifyContent: 'space-around'
+	},
+	anonymousText: {
+		marginTop:14,
+		width:theme.width *0.59,
+		width:theme.width *0.6 
+	}
 });
 
