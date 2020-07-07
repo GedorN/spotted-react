@@ -497,14 +497,11 @@ export default class PostDetails extends React.Component {
 					/>
 				</Modal>
 				<TouchableOpacity onPress={this.return.bind(this)}>
-					<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+					<View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5,  paddingLeft: 12}}>
 						<Image
-							style={{width: 12, height: 12, marginTop:4}}
-							source={require('../../../../assets/images/arrow-left.png')}
+							style={{ width: 30, height: 30, marginTop:4, opacity: 0.6 }}
+							source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
 						/>
-						<Text style={{marginLeft: 5}}>
-							voltar
-						</Text>
 					</View>
 				</TouchableOpacity>
 				{
