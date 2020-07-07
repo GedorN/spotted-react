@@ -499,9 +499,12 @@ export default class PostDetails extends React.Component {
 				<TouchableOpacity onPress={this.return.bind(this)}>
 					<View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5,  paddingLeft: 12}}>
 						<Image
-							style={{ width: 30, height: 30, marginTop:4, opacity: 0.6 }}
-							source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+							style={{width: 12, height: 12, marginTop:4}}
+							source={require('../../../../assets/images/arrow-left.png')}
 						/>
+						<Text style={{marginLeft: 5}}>
+							voltar
+						</Text>
 					</View>
 				</TouchableOpacity>
 				{
@@ -667,7 +670,6 @@ const styles = StyleSheet.create({
 	colContainer: {
 		flexDirection: 'column',
 		alignItems: 'flex-start',
-		borderTopWidth: 0.2,
 		borderColor: 'rgba(59, 56, 50, 0.2)',
 		flex: 1,
 		width:theme.width*0.99,
@@ -678,6 +680,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'flex-start',
 		padding: 10,
+		borderTopWidth: 0.2,
 		borderBottomWidth: 0.2,
 		borderColor: 'rgba(59, 56, 50, 0.2)',
 	},
