@@ -351,98 +351,103 @@ export default  class SignUp extends React.Component {
 			<KeyboardAvoidingView behavior={'padding'} style={{flex: 1}}>
 				<View style={styles.container}>
 					<Image
-						style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
+						style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.5}}
 						source={require('../../../../assets/images/simbol.png')}
 					/>
-					<View style={{justifyContent: 'center', alignContent: 'center'}}>
-						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
-							<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderRadius: 100}}>
-								<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
-							</View>
-						</TouchableOpacity>
-					</View>
-					{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
-					{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
-					{this.state.showPhoneError && <Text style={{color: 'red'}}> * Insira um telefone celular válido </Text>}
-					{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
-					{this.state.showEmailBadlyFormatted && <Text style={{color: 'red'}}> * Email com formato incorreto incorreto </Text>}
-					{this.state.showEmailAlreadyInUse && <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-															<Text> Parece que esse email já está cadastrado.</Text><TouchableOpacity onPress={() => {this.props.navigation.navigate('PasswordRestore')}}><Text style={{color: 'red'}}> Clique aqui </Text></TouchableOpacity>
-															<Text> para recuperar a senha</Text>
-														</View>}
-
-					<View style={{flexDirection: 'row', marginTop: 30}}>
-						<RUMineTextInput
-							onChangeText={ text => this.setState({ name: text }) }
-							autoCapitalize='words'
-							placeholder='Nome'
-							textContentType='name'
-							borderBottomWidth={1}
-							marginRight={4}
-							flex={1}
-						/>
-					</View>
-					<View style={styles.form}>
-						<RUMineTextInput
-							onChangeText={ text => this.setState({ email: text }) }
-							autoCapitalize='none'
-							placeholder='Email'
-							keyboardType='email-address'
-							textContentType='emailAddress'
-							borderBottomWidth={1}
-						/>
-					</View>
-					<View style={styles.form}>
-						<TextInputMask
-							style={{borderBottomWidth : 1, borderColor: theme.primary}}
-							type={'cel-phone'}
-							options={{
-								maskType: 'BRL',
-								withDDD: true,
-								dddMask: '(99) '
-							}}
-							placeholder={'Celular'}
-							value={this.state.phone}
-							onChangeText={text => {
-								this.setState({
-									phone: text
-								})
-							}}
-						/>
-						{/*<RUMineTextInput*/}
-						{/*	onChangeText={ text => this.setState({ email: text }) }*/}
-						{/*	autoCapitalize='none'*/}
-						{/*	placeholder='Telefone'*/}
-						{/*	keyboardType='numeric'*/}
-						{/*	textContentType='telephoneNumber'*/}
-						{/*/>*/}
-					</View>
-					<View style={styles.form}>
-						<EyeOfThePassword
-							onChangeText={ text => this.setState({ password: text }) }
-							autoCapitalize='none'
-							toggleSecureEntry={this.toggleSecureEntry.bind(this)}
-							secureTextEntry={this.state.securePassword}
-							placeholder='Password'
-							textContentType='password'
-						/>
-					</View>
-					<View style={styles.form}>
-						<View style = {styles.agreementView}>
-							<Text style = {styles.agreementText}>{'Ao criar conta você  concorda com nossos '}</Text>
-							<TouchableOpacity onPress = {() => Linking.openURL('https://spottedutfpr.com/privacy_policy')}>
-								<View style = {styles.agreementTouchView}>
-									<Text style = {styles.agreementWord}>{'termos'}</Text>
+					<View style = {{ borderRadius: 25, padding: 20, backgroundColor: 'white', elevation: 4, paddingBottom: 50 }}>
+						<View style={{justifyContent: 'center', alignContent: 'center'}}>
+							<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+								<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderRadius: 100}}>
+									<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
 								</View>
 							</TouchableOpacity>
 						</View>
-						<View style={{marginBottom: 10}}>
-							<FatBottomedButton text='Criar' backgroundColor={theme.primary} color={'white'} onTap={this.sendVerificationMessage.bind(this)}
+						{this.state.showErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha todos os campos </Text>}
+						{this.state.showNameErrorMessage && <Text style={{color: 'red'}}> * Por favor, preencha com o seu nome completo </Text>}
+						{this.state.showPhoneError && <Text style={{color: 'red'}}> * Insira um telefone celular válido </Text>}
+						{this.state.showErrorPasswordLength && <Text style={{color: 'red'}}> * A senha deve ter no mínimo 6 caracteres </Text>}
+						{this.state.showEmailBadlyFormatted && <Text style={{color: 'red'}}> * Email com formato incorreto incorreto </Text>}
+						{this.state.showEmailAlreadyInUse && <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+																<Text> Parece que esse email já está cadastrado.</Text><TouchableOpacity onPress={() => {this.props.navigation.navigate('PasswordRestore')}}><Text style={{color: 'red'}}> Clique aqui </Text></TouchableOpacity>
+																<Text> para recuperar a senha</Text>
+															</View>}
+
+						<View style={{flexDirection: 'row', marginTop: 30}}>
+							<RUMineTextInput
+								onChangeText={ text => this.setState({ name: text }) }
+								autoCapitalize='words'
+								placeholder='Nome'
+								textContentType='name'
+								borderBottomWidth={1}
+								borderBottomColor={'#b2b5b1'}
+								marginRight={4}
+								flex={1}
 							/>
 						</View>
-						<View>
-							<FatBottomedButton text='Cancelar' color={theme.primary} onTap={this.cancelPress.bind(this)}
+						<View style={styles.form}>
+							<RUMineTextInput
+								onChangeText={ text => this.setState({ email: text }) }
+								autoCapitalize='none'
+								placeholder='Email'
+								keyboardType='email-address'
+								textContentType='emailAddress'
+								borderBottomWidth={1}
+								borderBottomColor={'#b2b5b1'}
 							/>
+						</View>
+						<View style={{ ...styles.form, marginBottom: 10}}>
+							<TextInputMask
+								style={{borderBottomWidth : 1, borderColor:'#b2b5b1'}}
+								type={'cel-phone'}
+								options={{
+									maskType: 'BRL',
+									withDDD: true,
+									dddMask: '(99) '
+								}}
+								placeholder={'Celular'}
+								value={this.state.phone}
+								onChangeText={text => {
+									this.setState({
+										phone: text
+									})
+								}}
+							/>
+							{/*<RUMineTextInput*/}
+							{/*	onChangeText={ text => this.setState({ email: text }) }*/}
+							{/*	autoCapitalize='none'*/}
+							{/*	placeholder='Telefone'*/}
+							{/*	keyboardType='numeric'*/}
+							{/*	textContentType='telephoneNumber'*/}
+							{/*/>*/}
+						</View>
+						<View style={styles.form}>
+							<EyeOfThePassword
+								onChangeText={ text => this.setState({ password: text }) }
+								autoCapitalize='none'
+								toggleSecureEntry={this.toggleSecureEntry.bind(this)}
+								secureTextEntry={this.state.securePassword}
+								placeholder='Password'
+								textContentType='password'
+								borderBottomColor={'#b2b5b1'}
+							/>
+						</View>
+						<View style={styles.form}>
+							<View style = {styles.agreementView}>
+								<Text style = {styles.agreementText}>{'Ao criar conta você concorda com nossos '}</Text>
+								<TouchableOpacity onPress = {() => Linking.openURL('https://spottedutfpr.com/privacy_policy')}>
+									<View style = {styles.agreementTouchView}>
+										<Text style = {styles.agreementWord}>{'termos'}</Text>
+									</View>
+								</TouchableOpacity>
+							</View>
+							<View style={{marginBottom: 12}}>
+								<FatBottomedButton text='Criar' backgroundColor={theme.primary}  height={50} color={'white'} onTap={this.sendVerificationMessage.bind(this)}
+								/>
+							</View>
+							<View>
+								<FatBottomedButton text='Cancelar' color={theme.primary}  height={50} onTap={this.cancelPress.bind(this)}
+								/>
+							</View>
 						</View>
 					</View>
 				</View>
@@ -543,11 +548,13 @@ const styles= StyleSheet.create({
 	agreementView:{
 		flexDirection:'row',
 		justifyContent:'center',
-		marginBottom:theme.height*0.02
+		marginBottom:theme.height*0.02,
+		marginTop: 5,
 	},
 	agreementText:{
 		color:'#8f8f8f',
-		marginTop:theme.height*0.015
+		marginTop:theme.height*0.015,
+		fontSize: 12
 	},
 	agreementTouchView:{
 		paddingBottom:0,
@@ -555,7 +562,8 @@ const styles= StyleSheet.create({
 	},
 	agreementWord:{
 		fontWeight:'bold',
-		color:theme.primary
+		color:theme.primary,
+		fontSize: 12
 	},
 	centeredView: {
 		flex: 1,
@@ -563,6 +571,8 @@ const styles= StyleSheet.create({
 		alignItems: "center",
 		marginTop: 22,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		paddingTop: theme.height * 0.1,
+		marginTop: -(theme.height * 0.1)
 	},
 	agreementModalContainer: {
 		width: theme.width * 0.9,

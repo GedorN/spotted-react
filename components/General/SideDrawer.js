@@ -160,18 +160,20 @@ export default class SideDrawer extends React.Component {
 							</TouchableOpacity>
 							{
 								heimdallr.email === 'spotted@utfpr.com' &&
-								<TouchableOpacity
-									style={{position: 'absolute', bottom: 8, paddingLeft: 22, opacity: 0.8}}
-									onPress={() => {this.props.actionPressed('signIn')}}>
+								<TouchableOpacity onPress={() => {this.props.actionPressed('signIn')}}>
 									<View style={styles.item}>
-										<Image source={require('../../assets/images/sign-in-alt-solid.png')}
-										       style={{
-											       tintColor: theme.primary,
-											       width: 40,
-											       height: 32,
-											       marginRight: 13,
-										       }}
-										/>
+										<View style = {{ width: 45, height: 45, marginRight: 13 }}>
+											<Image source={require('../../assets/images/sign-in-alt-solid.png')}
+												style={{
+													resizeMode: 'contain',
+													tintColor: theme.primary,
+													width: null,
+													height: null,
+													flex:1,
+													opacity: 0.8
+												}}
+											/>
+										</View>
 										<Text>{ 'Registrar-se' }</Text>
 									</View>
 								</TouchableOpacity>

@@ -206,7 +206,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 									{
 										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
 										<View style = {{ marginBottom: theme.height * 0.02}}>
-											<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={this.props.ticket.colors[1]} onTap={this.redirectToPay.bind(this)}/>
+											<FatBottomedButton text={'Pagar'} height={50} fontSize={19} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={this.props.ticket.colors[1]} onTap={this.redirectToPay.bind(this)}/>
 										</View>
 									}
 									{

@@ -47,10 +47,10 @@ export default class ChangePassword extends React.Component {
 					/>
 				</View>
 				<View style={{marginTop: 20}}>
-					<FatBottomedButton text='Cancelar' color={theme.primary} onTap={this.props.changePassword} />
+					<FatBottomedButton text='Cancelar'color={'white'} height={50} backgroundColor={'black'} borderColor={'black'}  onTap={this.props.changePassword} />
 				</View>
 				<View style={{marginTop: 20}}>
-					<FatBottomedButton text='Salvar' color={theme.primary} onTap={this.props.changePassword} />
+					<FatBottomedButton text='Salvar'  color={'white'} backgroundColor={'#54c43b'} borderColor = {'#54c43b'}  height={50} onTap={this.props.changePassword} />
 				</View>
 			</View>
 		)

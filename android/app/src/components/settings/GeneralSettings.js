@@ -268,10 +268,10 @@ export default class GeneralSettings extends  React.Component {
 					</View>
 				</View>
 				<View style={{marginTop: 40}}>
-					<FatBottomedButton text='Alterar senha' color={theme.primary} onTap={this.props.changePassword} />
+					<FatBottomedButton text='Alterar senha' color={'white'} height={50} backgroundColor={'black'} borderColor={'black'}  onTap={this.props.changePassword} />
 				</View>
 				<View style={{marginTop: 20}}>
-					<FatBottomedButton text='Salvar' color={'white'} backgroundColor={theme.primary} onTap={() => this.saveEdition()} />
+					<FatBottomedButton text='Salvar' color={'white'} backgroundColor={'#54c43b'} borderColor = {'#54c43b'}  height={50} onTap={() => this.saveEdition()} />
 				</View>
 				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.88}}>
 					<TouchableOpacity onPress={() => {this.setState({ showAlert: true })}}>

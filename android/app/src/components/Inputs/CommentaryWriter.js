@@ -503,7 +503,7 @@ export default class CommentaryWriter extends React.Component {
 							</TouchableOpacity>
 						</View>
 						<View style={{marginTop:5, width: width * 0.9, alignSelf: 'center' }}>
-							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Comentar'} onTap={this.doPost.bind(this)}/>
+							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Comentar'} height={50} fontSize={17} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
 				</View>

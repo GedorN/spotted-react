@@ -98,7 +98,8 @@ export default class Login extends React.Component {
 	                    autoCompleteType='email'
 	                    keyboardType='email-address'
 	                    textContentType='emailAddress'
-	                    borderBottomWidth={1}
+						borderBottomWidth={1}
+						borderBottomColor={'#b2b5b1'}
 	                    onChangeText={text => this.setState({user: text})}
                     />
                     <EyeOfThePassword
@@ -106,7 +107,8 @@ export default class Login extends React.Component {
 	                    toggleSecureEntry={this.toggleSecureEntry.bind(this)}
 	                    placeholder='Senha'
 	                    autoCompleteType='password'
-	                    textContentType='password'
+						textContentType='password'
+						borderBottomColor={'#b2b5b1'}
 	                    onChangeText={text => this.setState({password: text})}
                     />
                     <TouchableOpacity style={styles.forgotPassword} onPress={() => this.props.navigation.navigate('PasswordRestore')}>
@@ -115,13 +117,13 @@ export default class Login extends React.Component {
 	                    </Text>
                     </TouchableOpacity>
 	                <View style={{marginBottom: 10}}>
-		                <FatBottomedButton color={'white'} backgroundColor={theme.primary} text={'Entrar'} onTap={this.doLogin.bind(this)} />
+		                <FatBottomedButton color={'white'} backgroundColor={theme.primary} text={'Entrar'}  height={50} onTap={this.doLogin.bind(this)} />
 	                </View>
 	                <View>
-		                <FatBottomedButton color={theme.primary} text={'Registrar-se'} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
+		                <FatBottomedButton color={theme.primary} text={'Registrar-se'}  height={50} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
 	                </View>
                 </View>
-	            <View style={{position: 'absolute', top: height * 0.85, width: width, alignItems: 'flex-start'}}>
+	            <View style={{position: 'absolute', top: height * 0.85, width: width, paddingLeft: 10, alignItems: 'flex-start'}}>
 	                <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>
 			            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
 	                </TouchableOpacity>

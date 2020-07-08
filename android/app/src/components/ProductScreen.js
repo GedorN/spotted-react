@@ -602,6 +602,7 @@ export default class ProductScreen extends React.Component {
 													<FatBottomedButton
 														disabled={this.state.product.stock <= 0}
 														text = {'Comprar'}
+														fontSize = {27}
 														backgroundColor = {this.state.product? this.state.product.colors[0] : null}
 														color = { this.state.product ? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
 														onTap = {this.buttonEnabled.bind(this)}
