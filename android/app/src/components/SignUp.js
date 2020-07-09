@@ -357,6 +357,7 @@ export default  class SignUp extends React.Component {
 					<View style = {{ borderRadius: 25, padding: 20, backgroundColor: 'white', elevation: 4, paddingBottom: 30 }}>
 						<View style={{justifyContent: 'center', alignContent: 'center'}}>
 							<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+								<Text style={{alignSelf: 'center', justifyContent: 'center', fontSize: 9, marginTop: 4}}> Escolher imagem: </Text>
 								<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderRadius: 100}}>
 									<UserImgProfile circular height={80} width={80} uri={this.state.profileImage}/>
 								</View>
