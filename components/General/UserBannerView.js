@@ -6,6 +6,7 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 import UserImgProfile from "./UserImgProfile";
+import heimdallr from "../Heimdallr/Heimdallr";
 
 export default class UserBannerView extends React.Component {
 	constructor(props) {
