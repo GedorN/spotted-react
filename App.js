@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator, StackViewTransitionConfigs } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import MainScreen from './android/app/src/components/MainScreen';
 import SignUp from "./android/app/src/components/SignUp";
@@ -12,7 +12,19 @@ import Store from "./android/app/src/components/Store";
 import Settings from "./android/app/src/components/Settings";
 import Tickets from "./android/app/src/components/Tickets";
 import AboutUs from "./android/app/src/components/AboutUs";
+import {CardStackStyleInterpolator} from 'react-navigation-stack';
 
+const config = {
+	animation: 'timing',
+	config: {
+		stiffness: 1000,
+		damping: 500,
+		mass: 3,
+		overshootClamping: true,
+		restDisplacementThreshold: 0.01,
+		restSpeedThreshold: 0.01,
+	},
+};
 
 const RootStack = createStackNavigator(
 	{
@@ -30,11 +42,16 @@ const RootStack = createStackNavigator(
 
 	},
 	{
+
 		initialRouteName: 'Home',
 		headerMode: 'none',
 		defaultNavigationOptions: {
 			gesturesEnabled: false,
 		},
+
+
+
+		transitionConfig: () => StackViewTransitionConfigs.SlideFromRightIOS,
 	},
 )
 
