@@ -35,6 +35,7 @@ export default class ChangePassword extends React.Component {
 						autoCapitalize='none'
 						placeholder='Senha'
 						textContentType='password'
+						borderBottomColor={'#b2b5b1'}
 					/>
 				</View>
 				<View>
@@ -44,6 +45,7 @@ export default class ChangePassword extends React.Component {
 						borderBottomWidth={1}
 						placeholder='Confirmar senha'
 						textContentType='password'
+						borderBottomColor={'#b2b5b1'}
 					/>
 				</View>
 				<View style={{marginTop: 20}}>

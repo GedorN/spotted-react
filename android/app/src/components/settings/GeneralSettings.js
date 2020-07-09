@@ -245,7 +245,7 @@ export default class GeneralSettings extends  React.Component {
 				<View style={{marginTop: 20}}>
 					<TextInput
 							placeholder = {this.state.userName}
-							style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
+							style={{ borderBottomWidth: 0.8, borderBottomColor: '#b2b5b1', height: 40 }}
 							value = {this.state.userName}
 							onChangeText = { userName => this.setState({ userName }) }
 							width = { theme.width*0.9 }
@@ -258,13 +258,13 @@ export default class GeneralSettings extends  React.Component {
 					<TextInput
 							placeholder = {this.state.email}
 							editable = {false}
-							style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
+							style={{ borderBottomWidth: 0.8, borderBottomColor: '#b2b5b1', height: 40 }}
 							value = {this.state.email}
 							onChangeText = { email => this.setState({ email }) }
 							width = { theme.width*0.9 }
 						/>
 					<View  style = {{ width: theme.width * 0.87, alignSelf: 'center', marginTop:7}}>
-						<Text style = {{ opacity: 0.4, fontSize: 11 }}>Você não pode alterar</Text>
+						<Text style = {{ opacity: 0.8, fontSize: 11, color: '#b2b5b1' }}>Você não pode alterar</Text>
 					</View>
 				</View>
 				<View style={{marginTop: 40}}>

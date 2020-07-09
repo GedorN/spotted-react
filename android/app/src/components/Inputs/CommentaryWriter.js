@@ -466,7 +466,7 @@ export default class CommentaryWriter extends React.Component {
 							<TextInput
 								style={{width: width * 0.9,
 									alignSelf:'center',
-									height: this.state.postImages.length > 0 ? height * 0.406 : height * 0.70,
+									height: this.state.postImages.length > 0 ? height * 0.38 : height * 0.70,
 								}}
 								onChangeText={text => this.setState({postText: text})}
 								autoCapitalize="sentences"
@@ -503,7 +503,7 @@ export default class CommentaryWriter extends React.Component {
 							</TouchableOpacity>
 						</View>
 						<View style={{marginTop:5, width: width * 0.9, alignSelf: 'center' }}>
-							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Comentar'} height={50} fontSize={17} onTap={this.doPost.bind(this)}/>
+							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Comentar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
 				</View>

@@ -354,7 +354,7 @@ export default  class SignUp extends React.Component {
 						style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.5}}
 						source={require('../../../../assets/images/simbol.png')}
 					/>
-					<View style = {{ borderRadius: 25, padding: 20, backgroundColor: 'white', elevation: 4, paddingBottom: 50 }}>
+					<View style = {{ borderRadius: 25, padding: 20, backgroundColor: 'white', elevation: 4, paddingBottom: 30 }}>
 						<View style={{justifyContent: 'center', alignContent: 'center'}}>
 							<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
 								<View style={{width: 90, height: 90, alignSelf: 'center', alignContent: 'center', justifyContent: 'center', alignItems: 'center', justifyItems: 'center', borderRadius: 100}}>
@@ -372,7 +372,7 @@ export default  class SignUp extends React.Component {
 																<Text> para recuperar a senha</Text>
 															</View>}
 
-						<View style={{flexDirection: 'row', marginTop: 30}}>
+						<View style={{flexDirection: 'row'}}>
 							<RUMineTextInput
 								onChangeText={ text => this.setState({ name: text }) }
 								autoCapitalize='words'
@@ -395,7 +395,7 @@ export default  class SignUp extends React.Component {
 								borderBottomColor={'#b2b5b1'}
 							/>
 						</View>
-						<View style={{ ...styles.form, marginBottom: 10}}>
+						<View style={{ marginTop:20, marginBottom: 10}}>
 							<TextInputMask
 								style={{borderBottomWidth : 1, borderColor:'#b2b5b1'}}
 								type={'cel-phone'}
@@ -524,8 +524,8 @@ export default  class SignUp extends React.Component {
 const styles= StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 20,
-		paddingTop: 50
+		padding:20,
+		justifyContent:'center',
 	},
 	contentContainer: {
 		paddingVertical: 20,
@@ -553,12 +553,12 @@ const styles= StyleSheet.create({
 	},
 	agreementText:{
 		color:'#8f8f8f',
-		marginTop:theme.height*0.015,
 		fontSize: 12
 	},
 	agreementTouchView:{
 		paddingBottom:0,
-		paddingTop:theme.height*0.015
+		paddingTop:theme.height*0.015,
+		marginTop: -(theme.height*0.015)
 	},
 	agreementWord:{
 		fontWeight:'bold',

@@ -406,7 +406,7 @@ export default class PostWrite extends React.Component {
 							<TextInput
 								style={{width: width * 0.9,
 									alignSelf:'center',
-									height: this.state.postImages.length > 0 ? height * 0.406 : height * 0.69,
+									height: this.state.postImages.length > 0 ? height * 0.38 : height * 0.69,
 								}}
 								onChangeText={text => this.setState({postText: text})}
 								onImageChange={this._onImageChange}
@@ -444,7 +444,7 @@ export default class PostWrite extends React.Component {
 							</TouchableOpacity>
 						</View>
 						<View style={{marginTop:5, width: width * 0.9, alignSelf:'center'}}>
-							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} height={50} fontSize={17} onTap={this.doPost.bind(this)}/>
+							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
 				</View>
