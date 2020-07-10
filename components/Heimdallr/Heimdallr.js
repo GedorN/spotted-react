@@ -250,7 +250,7 @@ function HeimdallrLib() {
 				    //     console.log('a:', a.data().date );
 				    //     return b.data().date - a.data().date;
 					// });
-					
+
 			        resolve(result.data().notifications.slice(0, limit));
 			    } else {
 		    		console.warn('null');
@@ -432,6 +432,26 @@ function HeimdallrLib() {
 			}catch (e) {
 				console.log('erro desca', e);
 			}
+		})
+	}
+
+	this.editPassword = function (oldPass, newPass) {
+		return new Promise((resolve, reject) => {
+			firebase.auth().signInWithEmailAndPassword(this.email, oldPass).then(
+				() => {
+					firebase.auth().currentUser.updatePassword(newPass).then(
+						() => {
+							resolve();
+						},
+						(err) => {
+							reject({err});
+						}
+					)
+				},
+				() => {
+					reject({message: 'Senha atual incorreta'});
+				}
+			)
 		})
 	}
 
