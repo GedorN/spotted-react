@@ -21,6 +21,9 @@ import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
 import Video from 'react-native-video';
+import {RNPhotoEditor} from "react-native-photo-editor";
+var RNFS = require('react-native-fs');
+
 
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
@@ -103,12 +106,22 @@ export default class CommentaryWriter extends React.Component {
 						if (response.type === 'video/mp4') {
 							this.setState({postImages: [response], showModal: true, videoIncluded: true});
 						} else {
-							console.log('Imagem escolhida');
-							let images = this.state.postImages;
-							images.push(response);
-							this.setState({postImages: images});
-							console.log('Imagem: ', response);
-							this.setState({showModal: true});
+							const name = Date.now().toString() + '.jpg';
+							RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+							RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+							response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+							RNPhotoEditor.Edit({
+								path: response.path,
+								onDone: (a) => {
+									console.log('Imagem escolhida');
+									let images = this.state.postImages;
+									images.push(response);
+									this.setState({postImages: images});
+									console.log('Imagem: ', response);
+									this.setState({showModal: true});
+								}
+							});
+
 						}
 					}
 				});
@@ -555,7 +568,7 @@ const styles = StyleSheet.create({
 	anonymousText: {
 		marginTop:14,
 		width:theme.width *0.59,
-		width:theme.width *0.6 
+		width:theme.width *0.6
 	}
 });
 

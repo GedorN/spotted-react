@@ -17,6 +17,9 @@ import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
 import Video from 'react-native-video';
 import {Text} from "react-native-paper";
+var RNFS = require('react-native-fs');
+import {RNPhotoEditor} from "react-native-photo-editor";
+
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
@@ -67,7 +70,6 @@ export default class PostWrite extends React.Component {
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
 				if (this.state.gifIncluded) {
-					checkedImages ++;
 					urlArray.push(img.path);
 					self.state.postImages = urlArray;
 					/* Save the post*/
@@ -199,11 +201,20 @@ export default class PostWrite extends React.Component {
 						if (response.type === 'video/mp4') {
 							this.setState({postImages: [response], videoIncluded: true});
 						} else {
-							console.log('Imagem escolhida');
-							let images = this.state.postImages;
-							images.push(response);
-							this.setState({postImages: images});
-							console.log('Imagem: ', response);
+							const name = Date.now().toString() + '.jpg';
+							RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+							RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+							response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+							RNPhotoEditor.Edit({
+								path: response.path,
+								onDone: (a) => {
+									console.log('e agora: ', a);
+									let images = this.state.postImages;
+									images.push(response);
+									this.setState({postImages: images});
+									console.log('Imagem: ', response);
+								}
+							});
 						}
 					}
 				});
@@ -494,8 +505,8 @@ const styles = StyleSheet.create({
 	postIcons: {
 		flexDirection:"row",
 		height: 45 ,
-		width: theme.width * 0.9, 
-		alignSelf:'center', 
+		width: theme.width * 0.9,
+		alignSelf:'center',
 		justifyContent: 'space-around'
 	},
 	anonymousText: {
