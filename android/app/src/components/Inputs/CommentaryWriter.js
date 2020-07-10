@@ -567,7 +567,6 @@ const styles = StyleSheet.create({
 	},
 	anonymousText: {
 		marginTop:14,
-		width:theme.width *0.59,
 		width:theme.width *0.6
 	}
 });
