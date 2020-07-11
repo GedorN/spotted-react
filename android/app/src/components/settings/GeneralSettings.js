@@ -27,6 +27,9 @@ import ImageResizer from "react-native-image-resizer";
 import AwesomeAlert from "react-native-awesome-alerts";
 import EyeOfThePassword from "../Inputs/EyeOfThePassword";
 import { StackActions, NavigationActions } from 'react-navigation';
+import {RNPhotoEditor} from "react-native-photo-editor";
+var RNFS = require('react-native-fs');
+
 
 
 export default class GeneralSettings extends  React.Component {
@@ -88,26 +91,35 @@ export default class GeneralSettings extends  React.Component {
 					} else if (response.customButton) {
 						console.log('User tapped custom button: ', response.customButton);
 					} else {
-						console.log('Imagem escolhida');
-						console.log(response);
-						let image = 'file://' + response.path;
-						console.log('path: ', image);
 						let propCo =  900000 / response.fileSize;
 						let quality = propCo > 1 ? 100 : 100 * propCo;
 						let constant = propCo > 1 ? 0.8 : 1;
-						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / constant, 'JPEG', quality).then(
-							(resolve) => {
-								console.log('resolve: ', resolve);
-								this.setState({imageCompressed: resolve.uri});
 
-							},
-							(error) => {
-								console.log('Image resize error: ', error);
-							}).catch((err) => {
-							console.log(err);
-						})
-						this.setState({userImage: image});
-						console.log('Imagem: ', this.state.postImages);
+						const name = Date.now().toString() + '.jpg';
+						RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+						RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+						response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+						let image = 'file://' + response.path;
+
+
+						RNPhotoEditor.Edit({
+							path: response.path,
+							onDone: () => {
+								ImageResizer.createResizedImage(response.path, response.width / 5, response.height / constant, 'JPEG', quality).then(
+									(resolve) => {
+										console.log('resolve: ', resolve);
+										this.setState({imageCompressed: resolve.uri});
+										this.setState({userImage: image});
+										console.log('Imagem: ', this.state.postImages);
+									},
+									(error) => {
+										console.log('Image resize error: ', error);
+									}).catch((err) => {
+									console.log(err);
+								})
+							}
+						});
+
 					}
 				});
 			} else {

@@ -25,7 +25,10 @@ import theme from "../../../../components/General/Theme";
 import ImageResizer from "react-native-image-resizer";
 import { TextInputMask } from 'react-native-masked-text';
 import {NavigationActions, StackActions} from "react-navigation";
+import {RNPhotoEditor} from "react-native-photo-editor";
 var interval = null;
+var RNFS = require('react-native-fs');
+
 
 
 export default  class SignUp extends React.Component {
@@ -298,22 +301,29 @@ export default  class SignUp extends React.Component {
 					} else if (response.customButton) {
 						console.log('User tapped custom button: ', response.customButton);
 					} else {
-						console.log('Imagem escolhida');
-						console.log(response);
+						const name = Date.now().toString() + '.jpg';
+						RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+						RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+						response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
 						let image = 'file://' + response.path;
-						console.log('path: ', image);
-						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / 5, 'JPEG', 60).then(
-							(resolve) => {
-								console.log('resolve: ', resolve);
-								this.setState({imageCompressed: resolve.uri});
+						RNPhotoEditor.Edit({
+							path: response.path,
+							onDone: () => {
+								ImageResizer.createResizedImage(response.path, response.width / 5, response.height / 5, 'JPEG', 60).then(
+									(resolve) => {
+										console.log('resolve: ', resolve);
+										this.setState({imageCompressed: resolve.uri});
+										this.setState({profileImage: image});
 
-							},
-							(error) => {
-								console.log('Image resize error: ', error);
-							}).catch((err) => {
-								console.log(err);
-						})
-						this.setState({profileImage: image});
+									},
+									(error) => {
+										console.log('Image resize error: ', error);
+									}).catch((err) => {
+									console.log(err);
+								})
+							}
+						});
+
 						console.log('Imagem: ', this.state.postImages);
 					}
 				});
