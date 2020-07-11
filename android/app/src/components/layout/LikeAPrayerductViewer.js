@@ -56,14 +56,17 @@ export default class LikeAPrayer extends React.Component{
 							paddingLeft:theme.width * 0.03,
 							paddingRight:theme.width * 0.03,
 						}}>
-							<Text style={{
-								textAlign: 'center',fontWeight:'bold',
-								fontSize:16,
-								color: this.props.colors ? this.props.colors[1] : 'black'
-							}}
-								ellipsizeMode='tail' numberOfLines={2}>
-								{ this.props.product ? this.props.product.name : '' }
-							</Text>
+							<View style = {{ width: theme.width * 0.35, alignSelf: 'center', padding: 2 }}>
+								<Text style={{
+									textAlign: 'center',fontWeight:'bold',
+									fontSize:16,
+									color: this.props.colors ? this.props.colors[1] : 'black',
+									alignSelf:'center'
+								}}
+									ellipsizeMode='tail' numberOfLines={2}>
+									{ this.props.product ? this.props.product.name : '' }
+								</Text>
+							</View>
 						</View>
 						<View style = {{width:theme.width * 0.43, height:theme.height * 0.25, alignSelf:'center',paddingTop:theme.height*0.01,marginBottom:theme.height * 0.005}}>
 							<Image
