@@ -68,7 +68,7 @@ const collections = {
 			{
 				desc: 'comment',
 				type : 'string',
-				required: true,
+				required: false,
 			},
 			{
 				desc: 'user_name',
@@ -85,6 +85,21 @@ const collections = {
 				type: 'string',
 				required: false,
             },
+            {
+                desc: 'images',
+                type: 'array',
+                required: false,
+            },
+	        {
+	        	desc: 'video',
+		        type: 'boolean',
+		        required: false,
+	        },
+			{
+				desc: 'gif',
+				type: 'boolean',
+				required: false,
+			},
             {
                 desc: 'anonymous',
                 type: 'boolean'
@@ -134,6 +149,16 @@ const collections = {
                 type: 'array',
                 required: false,
             },
+	        {
+		        desc: 'gif',
+		        type: 'boolean',
+		        required: false,
+	        },
+	        {
+	        	desc: 'video',
+		        type: 'boolean',
+		        required: false,
+	        },
             {
                 desc: 'anonymous',
                 type: 'boolean'

@@ -17,12 +17,15 @@ import UserImgProfile from "./UserImgProfile";
 import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
 import ReportModal from "./ReportModal";
+import Video from 'react-native-video';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import RBSheet from "react-native-raw-bottom-sheet";
 import ReportGod from "../../android/app/src/components/Inputs/ReportGod";
+import PostOptions from "../../android/app/src/components/Inputs/PostOptions";
 
 import theme from "./Theme";
 import AwesomeAlert from "react-native-awesome-alerts";
+import PostDetails from "../../android/app/src/components/PostDetails";
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
@@ -33,12 +36,17 @@ export default class PostViewer extends React.Component {
 	    indexImage: 0,
 	    opacityValue: 0.7,
 	    opacityValueScrolling: 1,
-	    opacity: new Animated.Value(0),
+		opacity: new Animated.Value(0),
+		reportAlert: true,
     };
   }
 
   componentDidMount =() =>  {
-      // console.log('haha: ', this.props);
+	  // console.log('haha: ', this.props);
+	  if(this.props.uid === heimdallr.user_id){
+		  this.setState({reportAlert: false});
+	  }
+
 	  if (this.props.images) {
 	  	this.props.images.forEach((img) => {
             let images = this.state.galleryObj;
@@ -68,10 +76,37 @@ export default class PostViewer extends React.Component {
     }
 
     getModalImagesLayout = () => {
-      // console.log('%c calculando...', 'color: green');
     if (this.props.images) {
-
-        if (this.props.images.length === 1) {
+    	if (this.props.video) {
+		    return (
+			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+				    <View  style={{width: width * 0.80, height: 235}}>
+					    <Video
+						    resizeMode={'cover'}
+						    repeat={true}
+						    source={{uri: this.props.images[0]}}
+						    style={{width: width * 0.80, height: 235, borderRadius: 10}}
+					    />
+				    </View>
+			    </View>
+		    )
+	    } else if (this.props.gif) {
+		    return (
+			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+				    <View style={{ flexDirection: 'row'}}>
+					    <View style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)'}}>
+						    <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+							    <Image
+								    source={{uri: this.props.images[0]}}
+								    resizeMode={'cover'}
+								    style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)', overlayColor: 'white'}}
+							    />
+						    </TouchableOpacity>
+					    </View>
+				    </View>
+			    </View>
+		    )
+	    }else if (this.props.images.length === 1) {
           return (
             <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
               <View style={{ flexDirection: 'row'}}>
@@ -260,16 +295,23 @@ export default class PostViewer extends React.Component {
   }
 
   goToComments = () => {
-  	this.props.navigation.push('PostDetails', {
-  		pid: this.props.pid,
-			userImage: this.props.userImage,
-			anonymous: this.props.anonymous?this.props.anonymous:'0',
+  	heimdallr.sendEvent('post_click');
+	this.props.navigation.push('PostDetails', {
+	pid: this.props.pid,
+	userImage: this.props.userImage,
+	anonymous: this.props.anonymous?this.props.anonymous:'0',
+	userId: this.props.uid,
     });
   }
 
 	closeAlert = () => {
 		this.RBSheet.close();
 		this.props.closeAlert();
+	}
+
+	deletePost = () => {
+		this.RBSheet.close();
+		this.props.confirmPostRm(this.props.pid);
 	}
 
   render () {
@@ -296,41 +338,42 @@ export default class PostViewer extends React.Component {
 			          <UserImgProfile circular height={45} width={45} uri={this.props.userImage}/>
 			      </TouchableOpacity>
 			  </View>
-			  <View style={{flexDirection: 'column'}}>
+				<View style={{flexDirection: 'column'}}>
 					<View style = {{flexDirection: 'row'}}>
-								<View style={styles.postHeader}>
-									<View style={{ flexDirection: 'row', alignItems: 'center'}}>
-											<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
-													<Text
-															style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
-													>
-															{this.props.user}
-													</Text>
-											</TouchableOpacity>
-										{this.props.elapsed_time &&
-												<Image
-													style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
-													source={require('../../assets/images/circle-solid.png') }
-												/>
-										}
-											<Text style= {{marginTop:35}}>
-												{ this.props.elapsed_time }
-											</Text>
-									</View>
-								</View>
-								<TouchableOpacity
-										style = {{width:theme.width * 0.14, alignSelf:'flex-end',height:theme.width * 0.08,flexDirection:'column',justifyContent:'flex-end'}}
-										onPress={() => this.RBSheet.open()}>
-										<View
-											style={{width: 40, height: theme.height * 0.1, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+						<View style={styles.postHeader}>
+							<View style={{ flexDirection: 'row', alignItems: 'center'}}>
+								<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
+										<Text
+												style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
 										>
-											<Image
-												style={{width: 20, height: 12}}
-												source={require('../../assets/images/ellipsis-h-solid.png')}
-											/>
-										</View>
-									</TouchableOpacity>
+												{this.props.user}
+										</Text>
+								</TouchableOpacity>
+								{
+									this.props.elapsed_time &&
+									<Image
+										style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
+										source={require('../../assets/images/circle-solid.png') }
+									/>
+								}
+									<Text style= {{marginTop:35}}>
+										{ this.props.elapsed_time }
+									</Text>
 							</View>
+						</View>
+						<TouchableOpacity
+								style = {{width:theme.width * 0.14, alignSelf:'flex-end',height:theme.width * 0.08,flexDirection:'column',justifyContent:'flex-end'}}
+								onPress={() => this.RBSheet.open()}>
+								<View
+									style={{width: 40, height: theme.height * 0.1, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+								>
+									<Image
+										style={{width: 20, height: 12}}
+										source={require('../../assets/images/ellipsis-h-solid.png')}
+									/>
+								</View>
+						</TouchableOpacity>
+					</View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
 			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.props.text}</Text>
@@ -351,17 +394,18 @@ export default class PostViewer extends React.Component {
 			              </TouchableOpacity>
 			          </View>
 			      </View>
-			  </View>
+			    </View>
 			</View>
 		    <RBSheet
 			    ref={ref => {
 				    this.RBSheet = ref;
 			    }}
-			    height={300}
+			    height={this.state.reportAlert ? 300 : 150}
 			    animationType={'slide'}
 			    duration={250}
 		    >
-			    <ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'}/>
+			    {/*<ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'} userId = {this.props.uid}/>*/}
+			    <PostOptions deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.props.uid}/>
 		    </RBSheet>
 	    </TouchableOpacity>
     );
@@ -375,35 +419,36 @@ export default class PostViewer extends React.Component {
           padding: 10,
           borderTopWidth: 0.2,
           borderColor: 'rgba(59, 56, 50, 0.2)',
+	      backgroundColor: 'white'
       },
       body: {
-					flexDirection: 'column',
-					marginTop:10,
+		flexDirection: 'column',
+		marginTop:10,
       },
       postHeader: {
         justifyContent: 'space-between',
         flexDirection: 'row',
-				height: 15,
-				fontWeight: 'bold',
-				alignItems: 'center',
-				alignContent: 'center',
-				width: width * 0.70,
+		height: 15,
+		fontWeight: 'bold',
+		alignItems: 'center',
+		alignContent: 'center',
+		width: width * 0.70,
       },
       postFooter: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          alignContent: 'center',
-          width: width * 0.95,
+	      flexDirection: 'row',
+	      alignItems: 'center',
+	      alignContent: 'center',
+	      width: width * 0.95,
 	      height: 40,
 	      zIndex: 99,
 
       },
       postHeaderUserImage: {
-          justifyContent: "flex-start",
-          alignContent: 'flex-start',
-          padding: 0,
-          alignItems: 'flex-start',
-          height: 30
+	      justifyContent: "flex-start",
+	      alignContent: 'flex-start',
+	      padding: 0,
+	      alignItems: 'flex-start',
+	      height: 30
       },
       post: {
           alignSelf: 'flex-start',

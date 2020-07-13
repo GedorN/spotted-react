@@ -5,7 +5,8 @@ import {
     Text,
     TouchableOpacity,
 	Image,
-	DeviceEventEmitter
+	DeviceEventEmitter,
+	ScrollView
 } from 'react-native';
 
 import UserImgProfile from "./UserImgProfile";
@@ -46,81 +47,148 @@ export default class SideDrawer extends React.Component {
             <View style={styles.container}>
                 <View style={styles.drawerHeader}>
 	                <View style={{flexDirection: 'column', alignItems: 'center', flex: 1}}>
-	                    <UserImgProfile circular height={100} width={100} uri={heimdallr.user_image} style={styles.userImage} />
-	                    <Text
-	                        style={styles.userName}
-	                    >
-	                        {heimdallr.user_name}
-	                    </Text>
-	                </View>
-                </View>
-                <View style={styles.content}>
-                    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-                          onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}>
-	                    <View style={styles.item}>
-		                    <Image source={require('../../assets/images/user-cog-solid.png')}
-		                        style={{
-			                        tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
-			                        width: 40,
-			                        height: 32,
-			                        marginRight: 13,
-		                        }}
-		                    />
-		                    <Text> Configurações </Text>
-	                    </View>
-                    </TouchableOpacity>
-					<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-					                  onPressIn={() => {heimdallr.checkTicketsStatus()}}
-					                  onPress={() => {this.props.navigation.push('Tickets',  {navigation: this.props.navigation})}}>
-		                <View style={styles.item}>
-				                <Image source={require('../../assets/images/shopping-bag.png')}
+		                <TouchableOpacity
+			                style={{alignSelf: 'flex-end'}}
+			                disabled={heimdallr.email === 'spotted@utfpr.com'}
+                            onPressIn={() => heimdallr.sendEvent('config_menu_click')}
+                            onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}
+		                >
+			                <Image source={require('../../assets/images/cog-solid.png')}
 			                       style={{
-				                       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
-				                       width: 35,
-				                       height: 40,
-				                       marginRight: 25,
-			                       }}
-			                />
-			                <Text>Pedidos</Text>
-		                </View>
-	                </TouchableOpacity>
-	                <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-	                                  onPress={() => {this.props.navigation.push('Store', {store : 'cac'})}}>
-		                <View style={styles.item}>
-				                <Image source={require('../../assets/images/cac_logo.png')}
-			                       style={{
-				                       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
-				                       width: 40,
-				                       height: 32,
+			                            alignSelf: 'flex-end',
+				                       tintColor: 'gray',
+				                       width: 23,
+				                       height: 23,
 				                       marginRight: 13,
 			                       }}
 			                />
-			                <Text> Loja CAC </Text>
-		                </View>
-	                </TouchableOpacity>
-	                {
-		                heimdallr.email === 'spotted@utfpr.com' &&
-		                <TouchableOpacity
-			                style={{position: 'absolute', bottom: 8, paddingLeft: 22, opacity: 0.8}}
-			                onPress={() => {this.props.actionPressed('signIn')}}>
-			                <View style={styles.item}>
-				                <Image source={require('../../assets/images/sign-in-alt-solid.png')}
-				                       style={{
-					                       tintColor: theme.primary,
-					                       width: 40,
-					                       height: 32,
-					                       marginRight: 13,
-				                       }}
-				                />
-				                <Text>{ 'Registrar-se' }</Text>
-			                </View>
 		                </TouchableOpacity>
-	                }
-	                <TouchableOpacity onPress={() => {this.props.navigation.push('AboutUs')}} style={{position: 'absolute', bottom: 2, paddingLeft: 22}}>
-		                <View >
-			                <Text> About us </Text>
-		                </View>
-	                </TouchableOpacity>
+		                <TouchableOpacity
+			                disabled={heimdallr.email === 'spotted@utfpr.com'}
+			                onPressIn={() => heimdallr.sendEvent('config_menu_click')}
+			                onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}
+		                >
+	                        <UserImgProfile circular height={100} width={100} uri={heimdallr.user_image} style={styles.userImage} />
+		                </TouchableOpacity>
+		                <TouchableOpacity
+			                disabled={heimdallr.email === 'spotted@utfpr.com'}
+			                onPressIn={() => heimdallr.sendEvent('config_menu_click')}
+			                onPress={() => {this.props.navigation.push('Settings', {navigation: this.props.navigation})}}
+		                >
+		                    <Text
+		                        style={styles.userName}
+		                    >
+		                        {heimdallr.user_name}
+		                    </Text>
+		                </TouchableOpacity>
+	                </View>
+                </View>
+                <View style={styles.content}>
+					<ScrollView contentContainerStyle= {styles.scrollview}
+								showsVerticalScrollIndicator = {false}>
+						<View >
+							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+							                  onPressIn={() => {heimdallr.checkTicketsStatus(); heimdallr.sendEvent('tickts_menu_click')}}
+							                  onPress={() => {this.props.navigation.push('Tickets',  {navigation: this.props.navigation})}}>
+								<View style={styles.item}>
+									<View style = {{ width: 57 }}>
+										<Image source={require('../../assets/images/shopping-bag.png')}
+										       style={{
+											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
+											       width: 30,
+											       height: 34,
+											       marginRight: 25,
+										       }}
+										/>
+									</View>
+									<Text>Pedidos</Text>
+								</View>
+							</TouchableOpacity>
+							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+							                  onPressIn={() => heimdallr.sendEvent('cac_store_click')}
+							                  onPress={() => {this.props.navigation.push('Store', {store : 'cac'})}}>
+								<View style={styles.item}>
+									<View style = {{ width: 45, height: 45, marginRight: 13 }}>
+										<Image source={require('../../assets/images/cac_logo.png')}
+										       style={{
+											       resizeMode: 'contain',
+											       flex:1,
+											       width: null,
+											       height: null,
+											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
+										       }}
+										/>
+									</View>
+									<Text> Loja CAC </Text>
+								</View>
+							</TouchableOpacity>
+							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+							                  onPressIn={() => heimdallr.sendEvent('maleficoz_store_click')}
+							                  onPress={() => {this.props.navigation.push('Store', {store : 'maleficoz'})}}>
+								<View style={styles.item}>
+									<View style = {{ width: 45, height: 45, marginRight: 13 }}>
+										<Image source={require('../../assets/images/maleficoz_logo.png')}
+										       style={{
+											       resizeMode: 'contain',
+											       flex:1,
+											       width: null,
+											       height: null,
+											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
+										       }}
+										/>
+									</View>
+									<Text> Loja MALEFICOZ </Text>
+								</View>
+							</TouchableOpacity>
+							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+							                  onPressIn={() => heimdallr.sendEvent('avalanche_store_click')}
+							                  onPress={() => {this.props.navigation.push('Store', {store : 'avalanche'})}}>
+								<View style={styles.item}>
+									<View style = {{ width: 45, height: 45, marginRight: 13 }}>
+										<Image source={require('../../assets/images/avalanche_logo.png')}
+										       style={{
+											       resizeMode: 'contain',
+											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
+											       flex:1,
+											       width: null,
+											       height: null,
+										       }}
+										/>
+									</View>
+									<Text> Loja AVALANCHE </Text>
+								</View>
+							</TouchableOpacity>
+							{
+								heimdallr.email === 'spotted@utfpr.com' &&
+								<TouchableOpacity onPress={() => {this.props.actionPressed('signIn')}}>
+									<View style={styles.item}>
+										<View style = {{ width: 45, height: 45, marginRight: 13 }}>
+											<Image source={require('../../assets/images/sign-in-alt-solid.png')}
+												style={{
+													resizeMode: 'contain',
+													tintColor: theme.primary,
+													width: null,
+													height: null,
+													flex:1,
+													opacity: 0.8
+												}}
+											/>
+										</View>
+										<Text>{ 'Registrar-se' }</Text>
+									</View>
+								</TouchableOpacity>
+							}
+						</View>
+						<View>
+							<TouchableOpacity
+									onPressIn={() => heimdallr.sendEvent('aboutUs_click')}
+									onPress={() => {this.props.navigation.push('AboutUs')}}>
+									<View style = {styles.aboutUs}>
+										<Text> About us </Text>
+									</View>
+							</TouchableOpacity>
+						</View>
+					</ScrollView>
                 </View>
             </View>
         );
@@ -154,7 +222,7 @@ const styles = StyleSheet.create({
 		height: 60,
 		marginBottom: 21,
 		width:theme.width * 0.7,
-
+		zIndex: 100,
 	},
     drawerHeader: {
         flex: 1,
@@ -170,7 +238,6 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 2,
-	    paddingTop: 8,
         flexDirection: 'column',
         // width: 200,,
 	    width: '100%',
@@ -190,7 +257,14 @@ const styles = StyleSheet.create({
 		height: 36,
 		marginRight: 21,
 	},
-    userImage: {
-
-    }
+	scrollview: {
+    	flexDirection: 'column',
+    	justifyContent: 'space-between',
+		marginTop: 0,
+	},
+	aboutUs: {
+		marginBottom: theme.height * 0.01,
+		marginLeft: 12,
+		zIndex: 100
+	}
 });

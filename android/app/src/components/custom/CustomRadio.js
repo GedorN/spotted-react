@@ -33,7 +33,9 @@ export default class CustomRadio extends React.Component {
 						fontWeight:'bold',
 						fontSize:25,
 						alignSelf:'center',
-						marginTop:25,marginBottom:5}}
+						marginTop:25,
+						marginBottom:5,
+						textAlign: 'auto'}}
 					>
 						{this.props.custom.label}
 					</Text>
@@ -47,7 +49,9 @@ export default class CustomRadio extends React.Component {
 										marginTop:theme.height*0.025,
 										alignSelf:'center',
 										fontWeight:'bold',
-										color:(this.state.color === i? this.props.colors[0] :'#8f8f8f')}}
+										color:(this.state.color === i? this.props.colors[0] :'#8f8f8f'),
+										width: theme.width * 0.8,
+										textAlign: 'center' }}
 									>
 										{i}
 									</Text>

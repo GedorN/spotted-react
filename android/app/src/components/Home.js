@@ -9,6 +9,8 @@ import {
 	RefreshControl,
 } from 'react-native';
 
+
+import Ripple from "react-native-material-ripple";
 import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import moment from "moment";
@@ -26,11 +28,14 @@ export default class Home extends React.Component {
 	    endPulling: false,
 	    isRefreshing: false,
 	    scrolling: false,
-	    showAlert: false,
+		showAlert: false,
+		deletePost: '',
+		showDeleteAlert: false,
     };
   }
 
   componentDidMount = () => {
+  	heimdallr.sendEvent('app_open');
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
   		console.log('peguei esses caras aqui', resolve);
@@ -60,6 +65,7 @@ export default class Home extends React.Component {
 	    console.log('interval?', distanceFromEnd);
 	    console.log('state before: ', this.state);
 	    if (!this.state.pulling) {
+	    	heimdallr.sendEvent('pulling_more_posts');
 	        console.log('int pullling');
 	        this.setState({ pulling: true });
 		    console.log('chegou');
@@ -134,9 +140,29 @@ export default class Home extends React.Component {
 	  )
   };
 
+  confirmPostRm =(pid) => {
+	  this.setState({ showDeleteAlert: true, deletePost: pid });
+  }
+
 
 	confirmReport = () => {
-		this.setState({ showAlert: true });
+			this.setState({ showAlert: true});
+	}
+
+	deletePost = () => {
+		this.setState({ isRefreshing: true });
+		heimdallr.deletePost(this.state.deletePost).then(
+			() => {
+				this.onRefresh();
+			},
+			() => {
+				this.setState({ isRefreshing: false });
+			}
+		);
+		this.setState({ showDeleteAlert: false});
+		heimdallr.deleteUserPost(this.state.deletePost);
+		// heimdallr.deletePostComments('comment',this.state.deletePost);
+		// heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
 	}
 
 
@@ -153,7 +179,12 @@ export default class Home extends React.Component {
 									user={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_name:'Anônimo'):item._data.user_name}
 									userImage={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_image:null):item._data.user_image}
 									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling}
-									closeAlert={this.confirmReport.bind(this)} />  }
+									video={item._data.video ? true : false}
+						            gif={item._data.gif ? true : false}
+								    closeAlert={this.confirmReport.bind(this)}
+						            confirmPostRm={this.confirmPostRm.bind(this)}
+							/>
+              }
               refreshControl={
 	              <RefreshControl
 		              refreshing={this.state.isRefreshing}
@@ -168,20 +199,42 @@ export default class Home extends React.Component {
               ListFooterComponent={ this.renderFooter.bind(this)}
 
           />
-	      <AwesomeAlert
-		      show={this.state.showAlert}
-		      showProgress={false}
-		      title="Denúncia realizada"
-		      message="Nossos criadores irão analisar a postagem denunciada"
-		      closeOnTouchOutside={true}
-		      closeOnHardwareBackPress={false}
-		      showConfirmButton={true}
-		      confirmText="OK"
-		      confirmButtonColor={'green'}
-		      onConfirmPressed={() => {
-			      this.setState({ showAlert: false })
-		      }}
 
+			<AwesomeAlert
+				show={this.state.showDeleteAlert}
+				showProgress={false}
+				title= {"Tem certeza que deseja excluir ? "}
+				titleStyle = {{fontSize: 15, justifyContent: 'center'}}
+				message= {"Após confirmada essa ação não poderá ser desfeita."}
+				messageStyle = {{fontSize: 13}}
+				closeOnTouchOutside={true}
+				closeOnHardwareBackPress={false}
+				showCancelButton = {true}
+				cancelText = {"Não"}
+				showConfirmButton={true}
+				confirmText= {"Sim"}
+				confirmButtonColor={'green'}
+				onConfirmPressed={() => {
+						this.deletePost();
+				}}
+				onCancelPressed={() => {
+					this.setState({ showDeleteAlert: false })
+				}}
+
+			/>
+	      <AwesomeAlert
+				show={this.state.showAlert}
+				showProgress={false}
+				title= {"Denúncia realizada"}
+				message= {"Nossos criadores irão analisar a postagem denunciada"}
+				closeOnTouchOutside={true}
+				closeOnHardwareBackPress={false}
+				showConfirmButton={true}
+				confirmText= {"OK"}
+				confirmButtonColor={'green'}
+				onConfirmPressed={() => {
+					this.setState({ showAlert: false })
+				}}
 	      />
 
       </View>

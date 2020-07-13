@@ -73,6 +73,7 @@ export default class ProductScreen extends React.Component {
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 		heimdallr.getProduct(this.state.iidProduct).then(
 			(resolve) => {
+				heimdallr.sendEvent(`${resolve.sid}_product_click`)
 				const original_price = resolve.price;
 				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
 				this.setState({product: resolve, productImages: resolve.images, PicPayPrice : resolve.price,
@@ -153,51 +154,70 @@ export default class ProductScreen extends React.Component {
 			params.buyer_email = heimdallr.email;
 			params.referenceId = await heimdallr.getUID();
 
-
-			axios({
-			    method: 'post',
-			    url: 'https://appws.picpay.com/ecommerce/public/payments',
-			    headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
-			    data: {
-				    "referenceId": params.referenceId,
-				    "callbackUrl": "http://www.spottedutfpr.com.br/callback",
-				    "value": params.product_price,
-				    "expiresAt": "2022-05-01T16:00:00-03:00",
-				    "buyer": {
-					    "firstName": heimdallr.user_name.split(' ')[0],
-					    "lastName": heimdallr.user_name.split(' ')[0],
-					    "document": "123.456.789-10",
-					    "email": heimdallr.email,
-					    "phone": "+55 27 12345-6789"
-				    }
-			    }
-			}).then(
-				(resolve) => {
-
-					params.url = resolve.data.paymentUrl;
-					heimdallr.saveTicketsRegister(params);
-					Linking.openURL(resolve.data.paymentUrl);
-					if(this.state.discountApplied){
-						heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
-						heimdallr.saveUserCoupon(this.state.userCouponsRegister);
-						this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
+			if (params.product_price == 0) {
+				params.status = 'Pago';
+				params.url = '';
+				heimdallr.saveTicketsRegister(params);
+				if(this.state.discountApplied){
+					heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
+					heimdallr.saveUserCoupon(this.state.userCouponsRegister);
+					this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
+				}
+				this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
+				showMessage({
+					message: "Compra realizada com sucesso",
+					type: "success",
+					icon: 'success'
+				});
+			} else {
+				axios({
+					method: 'post',
+					url: 'https://appws.picpay.com/ecommerce/public/payments',
+					headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
+					data: {
+						"referenceId": params.referenceId,
+						"callbackUrl": "http://www.spottedutfpr.com.br/callback",
+						"value": params.product_price,
+						"expiresAt": "2022-05-01T16:00:00-03:00",
+						"buyer": {
+							"firstName": heimdallr.user_name.split(' ')[0],
+							"lastName": heimdallr.user_name.split(' ')[0],
+							"document": "123.456.789-10",
+							"email": heimdallr.email,
+							"phone": "+55 27 12345-6789"
+						}
 					}
-					this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
-					showMessage({
-						message: "Compra realizada com sucesso",
-						type: "success",
-						icon: 'success'
-					});
-			    },
-			    (reject) => {
-				    this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true});
-				    showMessage({
-					    message: "Erro ao realizar a compra",
-					    type: "danger",
-					    icon: 'danger'
-				    });
-			    }
-			);
+				}).then(
+					(resolve) => {
+
+						params.url = resolve.data.paymentUrl;
+						heimdallr.saveTicketsRegister(params);
+						Linking.openURL(resolve.data.paymentUrl);
+						if(this.state.discountApplied){
+							heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
+							heimdallr.saveUserCoupon(this.state.userCouponsRegister);
+							this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
+						}
+						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
+						showMessage({
+							message: "Compra realizada com sucesso",
+							type: "success",
+							icon: 'success'
+						});
+					},
+					(reject) => {
+						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true});
+						showMessage({
+							message: "Erro ao realizar a compra",
+							type: "danger",
+							icon: 'danger'
+						});
+					}
+				);
+			}
+
+
+
 
 
 	}
@@ -232,6 +252,7 @@ export default class ProductScreen extends React.Component {
 							coupons[index].quantity  = coupons[index].quantity - 1;
 							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true,ticketStore:'spotted'});
 							this.ticketsRegister();
+							heimdallr.sendEvent(`spotted_ticket_apply`)
 						} else {
 							this.setState({discountApplied: false, warning:'Cupom já utilizado', discountPicPayPrice : this.state.PicPayPrice});
 							return ;
@@ -266,6 +287,7 @@ export default class ProductScreen extends React.Component {
 									coupons[index].quantity  = coupons[index].quantity - 1;
 									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid});
 									this.ticketsRegister();
+									heimdallr.sendEvent(`${this.state.product.sid}_ticket_apply`)
 								} else {
 									this.setState({discountApplied: false, warning:'Cupom já utilizado'});
 
@@ -285,7 +307,15 @@ export default class ProductScreen extends React.Component {
 
 	setSelectValue(item) {
 		if (this.state.product.customization.find((i) => (i.label === item.label)).value) {
-			this.state.product.customization.find((i) => (i.label === item.label)).value.push(item.value)
+			const index = this.state.product.customization.find((i) => (i.label === item.label)).value.indexOf(item.value);
+			if (index >= 0) {
+				this.state.product.customization.find((i) => (i.label === item.label)).value.splice(index, 1);
+				if (this.state.product.customization.find((i) => (i.label === item.label)).value.length === 0 ) {
+					this.state.product.customization.find((i) => (i.label === item.label)).value = undefined;
+				}
+			} else {
+				this.state.product.customization.find((i) => (i.label === item.label)).value.push(item.value)
+			}
 		} else {
 			this.state.product.customization.find((i) => (i.label === item.label)).value = [item.value];
 		}
@@ -324,14 +354,19 @@ export default class ProductScreen extends React.Component {
 
 
 	buttonEnabled = () => {
+		this.setState({});
 		if (this.state.product.customization.map((p) => p.value).some((fp) => {return fp === undefined})) {
 			this.setState( { errorMissingValues: true });
 		} else {
+			heimdallr.sendEvent('buy_press');
 			this.openAlert();
 		}
 	}
 
 	setPromotionalCode = () => {
+		if (!this.state.texInputCode) {
+			return ;
+		}
 		this.setState({ settingPromotionalCode: true, warning: null, discountApplied: false});
 		let coupons = null;
 		let coupon = null;
@@ -351,7 +386,11 @@ export default class ProductScreen extends React.Component {
 						let userCoupons = resolve;
 						if (!userCoupons || (userCoupons && !userCoupons.find((item) => coupon.id === item.id))) {
 							let discount = ((coupon.value / 100) * this.state.PicPayPrice);
-							this.setState({discountPicPayPrice : ((this.state.PicPayPrice - discount).toFixed(2)), discountApplied : true, newCoupon : coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false,discountPriceWithoutTax : this.state.storePrice});
+							let finalValue = ((this.state.PicPayPrice - discount).toFixed(2));
+							if (finalValue <= 0) {
+								finalValue = 0;
+							}
+							this.setState({discountPicPayPrice : finalValue, discountApplied : true, newCoupon : coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false,discountPriceWithoutTax : this.state.storePrice});
 						} else {
 							this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false});
 						}
@@ -381,7 +420,15 @@ export default class ProductScreen extends React.Component {
 										this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true, newCoupon : coupon, discountPriceWithoutTax : (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
 									}
 									else {
-										this.setState({discountPicPayPrice: (this.state.price_without_tax - coupon.value), discountApplied : true, newCoupon : coupon,discountPriceWithoutTax : (this.state.price_without_tax - coupon.value), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
+										let tempDiscountPriceWithoutTax = parseFloat(parseFloat(this.state.price_without_tax) - parseFloat(coupon.value)).toFixed(2);
+										let finalValue = parseFloat(parseFloat(this.state.PicPayPrice) - parseFloat(coupon.value)).toFixed(2);
+										if (finalValue <= 0) {
+											finalValue = 0
+										}
+										if (tempDiscountPriceWithoutTax <= 0) {
+											tempDiscountPriceWithoutTax = 0;
+										}
+										this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon, discountPriceWithoutTax :tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
 									}
 								} else{
 									this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false});
@@ -418,15 +465,15 @@ export default class ProductScreen extends React.Component {
 						<View>
 			                <FlatList
 								showsVerticalScrollIndicator={false}
+								keyboardShouldPersistTaps={'handled'}
 								ListHeaderComponent = {() =>
 									<View>
 										<TouchableOpacity onPress={() => { this.props.navigation.goBack() } }>
 											<View style={{ flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10 }}>
 												<Image
-													style={{ width: 12, height: 12, marginTop:4 }}
-													source={require('../../../../assets/images/arrow-left.png')}
+													style={{ width: 30, height: 30, marginTop:4, opacity: 0.6 }}
+													source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
 												/>
-												<Text style={{ marginLeft: 5 }}>voltar</Text>
 											</View>
 										</TouchableOpacity>
 										<View style = { styles.logoContainer }>
@@ -469,7 +516,7 @@ export default class ProductScreen extends React.Component {
 													placeholder = { this.state.placeholderCoupon }
 													style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
 													onChangeText = { this.receivePromotionalCode.bind(this) }
-													width = { theme.width*0.68 } 
+													width = { theme.width*0.68 }
 												/>
 												<TouchableOpacity
 													disabled={ this.state.settingPromotionalCode }
@@ -479,8 +526,8 @@ export default class ProductScreen extends React.Component {
 													<View style = {{ ...styles.cuponInput, backgroundColor:this.state.product ? this.state.product.colors[0] : null }}>
 														{
 															this.state.settingPromotionalCode ?
-															<ActivityIndicator size = "small" color = {( this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black' )} /> :
-															<Text style = {{ color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black'), fontWeight: 'bold' }}>{ 'OK' }</Text>
+															<ActivityIndicator size = "small" color = {(this.state.product ? this.state.product.colors[1] : null)} /> :
+															<Text style = {{ color:(this.state.product ? this.state.product.colors[1] : null), fontWeight: 'bold' }}>{ 'OK' }</Text>
 														}
 													</View>
 												</TouchableOpacity>
@@ -491,14 +538,17 @@ export default class ProductScreen extends React.Component {
 												<Text style = {{ fontWeight: 'bold' }}> { this.state.warning } </Text>
 											</View>
 										}
-										<View style = { styles.descriptionContainer }>
-											<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
-											<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
-										</View>
+										{
+											this.state.product && this.state.product.description != "" && this.state.product.description != null &&
+											<View style = { styles.descriptionContainer }>
+												<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
+												<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
+											</View>
+										}
 										{
 											this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
 											<View style = {{ marginTop: theme.height * 0.04, padding:20, backgroundColor: this.state.product ? this.state.product.colors[0] : null, elevation: 8, }}>
-												<Text style = {{ alignSelf:'center', fontSize: 24, fontWeight: 'bold', color: (this.state.product ? this.getTxtColor(this.state.product.colors[0]) : 'black') }}>{'Opções de Personalização'}</Text>
+												<Text style = {{ alignSelf:'center', fontSize: 24, fontWeight: 'bold', color: (this.state.product ? this.state.product.colors[1] : null) }}>{'Opções de Personalização'}</Text>
 											</View>
 										}
 									</View>
@@ -544,7 +594,7 @@ export default class ProductScreen extends React.Component {
 												</View>
 
 											}
-												<View style = { styles.footer }>
+												<View style ={{ ...styles.footer, paddingTop:(this.state.product && this.state.product.description != "" && this.state.product.description != null ? theme.height*0.03 : theme.height * 0.01) }}>
 													{
 														this.state.errorMissingValues &&
 														<Text style={{ color: 'red', marginBottom: 4 }}> *Obrigatório o preenchimento de todos os campos </Text>
@@ -552,8 +602,9 @@ export default class ProductScreen extends React.Component {
 													<FatBottomedButton
 														disabled={this.state.product.stock <= 0}
 														text = {'Comprar'}
+														fontSize = {27}
 														backgroundColor = {this.state.product? this.state.product.colors[0] : null}
-														color = {this.state.product? this.getTxtColor(this.state.product.colors[0]) : 'black' }borderWidth = {0.1} height = {54}
+														color = { this.state.product ? this.state.product.colors[1] : null }borderWidth = {0.1} height = {54}
 														onTap = {this.buttonEnabled.bind(this)}
 													/>
 												</View>
@@ -581,7 +632,7 @@ export default class ProductScreen extends React.Component {
 							</View>
 						</TouchableOpacity>
 						<Text style={{ padding: 5, marginTop: 10, fontWeight: 'bold' }}>
-							Está produto não está mais diponível (´;︵;`)
+							Esta produto não está mais diponível (´;︵;`)
 						</Text>
 					</View>
 				}
@@ -596,15 +647,17 @@ export default class ProductScreen extends React.Component {
 		            <View style = {styles.centeredView}>
 			            <View style = {{ ...styles.modalContainer, height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.72 : theme.height * 0.69) }}>
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.product?this.state.product.colors[0]: null}}>
-								<TouchableOpacity onPress={() => {this.disableModal()}}>
+								<TouchableOpacity
+									onPressIn={() => heimdallr.sendEvent('buy_cancel')}
+									onPress={() => {this.disableModal()}}>
 									<View style = {{ width: theme.width * 0.15, height: theme.height*0.05, alignSelf: 'flex-end' }}>
-										<Image 
+										<Image
 											style = {{ width: 15, height: 15, opacity: 0.4, alignSelf: 'flex-end', tintColor: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black') }}
 											source = {require('../../../../assets/images/times-solid.png')}
 										/>
 									</View>
 								</TouchableOpacity>
-								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: heimdallr.getTxtColor(this.state.product?this.state.product.colors[0] : 'black') }}>{'Confirmação da compra'}</Text>
+								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: (this.state.product ? this.state.product.colors[1] : null)}}>{'Confirmação da compra'}</Text>
 							</View>
 							<View style = {{ height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.57 : theme.height * 0.55), marginTop: theme.height * 0.1 }}>
 								{
@@ -614,7 +667,7 @@ export default class ProductScreen extends React.Component {
 											<Text style = {{ fontWeight: 'bold', fontSize: 15, textAlign: 'justify', lineHeight: 25, marginLeft: theme.width * 0.007, letterSpacing: 0.5 }}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
 											{
 												this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-												<View style = {{ flexDirection: 'row'}}> 
+												<View style = {{ flexDirection: 'row'}}>
 													<Text style = {{ flexDirection:'row', marginTop: theme.height * 0.01, textAlign: 'justify' }}>
 													{
 														this.state.product.customization.map(i =>
@@ -632,40 +685,48 @@ export default class ProductScreen extends React.Component {
 												<Text style = {{ fontWeight:'bold', letterSpacing: 0.5, marginTop: theme.height * 0.02, marginLeft:theme.width * 0.01, color: this.state.product? this.state.product.colors[0] : 'black' }}>{this.state.warning}</Text>
 											}
 											<Text style = { styles.information }>{'Informações:'}</Text>
-												<View style = { styles.picPayView}  >
-													<View style = {{ flexDirection:'column', flexWrap: 'wrap' }}>
-														<View style={{ flexDirection: 'row' }}>
-															<Text style = {styles.paymentText} >
-																{'R$ ' +(this.state.discountPicPayPrice != null ? this.state.discountPicPayPrice : this.state.PicPayPrice) + ' - Pago pelo '}
-															</Text>
-															<Image
-																style = {{ width: 61, height: 20, marginLeft: 3, marginTop:0}}
-																source = {{ uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc' }}>
-															</Image>
-														</View>
-														{
-															this.state.discountApplied &&
-															<View>
-																<Text style ={{ fontWeight: 'bold', marginBottom: theme.height*0.01, letterSpacing: 0.5}}>{'Valor com desconto'}</Text>
+												<View style = { styles.picPayView }  >
+													<View style = {{ margin: 20, flexWrap: 'wrap'}}>
+														<View style = {{ flexDirection:'column', flexWrap: 'wrap'}}>
+															<View style={{ flexDirection: 'row' }}>
+																<Text style = {styles.paymentText} >
+																	{'R$ ' +(this.state.discountPicPayPrice != null ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace(".", ",") : this.state.PicPayPrice) + ' - Pago pelo '}
+																</Text>
+																<Image
+																	style = {{ width: 61, height: 20, marginLeft: 3, marginTop:0}}
+																	source = {{ uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc' }}>
+																</Image>
 															</View>
-															
-														}
-													</View>
-													<View style={{flexDirection:'row'}}>
-														<Text style={styles.buyConfirmText}>
-															{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.sid : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
-														</Text>
+															{
+																this.state.discountApplied &&
+																<View>
+																	<Text style ={{ fontWeight: 'bold', marginBottom: theme.height*0.01, letterSpacing: 0.5}}>{'Valor com desconto'}</Text>
+																</View>
+
+															}
+														</View>
+														<View style={{ flexDirection:'row' }}>
+															<Text style={styles.buyConfirmText}>
+																{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
+															</Text>
+														</View>
 													</View>
 												</View>
 												<View style = {{ ...styles.modalButtons,  marginTop: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0 ? theme.height * 0.07 : theme.height * 0.05)}}>
-													<TouchableOpacity onPress = { this.disableModal.bind(this) }>
+													<TouchableOpacity
+														activeOpacity={1}
+														onPressIn={() => heimdallr.sendEvent('buy_cancel')}
+														onPress = { this.disableModal.bind(this) }>
 														<View style = { styles.cancelButton }>
 															<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing: 0.5 }}>{ 'Cancelar' }</Text>
 														</View>
 													</TouchableOpacity>
-													<TouchableOpacity onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
+													<TouchableOpacity
+														activeOpacity={1}
+														onPressIn={() => heimdallr.sendEvent(`${this.state.product.sid}_buy_confirm`)}
+														onPress = { this.state.discountApplied ? this.discountedTickets : this.ticketsRegister }>
 														<View style = {{ ...styles.confirmButton, backgroundColor: this.state.product? this.state.product.colors[0] : 'green' }}>
-															<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color:heimdallr.getTxtColor(this.state.product?this.state.product.colors[0]: 'black') }}>{ 'Confirmar' }</Text>
+															<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color: (this.state.product ? this.state.product.colors[1] : null) }}>{ 'Confirmar' }</Text>
 														</View>
 													</TouchableOpacity>
 												</View>
@@ -764,7 +825,6 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		color:'#8f8f8f',
 		fontWeight:'700',
-		paddingBottom: theme.height * 0.01,
 		textAlign:'justify',
 		letterSpacing : 0.5,
 		lineHeight: 25,
@@ -772,18 +832,14 @@ const styles = StyleSheet.create({
 	},
 	picPayView: {
 		borderColor:'#21c25e',
-		borderWidth:4,
-		paddingLeft:15,
-		paddingRight:15,
-		paddingTop:15,
-		paddingBottom:10,
+		borderWidth: 2,
 		marginTop:15,
-		borderRadius:25,
-	},	
+		borderRadius: 25,
+	},
 	cuponView: {
 		flexDirection: 'row',
 		alignItems: 'flex-end',
-		alignSelf: 'center', 
+		alignSelf: 'center',
 		marginTop: theme.height * 0.03,
 		marginBottom:theme.height * 0.02
 	},
@@ -802,7 +858,7 @@ const styles = StyleSheet.create({
 		marginLeft:0.001
 	},
 	modalContainer: {
-		width: theme.width * 0.9, 
+		width: theme.width * 0.9,
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 25,
@@ -827,10 +883,10 @@ const styles = StyleSheet.create({
 	modalButtons: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginBottom:theme.height * 0.01 
+		marginBottom:theme.height * 0.01
 	},
 	cancelButton: {
-		paddingTop: 14, 
+		paddingTop: 14,
 		paddingBottom: 14,
 		width:theme.width * 0.32,
 		elevation: 2,
@@ -853,16 +909,16 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		marginLeft: theme.width * 0.01,
 		marginBottom: theme.width * 0.02,
-		letterSpacing: 0.5, 
+		letterSpacing: 0.5,
 		marginTop: theme.width * 0.04,
-		fontSize: 15 
+		fontSize: 15
 	},
 	paymentText: {
 		fontWeight:'bold',
 		fontSize: 15,
 		marginBottom: 7,
-		letterSpacing: 0.5 
+		letterSpacing: 0.5
 	}
 
-	
+
 });

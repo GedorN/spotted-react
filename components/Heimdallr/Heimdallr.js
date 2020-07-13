@@ -119,6 +119,10 @@ function HeimdallrLib() {
 							{
 								merge: true
 							}
+						).then(
+							(res) => {
+								resolve(res);
+							}
 						);
 					}
 				)
@@ -144,9 +148,7 @@ function HeimdallrLib() {
 				resolve();
 			}
 
-		}).then(function (resolve) {
-			return returnValue;
-		})
+		});
 	}
 
 	this.saveNotification = function (params) {
@@ -242,19 +244,20 @@ function HeimdallrLib() {
 	        .doc(heimdallr.user_id)
 		    .get().then((result) => {
 		    	console.log('result not; ', result);
-		    	if (result && result.data().notifications.length > 0) {
+		    	if (result && result.data() && result.data().notifications && result.data().notifications.length > 0) {
 			        // console.log('user notification: ', result.docs[0].data());
 			        // docs = result.docs.sort((a, b) => {
 				    //     console.log('a:', a.data().date );
 				    //     return b.data().date - a.data().date;
-			        // });
+					// });
+
 			        resolve(result.data().notifications.slice(0, limit));
 			    } else {
-		    		console.log('null');
+		    		console.warn('null');
 		    		resolve(null);
 			    }
 	        }).catch ((e) => {
-	            console.log('notifications error: ', e);
+				console.warn('notifications error: ', e);
             });
     })
 	}
@@ -429,6 +432,26 @@ function HeimdallrLib() {
 			}catch (e) {
 				console.log('erro desca', e);
 			}
+		})
+	}
+
+	this.editPassword = function (oldPass, newPass) {
+		return new Promise((resolve, reject) => {
+			firebase.auth().signInWithEmailAndPassword(this.email, oldPass).then(
+				() => {
+					firebase.auth().currentUser.updatePassword(newPass).then(
+						() => {
+							resolve();
+						},
+						(err) => {
+							reject({err});
+						}
+					)
+				},
+				() => {
+					reject({message: 'Senha atual incorreta'});
+				}
+			)
 		})
 	}
 
@@ -755,7 +778,7 @@ function HeimdallrLib() {
 		  return user;
 	  }).catch((error) => {
 			console.log("erro usuário",error);
-		
+
 		});
   }
 
@@ -892,6 +915,141 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.deletePost = function (pid) {
+  	    this.sendEvent('delete_post');
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+				(result) => {
+
+					firebase.firestore().collection('post').doc(result._docs[0]._ref.id).delete().then(
+						() => {
+							resolve();
+						},
+						() => {
+							reject();
+						}
+					);
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+		})
+	}
+
+	this.deletePostComments = function (collection,pid){
+		firebase.firestore().collection(collection).doc(pid).delete().then(function(){
+			console.log("post comments deleted");
+		}).catch(function(error) {
+			console.log("Error removing document: ", error);
+		})
+	}
+
+	this.deletePostNotifications = function (collection,userId,pid){
+		let docs = null;
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).doc(userId).get().then(
+				(result) => {
+					docs = result.data().notifications.filter(item => item.eid != pid);
+					firebase.firestore().collection('notification').doc(userId).set(
+						{
+							notifications: docs
+						},
+						{
+							merge: true
+						}
+					);
+
+				}
+			)
+		}).catch(function(error){
+			console.log("error get commentary",error);
+		})
+	}
+
+
+	this.deleteUserPost = function (pid) {
+		let docs = [];
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('user_posts').doc(this.user_id).get().then(
+				(result) => {
+					const post = result.data().posts.find((item) => item.pid === pid);
+					const index = result.data().posts.indexOf(post);
+					const removed = result.data().posts.splice(index,1);
+					firebase.firestore().collection('user_posts').doc(this.user_id).set(
+						{ posts: result.data().posts }, {merge: true}).then(
+						()=> {
+							resolve();
+						},
+						(error) => {
+							reject(error);
+						}
+					);
+				})
+		}).catch(function(error){
+			console.log("error get commentary",error);
+			reject();
+		})
+	}
+
+	this.deleteCommentNotification = function (collection, cid, userId){
+		let docs = [];
+		return new Promise((resolve) => {
+			firebase.firestore().collection(collection).doc(userId).get().then(
+				(result) => {
+					let notification = null;
+					let index = null;
+					let removed = null;
+					notification = result.data().notifications.find((item) => item.cid === cid);
+					index = result.data().notifications.indexOf(notification);
+					removed = result.data().notifications.splice(index,1);
+					firebase.firestore().collection('notification').doc(userId).set(
+						{
+							notifications: result.data().notifications
+						},
+						{
+							merge: true
+						}
+					);
+
+				}
+			)
+		}).catch(function(error){
+			console.log("error get commentary",error);
+		})
+	}
+
+
+	this.deleteCommentary = function (pid, cid) {
+		this.sendEvent('delete_comment');
+		let docs = [];
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('comment').doc(pid).get().then(
+				(result) => {
+					let commentary = result.data().comments.find((item) => item.cid === cid);
+					let index = result.data().comments.indexOf(commentary);
+					let removed = result.data().comments.splice(index,1);
+					firebase.firestore().collection('comment').doc(pid).set(
+						{ comments: result.data().comments }, { merge: true }
+					).then(
+						() => {
+							resolve();
+						},
+						() => {
+							reject();
+						}
+					);
+
+				},
+				() => {
+					reject();
+				}
+			)
+		}).catch(function(error){
+			console.log("error get commentary",error);
+		})
+	}
+
 	this.saveSpecificColletion = function (collection,params) {
   	console.log('params.uid',params.uid);
 		return new Promise((resolve) => {
@@ -912,6 +1070,10 @@ function HeimdallrLib() {
 				}
 			)
 		})
+	}
+
+	this.sendEvent = function (eventName) {
+	    firebase.analytics().logEvent(eventName);
 	}
 
   this.saveCollection = function (collection, params) {

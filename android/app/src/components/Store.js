@@ -8,6 +8,8 @@ import {
 	TouchableOpacity,
 	RefreshControl,
 	ScrollView,
+	StatusBar,
+	BackHandler,
 } from "react-native";
 
 import ImNotTheOnlyChip from "./layout/ImNotTheOnlyChip";
@@ -46,8 +48,17 @@ export default class Store extends React.Component {
 	}
 
 	componentDidMount(): void {
+		BackHandler.addEventListener('hardwareBackPress', () => {
+			StatusBar.setBackgroundColor('white');
+			StatusBar.setBarStyle('dark-content');
+			console.warn('hue');
+		});
+
+
 		heimdallr.getStoreInfo(this.props.navigation.getParam('store')).then(
 			(resolve) => {
+				StatusBar.setBackgroundColor(resolve.colors[0]);
+				StatusBar.setBarStyle('light-content');
 				this.setState({
 					categories: resolve.categories,
 					colors: resolve.colors,
@@ -72,9 +83,13 @@ export default class Store extends React.Component {
 		)
 
 	}
+	componentWillUnmount() {
+		BackHandler.removeEventListener('hardwareBackPress');
+	}
 
 
 	chipPressed = (chip) => {
+		heimdallr.sendEvent(`${this.props.navigation.getParam('store')}_category`)
 		let filteredCategories = this.state.filteredCategories;
 		let filteredProducts = [];
 		if (filteredCategories.find((fc) => fc === chip)) {
@@ -95,21 +110,23 @@ export default class Store extends React.Component {
 
 	}
 
+	clearStatusBar = () => {
+		StatusBar.setBackgroundColor('white');
+		StatusBar.setBarStyle('dark-content');
+	}
+
 	render() {
 		return (
 			<ScrollView style={styles.container} showsVerticalScrollIndicator = {false}>
 				<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
-					<TouchableOpacity onPress={() => {this.props.navigation.goBack()}}>
-						<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10}}>
+					<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10, position: 'absolute', zIndex: 999}}>
+						<TouchableOpacity onPress={() => {this.clearStatusBar(); this.props.navigation.goBack()}}>
 							<Image
-								style={{width: 12, height: 12, marginTop:4}}
-								source={require('../../../../assets/images/arrow-left.png')}
+								style={{width: 30, height: 30, marginTop:4, opacity: 0.6}}
+								source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
 							/>
-							<Text style={{marginLeft: 5}}>
-								voltar
-							</Text>
-						</View>
-					</TouchableOpacity>
+						</TouchableOpacity>
+					</View>
 					<SevenBannerArmy url={this.state.banner}/>
 					<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
 						{
@@ -127,12 +144,14 @@ export default class Store extends React.Component {
 						}
 					</View>
 					<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
-						<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.015}}>{'Produtos '}</Text>
-						<View style = {{width:theme.width * 0.2, height : theme.height * 0.07, marginBottom:theme.height * 0.02}}>
-							<Image
-								source = {{ uri: this.state.logo }}
-								style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
-							</Image>
+						<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.05}}>{'Produtos '}</Text>
+						<View style = {{width:theme.width * 0.4, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: 5}}>
+							<View style = {{width:theme.width * 0.35, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: -20}}>
+								<Image
+									source = {{ uri: this.state.logo }}
+									style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
+								</Image>
+							</View>
 						</View>
 					</View>
 				</View>

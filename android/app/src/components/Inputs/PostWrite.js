@@ -6,14 +6,20 @@ import {
 	TouchableOpacity,
 	Image,
 	PermissionsAndroid,
-	Dimensions, StatusBar,
+	Dimensions,
+	StatusBar,
+	Keyboard,
 } from 'react-native';
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
+import Video from 'react-native-video';
 import {Text} from "react-native-paper";
+var RNFS = require('react-native-fs');
+import {RNPhotoEditor} from "react-native-photo-editor";
+
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
@@ -25,6 +31,8 @@ export default class PostWrite extends React.Component {
 			postImages: [],
 			anonymousUser: false,
 			anonymousText: "Postar como anônimo ?",
+			videoIncluded: false,
+			gifIncluded: false,
 		};
 	}
 
@@ -34,13 +42,15 @@ export default class PostWrite extends React.Component {
 	}
 
 	deletePostImg (pos) {
-		let images = [];images = this.state.postImages;
+		let images = [];
+		images = this.state.postImages;
 		let newImg = [];
 		for (let i = 0; i < images.length; i++) {
 			if (i != pos) {
 				newImg.push(images[i]);
 			}
-		}this.setState({postImages: newImg});
+		}
+		this.setState({postImages: newImg, videoIncluded: false, gifIncluded: false});
 	}
 
 	doPost = () => {
@@ -59,26 +69,43 @@ export default class PostWrite extends React.Component {
 			this.props.closeAndRefresh();
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
-				console.log('before: ', this.state.postImages);
-				let propCo =  900000 / img.fileSize;
-				let quality = propCo > 1 ? 100 : 100 * propCo;
-				let constant = propCo > 1 ? 0.8 : 1;
-				ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
-					(resolve) => {
-						let link = heimdallr.uploadImage(resolve.uri);
-						link.then(function (resolve) {
-							checkedImages ++;
-							console.log('URL resolve: ', resolve);
-							urlArray.push(resolve);
-							self.state.postImages = urlArray;
-							/* Save the post*/
-							self.savePost(checkedImages / posImagesLenght);
-						})
+				if (this.state.gifIncluded) {
+					urlArray.push(img.path);
+					self.state.postImages = urlArray;
+					/* Save the post*/
+					self.savePost(checkedImages / posImagesLenght);
+				} else if (img.type !== 'video/mp4') {
+					console.log('before: ', this.state.postImages);
+					let propCo =  900000 / img.fileSize;
+					let quality = propCo > 1 ? 100 : 100 * propCo;
+					let constant = propCo > 1 ? 0.8 : 1;
+					ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
+						(resolve) => {
+							let link = heimdallr.uploadImage(resolve.uri);
+							link.then(function (resolve) {
+								checkedImages ++;
+								console.log('URL resolve: ', resolve);
+								urlArray.push(resolve);
+								self.state.postImages = urlArray;
+								/* Save the post*/
+								self.savePost(checkedImages / posImagesLenght);
+							})
 
-					},
-					(reject) => {
-					}
-				)
+						},
+						(reject) => {
+						}
+					)
+				} else {
+					let link = heimdallr.uploadImage(img.uri);
+					link.then(function (resolve) {
+						checkedImages ++;
+						console.log('URL resolve: ', resolve);
+						urlArray.push(resolve);
+						self.state.postImages = urlArray;
+						/* Save the post*/
+						self.savePost(checkedImages / posImagesLenght);
+					})
+				}
 			})
 		} else {
 			// caso a postagem não contenha imagem
@@ -104,6 +131,7 @@ export default class PostWrite extends React.Component {
 		 * Espera até que todas as fotos tenham sido enviadas para continuar
 		 * */
 		if (sendedImages >= 1) {
+			heimdallr.sendEvent('post_write');
 			let self = this;
 			const params = {};
 			params.active = 1;
@@ -114,7 +142,9 @@ export default class PostWrite extends React.Component {
 			params.user_name = heimdallr.user_name;
 			params.anonymous = this.state.anonymousUser;
 			params.user_image = heimdallr.user_image;
+			params.gif = this.state.gifIncluded;
 			params.comments = 0;
+			params.video = this.state.videoIncluded;
 			heimdallr.getUID().then((uuid) => {
 				params.pid = uuid;
 				this.props.call();
@@ -155,6 +185,9 @@ export default class PostWrite extends React.Component {
 						skipBackup: true,
 						path: 'images',
 					},
+					mediaType: 'mixed',
+					noData: false, // we use response.data to display gif
+					allowsEditing: false // make sure we don't edit the gif
 				};
 
 				ImagePicker.showImagePicker(options, response => {
@@ -165,12 +198,24 @@ export default class PostWrite extends React.Component {
 					} else if (response.customButton) {
 						console.log('User tapped custom button: ', response.customButton);
 					} else {
-						console.log('Imagem escolhida');
-						let images = this.state.postImages;
-						images.push(response);
-						this.setState({postImages: images});
-						console.log('Imagem: ', response);
-						this.setState({showModal: true});
+						if (response.type === 'video/mp4') {
+							this.setState({postImages: [response], videoIncluded: true});
+						} else {
+							const name = Date.now().toString() + '.jpg';
+							RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+							RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+							response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+							RNPhotoEditor.Edit({
+								path: response.path,
+								onDone: (a) => {
+									console.log('e agora: ', a);
+									let images = this.state.postImages;
+									images.push(response);
+									this.setState({postImages: images});
+									console.log('Imagem: ', response);
+								}
+							});
+						}
 					}
 				});
 			} else {
@@ -181,11 +226,51 @@ export default class PostWrite extends React.Component {
 		}
 	}
 
+	_onImageChange = (event) => {
+		const {linkUri, data} = event.nativeEvent;
+		Keyboard.dismiss();
+		this.setState({ postImages: [{path: linkUri}], gifIncluded: true });
+	}
+
 	getModalImagesLayout() {
 		/*
 		* Existe uma condição para cada quantidade de fotos (0 a 4). O layout muda completamente
 		* */
-		if (this.state.postImages.length === 1) {
+		if (this.state.videoIncluded) {
+			return (
+				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+					<View style={{ flexDirection: 'row'}}>
+						<View style={{width: 280, height: 200}}>
+							<Video
+								resizeMode={'cover'}
+								repeat={true}
+								source={{uri: this.state.postImages[0].path}}
+								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'black'}}
+							/>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
+								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			)
+		} else if (this.state.gifIncluded) {
+			return (
+				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+					<View style={{ flexDirection: 'row'}}>
+						<View style={{width: 280, height: 200}}>
+							<Image
+								source={{uri: this.state.postImages[0].path}}
+								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+							/>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
+								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			)
+		}else if (this.state.postImages.length === 1) {
 			return (
 				<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
 					<View style={{ flexDirection: 'row'}}>
@@ -194,7 +279,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -210,7 +295,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 139, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -219,7 +304,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[1].path}}
 								style={{width: 139, height: 200,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 1)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -235,7 +320,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 140, height: 200, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -245,7 +330,7 @@ export default class PostWrite extends React.Component {
 									source={{uri: 'file://' + this.state.postImages[1].path}}
 									style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
-								<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
+								<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 1)}>
 									<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 								</TouchableOpacity>
 							</View>
@@ -254,7 +339,7 @@ export default class PostWrite extends React.Component {
 									source={{uri: 'file://' + this.state.postImages[2].path}}
 									style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 								/>
-								<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
+								<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 2)}>
 									<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 								</TouchableOpacity>
 							</View>
@@ -271,7 +356,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[0].path}}
 								style={{width: 139, height: 99, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 0)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -280,7 +365,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[1].path}}
 								style={{width: 139, height: 99, borderBottomLeftRadius: 10, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 1)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 1)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -291,7 +376,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[2].path}}
 								style={{width: 139, height: 99,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 2)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 2)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -300,7 +385,7 @@ export default class PostWrite extends React.Component {
 								source={{uri: 'file://' + this.state.postImages[3].path}}
 								style={{width: 139, height: 99, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
 							/>
-							<TouchableOpacity style={{position: 'absolute', top: 0, right: 0, padding: 5}} onPress={this.deletePostImg.bind(this, 3)}>
+							<TouchableOpacity style={{position: 'absolute', top: 4, right: 4, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 3)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 							</TouchableOpacity>
 						</View>
@@ -319,21 +404,23 @@ export default class PostWrite extends React.Component {
 					<View>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.props.close}>
-								<Image
-									source={require('../../../../../assets/images/times-solid.png')}
-									style={{width: 20, height: 20,marginRight:5}}
-								/>
+								<View style = {{ width: width * 0.1, height: height * 0.03, marginTop: height * 0.005 }}>
+									<Image
+										source={require('../../../../../assets/images/times-solid.png')}
+										style={{width: 20, height: 20,marginRight:5}}
+									/>
+								</View>
 							</TouchableOpacity>
 						</View>
 						{/*<UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>*/}
-						<View>
+						<View style = {{borderColor: '#f2f2f2', borderBottomWidth: 2, marginTop: height * 0.02 }}>
 							<TextInput
-								style={{width: width + 10,
-									borderBottomWidth: 0.7,
-									borderColor: 'grey',
-									height: this.state.postImages.length > 0 ? height * 0.406 : height * 0.70,
+								style={{width: width * 0.9,
+									alignSelf:'center',
+									height: this.state.postImages.length > 0 ? height * 0.38 : height * 0.69,
 								}}
 								onChangeText={text => this.setState({postText: text})}
+								onImageChange={this._onImageChange}
 								autoCapitalize="sentences"
 								multiline
 								textAlignVertical="top"
@@ -344,39 +431,30 @@ export default class PostWrite extends React.Component {
 						<View style={{alignSelf:'center'}}>
 							{this.getModalImagesLayout()}
 						</View>
-						<View style = {{flexDirection:"row", height: 45 , marginTop: this.state.postImages.length > 0 ? 10 : 2}}>
+						<View style = {{ ...styles.postIcons, marginTop: this.state.postImages.length > 0 ? 10 : 2 }}>
 							<TouchableOpacity
 								onPress = {this.getAnonymous.bind(this)}
-								style =
-									{{
-										width: 45,
-										height: 45,
-										marginTop: 3,
-										marginLeft: theme.width * 0.08}}
-							>
+								style = {{ width: 45, height: 45, marginTop: 3 }}>
 								<Image
 									source={require('../../../../../assets/images/mask-solid.png')}
-									style = {{ width: 50, height: 40, alignSelf: 'flex-start', opacity: 1}}
+									style = {{ width: 50, height: 40, opacity: 1 }}
 								/>
 
 							</TouchableOpacity>
-							<Text style = {{marginTop:14,marginLeft:11, opacity: !this.state.anonymousUser ? 0.5 : 1, width:theme.width *0.55,
-								fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
-							<TouchableOpacity disabled={this.state.postImages.length === 4} onPress={this.sendImagePropt.bind(this)}>
+							<Text style = {{ ...styles.anonymousText, opacity: !this.state.anonymousUser ? 0.5 : 1, fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
+							<TouchableOpacity disabled={this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded} onPress={this.sendImagePropt.bind(this)}>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}
 									style={{
 										width: 35,
 										height: 30,
-										alignSelf:'flex-end',
-										marginLeft:theme.width *0.08,
-										marginTop:7,
-										opacity: this.state.postImages.length === 4 ? 0.4 : 1
+										marginTop:9,
+										opacity: this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded ? 0.4 : 1
 									}}
 								/>
 							</TouchableOpacity>
 						</View>
-						<View style={{marginTop:15, width: width * 0.9, marginLeft: 25}}>
+						<View style={{marginTop:5, width: width * 0.9, alignSelf:'center'}}>
 							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
@@ -399,9 +477,7 @@ const styles = StyleSheet.create({
 	header: {
 		width: width,
 		height: 20,
-		justifyContent: 'flex-end',
 		alignItems: 'flex-end',
-		alignContent: 'center',
 		padding: 4,
 		marginTop: 10,
 	},
@@ -426,4 +502,15 @@ const styles = StyleSheet.create({
 		borderColor: 'black',
 		tintColor: 'white',
 	},
+	postIcons: {
+		flexDirection:"row",
+		height: 45 ,
+		width: theme.width * 0.9,
+		alignSelf:'center',
+		justifyContent: 'space-around'
+	},
+	anonymousText: {
+		marginTop:14,
+		width:theme.width *0.59,
+	}
 });

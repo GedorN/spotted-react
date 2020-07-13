@@ -6,6 +6,7 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 import UserImgProfile from "./UserImgProfile";
+import heimdallr from "../Heimdallr/Heimdallr";
 
 export default class UserBannerView extends React.Component {
 	constructor(props) {
@@ -28,7 +29,9 @@ export default class UserBannerView extends React.Component {
 
 	render() {
 		return (
-			<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+			<TouchableOpacity
+				onPressIn={() => heimdallr.sendEvent('person_find')}
+				onPress={this.goToUserProfile.bind(this)}>
 				<View style={styles.container}>
 					<UserImgProfile circular height={45} width={45} uri={this.props.profileImage} />
 					<View style={styles.info}>

@@ -50,15 +50,15 @@ export default class PasswordRestore extends React.Component{
 				{/*	source={require('../../../../assets/images/simbol.png')}*/}
 				{/*/>*/}
 				<Image
-					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
+					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.1}}
 					source={require('../../../../assets/images/simbol.png')}
 				/>
 				{ !this.state.emailSent &&
-					<View>
-						<Text style={{fontWeight: 'bold', marginTop: 30, fontSize: 16}}>
+					<View style = {{ borderRadius: 25, padding: 20, backgroundColor: 'white', elevation: 4, paddingBottom: 50, alignItems: 'center', alignSelf: 'center' }}>
+						<Text style={{fontWeight: 'bold', marginTop: 20, fontSize: 16, lineHeight: 25, alignSelf: 'flex-start'}}>
 							Esqueceu sua senha?
 						</Text>
-						<Text style={{fontWeight: 'bold', marginBottom: 30, fontSize: 16}}>
+						<Text style={{fontWeight: 'bold', marginBottom: 30, fontSize: 16, lineHeight: 25, alignSelf: 'flex-start' }}>
 							Não tem problema. Diga-nos o seu email para que a nossa equipe possa te ajudar
 						</Text>
 						<View style={styles.form}>
@@ -69,13 +69,14 @@ export default class PasswordRestore extends React.Component{
 								borderBottomWidth={1}
 								keyboardType='email-address'
 								textContentType='emailAddress'
+								borderBottomColor={'#b2b5b1'}
 								onChangeText={text => this.setState({ user: text })}
 							/>
-							<View style={{marginTop: 120}}>
-								<FatBottomedButton color={theme.primary} text={'Recuperar'} color={'white'} backgroundColor={theme.primary} onTap={this.recover.bind(this)}/>
+							<View style={{marginTop: 50}}>
+								<FatBottomedButton color={theme.primary} text={'Recuperar'} height={50} color={'white'} backgroundColor={theme.primary} onTap={this.recover.bind(this)}/>
 							</View>
-							<View style={{marginTop: 20}}>
-								<FatBottomedButton color={theme.primary} text={'Cancelar'} onTap={this.cancel.bind(this)}/>
+							<View style={{marginTop: 15}}>
+								<FatBottomedButton color={theme.primary} text={'Cancelar'} height={50} onTap={this.cancel.bind(this)}/>
 							</View>
 						</View>
 					</View>
@@ -87,7 +88,7 @@ export default class PasswordRestore extends React.Component{
 								Tudo certo!!! Em breve você receberá um email da nossa equipe
 							</Text>
 							<View style={{marginTop: 20}}>
-								<FatBottomedButton color={theme.primary} text={'Voltar'} onTap={this.cancel.bind(this)}/>
+								<FatBottomedButton color={theme.primary} text={'Voltar'} height={50} onTap={this.cancel.bind(this)}/>
 							</View>
 						</View>
 					</View>
@@ -100,7 +101,10 @@ export default class PasswordRestore extends React.Component{
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 30
+		padding: 30,
+		flexDirection: 'column',
+		alignItems:'center',
+		justifyContent:'center'
 	},
 	form: {
 		width: width * 0.8,

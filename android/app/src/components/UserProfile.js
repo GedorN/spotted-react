@@ -9,7 +9,7 @@ import {
 	ActivityIndicator,
 	RefreshControl,
 	Modal,
-	
+
 } from 'react-native';
 
 import PostViewer from "../../../../components/General/PostViewer";
@@ -18,6 +18,8 @@ import UserImgProfile from '../../../../components/General/UserImgProfile';
 import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
 import moment from "moment";
+import AwesomeAlert from "react-native-awesome-alerts";
+
 
 export default class UserProfile extends React.Component {
 	constructor(props) {
@@ -36,13 +38,16 @@ export default class UserProfile extends React.Component {
 			userImageUrl: [],
 			scrolling: false,
 			findUser : true,
+			showAlert: false,
+			deletePost: '',
+			showDeleteAlert: false,
 		};
 	}
 
 	componentDidMount = () => {
 		const user_id = this.props.navigation.getParam('userId');
 		if (user_id) {
-		
+
 			console.log('navigation: ', this.props);
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
@@ -50,7 +55,6 @@ export default class UserProfile extends React.Component {
 						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
 						heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
-							console.log('peguei de volta', resolve);
 							if(!resolve || resolve.length === 0){
 								this.setState({ endPulling: true });
 							}
@@ -73,14 +77,10 @@ export default class UserProfile extends React.Component {
 					console.warn('Deu ruim: ', reject);
 				});
 		} else {
-			// const hue = heimdallr.test(heimdallr.user_id, 100);
-			var before = Date.now();
-			console.log('navigation: ', this.props);
 			this.state.userId = heimdallr.user_id;
 			this.state.userImage = heimdallr.user_image;
 			this.state.userName = heimdallr.user_name;
 			this.state.userImageUrl = [{url: heimdallr.user_image}];
-			console.log('Profile: ', this.state.userId);
 			heimdallr.getUserColletion(100, this.state.userId).then(
 				(resolve) => {
 					if(!resolve || resolve.length === 0){
@@ -93,8 +93,6 @@ export default class UserProfile extends React.Component {
 
 						}
 					});
-					var after = Date.now() - before;
-					console.log(`o mais foda levou: ${after}`);
 					this.setState({ posts: resolve });
 				}
 			);
@@ -173,9 +171,27 @@ export default class UserProfile extends React.Component {
 						doc.elapsed_time = heimdallr.getElapsedTime(time);
 					}
 				});
-				console.log('peguei esses caras aqui', resolve);
-				this.setState({ posts: resolve });
+				this.setState({ posts: resolve, isRefreshing: false });
 
+			}
+		);
+	}
+
+	deletePostConfirm = (pid) => {
+		this.setState({ showDeleteAlert: true, deletePost: pid });
+
+	}
+
+	confirmReport = (deleteAction, pid) => {
+		this.setState({ showAlert: true });
+	}
+
+	deletePost = () => {
+		this.setState({ showDeleteAlert: false, isRefreshing: true });
+		heimdallr.deletePost(this.state.deletePost);
+		heimdallr.deleteUserPost(this.state.deletePost).then(
+			() => {
+				this.onRefresh();
 			}
 		);
 	}
@@ -183,10 +199,10 @@ export default class UserProfile extends React.Component {
 
 	render() {
 		return (
-			
+
 			<View style={{}}>
-				
-				{ this.state.findUser ? 
+
+				{ this.state.findUser ?
 					<View>
 						<Modal
 							visible={this.state.showImage}
@@ -207,28 +223,28 @@ export default class UserProfile extends React.Component {
 						onScrollEndDrag={() => this.setState({ scrolling: false })}
 						onScrollBeginDrag={() => this.setState({ scrolling: true })}
 						renderItem={ ({item}) =>
-								<PostViewer text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+								<PostViewer confirmPostRm={this.deletePostConfirm.bind(this)} closeAlert={this.confirmReport.bind(this)}  video={item.video ? true : false} text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
 						}
 						ListHeaderComponent={() =>
 							<View style={styles.profileHeader}>
-								<View style = {{alignSelf:'flex-start'}}>
-									<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
-										<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
-											<Image
-												style={{width: 12, height: 12, marginTop:4}}
-												source={require('../../../../assets/images/arrow-left.png')}
-											/>
-											<Text style={{marginLeft: 5}}>
-												voltar
-											</Text>
-										</View>
-									</TouchableOpacity>
-								</View>
+								{
+									this.props.navigation.getParam('userId') &&
+									<View style = {{alignSelf:'flex-start'}}>
+										<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+											<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
+												<Image
+													style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
+													source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+												/>
+											</View>
+										</TouchableOpacity>
+									</View>
+								}
 								<Image
 									style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
 									source={require('../../../../assets/images/simbol.png')}
 								/>
-								<View style = {{marginTop:-(theme.height * 0.03)}}>
+								<View style = {{ marginTop: -(this.props.navigation.getParam('userId') ? theme.height * 0.03 : theme.height * 0.01 ) }}>
 									<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
 										<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
 									</TouchableOpacity>
@@ -250,7 +266,7 @@ export default class UserProfile extends React.Component {
 							this.pullMorePosts(distanceFromEnd);
 						}}
 						ListFooterComponent={ this.renderFooter.bind(this)}
-	
+
 					/>
 					</View>
 					 :
@@ -258,28 +274,61 @@ export default class UserProfile extends React.Component {
 						<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
 							<View style={{flexDirection: 'row', marginTop: theme.height * 0.01,  paddingLeft: theme.width * 0.02,width:theme.width * 0.2,height:theme.height * 0.04}}>
 								<Image
-									style={{width: 12, height: 12, marginTop:4}}
-									source={require('../../../../assets/images/arrow-left.png')}
+									style={{ width: 30, height: 30, marginTop:4, opacity: 0.6 }}
+									source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
 								/>
-								<Text style={{marginLeft: 5}}>
-									voltar
-								</Text>
 							</View>
 						</TouchableOpacity>
-						 
+
 						<View style = {{alignSelf:'center'/* , borderColor:'black',borderWidth:1 */ ,marginTop:theme.height * 0.04,alignItems:'center'}}>
 							<Image
 											style={{width: theme.width * 0.7, height: theme.height * 0.25, marginTop:4 ,opacity:0.5,marginBottom:theme.height * 0.04}}
 											source={require('../../../../assets/images/mask-solid.png')}
 										/>
-							
+
 							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>Ih, o usuário vazou,</Text>
 							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>ou mudou de nome.</Text>
 							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01}}t>Mas o usuário sempre volta </Text>
 						</View>
 					 </View>
 				}
-			
+				<AwesomeAlert
+					show={this.state.showDeleteAlert}
+					showProgress={false}
+					title= {"Tem certeza que deseja excluir ? "}
+					titleStyle = {{fontSize: 15, justifyContent: 'center'}}
+					message= {"Após confirmada essa ação não poderá ser desfeita."}
+					messageStyle = {{fontSize: 13}}
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showCancelButton = {true}
+			  		cancelText = {"Não"}
+					showConfirmButton={true}
+					confirmText= {"Sim"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						 this.deletePost();
+					}}
+					onCancelPressed={() => {
+						this.setState({ showDeleteAlert: false })
+					}}
+				/>
+
+				<AwesomeAlert
+					show={this.state.showAlert}
+					showProgress={false}
+					title= {"Denúncia realizada"}
+		      		message= {"Nossos criadores irão analisar a postagem denunciada"}
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showConfirmButton={true}
+					confirmText= {"OK"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						this.setState({ showAlert: false })
+					}}
+				/>
+
 			</View>
 		);
 	}

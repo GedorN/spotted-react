@@ -156,10 +156,10 @@ export default class LikeARollingTicketViewer extends React.Component {
 									/>
 								</View>
 								</TouchableOpacity>
-								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: heimdallr.getTxtColor(this.props.ticket.colors[0])}}>{'Detalhes do pedido'}</Text>
+								<Text style = {{marginTop:-(theme.height *  0.025),fontSize:20, fontWeight:'bold', alignSelf:'center', color: this.props.ticket.colors[1] }}>{'Detalhes do pedido'}</Text>
 							</View>
-							<View>
-								<ScrollView style = {{height: theme.height * 0.6, marginTop:theme.height * 0.08}}
+							<View style = {{ height: theme.height * 0.7 }}>
+								<ScrollView style = {{height: theme.height * 0.6, marginTop:theme.height * 0.07}}
 									showsVerticalScrollIndicator = {false}>
 									<View style = {{marginTop:theme.height*0.02}}>
 										<Text style = {{fontWeight:'bold',fontSize:15,marginBottom:4}}>
@@ -205,9 +205,25 @@ export default class LikeARollingTicketViewer extends React.Component {
 									</TouchableOpacity>
 									{
 										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pendente' &&
-										<View >
-											<FatBottomedButton text={'Pagar'} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={heimdallr.getTxtColor(this.props.ticket.colors[0])} onTap={this.redirectToPay.bind(this)}/>
+										<View style = {{ marginBottom: theme.height * 0.02}}>
+											<FatBottomedButton text={'Pagar'} height={50} fontSize={19} backgroundColor={this.props.ticket.colors[0]} borderWidth = {0.1} color={this.props.ticket.colors[1]} onTap={this.redirectToPay.bind(this)}/>
 										</View>
+									}
+									{
+										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Entregue' &&
+										<View style = {{ marginBottom: theme.height * 0.02}}>
+											<Text style = {styles.textStatus}> Seu pedido foi entregue!  </Text>
+										</View>
+									}
+									{
+										this.props.ticket.payment === 'PicPay' && this.props.ticket.status === 'Pago' &&
+										<View style = {{ marginBottom: theme.height * 0.02}}>
+											<Text style = {{ flexDirection: 'row', textAlign: 'justify' }}>
+												<Text style = {styles.textStatus}>{'O pagamento foi efetivado, você já pode entrar em contato com '}</Text>
+												<Text style = {styles.textStatus}>{this.props.ticket.store_name}</Text>
+												<Text style = {styles.textStatus}>{' para retirar seu pedido.'}</Text>
+											</Text>
+										</View>	
 									}
 								</ScrollView>
 							</View>
@@ -258,22 +274,23 @@ const styles = StyleSheet.create({
 		flex:1
 	},
 	ticketHeader : {
-		height: theme.height *0.03,
-		width: theme.width * 0.89,
-		marginTop: theme.height *  0.01
+		height: theme.height *0.05,
+		width: theme.width * 0.4,
+		marginTop: theme.height *  0.01,
+		alignSelf: 'center',
+		marginTop:theme.height * 0.015
 	},
 	ticketLogo : {
-		width: 40,
-		height: 30,
-		marginLeft: theme.width * 0.02,
-		alignSelf: 'center',
-		marginTop: theme.height * 0.012
+		resizeMode: 'contain',
+		flex: 1,
+		width: null,
+		height: null,
 	},
 	ticketDetails : {
 		marginLeft:10,
 		flexDirection:'row',
 		height:theme.height*0.11,
-		marginTop:theme.height*0.04
+		marginTop:theme.height*0.03
 	},
 	ticketLetter : {
 		fontSize:15,
@@ -308,12 +325,12 @@ const styles = StyleSheet.create({
 	productName : {
 		fontSize:15,
 		alignSelf:'center',
-		marginTop:theme.height * 0.04,
+		marginTop:theme.height * 0.03,
 		fontWeight:'bold',
 	},
 	modalContainer: {
 		width: theme.width * 0.9,
-		height: theme.height * 0.75, 
+		height: theme.height * 0.75,
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 35,
@@ -346,7 +363,8 @@ const styles = StyleSheet.create({
 		width: theme.width * 0.9,
 		borderTopLeftRadius:20,
 		borderTopRightRadius:20,
-		padding:20,position:'absolute',
+		padding:20,
+		position:'absolute',
 		marginLeft:0.001
 	},
 	modalProduct : {
@@ -375,5 +393,11 @@ const styles = StyleSheet.create({
 		alignContent:'center',
 		alignItems:'center',
 		justifyContent:'center'
+	},
+	textStatus: {
+		color: '#8f8f8f',
+		alignSelf: 'center',
+		textAlign: 'justify',
+		lineHeight: 20
 	}
 });

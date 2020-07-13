@@ -72,7 +72,7 @@ export default class FatBottomedButton extends React.Component {
 							alignItems: 'center',
 							alignSelf: 'center',
 							fontWeight: 'bold',
-							fontSize: this.props.height ? this.props.height / 2 : 16,
+							fontSize: this.props.fontSize ? this.props.fontSize : 16,
 							color: this.props.color ? this.props.color : theme.primary,
 						}}
 					>

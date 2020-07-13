@@ -8,11 +8,11 @@ import {
 	Image,
 	PermissionsAndroid,
 	Modal,
+	TextInput
 } from 'react-native'
 
 import {
 	ActivityIndicator,
-	TextInput,
 } from 'react-native-paper'
 
 import { showMessage, hideMessage } from "react-native-flash-message";
@@ -27,6 +27,9 @@ import ImageResizer from "react-native-image-resizer";
 import AwesomeAlert from "react-native-awesome-alerts";
 import EyeOfThePassword from "../Inputs/EyeOfThePassword";
 import { StackActions, NavigationActions } from 'react-navigation';
+import {RNPhotoEditor} from "react-native-photo-editor";
+var RNFS = require('react-native-fs');
+
 
 
 export default class GeneralSettings extends  React.Component {
@@ -88,26 +91,35 @@ export default class GeneralSettings extends  React.Component {
 					} else if (response.customButton) {
 						console.log('User tapped custom button: ', response.customButton);
 					} else {
-						console.log('Imagem escolhida');
-						console.log(response);
-						let image = 'file://' + response.path;
-						console.log('path: ', image);
 						let propCo =  900000 / response.fileSize;
 						let quality = propCo > 1 ? 100 : 100 * propCo;
 						let constant = propCo > 1 ? 0.8 : 1;
-						ImageResizer.createResizedImage(response.path, response.width / 5, response.height / constant, 'JPEG', quality).then(
-							(resolve) => {
-								console.log('resolve: ', resolve);
-								this.setState({imageCompressed: resolve.uri});
 
-							},
-							(error) => {
-								console.log('Image resize error: ', error);
-							}).catch((err) => {
-							console.log(err);
-						})
-						this.setState({userImage: image});
-						console.log('Imagem: ', this.state.postImages);
+						const name = Date.now().toString() + '.jpg';
+						RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+						RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+						response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+						let image = 'file://' + response.path;
+
+
+						RNPhotoEditor.Edit({
+							path: response.path,
+							onDone: () => {
+								ImageResizer.createResizedImage(response.path, response.width / 5, response.height / constant, 'JPEG', quality).then(
+									(resolve) => {
+										console.log('resolve: ', resolve);
+										this.setState({imageCompressed: resolve.uri});
+										this.setState({userImage: image});
+										console.log('Imagem: ', this.state.postImages);
+									},
+									(error) => {
+										console.log('Image resize error: ', error);
+									}).catch((err) => {
+									console.log(err);
+								})
+							}
+						});
+
 					}
 				});
 			} else {
@@ -226,12 +238,9 @@ export default class GeneralSettings extends  React.Component {
 				<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
 								<View style={{flexDirection: 'row', marginTop: 7,width:theme.width * 0.2,height:theme.height * 0.04}}>
 									<Image
-										style={{width: 12, height: 12, marginTop:4}}
-										source={require('../../../../../assets/images/arrow-left.png')}
+										style={{width: 30, height: 30, marginTop:4, opacity: 0.6}}
+										source={require('../../../../../assets/images/chevron-circle-left-solid-white.png')}
 									/>
-									<Text style={{marginLeft: 5}}>
-										voltar
-									</Text>
 								</View>
 				</TouchableOpacity>
 				</View>
@@ -247,37 +256,36 @@ export default class GeneralSettings extends  React.Component {
 				</View>
 				<View style={{marginTop: 20}}>
 					<TextInput
-						label='Nome'
-						autoCompleteType={'username'}
-						textContentType={'name'}
-						value={this.state.userName}
-						onChangeText={userName => this.setState({ userName })}
-						mode='outlined'
-						selectionColor={theme.primary}
-						theme={{ colors: { primary: theme.primary, underlineColor:'transparent',}}}
-					/>
+							placeholder = {this.state.userName}
+							style={{ borderBottomWidth: 0.8, borderBottomColor: '#b2b5b1', height: 40 }}
+							value = {this.state.userName}
+							onChangeText = { userName => this.setState({ userName }) }
+							width = { theme.width*0.9 }
+						/>
+					<View style = {{ width: theme.width * 0.87, alignSelf: 'center', marginTop: 7 }}>
+						<Text style = {{ opacity: 0.8, fontSize: 11 }}>Nome</Text>
+					</View>
 				</View>
-				<View style={{marginTop: 10}}>
+				<View style={{marginTop: 20}}>
 					<TextInput
-						disabled={true}
-						label='Email (você não pode alterar)'
-						autoCompleteType={'username'}
-						textContentType={'name'}
-						value={this.state.email}
-						onChangeText={email => this.setState({ email })}
-						mode='outlined'
-						selectionColor={theme.primary}
-						editable={false}
-						theme={{ colors: { primary: theme.primary, underlineColor:'transparent',}}}
-					/>
+							placeholder = {this.state.email}
+							editable = {false}
+							style={{ borderBottomWidth: 0.8, borderBottomColor: '#b2b5b1', height: 40 }}
+							value = {this.state.email}
+							onChangeText = { email => this.setState({ email }) }
+							width = { theme.width*0.9 }
+						/>
+					<View  style = {{ width: theme.width * 0.87, alignSelf: 'center', marginTop:7}}>
+						<Text style = {{ opacity: 0.8, fontSize: 11, color: '#b2b5b1' }}>Você não pode alterar</Text>
+					</View>
+				</View>
+				<View style={{marginTop: 40}}>
+					<FatBottomedButton text='Alterar senha' color={'white'} height={50} backgroundColor={'black'} borderColor={'black'}  onTap={this.props.changePassword} />
 				</View>
 				<View style={{marginTop: 20}}>
-					<FatBottomedButton text='Alterar senha' color={theme.primary} onTap={this.props.changePassword} />
+					<FatBottomedButton text='Salvar' color={'white'} backgroundColor={'#54c43b'} borderColor = {'#54c43b'}  height={50} onTap={() => this.saveEdition()} />
 				</View>
-				<View style={{marginTop: 20}}>
-					<FatBottomedButton text='Salvar' color={'white'} backgroundColor={theme.primary} onTap={() => this.saveEdition()} />
-				</View>
-				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.9}}>
+				<View style={{flex: 1, justifyContent: 'space-between', flexDirection: 'row', position: 'absolute', top: theme.height * 0.8, width: theme.width * 0.88}}>
 					<TouchableOpacity onPress={() => {this.setState({ showAlert: true })}}>
 						<Text style={{color: theme.primary}}>
 							Excluir conta
