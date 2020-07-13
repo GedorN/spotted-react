@@ -229,7 +229,7 @@ function HeimdallrLib() {
 	            console.log("reset Notifications", result);
 	          }
 	        )
-	      } catch (e) {
+	      } catch (e) {p
 	        console.log("erro reset notifications:",e);
 	      }
 	    })
@@ -1166,6 +1166,16 @@ function HeimdallrLib() {
       }
     }).then(function (resolve) {
         return uploadedUrl;
+    })
+  }
+
+  this.getDrawer = function () {
+  	return new Promise((resolve, reject) => {
+  		firebase.firestore().collection('sideDrawer').get().then(
+		    (result) => {
+		    	resolve(result.docs[0].data());
+		    }
+	    )
     })
   }
 }
