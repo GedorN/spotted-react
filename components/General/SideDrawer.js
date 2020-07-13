@@ -88,15 +88,32 @@ export default class SideDrawer extends React.Component {
 								showsVerticalScrollIndicator = {false}>
 						<View >
 							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+							                  onPress={() => {this.props.navigation.push('Board', {navigation: this.props.navigation})}}>
+								<View style={styles.item}>
+									<View style = {{ width: 45, height: 45, marginRight: 13 }}>
+										<Image source={require('../../assets/images/UTFPR.png')}
+										       style={{
+											       resizeMode: 'contain',
+											       flex:1,
+											       width: null,
+											       height: null,
+											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
+										       }}
+										/>
+									</View>
+									<Text>Mural UTFPR</Text>
+								</View>
+							</TouchableOpacity>
+							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
 							                  onPressIn={() => {heimdallr.checkTicketsStatus(); heimdallr.sendEvent('tickts_menu_click')}}
 							                  onPress={() => {this.props.navigation.push('Tickets',  {navigation: this.props.navigation})}}>
 								<View style={styles.item}>
-									<View style = {{ width: 57 }}>
+									<View style = {{ width: 45, height: 45, marginRight: 13 }}>
 										<Image source={require('../../assets/images/shopping-bag.png')}
 										       style={{
 											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
-											       width: 30,
-											       height: 34,
+											       width: 28,
+											       height: 32,
 											       marginRight: 25,
 										       }}
 										/>

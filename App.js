@@ -13,6 +13,7 @@ import Settings from "./android/app/src/components/Settings";
 import Tickets from "./android/app/src/components/Tickets";
 import AboutUs from "./android/app/src/components/AboutUs";
 import {CardStackStyleInterpolator} from 'react-navigation-stack';
+import Board from "./android/app/src/components/Board";
 
 const config = {
 	animation: 'timing',
@@ -39,6 +40,7 @@ const RootStack = createStackNavigator(
 		Settings: { screen: Settings },
 		Tickets: { screen: Tickets},
 		AboutUs: { screen: AboutUs },
+		Board: { screen: Board},
 
 	},
 	{
