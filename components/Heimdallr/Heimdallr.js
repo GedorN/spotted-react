@@ -1178,6 +1178,16 @@ function HeimdallrLib() {
 	    )
     })
   }
+
+  this.getBoard = function (boardName) {
+	  return new Promise((resolve, reject) => {
+	  	firebase.firestore().collection('board').doc(boardName).get().then(
+		    (result) => {
+		    	resolve(result.data().docs);
+		    }
+	    )
+	  })
+  }
 }
 
 const heimdallr = new HeimdallrLib();

@@ -69,6 +69,7 @@ export default class PostWrite extends React.Component {
 			this.props.closeAndRefresh();
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
+				checkedImages ++;
 				if (this.state.gifIncluded) {
 					urlArray.push(img.path);
 					self.state.postImages = urlArray;

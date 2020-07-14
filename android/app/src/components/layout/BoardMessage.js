@@ -18,11 +18,11 @@ export default class BoardMessage extends React.Component{
     }
 
     componentDidMount = () => {
-		
+
 	}
 
 	goToBoardSubject = () => {
-		
+		this.props.navigation.navigate('BoardItems', {id: this.props.collection});
 	}
 
     render() {
@@ -93,19 +93,19 @@ const styles = StyleSheet.create({
 		width: theme.width * 0.38
 	},
 	subjectImageView: {
-		width: theme.width * 0.2, 
+		width: theme.width * 0.2,
 		height: theme.height * 0.1
 	},
 	subjectImage: {
 		resizeMode: 'contain',
 		flex: 1,
-		width: null, 
-		height: null, 
-		opacity: 0.9, 
+		width: null,
+		height: null,
+		opacity: 0.9,
 		tintColor:'#c0abb2'
 	},
 	subjectView: {
-		borderRadius: 35, 
+		borderRadius: 35,
 		height: theme.height * 0.22
 	}
 })
