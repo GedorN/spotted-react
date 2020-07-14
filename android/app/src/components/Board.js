@@ -4,13 +4,13 @@ import {
 	View,
 	Text,
 	Image,
-	TouchableOpacity,
 	FlatList,
 	Modal, RefreshControl
 } from 'react-native';
 
 import theme from "../../../../components/General/Theme";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
+import BoardMessage from "./layout/BoardMessage";
 
 
 export default class Board extends React.Component {
@@ -18,17 +18,72 @@ export default class Board extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
-
+			board: [],
+			scrolling: false,
+			isRefreshing: false,
 		}
 
-    }
+	}
+	
+	componentDidMount = () => {
+		this.setState({board: [{title: 'Encontros e eventos', icon: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/icons%2Fusers-solid.png?alt=media&token=f0a5c738-772f-47e2-9451-cebb3e7184f1',id: 'meetings' },
+							   {title: 'Imóveis', icon: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/icons%2Fbuilding-solid.png?alt=media&token=36f930fa-0e26-402e-8613-5648bd6f83a8', id: 'properties' },
+							   {title: 'Cursos', icon: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/icons%2Fsitemap-solid.png?alt=media&token=739c3714-bdbe-407a-986d-a1e26d8fad04', id:'courses' },
+							   {title: 'Avaliação dos professores', icon: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/icons%2Fchalkboard-teacher-solid.png?alt=media&token=1515cb71-7309-4f5e-a456-0f3cc8d42a7a', id: 'teacher_evaluation' }]})
+	}
 
 
     render() {
         return (
-            <View style = {{ padding: theme.width * 0.05}} >
-                <Text>Mural</Text>
+            <View style = {styles.container} >
+ 				<FlatList
+					ListHeaderComponent = {() =>
+						<View style={styles.header}>
+							<Text style={styles.boardTitle} >Mural</Text>
+						</View>
+					}
+					numColumns={2}
+					showsVerticalScrollIndicator={false}
+					showsVerticalScrollIndicator={false}
+					onScrollEndDrag={() => this.setState({ scrolling: false })}
+					onScrollBeginDrag={() => this.setState({ scrolling: true })}
+					keyExtractor={item => item.id}
+					data={this.state.board}
+					renderItem={ ({ item }) =>
+					<View style = {styles.boardView}>
+						<BoardMessage title = {item.title} icon = {item.icon} collection = {item.id} navigation={this.props.navigation}/>
+					</View>
+					}
+				/>
             </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+	container: {
+		backgroundColor: 'white',
+		paddingTop: theme.height * 0.05,
+		alignItems: 'center',
+		flexDirection: 'column',
+		width: theme.width
+	},
+	header: {
+		width: theme.width * 0.9,
+		flexDirection: 'row',
+		alignItems: 'center',
+		alignSelf: 'center',
+		marginBottom: theme.height * 0.04
+	},
+	boardTitle: {
+		fontSize: 25,
+		color: '#8f8f8f',
+		marginRight: theme.width * 0.03,
+	},
+	boardView: {
+		width :theme.width * 0.49,
+		alignContent: 'center',
+		alignItems:'center',
+		marginBottom: 10
+	}
+})
