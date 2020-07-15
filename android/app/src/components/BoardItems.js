@@ -19,11 +19,30 @@ export default class BoardItems extends React.Component {
 		this.state = {
 			search: null,
 			items: [],
+			allItems: null,
+			isRefreshing: false,
+			pullItemsRef: 1,
 		}
 	}
 
+
+	onRefresh = () => {
+		this.setState({ isRefreshing: true });
+		heimdallr.getBoard(this.props.navigation.getParam('id')).then(
+			(resolve) => {
+				const  n = this.state.pullItemsRef;
+				this.setState({ allItems: resolve, items: resolve.slice(0, (10 * n)), pullItemsRef: n + 1, isRefreshing: false });
+			}
+		)
+	}
+
 	changeText = (text) => {
-		this.setState({ search: text });
+		if (!text || text === '') {
+			heimdallr.sendEvent('searching_board');
+		}
+
+		let tempItems = this.state.allItems.filter((i) => i.title.toLowerCase().includes(text.toLowerCase()));
+		this.setState({ items: tempItems.slice(0, 10),  search: text });
 	}
 
 	componentWillMount(): void {
@@ -34,7 +53,8 @@ export default class BoardItems extends React.Component {
 	componentDidMount(): void {
 		heimdallr.getBoard(this.props.navigation.getParam('id')).then(
 			(resolve) => {
-				this.setState({ items: resolve });
+				const  n = this.state.pullItemsRef;
+				this.setState({ allItems: resolve, items: resolve.slice(0, (10 * n)), pullItemsRef: n + 1 });
 				console.warn('ih', JSON.stringify(resolve));
 			}
 		)
@@ -80,6 +100,12 @@ export default class BoardItems extends React.Component {
 					}
 					keyExtractor={item => item.id}
 					onEndReachedThreshold={0.3}
+					refreshControl={
+						<RefreshControl
+							refreshing={this.state.isRefreshing}
+							onRefresh={this.onRefresh.bind(this)}
+						/>
+					}
 				/>
 			</View>
 		)

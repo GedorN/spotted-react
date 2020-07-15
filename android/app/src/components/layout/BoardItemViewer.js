@@ -2,7 +2,8 @@ import React from 'react';
 import {
 	View,
 	Text,
-	TouchableOpacity
+	TouchableOpacity,
+	StyleSheet
 } from 'react-native';
 
 
@@ -15,15 +16,28 @@ export default class BoardItemViewer extends React.Component {
 	}
 	render() {
 		return (
-			<View>
+			<View style={styles.container}>
 				<TouchableOpacity onPress={() => console.warn('hue')}>
-					<View>
-						<Text> { this.props.title } </Text>
+					<View style={styles.item}>
+						<Text style={styles.title}> { this.props.title } </Text>
 					</View>
 				</TouchableOpacity>
 			</View>
 		)
 	}
 }
+
+const styles = StyleSheet.create({
+	container: {
+		padding: 4,
+		borderBottomWidth: 0.2,
+	},
+	item: {
+		height: 65
+	},
+	title: {
+		fontWeight: 'bold'
+	}
+});
 
 
