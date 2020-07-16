@@ -4,12 +4,10 @@ import {
 	StyleSheet,
 	Text,
 	Image,
-	TouchableOpacity, 
-	RefreshControl, 
+	TouchableOpacity,
+	RefreshControl,
 	FlatList,
 	Modal,
-	Dimensions,
-
 } from 'react-native';
 import RUMineTextInput from "./Inputs/RUMineTextInput";
 import theme from "../../../../components/General/Theme";
@@ -18,10 +16,6 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import PostViewer from "../../../../components/General/PostViewer";
 import BoardItemViewer from "./layout/BoardItemViewer";
 import BoardItemWriter from "./Inputs/BoardItemWriter";
-
-
-const width = Dimensions.get('screen').width;
-const  height = Dimensions.get('screen').height;
 
 
 export default class BoardItems extends React.Component {
@@ -55,7 +49,7 @@ export default class BoardItems extends React.Component {
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
-		heimdallr.getBoard(this.props.navigation.getParam('id')).then(
+		heimdallr.getBoard(this.state.id).then(
 			(resolve) => {
 				const  n = this.state.pullItemsRef;
 				this.setState({ allItems: resolve, items: resolve.slice(0, (10 * n)), pullItemsRef: n + 1, isRefreshing: false });
@@ -79,7 +73,7 @@ export default class BoardItems extends React.Component {
 
 	componentDidMount(): void {
 		this.state.id = this.props.navigation.getParam('id');
-		heimdallr.getBoard(this.props.navigation.getParam('id')).then(
+		heimdallr.getBoard(this.state.id).then(
 			(resolve) => {
 				const  n = this.state.pullItemsRef;
 				this.setState({ allItems: resolve, items: resolve.slice(0, (10 * n)), pullItemsRef: n + 1 });
@@ -143,7 +137,7 @@ export default class BoardItems extends React.Component {
 					visible={this.state.showBoardWriterModal}
 					onDismiss={this.hideModal}
 					onRequestClose={this.hideModal.bind(this)}
-					contentContainerStyle={{ backgroundColor: 'white', width: width + 10, height: height, position: 'absolute' }}
+					contentContainerStyle={{ backgroundColor: 'white', width: theme.width + 10, height: theme.height, position: 'absolute' }}
 				>
 					<BoardItemWriter id={this.state.id}  refresh={this.onRefresh.bind(this)} closeAndRefresh={this.closeAndRefresh.bind(this)} close ={this.hideModal.bind(this)} navigation = {this.props.navigation}/>
 				</Modal>

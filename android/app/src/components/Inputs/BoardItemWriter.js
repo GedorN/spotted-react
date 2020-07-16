@@ -6,10 +6,7 @@ import {
 	TouchableOpacity,
 	Image,
 	PermissionsAndroid,
-	Dimensions,
-	StatusBar,
     Keyboard,
-    ActivityIndicator,
 } from 'react-native';
 import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
@@ -23,8 +20,6 @@ import {Text} from "react-native-paper";
 var RNFS = require('react-native-fs');
 import {RNPhotoEditor} from "react-native-photo-editor";
 
-const width = Dimensions.get('screen').width;
-const height = Dimensions.get('screen').height;
 
 export default class BoardItemWriter extends React.Component {
 	constructor(props) {
@@ -42,8 +37,6 @@ export default class BoardItemWriter extends React.Component {
     }
 
     componentDidMount(): void {
-		StatusBar.setBackgroundColor('white');
-        StatusBar.setBarStyle('dark-content', true);
         if(this.props.id === 'properties'){
             this.setState({ placeholder: 'Fale sobre o imóvel que deseja postar...'});
         }
@@ -55,16 +48,21 @@ export default class BoardItemWriter extends React.Component {
         }
 	}
 
-	deletePostImg (pos) {
+	deletePostImg = (pos) => {
+		this.setState({postImages: null});
+		console.log('é pra apagar qual: ', pos);
+		console.log('antes:', this.state.postImages);
 		let images = [];
-		images = this.state.postImages;
+		images = Object.assign([], this.state.postImages);
 		let newImg = [];
 		for (let i = 0; i < images.length; i++) {
 			if (i != pos) {
 				newImg.push(images[i]);
 			}
 		}
-		this.setState({postImages: newImg, videoIncluded: false, gifIncluded: false});
+		this.setState({postImages: Object.assign([], newImg), videoIncluded: false, gifIncluded: false});
+		console.log('o que vem daqui? ', Object.assign([], newImg));
+		console.log('Depois, ', this.state.postImages);
 	}
 
 	doPost = () => {
@@ -249,7 +247,7 @@ export default class BoardItemWriter extends React.Component {
 		this.setState({ postImages: [{path: linkUri}], gifIncluded: true });
 	}
 
-	getModalImagesLayout(image, index) {
+	getModalImagesLayout = (image, index) => {
 
 		if (this.state.videoIncluded) {
 			return (
@@ -289,7 +287,7 @@ export default class BoardItemWriter extends React.Component {
             return(
                 <View key={index} style = {styles.imageView}>
                     <Image style={styles.carouselImage} source={{ uri: 'file://' + this.state.postImages[index].path }} />
-                    <TouchableOpacity style={{ position: 'absolute', top: 4, right: 12, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
+                    <TouchableOpacity style={{ position: 'absolute', top: 4, right: 12, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, index)}>
 						<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
 					</TouchableOpacity>
                 </View>
@@ -307,7 +305,7 @@ export default class BoardItemWriter extends React.Component {
                         <ProgressBar size="large" visible={this.state.activity} indeterminate color={theme.primary}/>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.props.close}>
-								<View style = {{ width: width * 0.1, height: height * 0.03, marginTop: height * 0.005 }}>
+								<View style = {{ width: theme.width * 0.1, height: theme.height * 0.03, marginTop: theme.height * 0.005 }}>
 									<Image
 										source={require('../../../../../assets/images/times-solid.png')}
 										style={{width: 20, height: 20,marginRight:5}}
@@ -315,12 +313,12 @@ export default class BoardItemWriter extends React.Component {
 								</View>
 							</TouchableOpacity>
 						</View>
-                        <View style = {{borderColor: '#f2f2f2', borderWidth: 2, borderRadius:15, marginTop: height * 0.02, width: width * 0.9, alignSelf: 'center' }}>
+                        <View style = {{borderColor: '#f2f2f2', borderWidth: 2, borderRadius:15, marginTop: theme.height * 0.02, width: theme.width * 0.9, alignSelf: 'center' }}>
 							<TextInput
-								style={{width: width * 0.8,
+								style={{width: theme.width * 0.8,
                                         alignSelf:'center',
-                                        height: height * 0.08,
-                                        marginTop: height * 0.03
+                                        height: theme.height * 0.08,
+                                        marginTop: theme.height * 0.03
 								}}
 								onChangeText={text => this.setState({titleText: text})}
 								onImageChange={this._onImageChange}
@@ -331,11 +329,11 @@ export default class BoardItemWriter extends React.Component {
 								ref={input => (this.postTextInput = input)}
 							/>
 						</View>
-						<View style = {{ width: width * 0.9,  alignSelf: 'center' }}>
+						<View style = {{ width: theme.width * 0.9,  alignSelf: 'center' }}>
 							<TextInput
-								style={{width: width * 0.8,
+								style={{width: theme.width * 0.8,
                                         alignSelf:'center',
-                                        height: this.state.postImages.length > 0 ? height * 0.2 : height * 0.58,
+                                        height: this.state.postImages.length > 0 ? theme.height * 0.2 : theme.height * 0.58,
                                         marginTop: theme.height * 0.02
 								}}
 								onChangeText={text => this.setState({postText: text})}
@@ -353,13 +351,11 @@ export default class BoardItemWriter extends React.Component {
                             <View style = {styles.carouselView}>
                                 <Carousel
                                     activePageIndicatorStyle = {{ backgroundColor: theme.primary}}
-                                    autoplay
-                                    autoplayTimeout={ 5000 }
-                                    loop
+                                    ref={carousel => { this.carousel = carousel; }}
                                     index={ 0 }
                                     pageSize={ theme.width * 0.8 }
                                 >
-                                    { this.state.postImages.length > 0 ? this.state.postImages.map((image, index) => this.getModalImagesLayout(image, index)) :null }
+                                    { this.state.postImages.length > 0 ? this.state.postImages.map((image, index) => this.getModalImagesLayout(image, index)) : null }
                                 </Carousel>
                             </View>
                         }
@@ -380,7 +376,7 @@ export default class BoardItemWriter extends React.Component {
 								/>
 							</TouchableOpacity>
 						</View>
-						<View style={{marginTop:5, width: width * 0.9, alignSelf:'center'}}>
+						<View style={{marginTop:5, width: theme.width * 0.9, alignSelf:'center'}}>
 							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
@@ -393,7 +389,7 @@ export default class BoardItemWriter extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		height: height,
+		height: theme.height,
 		alignItems: 'center',
 		alignContent: 'center',
 		position: 'absolute',
@@ -401,15 +397,15 @@ const styles = StyleSheet.create({
 		zIndex: 99999
 	},
 	header: {
-		width: width,
+		width: theme.width,
 		height: 20,
 		alignItems: 'flex-end',
 		padding: 4,
 		marginTop: 10,
 	},
 	imageButtonSelect: {
-		height: height * 0.1,
-		width: width + 10,
+		height: theme.height * 0.1,
+		width: theme.width + 10,
 		marginTop: 2,
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -434,20 +430,20 @@ const styles = StyleSheet.create({
 		width:theme.width *0.59,
 	},
 	imageView: {
-		height: theme.height * 0.27, 
-		width:theme.width * 0.8, 
-		alignSelf:'center', 
+		height: theme.height * 0.27,
+		width:theme.width * 0.8,
+		alignSelf:'center',
 		marginBottom: theme.height * 0.03
-	}, 
+	},
 	carouselView:{
 		alignContent:'center',
 		alignItems:'center',
-		width:theme.width, 
+		width:theme.width,
 		height:theme.height * 0.3
 	},
 	carouselImage: {
-		width: theme.width * 0.75, 
-		height: theme.height * 0.27, 
-		alignSelf:'center' 
+		width: theme.width * 0.75,
+		height: theme.height * 0.27,
+		alignSelf:'center'
 	}
 });
