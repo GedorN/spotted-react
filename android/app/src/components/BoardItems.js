@@ -4,7 +4,12 @@ import {
 	StyleSheet,
 	Text,
 	Image,
-	TouchableOpacity, RefreshControl, FlatList,
+	TouchableOpacity, 
+	RefreshControl, 
+	FlatList,
+	Modal,
+	Dimensions,
+
 } from 'react-native';
 import RUMineTextInput from "./Inputs/RUMineTextInput";
 import theme from "../../../../components/General/Theme";
@@ -12,6 +17,12 @@ import {Button} from 'react-native-paper';
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import PostViewer from "../../../../components/General/PostViewer";
 import BoardItemViewer from "./layout/BoardItemViewer";
+import BoardItemWriter from "./Inputs/BoardItemWriter";
+
+
+const width = Dimensions.get('screen').width;
+const  height = Dimensions.get('screen').height;
+
 
 export default class BoardItems extends React.Component {
 	constructor(props) {
@@ -22,9 +33,25 @@ export default class BoardItems extends React.Component {
 			allItems: null,
 			isRefreshing: false,
 			pullItemsRef: 1,
+			showBoardWriterModal: false,
+			id: null,
 		}
 	}
 
+	openBoardWriter = () => {
+
+		this.setState({ showBoardWriterModal: true });
+	}
+
+	hideModal = () => {
+		this.setState({ showBoardWriterModal: false });
+
+	};
+
+	closeAndRefresh = () => {
+		this.hideModal();
+		this.onRefresh();
+	}
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
@@ -51,6 +78,7 @@ export default class BoardItems extends React.Component {
 	}
 
 	componentDidMount(): void {
+		this.state.id = this.props.navigation.getParam('id');
 		heimdallr.getBoard(this.props.navigation.getParam('id')).then(
 			(resolve) => {
 				const  n = this.state.pullItemsRef;
@@ -88,7 +116,7 @@ export default class BoardItems extends React.Component {
 							flex={1}
 						/>
 					</View>
-					<Button color="green" mode="contained" icon={require('../../../../assets/images/plus-solid.png')} onPress={() => console.warn('uepa')} >
+					<Button color="green" mode="contained" icon={require('../../../../assets/images/plus-solid.png')}  onPress={this.openBoardWriter.bind(this)} >
 						Post
 					</Button>
 				</View>
@@ -107,6 +135,18 @@ export default class BoardItems extends React.Component {
 						/>
 					}
 				/>
+				<Modal
+					statusBarTranslucent={false}
+					transparent={true}
+					hardwareAccelerated={true}
+					animationType='slide'
+					visible={this.state.showBoardWriterModal}
+					onDismiss={this.hideModal}
+					onRequestClose={this.hideModal.bind(this)}
+					contentContainerStyle={{ backgroundColor: 'white', width: width + 10, height: height, position: 'absolute' }}
+				>
+					<BoardItemWriter id={this.state.id}  refresh={this.onRefresh.bind(this)} closeAndRefresh={this.closeAndRefresh.bind(this)} close ={this.hideModal.bind(this)} navigation = {this.props.navigation}/>
+				</Modal>
 			</View>
 		)
 	}
