@@ -18,7 +18,6 @@ import {
 
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
-import Carousel from 'react-native-banner-carousel';
 import FatBottomedButton from'./buttons/FatBottomedButton';
 import CustomizationTextArea from './CustomizationTexArea';
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -27,6 +26,7 @@ import CustomRadio from "./custom/CustomRadio";
 import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import axios from 'react-native-axios';
+import CarouselModaFoka from "./layout/CarouselModaFoka";
 import moment from "moment";
 
 
@@ -36,7 +36,8 @@ export default class ProductScreen extends React.Component {
 		this.state = {
 			iidProduct: '',
 			product : null,
-			productImages: null,
+			activeIndex: 0,
+			productImages: [],
 			customizationItems : [],
 			customizationDetails: [],
 			price_without_tax : null,
@@ -85,10 +86,10 @@ export default class ProductScreen extends React.Component {
 		)
 	}
 
-	renderPage(image, index) {
+	renderPage({item}) {
 		return (
-            <View key={index} style = {{ height:theme.height * 0.40,width:theme.width * 0.8,alignSelf:'center',marginBottom:theme.height * 0.03}}>
-                <Image style={{flex: 1, resizeMode: 'contain', width: theme.width * 0.75, height:theme.height * 0.45, alignSelf:'center'}} source={{ uri: image }} />
+            <View style = {{ height:theme.height * 0.40,width:theme.width * 0.8,alignSelf:'center',marginBottom:theme.height * 0.03}}>
+	            <Image style={{flex: 1, resizeMode: 'contain', width: theme.width * 0.75, height:theme.height * 0.45, alignSelf:'center'}} source={{ uri: item }} />
             </View>
         );
 	}
@@ -488,16 +489,7 @@ export default class ProductScreen extends React.Component {
 											</Text>
 										</View>
 										<View style = {{ alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.45 }}>
-											<Carousel
-												activePageIndicatorStyle = {{ backgroundColor: this.state.product ? this.state.product.colors[0] : 'black' }}
-												autoplay
-												autoplayTimeout={ 5000 }
-												loop
-												index={ 0 }
-												pageSize={ theme.width * 0.8 }
-											>
-												{ this.state.productImages ? this.state.productImages.map((image, index) => this.renderPage(image, index)) :null }
-											</Carousel>
+											<CarouselModaFoka images={this.state.productImages ? this.state.productImages: []} dotColor={this.state.product ? this.state.product.colors[0] : 'black'}/>
 										</View>
 										<View style = { styles.payContainer }>
 											<Text style = {{ fontWeight: 'bold', fontSize: 20 }}>

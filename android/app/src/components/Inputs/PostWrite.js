@@ -42,6 +42,8 @@ export default class PostWrite extends React.Component {
 	}
 
 	deletePostImg (pos) {
+		console.log('é pra apagar qual: ', pos);
+		console.log('antes:', this.state.postImages);
 		let images = [];
 		images = this.state.postImages;
 		let newImg = [];
@@ -51,6 +53,8 @@ export default class PostWrite extends React.Component {
 			}
 		}
 		this.setState({postImages: newImg, videoIncluded: false, gifIncluded: false});
+		console.log('o que vem daqui? ', Object.assign([], newImg));
+		console.log('Depois, ', this.state.postImages);
 	}
 
 	doPost = () => {
@@ -69,8 +73,8 @@ export default class PostWrite extends React.Component {
 			this.props.closeAndRefresh();
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
-				checkedImages ++;
 				if (this.state.gifIncluded) {
+					checkedImages ++;
 					urlArray.push(img.path);
 					self.state.postImages = urlArray;
 					/* Save the post*/

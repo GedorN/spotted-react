@@ -11,7 +11,7 @@ import {
 import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
-import Carousel from 'react-native-banner-carousel';
+import CarouselModaFoka from "../layout/CarouselModaFoka";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
@@ -66,7 +66,7 @@ export default class BoardItemWriter extends React.Component {
 	}
 
 	doPost = () => {
-		if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0 && this.state.titleText == '') {
+		if (!this.state.postText || this.state.postText == '' || !this.state.titleText || this.state.titleText == '') {
 			console.log('nothing to do...');
 			return ;
 		}
@@ -81,8 +81,8 @@ export default class BoardItemWriter extends React.Component {
             let checkedImages = 0;
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
-				checkedImages ++;
 				if (this.state.gifIncluded) {
+					checkedImages ++;
 					urlArray.push(img.path);
 					self.state.postImages = urlArray;
 					/* Save the post*/
@@ -247,8 +247,7 @@ export default class BoardItemWriter extends React.Component {
 		this.setState({ postImages: [{path: linkUri}], gifIncluded: true });
 	}
 
-	getModalImagesLayout = (image, index) => {
-
+	getModalImagesLayout = ({item}) => {
 		if (this.state.videoIncluded) {
 			return (
 				<View style={{alignItems: 'center', alignSelf: 'center', marginTop: 10}}>
@@ -284,6 +283,7 @@ export default class BoardItemWriter extends React.Component {
 				</View>
 			)
 		}else if (this.state.postImages.length > 0) {
+			const index = this.state.postImages.findIndex((i) => i.path === item.path);
             return(
                 <View key={index} style = {styles.imageView}>
                     <Image style={styles.carouselImage} source={{ uri: 'file://' + this.state.postImages[index].path }} />
@@ -333,7 +333,7 @@ export default class BoardItemWriter extends React.Component {
 							<TextInput
 								style={{width: theme.width * 0.8,
                                         alignSelf:'center',
-                                        height: this.state.postImages.length > 0 ? theme.height * 0.2 : theme.height * 0.58,
+                                        height: this.state.postImages.length > 0 ? theme.height * 0.2 : theme.height * 0.54,
                                         marginTop: theme.height * 0.02
 								}}
 								onChangeText={text => this.setState({postText: text})}
@@ -349,14 +349,7 @@ export default class BoardItemWriter extends React.Component {
                         {
                             this.state.postImages.length > 0 &&
                             <View style = {styles.carouselView}>
-                                <Carousel
-                                    activePageIndicatorStyle = {{ backgroundColor: theme.primary}}
-                                    ref={carousel => { this.carousel = carousel; }}
-                                    index={ 0 }
-                                    pageSize={ theme.width * 0.8 }
-                                >
-                                    { this.state.postImages.length > 0 ? this.state.postImages.map((image, index) => this.getModalImagesLayout(image, index)) : null }
-                                </Carousel>
+                               <CarouselModaFoka images={this.state.postImages} renderMethod={this.getModalImagesLayout.bind(this)}/>
                             </View>
                         }
 						<View style = {{ ...styles.postIcons, marginTop: this.state.postImages.length > 0 ? 10 : 2 }}>
