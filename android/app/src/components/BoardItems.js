@@ -119,7 +119,9 @@ export default class BoardItems extends React.Component {
 					data = {this.state.items}
 					ref={flatList => {this.flatList = flatList}}
 					renderItem={ ({item}) =>
-						<BoardItemViewer title={item.title} id={item.id}/>
+						<BoardItemViewer title={item.title} id={item.id} text={item.text} images={item.images} date={item.date} video={item.video}
+										 comments={item.comments} navigation={this.props.navigation} uid={item.uid} userImage={item.user_image}
+										 userName={item.user_name} date={item.date} pid={item.pid}/>
 					}
 					keyExtractor={item => item.id}
 					onEndReachedThreshold={0.3}

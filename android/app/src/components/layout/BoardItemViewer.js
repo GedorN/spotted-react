@@ -6,6 +6,9 @@ import {
 	StyleSheet
 } from 'react-native';
 
+import BoardItemDetails from "../BoardItemDetails";
+import moment from "moment";
+import 'moment/locale/pt-br';
 
 export default class BoardItemViewer extends React.Component {
 	constructor(props) {
@@ -14,10 +17,28 @@ export default class BoardItemViewer extends React.Component {
 
 		}
 	}
+
+	goToBoardItemDetails = () => {
+		this.props.navigation.push('BoardItemDetails', {
+			title: this.props.title,
+			id: this.props.id, 
+			text: this.props.text,
+			images: this.props.images, 
+			date: this.props.date, 
+			comments: this.props.comments,
+			uid: this.props.uid,
+			pid: this.props.pid,
+			userImage: this.props.userImage,
+			userName: this.props.userName,
+			video: this.props.video,
+			date: moment(this.props.date).locale('pt-br').format('LLLL'),
+			});
+	}
+
 	render() {
 		return (
 			<View style={styles.container}>
-				<TouchableOpacity onPress={() => console.warn('hue')}>
+				<TouchableOpacity onPress={this.goToBoardItemDetails.bind(this)}>
 					<View style={styles.item}>
 						<Text style={styles.title}> { this.props.title } </Text>
 					</View>
