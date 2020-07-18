@@ -43,8 +43,8 @@ export default class BoardItems extends React.Component {
 	};
 
 	closeAndRefresh = () => {
-		this.hideModal();
 		this.onRefresh();
+		this.setState({ showBoardWriterModal: false });
 	}
 
 	onRefresh = () => {
@@ -115,6 +115,7 @@ export default class BoardItems extends React.Component {
 					</Button>
 				</View>
 				<FlatList
+					style={{height: theme.height * 0.80}}
 					data = {this.state.items}
 					ref={flatList => {this.flatList = flatList}}
 					renderItem={ ({item}) =>
@@ -156,6 +157,8 @@ const styles = StyleSheet.create({
 
 	},
 	headerSearch: {
+		height: theme.height * 0.06,
+		padding: 0,
 		flexDirection: 'row',
 		alignContent: 'center',
 		alignItems: 'center',

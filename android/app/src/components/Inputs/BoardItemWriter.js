@@ -25,33 +25,30 @@ export default class BoardItemWriter extends React.Component {
 	constructor(props) {
         super(props);
         this.state = {
-            postText: [],
-            titleText: '',
+            postText: null,
+            titleText: null,
 			postImages: [],
 			videoIncluded: false,
-            gifIncluded: false,
             placeholder: null,
-            titlePlaceholder: 'Digite aqui o título de sua postagem',
+            titlePlaceholder: 'Digite aqui o título de sua postagem*',
             activity: false,
+	        blockButton: false,
 		};
     }
 
     componentDidMount(): void {
         if(this.props.id === 'properties'){
-            this.setState({ placeholder: 'Fale sobre o imóvel que deseja postar...'});
+            this.setState({ placeholder: 'Fale sobre o imóvel que deseja postar*'});
         }
         else if(this.props.id === 'courses'){
-            this.setState({ placeholder: 'Fale sobre o curso ou aula que deseja postar...'})
+            this.setState({ placeholder: 'Fale sobre o curso ou aula que deseja postar*'})
         }
         else if(this.props.id === 'meetings'){
-            this.setState({ placeholder: 'Fale sobre o encontro que deseja postar...'})
+            this.setState({ placeholder: 'Fale sobre o encontro que deseja postar*'})
         }
 	}
 
 	deletePostImg = (pos) => {
-		this.setState({postImages: null});
-		console.log('é pra apagar qual: ', pos);
-		console.log('antes:', this.state.postImages);
 		let images = [];
 		images = Object.assign([], this.state.postImages);
 		let newImg = [];
@@ -60,13 +57,13 @@ export default class BoardItemWriter extends React.Component {
 				newImg.push(images[i]);
 			}
 		}
-		this.setState({postImages: Object.assign([], newImg), videoIncluded: false, gifIncluded: false});
+		this.setState({postImages: Object.assign([], newImg), videoIncluded: false});
 		console.log('o que vem daqui? ', Object.assign([], newImg));
 		console.log('Depois, ', this.state.postImages);
 	}
 
 	doPost = () => {
-		if (!this.state.postText || this.state.postText == '' || !this.state.titleText || this.state.titleText == '') {
+		if (!this.state.postText || this.state.postText == '' || !this.state.titleText || this.state.titleText == '' || this.state.activity) {
 			console.log('nothing to do...');
 			return ;
 		}
@@ -81,13 +78,7 @@ export default class BoardItemWriter extends React.Component {
             let checkedImages = 0;
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
-				if (this.state.gifIncluded) {
-					checkedImages ++;
-					urlArray.push(img.path);
-					self.state.postImages = urlArray;
-					/* Save the post*/
-					self.savePost(checkedImages / posImagesLenght);
-				} else if (img.type !== 'video/mp4') {
+				 if (img.type !== 'video/mp4') {
 					console.log('before: ', this.state.postImages);
 					let propCo =  900000 / img.fileSize;
 					let quality = propCo > 1 ? 100 : 100 * propCo;
@@ -122,21 +113,10 @@ export default class BoardItemWriter extends React.Component {
 			})
 		} else {
 			// caso a postagem não contenha imagem
-			this.props.close();
 			this.savePost(1);
 		}
 	}
 
-	getAnonymous = () => {
-		const isAnon = !this.state.anonymousUser;
-		this.setState({anonymousUser: isAnon});
-		if(isAnon){
-           this.setState({anonymousText: "Será postado como anônimo"});
-		}
-		else{
-			this.setState({anonymousText: "Postar como anônimo ?"})
-		}
-	}
 
 	async savePost(sendedImages) {
 		console.log('Semaphore: ', sendedImages);
@@ -156,7 +136,6 @@ export default class BoardItemWriter extends React.Component {
 			params.images = this.state.postImages;
 			params.user_name = heimdallr.user_name;
 			params.user_image = heimdallr.user_image;
-			params.gif = this.state.gifIncluded;
             params.comments = 0;
             params.docName = this.props.id,
 			params.video = this.state.videoIncluded;
@@ -167,8 +146,7 @@ export default class BoardItemWriter extends React.Component {
 					console.log('result: ', resolve);
 					/*   */
                     self.setState({postImages: [], showModal: false});
-                    this.props.refresh();
-					this.props.close();
+					this.props.closeAndRefresh();
 				});
 			})
 		} else {
@@ -242,9 +220,7 @@ export default class BoardItemWriter extends React.Component {
 	}
 
 	_onImageChange = (event) => {
-		const {linkUri, data} = event.nativeEvent;
-		Keyboard.dismiss();
-		this.setState({ postImages: [{path: linkUri}], gifIncluded: true });
+		return ;
 	}
 
 	getModalImagesLayout = ({item}) => {
@@ -257,7 +233,13 @@ export default class BoardItemWriter extends React.Component {
 								resizeMode={'cover'}
 								repeat={true}
 								source={{uri: this.state.postImages[0].path}}
-								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'black'}}
+								style={{
+									width: theme.width * 0.67,
+									height: 200,
+									borderRadius: 10,
+									borderWidth: 0.1,
+									borderColor: 'black',
+									backgroundColor: 'black'}}
 							/>
 							<TouchableOpacity style={{position: 'absolute', top: 4, right: 7, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, 0)}>
 								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
@@ -266,23 +248,7 @@ export default class BoardItemWriter extends React.Component {
 					</View>
 				</View>
 			)
-		} else if (this.state.gifIncluded) {
-			return (
-				<View style={{alignItems: 'center', alignSelf: 'center', marginTop: 10}}>
-					<View style={{ flexDirection: 'row'}}>
-						<View style={{width: theme.width * 0.67, height: 100}}>
-							<Image
-								source={{uri: this.state.postImages[0].path}}
-								style={{width: 280, height: 200, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-							/>
-							<TouchableOpacity style={{position: 'absolute', top: 4, right: -550, padding: 5, backgroundColor: 'black', borderRadius: 100}} onPress={this.deletePostImg.bind(this, index)}>
-								<Image source={require('../../../../../assets/images/times-solid.png')} style={styles.deleteImgIcon}/>
-							</TouchableOpacity>
-						</View>
-					</View>
-				</View>
-			)
-		}else if (this.state.postImages.length > 0) {
+		} else if (this.state.postImages.length > 0) {
 			const index = this.state.postImages.findIndex((i) => i.path === item.path);
             return(
                 <View key={index} style = {styles.imageView}>
@@ -295,6 +261,14 @@ export default class BoardItemWriter extends React.Component {
 		} else {
 			return ;
 		}
+	}
+
+	blockButton() {
+		if (!this.state.titleText || !this.state.postText) {
+			return true;
+		}
+
+		return false;
 	}
 
 	render() {
@@ -313,18 +287,16 @@ export default class BoardItemWriter extends React.Component {
 								</View>
 							</TouchableOpacity>
 						</View>
-                        <View style = {{borderColor: '#f2f2f2', borderWidth: 2, borderRadius:15, marginTop: theme.height * 0.02, width: theme.width * 0.9, alignSelf: 'center' }}>
+                        <View style = {{borderColor: '#f2f2f2', borderWidth: 2, borderRadius:15, marginTop: theme.height * 0.02, width: theme.width * 0.9, alignSelf: 'center', padding: 2 }}>
 							<TextInput
-								style={{width: theme.width * 0.8,
+								style={{
+										width: theme.width * 0.8,
                                         alignSelf:'center',
-                                        height: theme.height * 0.08,
-                                        marginTop: theme.height * 0.03
+                                        height: theme.height * 0.05,
 								}}
 								onChangeText={text => this.setState({titleText: text})}
-								onImageChange={this._onImageChange}
 								autoCapitalize="sentences"
-								multiline
-								textAlignVertical="top"
+								maxLength={70}
 								placeholder={this.state.titlePlaceholder}
 								ref={input => (this.postTextInput = input)}
 							/>
@@ -333,11 +305,10 @@ export default class BoardItemWriter extends React.Component {
 							<TextInput
 								style={{width: theme.width * 0.8,
                                         alignSelf:'center',
-                                        height: this.state.postImages.length > 0 ? theme.height * 0.2 : theme.height * 0.54,
+                                        height: this.state.postImages.length > 0 ? theme.height * 0.25 : theme.height * 0.6,
                                         marginTop: theme.height * 0.02
 								}}
 								onChangeText={text => this.setState({postText: text})}
-								onImageChange={this._onImageChange}
 								autoCapitalize="sentences"
 								multiline
 								textAlignVertical="top"
@@ -357,20 +328,20 @@ export default class BoardItemWriter extends React.Component {
                                 <Text style={{fontSize:11, color:'#8f8f8f' }}>Sua postagem ficará no mural por 90 dias</Text>
                             </View>
 							<Text style = {{ ...styles.anonymousText, opacity: !this.state.anonymousUser ? 0.5 : 1, fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
-							<TouchableOpacity disabled={ this.state.videoIncluded || this.state.gifIncluded} onPress={this.sendImagePropt.bind(this) }>
+							<TouchableOpacity disabled={ this.state.videoIncluded} onPress={this.sendImagePropt.bind(this) }>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}
 									style={{
 										width: 35,
 										height: 30,
 										marginTop:9,
-										opacity: this.state.videoIncluded || this.state.gifIncluded ? 0.4 : 1
+										opacity: this.state.videoIncluded ? 0.4 : 1
 									}}
 								/>
 							</TouchableOpacity>
 						</View>
 						<View style={{marginTop:5, width: theme.width * 0.9, alignSelf:'center'}}>
-							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
+							<FatBottomedButton disabled={this.blockButton()} backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
 				</View>

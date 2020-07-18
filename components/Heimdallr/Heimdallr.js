@@ -152,55 +152,34 @@ function HeimdallrLib() {
 	}
 
 	this.saveBoardPost = function (params) {
-		let returnValue = null;
 		return new Promise((resolve) => {
-			console.log('checking params...');
-			let parametersOK = true;
-			const collections = collectionsStructures;
-			const structure = collections['boardPost'];
 
-			structure.forEach((e) => {
-				if (e.required === true) {
-					if (!params[e.desc] || e.type != typeof(params[e.desc])) {
-						console.log('ERRO: parâmetro ', e.desc, ' incorreto');
-						if (e.type != typeof(params[e.desc])) {
-							console.log(`Parametro esperado: ${e.type} porém recebido um ${typeof(params[e.desc])}`);
-						}
-						parametersOK = false;
+			let posts = [];
+			firebase.firestore().collection('board').doc(params.docName).get().then(
+				(result) => {
+					console.log('dos paranue', params);
+					console.log('resultado novo: ', result);
+					if (result.data()) {
+						let temp = result.data().docs;
+						temp.unshift(params);
+						posts = temp;
+					} else {
+						posts.unshift(params);
 					}
+					firebase.firestore().collection('board').doc(params.docName).set(
+						{
+							docs: posts
+						},
+						{
+							merge: true
+						}
+					).then(
+						(res) => {
+							resolve(res);
+						}
+					);
 				}
-			});
-
-			if (parametersOK) {
-				let posts = [];
-				firebase.firestore().collection('board').doc(params.docName).get().then(
-					(result) => {
-						console.log('dos paranue', params);
-						console.log('resultado novo: ', result);
-						if (result.data()) {
-							let temp = result.data().docs;
-							temp.push(params);
-							posts = temp;
-						} else {
-							posts.push(params);
-						}
-						firebase.firestore().collection('board').doc(params.docName).set(
-							{
-								docs: posts
-							},
-							{
-								merge: true
-							}
-						).then(
-							(res) => {
-								resolve(res);
-							}
-						);
-					}
-				)
-			} else {
-				resolve();
-			}
+			)
 
 		});
 	}
