@@ -19,6 +19,7 @@ export default class BoardItemViewer extends React.Component {
 	}
 
 	goToBoardItemDetails = () => {
+		console.warn('doc name',this.props.docName);
 		this.props.navigation.push('BoardItemDetails', {
 			title: this.props.title,
 			id: this.props.id, 
@@ -31,6 +32,7 @@ export default class BoardItemViewer extends React.Component {
 			userImage: this.props.userImage,
 			userName: this.props.userName,
 			video: this.props.video,
+			docName: this.props.docName,
 			date: moment(this.props.date).locale('pt-br').format('LLLL'),
 			});
 	}

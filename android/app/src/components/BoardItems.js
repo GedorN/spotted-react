@@ -77,7 +77,7 @@ export default class BoardItems extends React.Component {
 			(resolve) => {
 				const  n = this.state.pullItemsRef;
 				this.setState({ allItems: resolve, items: resolve.slice(0, (10 * n)), pullItemsRef: n + 1 });
-				console.warn('ih', JSON.stringify(resolve));
+				console.warn('ih', this.state.id);
 			}
 		)
 	}
@@ -121,7 +121,7 @@ export default class BoardItems extends React.Component {
 					renderItem={ ({item}) =>
 						<BoardItemViewer title={item.title} id={item.id} text={item.text} images={item.images} date={item.date} video={item.video}
 										 comments={item.comments} navigation={this.props.navigation} uid={item.uid} userImage={item.user_image}
-										 userName={item.user_name} date={item.date} pid={item.pid}/>
+										 userName={item.user_name} date={item.date} pid={item.pid} docName={this.state.id}/>
 					}
 					keyExtractor={item => item.id}
 					onEndReachedThreshold={0.3}

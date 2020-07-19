@@ -64,21 +64,35 @@ export default class BoardItemDetails extends React.Component {
             showAlert: false,
             deleteComment: false,
             showDeleteAlert: false,
-            commentId: null
+            commentId: null,
+            docName: null,
         }
     }
 
     componentDidMount = () => {
-        this.setState({ title: this.props.navigation.getParam('title'), text: this.props.navigation.getParam('text'),images: this.props.navigation.getParam('images'),
-                        videoIncluded: this.props.navigation.getParam('video'), userImage: this.props.navigation.getParam('userImage'), userName: this.props.navigation.getParam('userName'),
-                        date: this.props.navigation.getParam('date'), uid: this.props.navigation.getParam('uid'), pid: this.props.navigation.getParam('pid')   });
 
-        let postImages = this.props.navigation.getParam('images');
-        let images = [];
-        postImages.forEach((img) => {
-            images.push({url: img});
-            this.setState({ galleryObj: images });
+        if(this.props.navigation.getParam('origin')){
+            console.warn('ORIGIN', this.props.navigation.getParam('docName'));
+            heimdallr.getBoardItem(this.props.navigation.getParam('docName'),this.props.navigation.getParam('pid')).then((item) => {
+                console.warn("IMAGES",item[0].images);
+                this.setState({ title: item[0].title, text: item[0].text, images: item[0].images,
+                videoIncluded: item[0].video, userImage: item[0].user_image, userName: item[0].user_name,
+                date: moment(item[0].date).locale('pt-br').format('LLLL'), uid: item[0].uid, pid: item[0].pid, docName: this.props.navigation.getParam('docName') });
+            })
+        }
+        else{
+            this.setState({ title: this.props.navigation.getParam('title'), text: this.props.navigation.getParam('text'),images: this.props.navigation.getParam('images'),
+                        videoIncluded: this.props.navigation.getParam('video'), userImage: this.props.navigation.getParam('userImage'), userName: this.props.navigation.getParam('userName'),
+                        date: this.props.navigation.getParam('date'), uid: this.props.navigation.getParam('uid'), pid: this.props.navigation.getParam('pid'), docName: this.props.navigation.getParam('docName') });
+
+            let postImages = this.props.navigation.getParam('images');
+            let images = [];
+            postImages.forEach((img) => {
+                images.push({url: img});
+                this.setState({ galleryObj: images });
         });
+        }
+
         
         heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments).then((resolve) => {
 			 resolve.forEach((doc) => {
@@ -125,6 +139,7 @@ export default class BoardItemDetails extends React.Component {
 			notifications.content = comment;
             notifications.cid = cid;
             notifications.origin = 1;
+            notifications.board = this.state.docName;
 			notifications.date = await heimdallr.getServerTime();
 			notifications.visualized = 0;
 			notifications.entity = "commentary";
@@ -454,7 +469,8 @@ const styles = StyleSheet.create({
         color:'#b2b5b1', 
         width: theme.width * 0.75,
         marginLeft: theme.width * 0.1, 
-        alignSelf: 'center'
+        alignSelf: 'center',
+        marginTop: 10
     },
     userName: {
         marginLeft: 17, 

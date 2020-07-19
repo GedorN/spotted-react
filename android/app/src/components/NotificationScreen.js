@@ -114,7 +114,7 @@ export default class NotificationScreen extends React.Component {
 						image_uri = {item.user_image} notification_text = {item.content}
 				   		user_name = {item.user_name} uid_notification = {item.uid_notification}
 				   		eid = {item.eid} navigation={this.props.navigation} visualized = {item.visualized}
-				   		anonymous = {item.anonymous?item.anonymous:'0'}/>
+				   		anonymous = {item.anonymous?item.anonymous:'0'} origin={item.origin? item.origin : null} docName={item.board? item.board : null}/>
                         }
                         keyExtractor={item => item.nid}
                         refreshControl={
