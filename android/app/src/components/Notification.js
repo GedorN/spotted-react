@@ -45,14 +45,27 @@ export default class Notification extends React.Component {
     }
 
     goToDetails = () => {
+		if (this.props.origin) {
+			switch (this.props.origin) {
+				case 0:
+					this.goToPostDetails();
+					break;
+				case 1:
+					this.goToBoardItemDetails();
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.goToPostDetails();
+		}
 
-        console.warn("NOTIFICATIONS ORIGIN", this.props.origin);
-        if(this.props.origin && this.props.origin === 1){
-            this.goToBoardItemDetails();
-        }
-        else{
-            this.goToPostDetails();
-        }
+        // if(this.props.origin && this.props.origin === 1){
+        //     this.goToBoardItemDetails();
+        // }
+        // else{
+        //     this.goToPostDetails();
+        // }
     }
 
     render = () => {

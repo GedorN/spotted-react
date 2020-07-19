@@ -72,45 +72,74 @@ export default class BoardItemDetails extends React.Component {
 
     componentDidMount = () => {
 
-        if(this.props.navigation.getParam('origin')){
-            console.warn('ORIGIN', this.props.navigation.getParam('docName'));
-            heimdallr.getBoardItem(this.props.navigation.getParam('docName'),this.props.navigation.getParam('pid')).then((item) => {
-                console.warn("IMAGES",item[0].images);
-                this.setState({ title: item[0].title, text: item[0].text, images: item[0].images,
-                videoIncluded: item[0].video, userImage: item[0].user_image, userName: item[0].user_name,
-                date: moment(item[0].date).locale('pt-br').format('LLLL'), uid: item[0].uid, pid: item[0].pid, docName: this.props.navigation.getParam('docName') });
+        if(this.props.navigation.getParam('origin')) {
+        	const docName = this.props.navigation.getParam('docName');
+        	const pid = this.props.navigation.getParam('pid');
+            heimdallr.getBoardItem(docName, pid).then(
+            	(item) => {
+	                this.setState({
+		                title: item[0].title, text: item[0].text, images: item[0].images,
+	                    videoIncluded: item[0].video,
+		                userImage: item[0].user_image,
+		                userName: item[0].user_name,
+	                    date: moment(item[0].date).locale('pt-br').format('LLLL'),
+		                uid: item[0].uid,
+		                pid: item[0].pid,
+		                docName: docName,
+	                });
 
-                if (item[0].uid === heimdallr.user_id){
-                    this.state.reportAlert = false;
-                }
+	                if (item[0].uid === heimdallr.user_id){
+	                    this.state.reportAlert = false;
+	                }
+            });
 
-            })
+	        heimdallr.getComments(pid, this.state.pulledComments).then(
+	        	(resolve) => {
+		        resolve.forEach((doc) => {
+			        const time = moment(doc.date).fromNow();
+			        doc.elapsed_time = heimdallr.getElapsedTime(time);
+		        })
+		        this.setState({ comments: resolve });
+	        });
         }
         else{
-            this.setState({ title: this.props.navigation.getParam('title'), text: this.props.navigation.getParam('text'),images: this.props.navigation.getParam('images'),
-                            videoIncluded: this.props.navigation.getParam('video'), userImage: this.props.navigation.getParam('userImage'), userName: this.props.navigation.getParam('userName'),
-                            date: this.props.navigation.getParam('date'), uid: this.props.navigation.getParam('uid'), pid: this.props.navigation.getParam('pid'), docName: this.props.navigation.getParam('docName') });
+        	const item = this.props.navigation.getParam('item');
 
             if (this.props.navigation.getParam('uid') === heimdallr.user_id){
                 this.state.reportAlert = false;
             }
 
-            let postImages = this.props.navigation.getParam('images');
+            let postImages = item.images;
             let images = [];
-            postImages.forEach((img) => {
-                images.push({url: img});
-                this.setState({ galleryObj: images });
-            });
+            for (let i = 0; i < postImages.length; i++) {
+                images.push({url: postImages[i]});
+            }
+
+	        this.setState({
+		        title: item.title,
+		        text: item.text,
+		        images: item.images,
+		        videoIncluded: item.video,
+		        userImage: item.user_image,
+		        userName: item.user_name,
+		        date:  moment(item.date).locale('pt-br').format('LLLL'),
+		        uid: item.uid,
+		        pid: item.pid,
+		        docName: this.props.navigation.getParam('docName'),
+		        galleryObj: images
+	        });
+
+	        heimdallr.getComments(item.pid, this.state.pulledComments).then((resolve) => {
+		        resolve.forEach((doc) => {
+			        const time = moment(doc.date).fromNow();
+			        doc.elapsed_time = heimdallr.getElapsedTime(time);
+		        })
+		        this.setState({ comments: resolve });
+	        });
         }
 
 
-        heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments).then((resolve) => {
-			 resolve.forEach((doc) => {
-				const time = moment(doc.date).fromNow();
-				doc.elapsed_time = heimdallr.getElapsedTime(time);
-			})
-			this.setState({ comments: resolve });
-		});
+
     }
 
     _hideModal = () => {
@@ -134,7 +163,6 @@ export default class BoardItemDetails extends React.Component {
         posts.push(params);
         this.setState({ comments: posts, reportAlert: false });
         this.triggerNotification(params.comment, params.cid);
-
     }
 
     triggerNotification = async (comment, cid) => {
@@ -231,7 +259,7 @@ export default class BoardItemDetails extends React.Component {
 		else{
 			heimdallr.deleteBoardItem(this.state.docName,this.state.pid).then(
 				() => {
-					this.props.navigation.push('Home');
+					this.props.navigation.push('BoardItems', {id: this.state.docName});
 				}
 			);
 		}

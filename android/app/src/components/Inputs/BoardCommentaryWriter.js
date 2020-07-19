@@ -5,22 +5,12 @@ import {
 	TouchableOpacity,
 	View,
 	StyleSheet,
-	StatusBar,
-	ActivityIndicator,
-	Text,
-	Keyboard
 } from 'react-native';
 
 import {ProgressBar} from "react-native-paper";
-
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
-import ImagePicker from "react-native-image-picker";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
-import ImageResizer from "react-native-image-resizer";
-import Video from 'react-native-video';
-import {RNPhotoEditor} from "react-native-photo-editor";
-var RNFS = require('react-native-fs');
 
 export default class BoardCommentaryWriter extends React.Component {
 	constructor(props) {
@@ -30,10 +20,10 @@ export default class BoardCommentaryWriter extends React.Component {
 			activity: false,
 		}
 	}
-	
+
 	async savePost() {
-		
-		heimdallr.sendEvent('commentary_write')
+
+		heimdallr.sendEvent('commentary_board_write')
 		const params = {};
 		params.comment = this.state.postText;
 		params.date = await heimdallr.getServerTime();
@@ -62,7 +52,7 @@ export default class BoardCommentaryWriter extends React.Component {
     }
 
     render() {
-        return ( 
+        return (
             <View style={styles.container}>
 				<View style = {{ width: theme.width }}>
 					<ProgressBar size="large" visible={this.state.activity} indeterminate color={theme.primary}/>
@@ -122,21 +112,21 @@ const styles = StyleSheet.create({
 		height: theme.height * 0.75,
 	},
 	button: {
-		marginTop:5, 
-		width: theme.width * 0.9, 
-		alignSelf: 'center' 
+		marginTop:5,
+		width: theme.width * 0.9,
+		alignSelf: 'center'
 	},
 	textInputView: {
-		borderColor: '#f2f2f2', 
-		borderBottomWidth: 2 
+		borderColor: '#f2f2f2',
+		borderBottomWidth: 2
 	},
 	solid: {
-		width: 20, 
+		width: 20,
 		height: 20,
 		marginRight:5
 	},
 	headerView: {
 		width: theme.width * 0.98,
-		alignSelf: 'center' 
+		alignSelf: 'center'
 	}
 })

@@ -96,6 +96,7 @@ export default class SideDrawer extends React.Component {
 								showsVerticalScrollIndicator = {false}>
 						<View >
 							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
+							                  onPressIn={() => heimdallr.sendEvent('board_menu_click')}
 							                  onPress={() => {this.props.navigation.push('Board', {navigation: this.props.navigation})}}>
 								<View style={styles.item}>
 									<View style = {{ width: 45, height: 45, marginRight: 13 }}>
