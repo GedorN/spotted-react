@@ -53,8 +53,8 @@ export default class NotificationScreen extends React.Component {
 	    heimdallr.getUserNotifications( heimdallr.user_id, this.state.pulledNotifications).then(
 		    (resolve) => {
 				console.log('devolve dessa forma: ', resolve);
-					this.setState({notifications: resolve});
-				
+					this.setState({notifications: resolve, pulling: false});
+
 		    }
 	    );
 

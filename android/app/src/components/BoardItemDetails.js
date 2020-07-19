@@ -79,11 +79,11 @@ export default class BoardItemDetails extends React.Component {
                 this.setState({ title: item[0].title, text: item[0].text, images: item[0].images,
                 videoIncluded: item[0].video, userImage: item[0].user_image, userName: item[0].user_name,
                 date: moment(item[0].date).locale('pt-br').format('LLLL'), uid: item[0].uid, pid: item[0].pid, docName: this.props.navigation.getParam('docName') });
-            
+
                 if (item[0].uid === heimdallr.user_id){
                     this.state.reportAlert = false;
                 }
-        
+
             })
         }
         else{
@@ -103,14 +103,14 @@ export default class BoardItemDetails extends React.Component {
             });
         }
 
-        
+
         heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments).then((resolve) => {
 			 resolve.forEach((doc) => {
 				const time = moment(doc.date).fromNow();
 				doc.elapsed_time = heimdallr.getElapsedTime(time);
-			}) 
+			})
 			this.setState({ comments: resolve });
-		});    
+		});
     }
 
     _hideModal = () => {
@@ -126,9 +126,9 @@ export default class BoardItemDetails extends React.Component {
 			userId: this.state.uid,
 		});
     }
-    
+
     addCommentary = async (params) => {
-		
+
         heimdallr.saveComment(params);
         let posts = this.state.comments;
         posts.push(params);
@@ -165,7 +165,7 @@ export default class BoardItemDetails extends React.Component {
 		}
 	}
 
-    
+
     onRefresh = () => {
 		this.setState({ isRefreshing: true });
 		let result = heimdallr.getComments(this.state.pid, 10);
@@ -210,7 +210,7 @@ export default class BoardItemDetails extends React.Component {
     commentaryCallback = () => {
 		this.setState({ showAlert: true });
 	}
-    
+
     commentaryDelete = (cid) => {
 		this.setState({  showDeleteAlert: true, deleteComment: true, commentId: cid });
     }
@@ -237,12 +237,12 @@ export default class BoardItemDetails extends React.Component {
 		}
 
     }
-    
+
     deletePostConfirm = () => {
 		this.RBSheet.close();
 		this.setState({ showDeleteAlert: true });
     }
-    
+
     closeAlert = () => {
 		this.RBSheet.close();
 		this.setState({ showAlert: true });
@@ -289,7 +289,7 @@ export default class BoardItemDetails extends React.Component {
 		}
     }
 
-    
+
 
     disableModal () {
 		this.setState({ showImages: false });
@@ -455,14 +455,12 @@ const styles = StyleSheet.create({
         flex: 1
     },
     header:{
-        width: theme.width , 
+        width: theme.width ,
         marginBottom: 15,
-        borderBottomColor: '#b2b5b1', 
-        borderTopColor: '#b2b5b1', 
-        paddingTop: theme.height * 0.02, 
-        borderBottomWidth: 0.4, 
+        borderBottomColor: '#b2b5b1',
+        paddingTop: theme.height * 0.02,
+        borderBottomWidth: 0.4,
         paddingBottom: theme.height * 0.01,
-        borderTopWidth:0.2, 
         justifyContent:"center"
     },
     fab: {
@@ -479,13 +477,13 @@ const styles = StyleSheet.create({
 		tintColor: 'white',
     },
     returnView:{
-        flexDirection: 'row', 
-        marginBottom: 10,  
+        flexDirection: 'row',
+        marginBottom: 10,
         paddingLeft: 12
     },
     returnImage: {
-        width: 12, 
-        height: 12, 
+        width: 12,
+        height: 12,
         marginTop:4
     },
     carouselImage: {
@@ -498,51 +496,50 @@ const styles = StyleSheet.create({
 		height: theme.height * 0.27,
 		width:theme.width * 0.8,
 		alignSelf:'center',
-		
+
     },
     userHeader: {
         flexDirection: 'row',
-        width: theme.width * 0.95, 
+        width: theme.width * 0.95,
         alignItems: 'center',
         alignSelf: 'center'
     },
     date:{
-        fontSize: 10, 
-        color:'#b2b5b1', 
+        fontSize: 10,
+        color:'#b2b5b1',
         width: theme.width * 0.75,
-        marginLeft: theme.width * 0.1, 
+        marginLeft: theme.width * 0.1,
         alignSelf: 'center',
         marginTop: 10
     },
     userName: {
-        marginLeft: 17, 
+        marginLeft: 17,
         fontWeight:'bold'
     },
     textHeader: {
-        flexDirection: 'column', 
-        width: theme.width * 0.90, 
-        alignSelf: 'center', 
+        flexDirection: 'column',
+        width: theme.width * 0.90,
+        alignSelf: 'center',
         marginLeft: theme.width * 0.27,
     },
     title: {
-        fontWeight:'700', 
-        marginBottom: theme.height * 0.02, 
+        fontWeight:'700',
+        marginBottom: theme.height * 0.02,
         marginTop: theme.height * 0.02
     },
     postHeader: {
-        width: theme.width * 0.9, 
-        alignSelf:'center', 
+        width: theme.width * 0.9,
+        alignSelf:'center',
         flexDirection: 'column'
     },
     text: {
-        marginBottom: theme.height * 0.02, 
-        flexWrap: 'wrap', 
+        marginBottom: theme.height * 0.02,
+        flexWrap: 'wrap',
         textAlign: 'justify'
     },
     carouselView: {
         alignContent: 'center',
-        width: theme.width * 0.75, 
-        marginLeft: theme.width * 0.1,
+        width: theme.width * 0.75,
         alignSelf: 'center'
     }
 })
