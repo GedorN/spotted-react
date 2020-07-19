@@ -66,6 +66,7 @@ export default class BoardItemDetails extends React.Component {
             showDeleteAlert: false,
             commentId: null,
             docName: null,
+            reportAlert: true,
         }
     }
 
@@ -78,19 +79,28 @@ export default class BoardItemDetails extends React.Component {
                 this.setState({ title: item[0].title, text: item[0].text, images: item[0].images,
                 videoIncluded: item[0].video, userImage: item[0].user_image, userName: item[0].user_name,
                 date: moment(item[0].date).locale('pt-br').format('LLLL'), uid: item[0].uid, pid: item[0].pid, docName: this.props.navigation.getParam('docName') });
+            
+                if (item[0].uid === heimdallr.user_id){
+                    this.state.reportAlert = false;
+                }
+        
             })
         }
         else{
             this.setState({ title: this.props.navigation.getParam('title'), text: this.props.navigation.getParam('text'),images: this.props.navigation.getParam('images'),
-                        videoIncluded: this.props.navigation.getParam('video'), userImage: this.props.navigation.getParam('userImage'), userName: this.props.navigation.getParam('userName'),
-                        date: this.props.navigation.getParam('date'), uid: this.props.navigation.getParam('uid'), pid: this.props.navigation.getParam('pid'), docName: this.props.navigation.getParam('docName') });
+                            videoIncluded: this.props.navigation.getParam('video'), userImage: this.props.navigation.getParam('userImage'), userName: this.props.navigation.getParam('userName'),
+                            date: this.props.navigation.getParam('date'), uid: this.props.navigation.getParam('uid'), pid: this.props.navigation.getParam('pid'), docName: this.props.navigation.getParam('docName') });
+
+            if (this.props.navigation.getParam('uid') === heimdallr.user_id){
+                this.state.reportAlert = false;
+            }
 
             let postImages = this.props.navigation.getParam('images');
             let images = [];
             postImages.forEach((img) => {
                 images.push({url: img});
                 this.setState({ galleryObj: images });
-        });
+            });
         }
 
         
@@ -122,7 +132,7 @@ export default class BoardItemDetails extends React.Component {
         heimdallr.saveComment(params);
         let posts = this.state.comments;
         posts.push(params);
-        this.setState({ comments: posts });
+        this.setState({ comments: posts, reportAlert: false });
         this.triggerNotification(params.comment, params.cid);
 
     }
@@ -219,14 +229,23 @@ export default class BoardItemDetails extends React.Component {
 			);
 		}
 		else{
-			heimdallr.deletePost(this.state.pid);
-			heimdallr.deleteUserPost(this.state.pid).then(
+			heimdallr.deleteBoardItem(this.state.docName,this.state.pid).then(
 				() => {
 					this.props.navigation.push('Home');
 				}
 			);
 		}
 
+    }
+    
+    deletePostConfirm = () => {
+		this.RBSheet.close();
+		this.setState({ showDeleteAlert: true });
+    }
+    
+    closeAlert = () => {
+		this.RBSheet.close();
+		this.setState({ showAlert: true });
 	}
 
     renderFooter = () => {
@@ -308,12 +327,24 @@ export default class BoardItemDetails extends React.Component {
                 <FlatList
                     ListHeaderComponent = {() =>
                         <View style={styles.header}>
-                            <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
                                 <View style={styles.userHeader}>
-                                    <UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.state.userImage? this.state.userImage : null}/>
-                                    <Text style={styles.userName}>{this.state.userName}</Text>
+                                    <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+                                        <View style={{width: theme.width * 0.82, flexDirection :'row',alignItems: 'center'}}>
+                                            <UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.state.userImage? this.state.userImage : null}/>
+                                            <Text style={styles.userName}>{this.state.userName}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.RBSheet.open()}>
+                                        <View
+                                            style={{width: 40, height: 20, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end', alignContent: 'flex-end'}}
+                                        >
+                                            <Image
+                                                style={{width: 20, height: 12}}
+                                                source={require('../../../../assets/images/ellipsis-h-solid.png')}
+                                            />
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
-                            </TouchableOpacity>
                             <View style={styles.postHeader}>
                                 <View style={styles.textHeader}>
                                     <Text style={styles.title}>{this.state.title}</Text>
@@ -352,6 +383,17 @@ export default class BoardItemDetails extends React.Component {
                     icon={require('../../../../assets/images/comment-regular.png')}
                     onPress={this._openBoardCommentaryWriter.bind(this)}
                 />
+                <RBSheet
+					ref={ref => {
+						this.RBSheet = ref;
+					}}
+					height={this.state.reportAlert ? 300 : 150}
+					animationType={'slide'}
+					duration={250}
+
+				>
+					<PostOptions deletePost={this.deletePostConfirm.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.state.uid} />
+				</RBSheet>
                 <AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}

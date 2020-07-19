@@ -51,8 +51,14 @@ export default class BoardCommentaryWriter extends React.Component {
 
 
     doPost = () =>{
-	   this.props.close();
-	   this.savePost();
+
+		if(this.state.postText){
+			this.props.close();
+	   		this.savePost();
+		}
+		else{
+			return;
+		}
     }
 
     render() {

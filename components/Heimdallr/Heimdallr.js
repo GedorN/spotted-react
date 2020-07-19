@@ -1083,6 +1083,32 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.deleteBoardItem = function (docName, pid) {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('board').doc(docName).get().then(
+				(result) => {
+					let board = result.data().docs.filter((item) => item.pid != pid);
+					firebase.firestore().collection('board').doc(docName).set(
+						{ docs: board }, { merge: true }
+					).then(
+						() => {
+							resolve();
+						},
+						() => {
+							reject();
+						}
+					);
+
+				},
+				() => {
+					reject();
+				}
+			)
+		}).catch(function(error){
+			console.log("error delete board item",error);
+		})
+	}
+
 	this.saveSpecificColletion = function (collection,params) {
   	console.log('params.uid',params.uid);
 		return new Promise((resolve) => {
