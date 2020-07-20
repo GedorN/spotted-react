@@ -376,7 +376,7 @@ export default class BoardItemDetails extends React.Component {
                             <View style={styles.postHeader}>
                                 <View style={styles.textHeader}>
                                     <Text style={styles.title}>{this.state.title}</Text>
-                                    <View style = {{width: theme.width * 0.7}}>
+                                    <View style = {{width: theme.width * 0.9}}>
                                         <Text style={styles.text}>{this.state.text}</Text>
                                     </View>
                                 </View>
@@ -548,7 +548,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         width: theme.width * 0.90,
         alignSelf: 'center',
-        marginLeft: theme.width * 0.27,
     },
     title: {
         fontWeight:'700',
@@ -556,9 +555,10 @@ const styles = StyleSheet.create({
         marginTop: theme.height * 0.02
     },
     postHeader: {
-        width: theme.width * 0.9,
+		width: theme.width * 0.9,
+		marginTop: 10,
         alignSelf:'center',
-        flexDirection: 'column'
+		flexDirection: 'column',
     },
     text: {
         marginBottom: theme.height * 0.02,

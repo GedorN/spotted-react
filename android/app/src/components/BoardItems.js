@@ -100,7 +100,7 @@ export default class BoardItems extends React.Component {
 				<View style={styles.headerSearch}>
 					<Image
 						source={require('../../../../assets/images/search-solid.png')}
-						style={{height: 30, width: 30, opacity:0.5, marginLeft:20}}
+						style={{height: 30, width: 30, opacity:0.5, marginLeft:5}}
 					/>
 					<View style={styles.search}>
 						<RUMineTextInput
@@ -153,7 +153,7 @@ export default class BoardItems extends React.Component {
 const styles = StyleSheet.create({
 	search: {
 		flexDirection: 'row',
-		width: theme.width*0.50,
+		width: theme.width*0.52,
 		marginLeft: 17,
 		marginTop:20,
 
