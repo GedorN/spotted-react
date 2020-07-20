@@ -105,7 +105,7 @@ export default class BoardItemDetails extends React.Component {
         else{
         	const item = this.props.navigation.getParam('item');
 
-            if (this.props.navigation.getParam('uid') === heimdallr.user_id){
+            if (item.uid === heimdallr.user_id){
                 this.state.reportAlert = false;
             }
 
@@ -130,10 +130,10 @@ export default class BoardItemDetails extends React.Component {
 	        });
 
 	        heimdallr.getComments(item.pid, this.state.pulledComments).then((resolve) => {
-		        resolve.forEach((doc) => {
-			        const time = moment(doc.date).fromNow();
-			        doc.elapsed_time = heimdallr.getElapsedTime(time);
-		        })
+	        	for (let j = 0; j < resolve.length; j++) {
+			        const time = moment(resolve[j].date).fromNow();
+			        resolve[j].elapsed_time = heimdallr.getElapsedTime(time);
+		        }
 		        this.setState({ comments: resolve });
 	        });
         }
@@ -159,6 +159,7 @@ export default class BoardItemDetails extends React.Component {
     addCommentary = async (params) => {
 
         heimdallr.saveComment(params);
+        heimdallr.changeBoardItemPriority(this.state.docName, this.state.pid);
         let posts = this.state.comments;
         posts.push(params);
         this.setState({ comments: posts, reportAlert: false });

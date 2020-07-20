@@ -180,10 +180,6 @@ const collections = {
                 type: 'string',
                 require: true,
             },
-	        {
-	        	desc: 'comments',
-		        type: 'number',
-	        },
             {
                 desc: 'uid',
                 type: 'string',

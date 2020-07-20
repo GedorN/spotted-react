@@ -73,13 +73,7 @@ export default class BoardItems extends React.Component {
 
 	componentDidMount(): void {
 		this.state.id = this.props.navigation.getParam('id');
-		heimdallr.getBoard(this.state.id).then(
-			(resolve) => {
-				const  n = this.state.pullItemsRef;
-				this.setState({ allItems: resolve, items: resolve.slice(0, (10 * n)), pullItemsRef: n + 1 });
-				console.warn('ih', this.state.id);
-			}
-		)
+		this.onRefresh();
 	}
 
 

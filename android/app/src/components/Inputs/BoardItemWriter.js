@@ -128,7 +128,7 @@ export default class BoardItemWriter extends React.Component {
 			let self = this;
 			const params = {};
             params.active = 1;
-            params.day_counter = 1;
+            params.day_counter = 190;
             params.date = await heimdallr.getServerTime();
             params.title = this.state.titleText;
 			params.text = this.state.postText;
@@ -136,7 +136,6 @@ export default class BoardItemWriter extends React.Component {
 			params.images = this.state.postImages;
 			params.user_name = heimdallr.user_name;
 			params.user_image = heimdallr.user_image;
-            params.comments = 0;
             params.docName = this.props.id,
 			params.video = this.state.videoIncluded;
 			heimdallr.getUID().then((uuid) => {
