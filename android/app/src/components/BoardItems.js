@@ -74,6 +74,9 @@ export default class BoardItems extends React.Component {
 	componentDidMount(): void {
 		this.state.id = this.props.navigation.getParam('id');
 		this.onRefresh();
+		this.props.navigation.addListener('willFocus', () => {
+			this.onRefresh();
+		});
 	}
 
 

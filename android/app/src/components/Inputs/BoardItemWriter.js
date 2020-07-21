@@ -124,7 +124,7 @@ export default class BoardItemWriter extends React.Component {
 		 * Espera até que todas as fotos tenham sido enviadas para continuar
 		 * */
 		if (sendedImages >= 1) {
-			heimdallr.sendEvent('post_write');
+			heimdallr.sendEvent('board_post_write');
 			let self = this;
 			const params = {};
             params.active = 1;

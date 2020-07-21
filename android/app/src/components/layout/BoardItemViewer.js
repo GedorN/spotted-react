@@ -36,7 +36,7 @@ export default class BoardItemViewer extends React.Component {
 	render() {
 		return (
 			<View style={styles.container}>
-				<TouchableOpacity onPress={this.goToBoardItemDetails.bind(this)}>
+				<TouchableOpacity onPressIn={() => heimdallr.sendEvent('board_details_click')} onPress={this.goToBoardItemDetails.bind(this)}>
 					<View style={styles.item}>
 						<View style ={styles.header}>
 							<UserImgProfile  circular marginBottom={5} height={45} width={45} uri={this.props.userImage? this.props.userImage : null}/>

@@ -8,6 +8,7 @@ import {
 
 import theme from "../../../../../components/General/Theme";
 import Ripple from 'react-native-material-ripple';
+import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 
 
 export default class BoardMessage extends React.Component{
@@ -31,6 +32,7 @@ export default class BoardMessage extends React.Component{
 				<Ripple
 					rippleOpacity={0.42}
 					rippleColor="rgba(143, 143, 143, .8)"
+					onPressIn={heimdallr.sendEvent(`board_${this.props.collection}_click`)}
 					onPress={this.goToBoardSubject.bind(this)}
 					rippleCentered = {true}
 				>

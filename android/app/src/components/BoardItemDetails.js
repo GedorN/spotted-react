@@ -247,8 +247,8 @@ export default class BoardItemDetails extends React.Component {
     deletePost = () => {
 
 		this.setState({ showDeleteAlert: false });
-
 		if(this.state.deleteComment){
+			heimdallr.sendEvent('delete_board_commentary');
 			heimdallr.deleteCommentary(this.state.pid, this.state.commentId).then(
 				() => {
 					let comments = this.state.comments;
@@ -256,8 +256,8 @@ export default class BoardItemDetails extends React.Component {
 					this.setState({ deleteComment: false, comments: comments });
 				}
 			);
-		}
-		else{
+		} else {
+			heimdallr.sendEvent('delete_board_item');
 			heimdallr.deleteBoardItem(this.state.docName,this.state.pid).then(
 				() => {
 					this.props.navigation.push('BoardItems', {id: this.state.docName});
