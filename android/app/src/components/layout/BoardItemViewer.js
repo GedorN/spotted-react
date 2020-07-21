@@ -50,9 +50,9 @@ export default class BoardItemViewer extends React.Component {
 						</View>
 						<View style={styles.bodyView}>
 							<View style={styles.titleView}>
-								<Text style={styles.title}> { this.props.title } </Text>
+								<Text style={styles.title}>{ this.props.title }</Text>
 							</View>
-							<View style={styles.textView} > 
+							<View style={styles.textView} >
 								<Text ellipsizeMode='tail' numberOfLines={2} style={{flexWrap:'wrap'}}>{this.props.text}</Text>
 							</View>
 						</View>
@@ -93,40 +93,40 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap'
 	},
 	header: {
-		flexDirection: 'row', 
+		flexDirection: 'row',
 		alignContent:'space-between',
 		justifyContent: 'space-between',
-		width: theme.width *0.9, 
+		width: theme.width *0.9,
 		alignSelf: 'center',
 	},
 	userNameView: {
 		width: theme.width* 0.75,
-		alignSelf: 'center', 
+		alignSelf: 'center',
 		flexDirection: 'row'
 	},
 	circleSolid:{
-		width: 4, 
-		height: 4, 
-		marginLeft: 4, 
-		marginRight: 4, 
+		width: 4,
+		height: 4,
+		marginLeft: 4,
+		marginRight: 4,
 		marginTop:10,
 		opacity:0.7
 	},
 	bodyView:{
-		width: theme.width*0.78, 
-		alignSelf: 'flex-end', 
-		flexDirection: 'column', 
+		width: theme.width*0.78,
+		alignSelf: 'flex-end',
+		flexDirection: 'column',
 		marginTop: 5
 	},
 	titleView: {
-		width:theme.width * 0.75, 
-		alignSelf :'flex-start' 
+		width:theme.width * 0.75,
+		alignSelf :'flex-start'
 	},
 	textView: {
-		width: theme.width * 0.75, 
-		alignSelf: 'flex-start', 
-		marginTop: 10, 
-		paddingLeft: 5, 
+		width: theme.width * 0.75,
+		alignSelf: 'flex-start',
+		marginTop: 10,
+		paddingLeft: 5,
 		height:theme.height * 0.05
 	},
 	commentIMage: {
