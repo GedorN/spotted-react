@@ -75,7 +75,7 @@ export default class Board extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: 'white',
-		paddingTop: theme.height * 0.05,
+		paddingTop: theme.height * 0.01,
 		alignItems: 'center',
 		flexDirection: 'column',
 		width: theme.width
@@ -85,7 +85,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		alignSelf: 'center',
-		marginBottom: theme.height * 0.04
+		marginBottom: theme.height * 0.02,
+		marginTop: theme.width * 0.05
 	},
 	boardTitle: {
 		fontSize: 25,

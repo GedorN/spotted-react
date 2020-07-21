@@ -260,7 +260,7 @@ export default class BoardItemDetails extends React.Component {
 			heimdallr.sendEvent('delete_board_item');
 			heimdallr.deleteBoardItem(this.state.docName,this.state.pid).then(
 				() => {
-					this.props.navigation.push('BoardItems', {id: this.state.docName});
+					this.props.navigation.goBack();
 				}
 			);
 		}
