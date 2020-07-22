@@ -164,6 +164,73 @@ const collections = {
                 type: 'boolean'
             }
         ],
+        boardPost : [
+            {
+                desc: 'user_name',
+                type: 'string',
+                require: true,
+            },
+	        {
+	        	desc: 'pid',
+		        type: 'string',
+		        required: true,
+	        },
+            {
+                desc: 'user_image',
+                type: 'string',
+                require: true,
+            },
+            {
+                desc: 'uid',
+                type: 'string',
+                require: true,
+            },
+            {
+                desc: 'text',
+                type: 'string',
+            },
+            {
+                desc: 'active',
+                type: 'number',
+                required: true,
+            },
+            {
+              desc: 'date',
+              type: 'number',
+	            required: true,
+            },
+            {
+                desc: 'images',
+                type: 'array',
+                required: false,
+            },
+	        {
+		        desc: 'gif',
+		        type: 'boolean',
+		        required: false,
+	        },
+	        {
+	        	desc: 'video',
+		        type: 'boolean',
+		        required: false,
+	        },
+            {
+                desc: 'day_counter',
+                type:  'number',
+                required: true
+            },
+            {
+                desc: 'docName',
+                type: 'string',
+                required: true
+            },
+            {
+                desc: 'title',
+                type: 'string',
+                required: true
+            }
+
+        ],
 		unverified_post: [
 			{
 				desc: 'user_name',

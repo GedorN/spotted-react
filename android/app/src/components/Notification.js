@@ -36,24 +36,56 @@ export default class Notification extends React.Component {
         })
     }
 
+    goToBoardItemDetails = () => {
+        this.props.navigation.push('BoardItemDetails',{
+            pid:this.props.eid,
+            origin: this.props.origin,
+            docName: this.props.docName,
+        })
+    }
+
+    goToDetails = () => {
+		if (this.props.origin) {
+			switch (this.props.origin) {
+				case 0:
+					this.goToPostDetails();
+					break;
+				case 1:
+					this.goToBoardItemDetails();
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.goToPostDetails();
+		}
+
+        // if(this.props.origin && this.props.origin === 1){
+        //     this.goToBoardItemDetails();
+        // }
+        // else{
+        //     this.goToPostDetails();
+        // }
+    }
+
     render = () => {
 		return (
             <View style = {this.props.visualized > 0 ? styles.postVisualized : styles.noVisualized}>
-            <TouchableOpacity  onPress={this.props.anonymous == '0'?this.goToUserProfile.bind(this):null}>
-                <UserImgProfile circular height={45} width={45}  uri={this.props.anonymous == '0'?this.props.image_uri:null}/>
-            </TouchableOpacity>
-            <TouchableOpacity  onPress={this.goToPostDetails.bind(this)}>
-                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', width: theme.width * 0.82,marginTop:14,marginLeft:7}}>
-                    <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.anonymous == '0'?this.props.user_name:'Anônimo'}</Text>
-                    <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
-                         comentou na sua postagem:
-                    </Text>
-                    <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
-                        "{this.props.notification_text}"
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity  onPress={this.props.anonymous == '0'?this.goToUserProfile.bind(this):null}>
+                    <UserImgProfile circular height={45} width={45}  uri={this.props.anonymous == '0'?this.props.image_uri:null}/>
+                </TouchableOpacity>
+                <TouchableOpacity  onPress={this.goToDetails.bind(this)}>
+                    <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', width: theme.width * 0.82,marginTop:14,marginLeft:7}}>
+                        <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.anonymous == '0'?this.props.user_name:'Anônimo'}</Text>
+                        <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
+                            comentou na sua postagem:
+                        </Text>
+                        <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
+                            "{this.props.notification_text}"
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
 		);
 	}
 }

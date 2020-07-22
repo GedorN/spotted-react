@@ -80,73 +80,63 @@ function HeimdallrLib() {
 
 
 	this.saveComment = function (params) {
-		let returnValue = null;
 		return new Promise((resolve) => {
-			console.log('checking params...');
-			let parametersOK = true;
-			const collections = collectionsStructures;
-			const structure = collections['comment'];
-
-			structure.forEach((e) => {
-				if (e.required === true) {
-					if (!params[e.desc] || e.type != typeof(params[e.desc])) {
-						console.log('ERRO: parâmetro ', e.desc, ' incorreto');
-						if (e.type != typeof(params[e.desc])) {
-							console.log(`Parametro esperado: ${e.type} porém recebido um ${typeof(params[e.desc])}`);
-						}
-						parametersOK = false;
+			let comments = [];
+			firebase.firestore().collection('comment').doc(params.pid).get().then(
+				(result) => {
+					if (result.data()) {
+						let temp = result.data().comments;
+						temp.push(params);
+						comments = temp;
+					} else {
+						comments.push(params);
 					}
+					firebase.firestore().collection('comment').doc(params.pid).set(
+						{
+							comments: comments
+						},
+						{
+							merge: true
+						}
+					).then(
+						(res) => {
+							resolve(res);
+						}
+					);
 				}
-			});
+			)
+		});
+	}
 
-			if (parametersOK) {
-				let comments = [];
-				firebase.firestore().collection('comment').doc(params.pid).get().then(
-					(result) => {
-						console.log('dos paranue', params);
-						console.log('resultado novo: ', result);
-						if (result.data()) {
-							let temp = result.data().comments;
-							temp.push(params);
-							comments = temp;
-						} else {
-							comments.push(params);
-						}
-						firebase.firestore().collection('comment').doc(params.pid).set(
-							{
-								comments: comments
-							},
-							{
-								merge: true
-							}
-						).then(
-							(res) => {
-								resolve(res);
-							}
-						);
+	this.saveBoardPost = function (params) {
+		return new Promise((resolve) => {
+
+			let posts = [];
+			firebase.firestore().collection('board').doc(params.docName).get().then(
+				(result) => {
+					console.log('dos paranue', params);
+					console.log('resultado novo: ', result);
+					if (result.data()) {
+						let temp = result.data().docs;
+						temp.unshift(params);
+						posts = temp;
+					} else {
+						posts.unshift(params);
 					}
-				)
-				// const base = firebase.firestore().collection('notification').doc(params.uid);
-				// base.set(params).then(
-				// 	(docRef) => {
-				// 		// console.warn(`Documento ${docRef.id}`);
-				// 		// console.log(`Documento ${docRef.id}`);
-				// 		returnValue = docRef.id;
-				// 		if (collection === 'user') {
-				// 			this.user_image = params.user_image ? params.user_image : null;
-				// 			this.user_name = params.name;
-				// 			this.email = params.email;
-				// 			this.uid = params.uid;
-				// 		}
-				// 		resolve();
-				// 	},
-				// 	() => {
-				// 		console.log('Erro ao criar a notificação');
-				// 	}
-				// );
-			} else {
-				resolve();
-			}
+					firebase.firestore().collection('board').doc(params.docName).set(
+						{
+							docs: posts
+						},
+						{
+							merge: true
+						}
+					).then(
+						(res) => {
+							resolve(res);
+						}
+					);
+				}
+			)
 
 		});
 	}
@@ -229,7 +219,7 @@ function HeimdallrLib() {
 	            console.log("reset Notifications", result);
 	          }
 	        )
-	      } catch (e) {
+	      } catch (e) {p
 	        console.log("erro reset notifications:",e);
 	      }
 	    })
@@ -1050,6 +1040,32 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.deleteBoardItem = function (docName, pid) {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('board').doc(docName).get().then(
+				(result) => {
+					let board = result.data().docs.filter((item) => item.pid != pid);
+					firebase.firestore().collection('board').doc(docName).set(
+						{ docs: board }, { merge: true }
+					).then(
+						() => {
+							resolve();
+						},
+						() => {
+							reject();
+						}
+					);
+
+				},
+				() => {
+					reject();
+				}
+			)
+		}).catch(function(error){
+			console.log("error delete board item",error);
+		})
+	}
+
 	this.saveSpecificColletion = function (collection,params) {
   	console.log('params.uid',params.uid);
 		return new Promise((resolve) => {
@@ -1167,6 +1183,54 @@ function HeimdallrLib() {
     }).then(function (resolve) {
         return uploadedUrl;
     })
+  }
+
+  this.getDrawer = function () {
+  	return new Promise((resolve, reject) => {
+  		firebase.firestore().collection('sideDrawer').get().then(
+		    (result) => {
+		    	resolve(result.docs[0].data());
+		    }
+	    )
+    })
+  }
+
+  this.getBoard = function (boardName) {
+	  return new Promise((resolve, reject) => {
+	  	firebase.firestore().collection('board').doc(boardName).get().then(
+		    (result) => {
+		    	resolve(result.data().docs);
+		    }
+	    )
+	  })
+  }
+
+  this.getBoardItem = function (boardName, pid) {
+	return new Promise((resolve, reject) => {
+		firebase.firestore().collection('board').doc(boardName).get().then(
+		  (result) => {
+			  let board = result.data().docs;
+			  let boardItem = board.filter(item => item.pid === pid);
+			  resolve(boardItem);
+		  }
+	  )
+	})
+  }
+
+  this.changeBoardItemPriority = function (boardName, pid) {
+	  firebase.firestore().collection('board').doc(boardName).get().then(
+		  (result) => {
+			  let board = result.data().docs;
+			  let boardItemIndex = board.findIndex(item => item.pid === pid);
+			  if (boardItemIndex !== 0) {
+			  	[board[boardItemIndex -1 ], board[boardItemIndex]] = [board[boardItemIndex], board[boardItemIndex - 1]];
+			  	firebase.firestore().collection('board').doc(boardName).set({
+				    docs: board
+			    }, {merge: true});
+			  }
+
+		  }
+	  )
   }
 }
 

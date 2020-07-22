@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     },
 	forgotPassword: {
     	alignSelf: 'flex-end',
-		marginBottom: 50,
+		marginBottom: 30,
 	}
 });
 
