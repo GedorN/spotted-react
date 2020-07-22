@@ -51,7 +51,6 @@ export default class Store extends React.Component {
 		BackHandler.addEventListener('hardwareBackPress', () => {
 			StatusBar.setBackgroundColor('white');
 			StatusBar.setBarStyle('dark-content');
-			console.warn('hue');
 		});
 
 

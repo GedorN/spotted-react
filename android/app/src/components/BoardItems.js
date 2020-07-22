@@ -107,7 +107,13 @@ export default class BoardItems extends React.Component {
 							flex={1}
 						/>
 					</View>
-					<Button color="green" mode="contained" icon={require('../../../../assets/images/plus-solid.png')}  onPress={this.openBoardWriter.bind(this)} >
+					<Button
+						disabled={heimdallr.email === 'spotted@utfpr.com'}
+						color="green"
+						mode="contained"
+						icon={require('../../../../assets/images/plus-solid.png')}
+						onPress={this.openBoardWriter.bind(this)}
+					>
 						Post
 					</Button>
 				</View>

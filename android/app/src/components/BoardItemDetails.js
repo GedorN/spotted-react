@@ -308,7 +308,7 @@ export default class BoardItemDetails extends React.Component {
 			const index = this.state.images.indexOf(item);
             return(
                 <View key={index} style = {styles.imageView}>
-                    <TouchableOpacity onPress={() => {this.setState({ showImages: true, indexImage: index })}}>
+                    <TouchableOpacity activeOpacity={0.9} onPress={() => {this.setState({ showImages: true, indexImage: index })}}>
                         <Image style={styles.carouselImage} source={{ uri: this.state.images[index] }} />
                     </TouchableOpacity>
                 </View>
@@ -405,9 +405,11 @@ export default class BoardItemDetails extends React.Component {
                         this.pullMoreCommentaries(distanceFromEnd);
                     }}
                     ListFooterComponent={ this.renderFooter.bind(this)}
-                    />
+                />
                 <FAB
+	                visible={heimdallr.email !== 'spotted@utfpr.com'}
                     style={styles.fab}
+                    color={'white'}
                     small
                     icon={require('../../../../assets/images/comment-regular.png')}
                     onPress={this._openBoardCommentaryWriter.bind(this)}

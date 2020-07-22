@@ -95,9 +95,9 @@ export default class SideDrawer extends React.Component {
 					<ScrollView contentContainerStyle= {styles.scrollview}
 								showsVerticalScrollIndicator = {false}>
 						<View >
-							<TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}
-							                  onPressIn={() => heimdallr.sendEvent('board_menu_click')}
-							                  onPress={() => {this.props.navigation.push('Board', {navigation: this.props.navigation})}}>
+							<TouchableOpacity
+				                  onPressIn={() => heimdallr.sendEvent('board_menu_click')}
+				                  onPress={() => {this.props.navigation.push('Board', {navigation: this.props.navigation})}}>
 								<View style={styles.item}>
 									<View style = {{ width: 45, height: 45, marginRight: 13 }}>
 										<Image source={require('../../assets/images/UTFPR.png')}
@@ -106,7 +106,6 @@ export default class SideDrawer extends React.Component {
 											       flex:1,
 											       width: null,
 											       height: null,
-											       tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : null,
 										       }}
 										/>
 									</View>
