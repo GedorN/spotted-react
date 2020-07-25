@@ -151,7 +151,8 @@ export default class CommentaryWriter extends React.Component {
 			params.gif = this.state.gifIncluded;
 			params.images = this.state.postImages;
 			params.video = this.state.videoIncluded;
-
+			params.liked_by = [];
+			params.likes = 0;
 			heimdallr.getUID().then((uuid) => {
 				params.cid = uuid;
 				console.log('olha como vai', params);

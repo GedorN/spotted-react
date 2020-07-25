@@ -38,6 +38,8 @@ export default class PostViewer extends React.Component {
 	    opacityValueScrolling: 1,
 		opacity: new Animated.Value(0),
 		reportAlert: true,
+	    liked: false,
+	    likes: 0,
     };
   }
 
@@ -46,6 +48,11 @@ export default class PostViewer extends React.Component {
 	  if(this.props.uid === heimdallr.user_id){
 		  this.setState({reportAlert: false});
 	  }
+
+	  console.log('vamo ver', this.props.likes, this.props.liked_by);
+	  this.state.likes = this.props.likes;
+	  const liked = this.props.liked_by && this.props.liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
+	  this.setState({ liked: liked });
 
 	  if (this.props.images) {
 	  	this.props.images.forEach((img) => {
@@ -129,7 +136,7 @@ export default class PostViewer extends React.Component {
           )
         } else if (this.props.images.length === 2) {
           return (
-            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+            <View style={{alignItems: 'flex-start', alignSelf: 'flex-start'}}>
               <View style={{ flexDirection: 'row'}}>
                 <View style={{width: width * 0.40, height: 235}}>
 	                <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
@@ -314,6 +321,17 @@ export default class PostViewer extends React.Component {
 		this.props.confirmPostRm(this.props.pid);
 	}
 
+	likeIt = () => {
+  	    if (this.state.liked) {
+	        heimdallr.dislikePost(this.props.pid);
+	        this.setState({ liked: false, likes: this.state.likes -1 });
+        } else {
+  	    	heimdallr.likePost(this.props.pid);
+  	        this.setState({ liked: true, likes: this.state.likes ? this.state.likes + 1 : 1 });
+        }
+	}
+
+
   render () {
     return (
 	    <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToComments.bind(this)}>
@@ -383,17 +401,33 @@ export default class PostViewer extends React.Component {
 			          </View>
 			      </View>
 			      <View style={styles.postFooter}>
-			          <View style={{ left: 20, opacity: 0.7}}>
-			              <TouchableOpacity
-			                  onPress={this.goToComments.bind(this)}
-			              >
-			                  <Image
-			                      style={{width: 17, height: 17, marginTop:10}}
-			                      source={require('../../assets/images/comment-regular.png') }
-			                  />
-			              </TouchableOpacity>
-			          </View>
-			      </View>
+					<View style={{ left: 20, flexDirection: 'row', alignItems: 'center'}}>
+						{
+							heimdallr.email !== 'spotted@utfpr.com' &&
+							<TouchableOpacity
+								style={{flexDirection: 'row', marginRight: 30}}
+								onPress={this.likeIt.bind(this)}
+							>
+								<Image
+									style={{width: 17, height: 17, marginTop:10, alignSelf: 'flex-start'}}
+									source={this.state.liked ? require('../../assets/images/s2-checked.png') : require('../../assets/images/s2.png') }
+								/>
+								{
+									this.state.likes > 0 &&
+									<Text style={{alignSelf: 'flex-end'}}> {this.state.likes} </Text>
+								}
+							</TouchableOpacity>
+						}
+						<TouchableOpacity
+							onPress={this.goToComments.bind(this)}
+						>
+							<Image
+								style={{width: 17, height: 17, marginTop:10}}
+								source={require('../../assets/images/comment-regular.png') }
+							/>
+						</TouchableOpacity>
+					</View>
+				</View>
 			    </View>
 			</View>
 		    <RBSheet

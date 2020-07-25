@@ -65,6 +65,8 @@ export default class PostDetails extends React.Component {
 			deleteComment: false,
 			commentId: '',
 			removedPost: false,
+			likes: 0,
+			liked: false,
 		};
 	}
 
@@ -91,7 +93,10 @@ export default class PostDetails extends React.Component {
 				return ;
 			}
 			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
-			this.setState( { post: resolve[0] });
+			console.log(resolve[0].data());
+			let liked = resolve[0].data().liked_by && resolve[0].data().liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
+			console.log('fui gostado:', liked);
+			this.setState( { post: resolve[0], likes: resolve[0].data().likes, liked: liked});
 			if (resolve[0].data().images) {
 				(resolve[0].data().images).forEach((img) => {
 					let images = this.state.galleryObj;
@@ -464,14 +469,23 @@ export default class PostDetails extends React.Component {
 			);
 		}
 		else{
-			heimdallr.deletePost(this.state.postId);
-			heimdallr.deleteUserPost(this.state.postId).then(
+			heimdallr.deletePost(this.state.postId).then(
 				() => {
 					this.props.navigation.push('Home');
 				}
 			);
 		}
 
+	}
+
+	likeIt = () => {
+		if (this.state.liked) {
+			heimdallr.dislikePost(this.state.postId);
+			this.setState({ liked: false, likes: this.state.likes -1 });
+		} else {
+			heimdallr.likePost(this.state.postId);
+			this.setState({ liked: true, likes: this.state.likes ? this.state.likes + 1 : 1 });
+		}
 	}
 
 
@@ -564,7 +578,25 @@ export default class PostDetails extends React.Component {
 													</View>
 												</View>
 											</View>
-											<Text style={{color: 'gray', fontSize: 8,marginLeft:theme.width * 0.02}}> {this.state.post ? this.state.post.data().date : null} </Text>
+											<Text style={{color: 'gray', fontSize: 12 ,marginLeft:theme.width * 0.02}}> {this.state.post ? this.state.post.data().date : null} </Text>
+											<View style={{ left: 20, flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+												{
+													heimdallr.email !== 'spotted@utfpr.com' &&
+													<TouchableOpacity
+														style={{flexDirection: 'row'}}
+														onPress={this.likeIt.bind(this)}
+													>
+														<Image
+															style={{width: 17, height: 17, marginTop:10, alignSelf: 'flex-start'}}
+															source={this.state.liked ? require('../../../../assets/images/s2-checked.png') : require('../../../../assets/images/s2.png') }
+														/>
+														{
+															this.state.likes > 0 &&
+															<Text style={{alignSelf: 'flex-end'}}> {this.state.likes} </Text>
+														}
+													</TouchableOpacity>
+												}
+											</View>
 										</View>
 									</View>
 								}
@@ -576,7 +608,24 @@ export default class PostDetails extends React.Component {
 								}
 								data = {this.state.comments}
 								renderItem={ ({item}) =>
-									< CommentaryViewer deleteCommentary={this.commentaryDelete.bind(this)}  images = {item.images} video = {item.video} gif={item.gif} commentaryCallback= {this.comentaryCallback} cid = {item.cid} pid = {this.state.postId} userImage={item.anonymous ? null : item.user_image}  anonymous={item.anonymous} text={item.comment} user_name={item.anonymous ? 'Anônimo' : item.user_name} user_id = {item.id_user} elapsed_time={item.elapsed_time} navigation={this.props.navigation} />
+									< CommentaryViewer
+										deleteCommentary={this.commentaryDelete.bind(this)}
+										images = {item.images}
+										video = {item.video}
+										gif={item.gif}
+										commentaryCallback= {this.comentaryCallback}
+										cid = {item.cid}
+										pid = {this.state.postId}
+										userImage={item.anonymous ? null : item.user_image}
+										anonymous={item.anonymous}
+										text={item.comment}
+										user_name={item.anonymous ? 'Anônimo' : item.user_name}
+										user_id = {item.id_user}
+										elapsed_time={item.elapsed_time}
+										navigation={this.props.navigation}
+										liked_by={item.liked_by}
+										likes={item.likes}
+									/>
 								}
 								keyExtractor={item => item.cid}
 								onEndReachedThreshold={0.3}

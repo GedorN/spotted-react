@@ -112,6 +112,16 @@ const collections = {
                 require: true,
             },
 	        {
+	        	desc: 'liked_by',
+		        type: 'array',
+		        required: false,
+	        },
+	        {
+	        	desc: 'likes',
+		        type: 'number',
+		        required: false,
+	        },
+	        {
 	        	desc: 'pid',
 		        type: 'string',
 		        required: true,

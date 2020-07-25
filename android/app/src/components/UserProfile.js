@@ -188,8 +188,7 @@ export default class UserProfile extends React.Component {
 
 	deletePost = () => {
 		this.setState({ showDeleteAlert: false, isRefreshing: true });
-		heimdallr.deletePost(this.state.deletePost);
-		heimdallr.deleteUserPost(this.state.deletePost).then(
+		heimdallr.deletePost(this.state.deletePost).then(
 			() => {
 				this.onRefresh();
 			}
@@ -223,7 +222,23 @@ export default class UserProfile extends React.Component {
 						onScrollEndDrag={() => this.setState({ scrolling: false })}
 						onScrollBeginDrag={() => this.setState({ scrolling: true })}
 						renderItem={ ({item}) =>
-								<PostViewer confirmPostRm={this.deletePostConfirm.bind(this)} closeAlert={this.confirmReport.bind(this)}  video={item.video ? true : false} text={item.text} pid={item.pid} elapsed_time={item.elapsed_time} uid={item.uid} images={item.images} user={item.user_name} userImage={item.user_image} navigation={this.props.navigation} scrolling={this.state.scrolling} />
+								item.anonymous !== true &&
+								<PostViewer
+									confirmPostRm={this.deletePostConfirm.bind(this)}
+									closeAlert={this.confirmReport.bind(this)}
+									video={item.video ? true : false}
+									text={item.text}
+									pid={item.pid}
+									elapsed_time={item.elapsed_time}
+									uid={item.uid}
+									images={item.images}
+									user={item.user_name}
+									userImage={item.user_image}
+									navigation={this.props.navigation}
+									scrolling={this.state.scrolling}
+									likes={item.likes}
+									liked_by={item.liked_by}
+								/>
 						}
 						ListHeaderComponent={() =>
 							<View style={styles.profileHeader}>

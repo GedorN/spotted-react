@@ -150,6 +150,8 @@ export default class PostWrite extends React.Component {
 			params.gif = this.state.gifIncluded;
 			params.comments = 0;
 			params.video = this.state.videoIncluded;
+			params.liked_by = [];
+			params.likes = 0;
 			heimdallr.getUID().then((uuid) => {
 				params.pid = uuid;
 				this.props.call();
