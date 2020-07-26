@@ -7,6 +7,7 @@
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
+import theme from "../General/Theme";
 
 
 function HeimdallrLib() {
@@ -84,36 +85,17 @@ function HeimdallrLib() {
 			let comments = [];
 			firebase.firestore().collection('comment').add(params).then(
 				(result) => {
+					firebase.firestore().collection('post').where('pid', '==', params.pid).get().then(
+						(res) => {
+							firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
+								comments: res.docs[0].data().comments + 1
+							}, {merge: true});
+						}
+					);
 					resolve(result);
 				}
 			)
 		});
-		// return new Promise((resolve) => {
-		// 	let comments = [];
-		// 	firebase.firestore().collection('comment').doc(params.pid).get().then(
-		// 		(result) => {
-		// 			if (result.data()) {
-		// 				let temp = result.data().comments;
-		// 				temp.push(params);
-		// 				comments = temp;
-		// 			} else {
-		// 				comments.push(params);
-		// 			}
-		// 			firebase.firestore().collection('comment').doc(params.pid).set(
-		// 				{
-		// 					comments: comments
-		// 				},
-		// 				{
-		// 					merge: true
-		// 				}
-		// 			).then(
-		// 				(res) => {
-		// 					resolve(res);
-		// 				}
-		// 			);
-		// 		}
-		// 	)
-		// });
 	}
 
 	this.saveBoardPost = function (params) {
@@ -1043,21 +1025,20 @@ function HeimdallrLib() {
 		this.sendEvent('delete_comment');
 		let docs = [];
 		return new Promise((resolve, reject) => {
-			firebase.firestore().collection('comment').doc(pid).get().then(
+			firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 				(result) => {
-					let commentary = result.data().comments.find((item) => item.cid === cid);
-					let index = result.data().comments.indexOf(commentary);
-					let removed = result.data().comments.splice(index,1);
-					firebase.firestore().collection('comment').doc(pid).set(
-						{ comments: result.data().comments }, { merge: true }
-					).then(
+					firebase.firestore().collection('comment').doc(result.docs[0]._ref.path.split('/')[1]).delete().then(
 						() => {
+							firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+								(res) => {
+									firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
+										comments: res.docs[0].data().comments + 1
+									}, {merge: true});
+								}
+							);
 							resolve();
-						},
-						() => {
-							reject();
 						}
-					);
+					)
 
 				},
 				() => {
@@ -1265,6 +1246,7 @@ function HeimdallrLib() {
 		  	let doc = resolve.docs[0].data();
 		    const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
 		    if (index == -1) {
+			    this.sendEvent('like_post');
 			    doc.likes = doc.likes ? doc.likes + 1 : 1;
 			    if (doc.liked_by) {
 				    doc.liked_by.push(this.user_id);
@@ -1329,6 +1311,7 @@ function HeimdallrLib() {
 				let doc = resolve.docs[0].data();
 				const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
 				if (index == -1) {
+					this.sendEvent('like_commentary');
 					doc.likes = doc.likes ? doc.likes + 1 : 1;
 					if (doc.liked_by) {
 						doc.liked_by.push(this.user_id);

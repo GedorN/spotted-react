@@ -238,6 +238,7 @@ export default class UserProfile extends React.Component {
 									scrolling={this.state.scrolling}
 									likes={item.likes}
 									liked_by={item.liked_by}
+									comments={item.comments}
 								/>
 						}
 						ListHeaderComponent={() =>

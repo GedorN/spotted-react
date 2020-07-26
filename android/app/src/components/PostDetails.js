@@ -4,7 +4,6 @@ import {
 	StyleSheet,
 	Dimensions,
 	View,
-	TextInput,
 	Image,
 	TouchableOpacity,
 	FlatList,
@@ -19,14 +18,12 @@ import { FAB } from 'react-native-paper';
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
-import OptionsMenu from "react-native-options-menu";
 import CommentaryViewer from "./CommentaryViewer";
 import Video from 'react-native-video';
 import moment from "moment";
 import 'moment/locale/pt-br';
 
 import RBSheet from "react-native-raw-bottom-sheet";
-import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
 import CommentaryWriter from "./Inputs/CommentaryWriter";
@@ -68,15 +65,6 @@ export default class PostDetails extends React.Component {
 			likes: 0,
 			liked: false,
 		};
-	}
-
-	componentWillMount () {
-		// BackHandler.addEventListener("hardwareBackPress", () => {
-		// 	console.warn('nao nao');
-		// })
-		// let keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-		// 	console.warn('apareci');
-		// });
 	}
 
 	componentDidMount = () => {
@@ -415,7 +403,9 @@ export default class PostDetails extends React.Component {
 				// data.cid = uuid;
 				let posts = this.state.comments;
 				posts.push(params);
-				this.setState({ comments: posts });
+				let post = this.state.post;
+				post.data().comments++;
+				this.setState({ comments: posts, post: post });
 				this.setState({ creatingComment: false, reportAlert: false });
 
 				heimdallr.saveComment(params);
@@ -464,7 +454,9 @@ export default class PostDetails extends React.Component {
 				() => {
 					let comments = this.state.comments;
 					comments.splice(comments.findIndex((c) => c.cid === this.state.commentId), 1);
-					this.setState({ deleteComment: false, comments: comments });
+					let post = this.state.post;
+					post.data().comments--;
+					this.setState({ deleteComment: false, comments: comments, post: post });
 				}
 			);
 		}
@@ -583,7 +575,7 @@ export default class PostDetails extends React.Component {
 												{
 													heimdallr.email !== 'spotted@utfpr.com' &&
 													<TouchableOpacity
-														style={{flexDirection: 'row'}}
+														style={{flexDirection: 'row', marginRight: 30}}
 														onPress={this.likeIt.bind(this)}
 													>
 														<Image
@@ -592,9 +584,13 @@ export default class PostDetails extends React.Component {
 														/>
 														{
 															this.state.likes > 0 &&
-															<Text style={{alignSelf: 'flex-end'}}> {this.state.likes} </Text>
+															<Text style={{alignSelf: 'flex-end', fontSize: 12}}> {this.state.likes} </Text>
 														}
 													</TouchableOpacity>
+												}
+												{
+													this.state.post &&
+													<Text style={{alignSelf: 'flex-end', fontSize: 12}}>{this.state.post.data().comments} {this.state.post.data().comments == 1 ? 'comentário' : 'comentários'}</Text>
 												}
 											</View>
 										</View>

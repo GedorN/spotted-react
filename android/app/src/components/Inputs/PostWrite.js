@@ -156,6 +156,7 @@ export default class PostWrite extends React.Component {
 				params.pid = uuid;
 				this.props.call();
 				let result = heimdallr.saveCollection('post', params);
+				heimdallr.sendEvent('post_created');
 				result.then((resolve) => {
 					console.log('result: ', resolve);
 					self.postTextInput.clear();

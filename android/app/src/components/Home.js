@@ -190,6 +190,7 @@ export default class Home extends React.Component {
 						            confirmPostRm={this.confirmPostRm.bind(this)}
 									likes={item._data.likes}
 									liked_by={item._data.liked_by}
+									comments={item._data.comments}
 							/>
               }
               refreshControl={

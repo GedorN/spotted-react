@@ -12,20 +12,15 @@ import {
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
-
 import UserImgProfile from "./UserImgProfile";
-import OptionsMenu from 'react-native-options-menu';
 import heimdallr from "../Heimdallr/Heimdallr";
-import ReportModal from "./ReportModal";
 import Video from 'react-native-video';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import RBSheet from "react-native-raw-bottom-sheet";
-import ReportGod from "../../android/app/src/components/Inputs/ReportGod";
 import PostOptions from "../../android/app/src/components/Inputs/PostOptions";
-
 import theme from "./Theme";
-import AwesomeAlert from "react-native-awesome-alerts";
 import PostDetails from "../../android/app/src/components/PostDetails";
+
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
@@ -44,12 +39,10 @@ export default class PostViewer extends React.Component {
   }
 
   componentDidMount =() =>  {
-	  // console.log('haha: ', this.props);
 	  if(this.props.uid === heimdallr.user_id){
 		  this.setState({reportAlert: false});
 	  }
 
-	  console.log('vamo ver', this.props.likes, this.props.liked_by);
 	  this.state.likes = this.props.likes;
 	  const liked = this.props.liked_by && this.props.liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
 	  this.setState({ liked: liked });
@@ -414,17 +407,19 @@ export default class PostViewer extends React.Component {
 								/>
 								{
 									this.state.likes > 0 &&
-									<Text style={{alignSelf: 'flex-end'}}> {this.state.likes} </Text>
+									<Text style={{alignSelf: 'flex-end', fontSize: 12}}> {this.state.likes} </Text>
 								}
 							</TouchableOpacity>
 						}
 						<TouchableOpacity
+							style={{flexDirection: 'row'}}
 							onPress={this.goToComments.bind(this)}
 						>
 							<Image
 								style={{width: 17, height: 17, marginTop:10}}
 								source={require('../../assets/images/comment-regular.png') }
 							/>
+							<Text style={{alignSelf: 'flex-end', fontSize: 12}}> {this.props.comments} </Text>
 						</TouchableOpacity>
 					</View>
 				</View>
