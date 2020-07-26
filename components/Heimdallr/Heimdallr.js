@@ -1263,42 +1263,43 @@ function HeimdallrLib() {
 	  firebase.firestore().collection('post').where('pid', '==', pid).get().then(
 		  async (resolve) => {
 		  	let doc = resolve.docs[0].data();
-		  	doc.likes = doc.likes ? doc.likes + 1 : 1;
-		  	if (doc.liked_by) {
-			    doc.liked_by.push(this.user_id);
-		    } else {
-		  		doc.liked_by = [this.user_id];
+		    const index = doc.liked_by.indexOf(this.user_id);
+		    if (index == -1) {
+			    doc.likes = doc.likes ? doc.likes + 1 : 1;
+			    if (doc.liked_by) {
+				    doc.liked_by.push(this.user_id);
+			    } else {
+			        doc.liked_by = [this.user_id];
+			    }
+			    console.log('aqui', doc);
+			    console.log('doc: ', resolve.docs[0]._ref.id);
+			    firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
+				    likes: doc.likes,
+				    liked_by: doc.liked_by,
+			    }, {merge: true});
+
+			    if(this.user_id != doc.uid){
+				    const notifications = {};
+				    notifications.eid = doc.pid;
+				    notifications.uid = doc.uid;
+				    notifications.uid_notification = this.user_id;
+				    notifications.user_name = this.user_name;
+				    notifications.user_image = this.user_image;
+				    notifications.content = `curtiu a sua postagem ❤`;
+				    notifications.date = await this.getServerTime();
+				    notifications.visualized = 0;
+				    notifications.entity = "like";
+				    this.incrementNotification(doc.uid);
+
+				    this.getUID().then((uuid) => {
+					    notifications.nid = uuid;
+					    let result = this.saveNotification(notifications);
+					    result.then((resolve) => {
+						    console.log("notification received", resolve);
+					    });
+				    })
+			    }
 		    }
-		  	console.log('aqui', doc);
-		  	console.log('doc: ', resolve.docs[0]._ref.id);
-		  	firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
-			    likes: doc.likes,
-			    liked_by: doc.liked_by,
-		    }, {merge: true});
-
-		    if(this.user_id != doc.uid){
-			    const notifications = {};
-			    notifications.eid = doc.pid;
-			    notifications.uid = doc.uid;
-			    notifications.uid_notification = this.user_id;
-			    notifications.user_name = this.user_name;
-			    notifications.user_image = this.user_image;
-			    notifications.content = `curtiu a sua postagem ❤`;
-			    notifications.date = await this.getServerTime();
-			    notifications.visualized = 0;
-			    notifications.entity = "like";
-			    this.incrementNotification(doc.uid);
-
-			    this.getUID().then((uuid) => {
-				    notifications.nid = uuid;
-				    let result = this.saveNotification(notifications);
-				    result.then((resolve) => {
-					    console.log("notification received", resolve);
-				    });
-			    })
-		    }
-
-
 		  },
 		  (reject) => {
 
@@ -1311,9 +1312,11 @@ function HeimdallrLib() {
 			(resolve) => {
 				let doc = resolve.docs[0].data();
 				console.log('aqui', doc);
-				doc.likes = doc.likes - 1;
 				const index = doc.liked_by.indexOf(this.user_id);
-				doc.liked_by.splice(index, 1);
+				if (index != -1) {
+					doc.likes = doc.likes - 1;
+					doc.liked_by.splice(index, 1);
+				}
 				firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
 					likes: doc.likes,
 					liked_by: doc.liked_by,
@@ -1329,41 +1332,42 @@ function HeimdallrLib() {
 		firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 			async (resolve) => {
 				let doc = resolve.docs[0].data();
-				doc.likes = doc.likes ? doc.likes + 1 : 1;
-				if (doc.liked_by) {
-					doc.liked_by.push(this.user_id);
-				} else {
-					doc.liked_by = [this.user_id];
+				const index = doc.liked_by.indexOf(this.user_id);
+				if (index == -1) {
+					doc.likes = doc.likes ? doc.likes + 1 : 1;
+					if (doc.liked_by) {
+						doc.liked_by.push(this.user_id);
+					} else {
+						doc.liked_by = [this.user_id];
+					}
+					console.log('aqui', this.user_id);
+					console.log('doc: ', this.liked_by);
+					firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
+						likes: doc.likes,
+						liked_by: doc.liked_by,
+					}, {merge: true});
+					if(this.user_id != doc.id_user){
+						const notifications = {};
+						notifications.eid = doc.pid;
+						notifications.uid = doc.id_user;
+						notifications.uid_notification = this.user_id;
+						notifications.user_name = this.user_name;
+						notifications.user_image = this.user_image;
+						notifications.content = `curtiu o seu comentário ❤`;
+						notifications.date = await this.getServerTime();
+						notifications.visualized = 0;
+						notifications.entity = "like";
+						this.incrementNotification(doc.id_user);
+
+						this.getUID().then((uuid) => {
+							notifications.nid = uuid;
+							let result = this.saveNotification(notifications);
+							result.then((resolve) => {
+								console.log("notification received", resolve);
+							});
+						})
+					}
 				}
-				console.log('aqui', this.user_id);
-				console.log('doc: ', this.liked_by);
-				firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
-					likes: doc.likes,
-					liked_by: doc.liked_by,
-				}, {merge: true});
-				if(this.user_id != doc.id_user){
-					const notifications = {};
-					notifications.eid = doc.pid;
-					notifications.uid = doc.id_user;
-					notifications.uid_notification = this.user_id;
-					notifications.user_name = this.user_name;
-					notifications.user_image = this.user_image;
-					notifications.content = `curtiu o seu comentário ❤`;
-					notifications.date = await this.getServerTime();
-					notifications.visualized = 0;
-					notifications.entity = "like";
-					this.incrementNotification(doc.id_user);
-
-					this.getUID().then((uuid) => {
-						notifications.nid = uuid;
-						let result = this.saveNotification(notifications);
-						result.then((resolve) => {
-							console.log("notification received", resolve);
-						});
-					})
-				}
-
-
 			},
 			(reject) => {
 
@@ -1376,13 +1380,15 @@ function HeimdallrLib() {
 			(resolve) => {
 				let doc = resolve.docs[0].data();
 				console.log('aqui', doc);
-				doc.likes = doc.likes - 1;
 				const index = doc.liked_by.indexOf(this.user_id);
-				doc.liked_by.splice(index, 1);
-				firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
-					likes: doc.likes,
-					liked_by: doc.liked_by,
-				}, {merge: true});
+				if (index != -1) {
+					doc.likes = doc.likes - 1;
+					doc.liked_by.splice(index, 1);
+					firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
+						likes: doc.likes,
+						liked_by: doc.liked_by,
+					}, {merge: true});
+				}
 			},
 			(reject) => {
 
