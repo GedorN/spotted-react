@@ -1263,7 +1263,7 @@ function HeimdallrLib() {
 	  firebase.firestore().collection('post').where('pid', '==', pid).get().then(
 		  async (resolve) => {
 		  	let doc = resolve.docs[0].data();
-		    const index = doc.liked_by.indexOf(this.user_id);
+		    const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
 		    if (index == -1) {
 			    doc.likes = doc.likes ? doc.likes + 1 : 1;
 			    if (doc.liked_by) {
@@ -1271,8 +1271,6 @@ function HeimdallrLib() {
 			    } else {
 			        doc.liked_by = [this.user_id];
 			    }
-			    console.log('aqui', doc);
-			    console.log('doc: ', resolve.docs[0]._ref.id);
 			    firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
 				    likes: doc.likes,
 				    liked_by: doc.liked_by,
@@ -1293,10 +1291,7 @@ function HeimdallrLib() {
 
 				    this.getUID().then((uuid) => {
 					    notifications.nid = uuid;
-					    let result = this.saveNotification(notifications);
-					    result.then((resolve) => {
-						    console.log("notification received", resolve);
-					    });
+					    this.saveNotification(notifications);
 				    })
 			    }
 		    }
@@ -1332,7 +1327,7 @@ function HeimdallrLib() {
 		firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 			async (resolve) => {
 				let doc = resolve.docs[0].data();
-				const index = doc.liked_by.indexOf(this.user_id);
+				const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
 				if (index == -1) {
 					doc.likes = doc.likes ? doc.likes + 1 : 1;
 					if (doc.liked_by) {
@@ -1340,8 +1335,6 @@ function HeimdallrLib() {
 					} else {
 						doc.liked_by = [this.user_id];
 					}
-					console.log('aqui', this.user_id);
-					console.log('doc: ', this.liked_by);
 					firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
 						likes: doc.likes,
 						liked_by: doc.liked_by,
@@ -1361,10 +1354,7 @@ function HeimdallrLib() {
 
 						this.getUID().then((uuid) => {
 							notifications.nid = uuid;
-							let result = this.saveNotification(notifications);
-							result.then((resolve) => {
-								console.log("notification received", resolve);
-							});
+							this.saveNotification(notifications);
 						})
 					}
 				}
@@ -1379,7 +1369,6 @@ function HeimdallrLib() {
 		firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 			(resolve) => {
 				let doc = resolve.docs[0].data();
-				console.log('aqui', doc);
 				const index = doc.liked_by.indexOf(this.user_id);
 				if (index != -1) {
 					doc.likes = doc.likes - 1;
