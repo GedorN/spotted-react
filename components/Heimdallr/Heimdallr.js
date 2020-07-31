@@ -17,7 +17,7 @@ function HeimdallrLib() {
   this.email = null;
   this.token = null;
   this.phone = null;
-
+  this.userPlans = null;
 
   // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
   this.test = function (uid, limit) {
@@ -313,6 +313,23 @@ function HeimdallrLib() {
 		});
 	}
 
+	this.getPartnersPlan = (store_code) => {
+		let docs = null
+		return new Promise((resolve) => {
+				const store = firebase.firestore()
+				.collection('partners_plan').doc(store_code)
+				.get().then((result) => {
+					docs = result.data();
+					console.warn("RESULT.DATA()",result.data());
+					resolve();
+				}).catch((e) => {
+					console.warn("erro",e);
+				});
+		}).then(function (resolve) {
+			 return docs;
+		})
+	}
+
 	this.getCoupons = (store_code) => {
 		let docs = null;
 		return new Promise((resolve) => {
@@ -342,6 +359,22 @@ function HeimdallrLib() {
 			 resolve();
 		})
 
+	}
+
+	this.userLimiter = (store_code, partnersPlan) => {
+
+		return new Promise((resolve, reject) => {
+				try{ 
+					firebase.firestore()
+					.collection('partners_plan').doc(store_code)
+					.set({
+						plans: partnersPlan
+					}, {merge: false});
+			}catch(erro){
+
+			}
+			resolve();
+		})
 	}
 
 	this.saveUserCoupon = function (userCoupons){
@@ -624,6 +657,61 @@ function HeimdallrLib() {
 	  })
   }
 
+  this.updatePartnerPlan = function(store_code,plan_doc,partner_plan){
+	  return new Promise((resolve) => {
+		  firebase.firestore().collection('partners_plan').doc(store_code).set({
+		  	[plan_doc]: partner_plan
+		  },{merge:true}).then((res) => {
+			  console.warn("save new partner");
+			  resolve();
+		  })
+	  })
+  }
+
+  this.savePartnerPlan = function (store_code,partnerPlan) {
+	  console.warn("STORE_CODE",store_code);
+	return new Promise((resolve) => {
+		firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+			(result) => {
+			  if(this.userPlans != null){
+				  if(this.userPlans[store_code]){
+						this.userPlans[store_code].unshift(partnerPlan);
+						firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+						userPlans: this.userPlans
+					}, {merge: true}).then((res) => {
+						console.warn('salvou plano');
+						resolve();
+					})
+				  }
+				  else{
+					  let plans = [];
+					  plans.push(partnerPlan);
+					  this.userPlans[store_code] = plans;
+					  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+						userPlans: this.userPlans
+					}, {merge: true}).then((res) => {
+						console.warn('salvou plano');
+						resolve();
+					})
+				  }
+			  }
+			  else {
+				let partnerPlans = {};
+				partnerPlans[store_code] = [];
+				partnerPlans[store_code].push(partnerPlan);
+				this.userPlans = partnerPlans;
+				  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+					  userPlans: this.userPlans
+				  }, {merge: true}).then((res) => {
+					  console.warn('salvou plano');
+					  resolve();
+				  })
+			  }
+			})
+		})
+	}
+
+
   this.updateProfile = function (user) {
 	  return new Promise((resolve) => {
 		  firebase.auth().currentUser.updateProfile({
@@ -666,7 +754,7 @@ function HeimdallrLib() {
                       this.user_id = user._user.uid;
                       this.user_image = user._user.photoURL;
                       this.user_name = user._user.displayName;
-                      this.email = user._user.email;
+					  this.email = user._user.email;
                       console.log('this.token', this.user_id);
                       this.getUserData(user);
                       u = user;
@@ -684,8 +772,10 @@ function HeimdallrLib() {
   this.getUserData = function (user) {
 	  firebase.firestore().collection('user').where('uid', '==', user._user.uid).get().then(
 		  (resolve) => {
-		  	console.log('resolve USER', resolve.docs[0].data().phone);
-		  	this.phone = resolve.docs[0].data().phone;
+			  let user =  resolve.docs[0].data();
+		  	console.log('resolve USER', user.phone);
+			  this.phone = user.phone;
+			  this.userPlans = user.userPlans ? user.userPlans : null;
 		  	console.log(this.phone);
 		  }
 	  )
@@ -760,6 +850,24 @@ function HeimdallrLib() {
 			console.log("erro usuário",error);
 
 		});
+  }
+
+  this.getUserPartnerPlans = function (store_code){
+	  let partnerPlans = null;
+	  return new Promise((resolve) => {
+		  firebase.firestore().collection('user').where('uid', '==', this.user_id).get()
+		  	.then((result) => {
+				  /* console.warn("PARTNER PLANS RESULT",result._docs[0]._data[store_code]); */
+				if(result._docs[0]._data[store_code]){
+					partnerPlans = result._docs[0]._data[store_code];
+				}
+				resolve();
+			  })
+	  }).then(function (resolve){
+		  return partnerPlans;
+	  }).catch((erro) => {
+		  console.log("partners plan erro", erro);
+	  });
   }
 
   this.getUserColletion = function (limit, uid) {
@@ -1153,6 +1261,20 @@ function HeimdallrLib() {
     }).then(function (resolve) {
       return returnValue;
     })
+  }
+
+  this.saveOutstandingPayments = function(params){
+	  return new Promise((resolve,reject) => {
+		firebase.firestore().collection('outstanding_payments').add(params).then(
+			(result) => {
+				resolve();
+			},
+			(erro) => {
+				reject(erro);
+			}
+		)
+
+	  })
   }
 
   this.checkTicketsStatus = function(uid) {

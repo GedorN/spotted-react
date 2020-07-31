@@ -17,18 +17,38 @@ export default class LikeAPrayer extends React.Component{
 		this.state = {
 			opacityValue: 0.7,
 			opacityValueScrolling: 1,
+			price: '',
+			partnersPlan: null,
 		}
 	}
 	componentDidMount(): void {
 		console.log('produto recebido: ', this.props.product);
+		this.state.price = this.props.product.price;
+		this.state.partnersPlan = this.props.partnersPlan;
+		/* console.warn("PRICE", this.state.price); */
+		this.planDiscount();
+	}
+
+	planDiscount = () =>{
+
+		if(this.props.validPlan){
+			if(this.props.discountType === 0){
+				let newPrice = this.state.price - (this.state.price * (this.props.discount/100));
+				this.setState({ price: newPrice });
+			}else{
+				let newPrice = this.state.price - this.props.discount;
+				newPrice <= 0 ? newPrice = 0 : newPrice;
+				this.setState({ price: newPrice });
+			}
+		}
 	}
 
 	goToProductScreen = () => {
-		try {
-			this.props.navigation.push('ProductScreen', {iid: this.props.product.iid});
-		} catch (e) {
-			console.log(e);
-		}
+
+		this.props.navigation.push('ProductScreen', 
+		{
+			iid: this.props.product.iid,
+		})
 	}
 
 
@@ -79,7 +99,7 @@ export default class LikeAPrayer extends React.Component{
 								source={{ uri: this.props.product && this.props.product.images ? this.props.product.images[0] : null}}
 							/>
 						</View>
-						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ this.props.product && this.props.product.price? ('Valor: R$ ' + (parseFloat(this.props.product.price) * 1.16).toFixed(2)) : ''}</Text>
+						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ ('Valor: R$ ' + (parseFloat(this.state.price) * 1.16).toFixed(2))}</Text>
 					</View>
 				</Ripple>
 			</View>
