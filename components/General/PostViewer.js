@@ -82,6 +82,7 @@ export default class PostViewer extends React.Component {
 			    <View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
 				    <View  style={{width: width * 0.80, height: 235}}>
 					    <Video
+						    disableFocus={true}
 						    resizeMode={'cover'}
 						    repeat={true}
 						    source={{uri: this.props.images[0]}}

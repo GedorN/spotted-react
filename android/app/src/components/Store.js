@@ -28,7 +28,7 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 
 let scrolling = false;
-let interval = 5000;
+var verify = null;
 export default class Store extends React.Component {
 	constructor (props) {
 		super(props);
@@ -77,8 +77,8 @@ export default class Store extends React.Component {
 
 		heimdallr.getPartnersPlan(this.props.navigation.getParam('store'))
 		.then((resolve) => {
-			this.setState({ planId: Object.keys(resolve), partnersPlan: resolve }) 
-	 	}); 
+			this.setState({ planId: Object.keys(resolve), partnersPlan: resolve })
+	 	});
 
 		this.verifyPlan().then((result) => {
 			heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
@@ -112,26 +112,26 @@ export default class Store extends React.Component {
 
 	verifyPlan = async () => {
 
-		let today = await heimdallr.getServerTime(); 
+		let today = await heimdallr.getServerTime();
 
 		return new Promise((result) => {
 			let userPlans = null;
 			let store_code =this.props.navigation.getParam('store');
 			if(heimdallr.userPlans != null && heimdallr.userPlans[store_code]){
 				userPlans = heimdallr.userPlans[store_code];
-				if(today < userPlans[0].due_date){	
-					this.setState({ 
-						validPlan: true, 
-						discount: userPlans[0].value, 
-						discountType: userPlans[0].type, 
-						plan: userPlans[0].name, 
-						dueDatePlan: moment(userPlans[0].due_date).format('DD/MM/YYYY'), 
+				if(today < userPlans[0].due_date){
+					this.setState({
+						validPlan: true,
+						discount: userPlans[0].value,
+						discountType: userPlans[0].type,
+						plan: userPlans[0].name,
+						dueDatePlan: moment(userPlans[0].due_date).format('DD/MM/YYYY'),
 					});
 				}
 			}
-			result();	
+			result();
 		})
-	
+
 	}
 
 	componentWillUnmount() {
@@ -198,8 +198,9 @@ export default class Store extends React.Component {
 
 				userParams.url = resolve.data.paymentUrl;
 				Linking.openURL(resolve.data.paymentUrl);
-				
-				paymentFunction = () => {
+
+
+				verify = setInterval(() => {
 					axios({
 						method: 'get',
 						url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
@@ -209,8 +210,7 @@ export default class Store extends React.Component {
 							this.setState({ showPartnerModal : false, showLoading: false });
 							if(resolve.data.status === 'paid'){
 
-								clearFunction();
-
+								clearInterval(verify);
 								showMessage({
 									message: "Compra realizada com sucesso",
 									type: "success",
@@ -219,33 +219,30 @@ export default class Store extends React.Component {
 
 								heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
 								heimdallr.savePartnerPlan(store_code,userParams)
-								.then((result) => {
-									this.props.navigation.push('Store', { store: store_code });
-								}); 
-								
+									.then((result) => {
+										this.props.navigation.push('Store', { store: store_code });
+									});
+
 							}
 						},
 						(reject) => {
 							this.setState({ showPartnerModal : false, showLoading: false });
 						})
-				}
+				}, 5000);
 
-				let verify = setInterval(paymentFunction,interval); 
 
-				clearFunction = () => {
-					clearTimeout(verify);
-				}
-
-				setTimeout(clearFunction,240000);
+				setTimeout(() => {
+					clearInterval(verify);
+				},240000);
 			},
 			(reject) => {
-
+				clearInterval(verify);
  				showMessage({
 					message: "Erro ao realizar a compra",
 					type: "danger",
 					icon: 'danger'
 				});
-			})        
+			})
 	}
 
 
@@ -413,7 +410,7 @@ export default class Store extends React.Component {
 										<ScrollView style = {styles.scrollView} showsVerticalScrollIndicator = {false}>
 											<View>
 												<View style={{marginBottom: 20, marginLeft: 10}}>
-													<Text style={{color: '#8f8f8f', fontWeight: 'bold', marginTop: 10}}>Selecione o plano</Text> 
+													<Text style={{color: '#8f8f8f', fontWeight: 'bold', marginTop: 10}}>Selecione o plano</Text>
 												</View>
 												{
 													this.state.planId.map(i =>
@@ -523,16 +520,16 @@ const styles = StyleSheet.create({
 		marginLeft:0.001
 	},
 	iconView: {
-		width: theme.width * 0.15, 
-		height: theme.height*0.05, 
-		alignSelf: 'flex-end' 
+		width: theme.width * 0.15,
+		height: theme.height*0.05,
+		alignSelf: 'flex-end'
 	},
 	modalText: {
-		marginTop: -(theme.height *  0.025), 
-		fontSize: 20, 
-		fontWeight: 'bold', 
-		letterSpacing: 0.5, 
-		alignSelf: 'center' 
+		marginTop: -(theme.height *  0.025),
+		fontSize: 20,
+		fontWeight: 'bold',
+		letterSpacing: 0.5,
+		alignSelf: 'center'
 	},
 	modalButtons: {
 		flexDirection: 'row',
@@ -561,84 +558,84 @@ const styles = StyleSheet.create({
 		justifyContent: 'center'
 	},
 	partnerButton: {
-		elevation: 2, 
-		width: theme.width * 0.9, 
-		alignSelf: 'center', 
-		borderRadius: 15, 
-		flexDirection:'row', 
+		elevation: 2,
+		width: theme.width * 0.9,
+		alignSelf: 'center',
+		borderRadius: 15,
+		flexDirection:'row',
 		justifyContent: 'center',
 		alignContent :'center',
 		alignItems:'center',
 	},
 	messageView: {
-		width:theme.width * 0.8, 
-		alignSelf: 'center', 
+		width:theme.width * 0.8,
+		alignSelf: 'center',
 		marginBottom: 10
 	},
-	modalView: { 
-		marginTop: theme.height * 0.08, 
+	modalView: {
+		marginTop: theme.height * 0.08,
 		paddingBottom: 50
 	},
 	timesSolid: {
-		width: 15, 
-		height: 15, 
-		opacity: 0.4, 
+		width: 15,
+		height: 15,
+		opacity: 0.4,
 		alignSelf: 'flex-end',
 	},
 	partnerButtonIcon: {
-		width: 22, 
-		height: 20, 
+		width: 22,
+		height: 20,
 		alignSelf: 'center',
 	},
 	partnersPlanView: {
-		borderRadius: 10, 
-		marginBottom: 10, 
-		marginRight: 5, 
-		alignSelf: 'center', 
+		borderRadius: 10,
+		marginBottom: 10,
+		marginRight: 5,
+		alignSelf: 'center',
 		backgroundColor: 'white'
 	},
 	selectedPlan: {
-		backgroundColor: 'white', 
-		padding:15, 
-		borderRadius: 10, 
-		elevation: 2, 
+		backgroundColor: 'white',
+		padding:15,
+		borderRadius: 10,
+		elevation: 2,
 		width: theme.width * 0.75,
 	},
 	planDescriptionView: {
-		flexDirection: 'row', 
+		flexDirection: 'row',
 		width: theme.width * 0.65
 	},
 	planDescription: {
-		flexWrap: 'wrap', 
+		flexWrap: 'wrap',
 		fontWeight:'400',
 		color: '#8f8f8f'
 	},
 	scrollView: {
-		height: theme.height * 0.35, 
-		marginTop: 0 
+		height: theme.height * 0.35,
+		marginTop: 0
 	},
 	descriptionTitle: {
-		fontWeight:'bold', 
+		fontWeight:'bold',
 		flexWrap: 'wrap'
 	},
 	planName: {
-		fontWeight: 'bold', 
-		fontSize: 17, 
+		fontWeight: 'bold',
+		fontSize: 17,
 		marginBottom: 10,
 	},
 	buttonPartnerText: {
-		fontWeight: 'bold', 
-		fontSize: 15, 
-		letterSpacing: 1, 
-		alignSelf: 'center', 
-		marginLeft: 10, 
+		fontWeight: 'bold',
+		fontSize: 15,
+		letterSpacing: 1,
+		alignSelf: 'center',
+		marginLeft: 10,
 	},
 	partnerButtonView: {
-		flexDirection : 'row', 
+		flexDirection : 'row',
 		alignSelf: 'center',
-		width: theme.width * 0.47, 
-		height: theme.height * 0.03, 
-		alignContent: 'center', 
+		width: theme.width * 0.47,
+		height: theme.height * 0.03,
+		alignContent: 'center',
 		justifyContent:'flex-start'
 	}
 });
