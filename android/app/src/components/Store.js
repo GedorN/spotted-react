@@ -112,7 +112,7 @@ export default class Store extends React.Component {
 
 	verifyPlan = async () => {
 
-		let today = moment(await heimdallr.getServerTime()).format(); 
+		let today = await heimdallr.getServerTime(); 
 
 		return new Promise((result) => {
 			let userPlans = null;
@@ -152,7 +152,7 @@ export default class Store extends React.Component {
 
 		userParams.referenceId = await heimdallr.getUID();
 		userParams.signature_date = await heimdallr.getServerTime();
-		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').format();
+		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').valueOf();
 		userParams.members = null;
 
 		user.user_name = heimdallr.user_name;

@@ -320,7 +320,6 @@ function HeimdallrLib() {
 				.collection('partners_plan').doc(store_code)
 				.get().then((result) => {
 					docs = result.data();
-					console.warn("RESULT.DATA()",result.data());
 					resolve();
 				}).catch((e) => {
 					console.warn("erro",e);
@@ -646,14 +645,14 @@ function HeimdallrLib() {
 		  firebase.firestore().collection('partners_plan').doc(store_code).set({
 		  	[plan_doc]: partner_plan
 		  },{merge:true}).then((res) => {
-			  console.warn("save new partner");
+
 			  resolve();
 		  })
 	  })
   }
 
   this.savePartnerPlan = function (store_code,partnerPlan) {
-	  console.warn("STORE_CODE",store_code);
+
 	return new Promise((resolve) => {
 		firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 			(result) => {
@@ -663,7 +662,7 @@ function HeimdallrLib() {
 						firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 						userPlans: this.userPlans
 					}, {merge: true}).then((res) => {
-						console.warn('salvou plano');
+	
 						resolve();
 					})
 				  }
@@ -674,7 +673,7 @@ function HeimdallrLib() {
 					  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 						userPlans: this.userPlans
 					}, {merge: true}).then((res) => {
-						console.warn('salvou plano');
+
 						resolve();
 					})
 				  }
@@ -687,7 +686,7 @@ function HeimdallrLib() {
 				  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 					  userPlans: this.userPlans
 				  }, {merge: true}).then((res) => {
-					  console.warn('salvou plano');
+	
 					  resolve();
 				  })
 			  }

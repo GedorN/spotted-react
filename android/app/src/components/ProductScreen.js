@@ -102,7 +102,7 @@ export default class ProductScreen extends React.Component {
 
 	planDiscount = async () =>{
 
-		let today = moment(await heimdallr.getServerTime()).format(); 
+		let today = await heimdallr.getServerTime(); 
 		let userPlans = null;
 
 		if(heimdallr.userPlans != null && heimdallr.userPlans[this.state.product.sid]){
@@ -507,7 +507,7 @@ export default class ProductScreen extends React.Component {
 
 		userParams.referenceId = await heimdallr.getUID();
 		userParams.signature_date = await heimdallr.getServerTime();
-		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').format();
+		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').valueOf();
 		userParams.members = null;
 
 		user.user_name = heimdallr.user_name;
@@ -929,7 +929,7 @@ export default class ProductScreen extends React.Component {
 		            style = {{ height: 50, width: theme.width * 0.5 }}
 	            >
 		            <View style = {styles.centeredView}>
-						<View style = {{ ...styles.modalContainer, height: this.state.partnersPlan && this.state.partnersPlan.length > 1 ?  theme.height * 0.7 : theme.height * 0.55}}>
+						<View style = {{ ...styles.modalContainer, height: this.state.planId && this.state.planId.length > 1 ?  theme.height * 0.7 : theme.height * 0.55}}>
 							<View style = {{ ...styles.modalHeader , backgroundColor:  this.state.product? this.state.product.colors[0]: null}}>
 								<TouchableOpacity onPress={() => {this.setState({showPartnerModal: false})}}>
 									<View style = {styles.iconView}>
@@ -943,7 +943,7 @@ export default class ProductScreen extends React.Component {
 							</View>
 							{
 								!this.state.showLoading &&
-								<View style = {{ ...styles.modalView, height:  this.state.partnersPlan &&  this.state.partnersPlan.length > 1 ? theme.height * 0.64 : theme.height * 0.5 }}>
+								<View style = {{ ...styles.modalView, height:  this.state.planId &&  this.state.planId.length > 1 ? theme.height * 0.64 : theme.height * 0.5 }}>
 									<ScrollView style = {styles.scrollView} showsVerticalScrollIndicator = {false}>
 										<View>
 											<View style={{ marginBottom: 20, marginLeft: 10, marginTop: 10 }}>
