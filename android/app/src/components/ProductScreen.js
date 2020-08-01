@@ -76,7 +76,7 @@ export default class ProductScreen extends React.Component {
 		}
 	}
 
-	componentDidMount(): void {
+	componentDidMount = async () => {
 
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 
@@ -104,7 +104,7 @@ export default class ProductScreen extends React.Component {
 								price_without_tax: original_price,
 								storePrice : original_price,
 								spottedPrice : resolve.price,
-								initialLoad: true,
+								initialLoad: false,
 								PicPayPrice: (newPrice * 1.16).toFixed(2)
 							});
 						} else {
@@ -116,7 +116,7 @@ export default class ProductScreen extends React.Component {
 								price_without_tax: original_price,
 								storePrice : original_price,
 								spottedPrice : resolve.price,
-								initialLoad: true,
+								initialLoad: false,
 								PicPayPrice: (newPrice * 1.16).toFixed(2),
 							});
 						}
@@ -129,8 +129,8 @@ export default class ProductScreen extends React.Component {
 						price_without_tax: original_price,
 						storePrice : original_price,
 						spottedPrice : resolve.price,
-						initialLoad: true,
-						PicPayPrice : this.state.spottedPrice
+						initialLoad: false,
+						PicPayPrice : resolve.price
 					});
 				}
 			},
