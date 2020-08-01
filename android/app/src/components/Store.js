@@ -142,6 +142,7 @@ export default class Store extends React.Component {
 
 		this.setState({showLoading: true});
 
+	
 		let price = null;
 		let timeNow = null;
 		let user = {};
@@ -160,15 +161,6 @@ export default class Store extends React.Component {
 		user.image = heimdallr.user_image;
 		user.phone = heimdallr.phone;
 		user.referenceId = 	userParams.referenceId;
-
-		if(collectionParams.members &&collectionParams.members.length > 0){
-			collectionParams.members.push(user);
-		}
-		else{
-			let newUsers = [];
-			newUsers.push(user);
-			collectionParams.members = newUsers;
-		}
 
 		collectionParams.members_number = (collectionParams.members_number - 1);
 
@@ -218,6 +210,7 @@ export default class Store extends React.Component {
 								});
 
 								heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
+								heimdallr.updateNewPartner(collectionParams.plan_id,user);
 								heimdallr.savePartnerPlan(store_code,userParams)
 									.then((result) => {
 										this.props.navigation.push('Store', { store: store_code });

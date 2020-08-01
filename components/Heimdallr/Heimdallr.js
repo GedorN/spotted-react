@@ -651,6 +651,36 @@ function HeimdallrLib() {
 	  })
   }
 
+  this.updateNewPartner = function(plan_id, user){
+	return new Promise((resolve) => {
+		firebase.firestore().collection('partners').doc(plan_id).get().then(
+			(result) => {
+				if(result.data()){
+					let partners = result.data().members;
+					partners.push(user);
+					firebase.firestore().collection('partners').doc(plan_id).set({
+						members: partners
+					},	{merge: true}).then((res) => {
+
+						resolve();
+					})
+				}
+				else{
+					let partners = [];
+					partners.push(user);
+					firebase.firestore().collection('partners').doc(plan_id).set({
+						members: partners
+					},	{merge: true}).then((res) => {
+
+						resolve();
+					})
+				}
+			}
+		)
+	})
+  }
+
+
   this.savePartnerPlan = function (store_code,partnerPlan) {
 
 	return new Promise((resolve) => {

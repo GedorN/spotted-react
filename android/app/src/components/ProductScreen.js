@@ -552,14 +552,6 @@ export default class ProductScreen extends React.Component {
 		user.phone = heimdallr.phone;
 		user.referenceId = 	userParams.referenceId;
 
-		if(collectionParams.members &&collectionParams.members.length > 0){
-			collectionParams.members.push(user);
-		}
-		else{
-			let newUsers = [];
-			newUsers.push(user);
-			collectionParams.members = newUsers;
-		}
 		collectionParams.members_number = (collectionParams.members_number - 1);
 
 		timeNow = moment(userParams.signature_date).add(4,'m').format();
@@ -606,6 +598,7 @@ export default class ProductScreen extends React.Component {
 								});
 
 								heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
+								heimdallr.updateNewPartner(collectionParams.plan_id,user);
 								heimdallr.savePartnerPlan(store_code,userParams)
 									.then((result) => {
 										this.props.navigation.push('ProductScreen',
