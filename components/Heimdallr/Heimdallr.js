@@ -361,22 +361,6 @@ function HeimdallrLib() {
 
 	}
 
-	this.userLimiter = (store_code, partnersPlan) => {
-
-		return new Promise((resolve, reject) => {
-				try{ 
-					firebase.firestore()
-					.collection('partners_plan').doc(store_code)
-					.set({
-						plans: partnersPlan
-					}, {merge: false});
-			}catch(erro){
-
-			}
-			resolve();
-		})
-	}
-
 	this.saveUserCoupon = function (userCoupons){
 
 		return new Promise((resolve, reject) => {
@@ -852,24 +836,6 @@ function HeimdallrLib() {
 		});
   }
 
-  this.getUserPartnerPlans = function (store_code){
-	  let partnerPlans = null;
-	  return new Promise((resolve) => {
-		  firebase.firestore().collection('user').where('uid', '==', this.user_id).get()
-		  	.then((result) => {
-				  /* console.warn("PARTNER PLANS RESULT",result._docs[0]._data[store_code]); */
-				if(result._docs[0]._data[store_code]){
-					partnerPlans = result._docs[0]._data[store_code];
-				}
-				resolve();
-			  })
-	  }).then(function (resolve){
-		  return partnerPlans;
-	  }).catch((erro) => {
-		  console.log("partners plan erro", erro);
-	  });
-  }
-
   this.getUserColletion = function (limit, uid) {
   	let docs = null;
   	return new Promise((resolve) => {
@@ -1261,20 +1227,6 @@ function HeimdallrLib() {
     }).then(function (resolve) {
       return returnValue;
     })
-  }
-
-  this.saveOutstandingPayments = function(params){
-	  return new Promise((resolve,reject) => {
-		firebase.firestore().collection('outstanding_payments').add(params).then(
-			(result) => {
-				resolve();
-			},
-			(erro) => {
-				reject(erro);
-			}
-		)
-
-	  })
   }
 
   this.checkTicketsStatus = function(uid) {
