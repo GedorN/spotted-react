@@ -90,14 +90,14 @@ export default class ProductScreen extends React.Component {
 				let today = await heimdallr.getServerTime();
 				let userPlans = null;
 
-				if(heimdallr.userPlans != null && heimdallr.userPlans[this.state.product.sid]){
-					userPlans =  heimdallr.userPlans[this.state.product.sid];
+				if(heimdallr.userPlans != null && heimdallr.userPlans[resolve.sid]){
+					userPlans =  heimdallr.userPlans[resolve.sid];
 
 					// verifica se o plano ainda está dentro da validade
 					if(today < userPlans[0].due_date){
 						// verifica se o desconte deve ser absoluto ou porcentagem
 						if( userPlans[0].type === 0 ){
-							let newPrice = this.state.storePrice - (this.state.storePrice * ((userPlans[0].value)/100));
+							let newPrice = original_price - (original_price * ((userPlans[0].value)/100));
 							this.setState({
 								product: resolve,
 								productImages: resolve.images,
@@ -108,7 +108,7 @@ export default class ProductScreen extends React.Component {
 								PicPayPrice: (newPrice * 1.16).toFixed(2)
 							});
 						} else {
-							let newPrice = this.state.storePrice - userPlans[0].value;
+							let newPrice = this.original_price- userPlans[0].value;
 							newPrice <= 0 ? newPrice = 0 : newPrice
 							this.setState({
 								product: resolve,
@@ -140,19 +140,19 @@ export default class ProductScreen extends React.Component {
 		)
 	}
 
-	planDiscount = async () =>{
+	planDiscount = async (store_code, store_price) =>{
 
 		let today = await heimdallr.getServerTime();
 		let userPlans = null;
 
-		if(heimdallr.userPlans != null && heimdallr.userPlans[this.state.product.sid]){
-			userPlans =  heimdallr.userPlans[this.state.product.sid];
+		if(heimdallr.userPlans != null && heimdallr.userPlans[store_code]){
+			userPlans = heimdallr.userPlans[store_code];
 
 			// verifica se o plano ainda está dentro da validade
 			if(today < userPlans[0].due_date){
 				// verifica se o desconte deve ser absoluto ou porcentagem
 				if( userPlans[0].type === 0 ){
-					let newPrice = this.state.storePrice - (this.state.storePrice * ((userPlans[0].value)/100));
+					let newPrice = store_price - (store_price * ((userPlans[0].value)/100));
 					this.setState({ PicPayPrice: (newPrice * 1.16).toFixed(2) });
 				} else {
 					let newPrice = this.state.storePrice - userPlans[0].value;
@@ -552,6 +552,14 @@ export default class ProductScreen extends React.Component {
 		user.phone = heimdallr.phone;
 		user.referenceId = 	userParams.referenceId;
 
+		if(collectionParams.members &&collectionParams.members.length > 0){
+			collectionParams.members.push(user);
+		}
+		else{
+			let newUsers = [];
+			newUsers.push(user);
+			collectionParams.members = newUsers;
+		}
 		collectionParams.members_number = (collectionParams.members_number - 1);
 
 		timeNow = moment(userParams.signature_date).add(4,'m').format();
@@ -598,7 +606,6 @@ export default class ProductScreen extends React.Component {
 								});
 
 								heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
-								heimdallr.updateNewPartner(collectionParams.plan_id,user);
 								heimdallr.savePartnerPlan(store_code,userParams)
 									.then((result) => {
 										this.props.navigation.push('ProductScreen',
