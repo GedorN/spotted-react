@@ -244,6 +244,7 @@ export default class ProductScreen extends React.Component {
 					heimdallr.saveUserCoupon(this.state.userCouponsRegister);
 					this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
 				}
+
 				this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
 				showMessage({
 					message: "Compra realizada com sucesso",
@@ -259,7 +260,7 @@ export default class ProductScreen extends React.Component {
 						"referenceId": params.referenceId,
 						"callbackUrl": "http://www.spottedutfpr.com.br/callback",
 						"value": params.product_price,
-						"expiresAt": "2022-05-01T16:00:00-03:00",
+						"expiresAt": moment().endOf('month').format(),
 						"buyer": {
 							"firstName": heimdallr.user_name.split(' ')[0],
 							"lastName": heimdallr.user_name.split(' ')[0],
@@ -279,6 +280,9 @@ export default class ProductScreen extends React.Component {
 							heimdallr.saveUserCoupon(this.state.userCouponsRegister);
 							this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
 						}
+						setTimeout(() => {
+							heimdallr.checkTicketsStatus(heimdallr.user_id);
+						}, 20000);
 						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
 						showMessage({
 							message: "Compra realizada com sucesso",
