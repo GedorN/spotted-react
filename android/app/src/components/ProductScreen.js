@@ -20,6 +20,7 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import FatBottomedButton from'./buttons/FatBottomedButton';
 import CustomizationTextArea from './CustomizationTexArea';
+import PartnerPlans from "./Inputs/PartnerPlans";
 import AwesomeAlert from "react-native-awesome-alerts";
 import CustomSelect from "./custom/CustomSelect";
 import CustomRadio from "./custom/CustomRadio";
@@ -69,10 +70,12 @@ export default class ProductScreen extends React.Component {
 			settingPromotionalCode: false,
 			discountPicPayPrice: null,
 			discountPriceWithoutTax: null,
-			showPartnerModal: false,
 			partnersPlan: null,
 			selectedPlan: null,
-			planId: null,
+			planId: [],
+			showPartnerPlans: false,
+			pushParameter: 1,
+			currentPlan: false,
 		}
 	}
 
@@ -83,7 +86,15 @@ export default class ProductScreen extends React.Component {
 
 		heimdallr.getProduct(this.state.iidProduct).then(
 			async (resolve) => {
-				heimdallr.sendEvent(`${resolve.sid}_product_click`)
+
+				heimdallr.getPartnersPlan(resolve.sid)
+					.then((resolve) => {
+						this.setState({ planId: Object.keys(resolve), partnersPlan: resolve })
+					});
+
+				this.planDiscount(resolve.sid, resolve.price);
+				heimdallr.sendEvent(`${resolve.sid}_product_click`);
+
 				const original_price = resolve.price;
 				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
 
@@ -147,7 +158,7 @@ export default class ProductScreen extends React.Component {
 
 		if(heimdallr.userPlans != null && heimdallr.userPlans[store_code]){
 			userPlans = heimdallr.userPlans[store_code];
-
+			this.setState({currentPlan: userPlans[0]});
 			// verifica se o plano ainda está dentro da validade
 			if(today < userPlans[0].due_date){
 				// verifica se o desconte deve ser absoluto ou porcentagem
@@ -653,6 +664,10 @@ export default class ProductScreen extends React.Component {
 		this.setState({ showAlert: false });
 	}
 
+	hideModal = () => {
+		this.setState({showPartnerPlans: false});
+	}
+
 	render() {
 		return (
 			<KeyboardAvoidingView style={{flex: 1}}>
@@ -728,7 +743,7 @@ export default class ProductScreen extends React.Component {
 											</View>
 										}
 										<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
-											<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerModal : true})}>
+											<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerPlans : true})}>
 												<View style={styles.partnerButtonView}>
 													<Image
 														style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] === 'white' ? 'black' : 'white'}}
@@ -953,88 +968,18 @@ export default class ProductScreen extends React.Component {
 		            </View>
 	            </Modal>
 				<Modal
-		            hardwareAccelerated={true}
-		            animationType='fade'
-		            transparent={true}
-		            visible={this.state.showPartnerModal}
-		            onRequestClose={() => { this.setState({showPartnerModal: false}) }}
-		            style = {{ height: 50, width: theme.width * 0.5 }}
-	            >
-		            <View style = {styles.centeredView}>
-						<View style = {{ ...styles.modalContainer, height: this.state.planId && this.state.planId.length > 1 ?  theme.height * 0.7 : theme.height * 0.55}}>
-							<View style = {{ ...styles.modalHeader , backgroundColor:  this.state.product? this.state.product.colors[0]: null}}>
-								<TouchableOpacity onPress={() => {this.setState({showPartnerModal: false})}}>
-									<View style = {styles.iconView}>
-										<Image
-											style = {{ ...styles.timesSolid, tintColor: heimdallr.getTxtColor(this.state.product? this.state.product.colors[0]: 'black') }}
-											source = {require('../../../../assets/images/times-solid.png')}
-										/>
-									</View>
-								</TouchableOpacity>
-								<Text style = {{ ...styles.modalText, color: (this.state.product ? this.state.product.colors[1] : null)}}>{'Opções de plano'}</Text>
-							</View>
-							{
-								!this.state.showLoading &&
-								<View style = {{ ...styles.modalView, height:  this.state.planId &&  this.state.planId.length > 1 ? theme.height * 0.64 : theme.height * 0.5 }}>
-									<ScrollView style = {styles.scrollView} showsVerticalScrollIndicator = {false}>
-										<View>
-											<View style={{ marginBottom: 20, marginLeft: 10, marginTop: 10 }}>
-												<Text style={{ color: '#8f8f8f', fontWeight: 'bold' }}>Selecione o plano</Text>
-											</View>
-											{
-												this.state.planId != null && this.state.planId.map(i =>
-												<View  key = {i} style={styles.partnersPlanView}>
-													<View style={{ ...styles.selectedPlan, borderColor: (this.state.selectedPlan === this.state.planId.indexOf(i) && this.state.product ? this.state.product.colors[0]: null), borderWidth: (this.state.selectedPlan === this.state.planId.indexOf(i) ? 3 : 0) }}>
-														<TouchableOpacity onPress={() => this.setState({ selectedPlan: this.state.planId.indexOf(i) })}>
-															<Text style={{ ...styles.planName, color: (this.state.product ? this.state.product.colors[0] : null)}}>{ 'Plano: ' + this.state.partnersPlan[i].name}</Text>
-															<View style={styles.planDescriptionView}>
-																<Text style={styles.descriptionTitle}>{ 'Descrição: '}
-																	<Text style = {styles.planDescription}>{JSON.parse(this.state.partnersPlan[i].description) + '.'}</Text>
-																</Text>
-															</View>
-															<View style={{flexDirection: 'row'}}>
-																<Text style={{fontWeight:'bold'}}>{ 'Valor de desconto nas compras: ' }</Text>
-																<Text style={{color: '#8f8f8f'}}>{this.state.partnersPlan[i].type === 0 ? this.state.partnersPlan[i].value + '%' : 'R$ ' + parseFloat(this.state.partnersPlan[i].value).toFixed(2)}</Text>
-															</View>
-															<Text style={{fontWeight: 'bold'}}>{'O plano é válido por ' + this.state.partnersPlan[i].vigor + ' dias.'}</Text>
-															<Text style={{fontWeight:'bold'}}>{'Preço: R$' + this.state.partnersPlan[i].price}</Text>
-														</TouchableOpacity>
-													</View>
-												</View>
-												)
-											}
-											<View style = {{ ...styles.modalButtons,  marginTop: theme.height * 0.05}}>
-												<TouchableOpacity activeOpacity={1} onPress = { () => this.setState({ showPartnerModal: false }) }>
-													<View style = { styles.cancelButton }>
-														<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing: 0.5 }}>{ 'Cancelar' }</Text>
-													</View>
-												</TouchableOpacity>
-												<TouchableOpacity activeOpacity={1} onPress = { this.registerPartnerPlan.bind(this) }>
-													<View style = {{ ...styles.confirmButton, backgroundColor: (this.state.product ? this.state.product.colors[0] : null)}}>
-														<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color: (this.state.product ? this.state.product.colors[1] : null) }}>{ 'Confirmar' }</Text>
-													</View>
-												</TouchableOpacity>
-											</View>
-										</View>
-									</ScrollView>
-								</View>
-							}
-							{
-								this.state.showLoading &&
-								<View style = {{marginTop: theme.height * 0.1}}>
-									<ActivityIndicator size="large" color={this.state.product? this.state.product.colors[0] : theme.primary} />
-									<View style={{flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap', justifyContent: 'center',marginTop:theme.height * 0.05 }}>
-										<Text style={{fontStyle: 'italic', fontWeight: 'bold', fontSize: 25, color: '#8f8f8f'}}>
-											HOOOOOOLD!
-										</Text>
-										<Text style={{fontWeight: 'bold', fontSize: 25, textAlign: 'center', marginTop: theme.height * 0.05, lineHeight: 50 }}>
-											Estamos registrando o seu plano ;)
-										</Text>
-									</View>
-								</View>
-							}
-						</View>
-					</View>
+					statusBarTranslucent={false}
+					transparent={true}
+					hardwareAccelerated={true}
+					animationType='slide'
+					visible={this.state.showPartnerPlans}
+					onDismiss={() => this.setState({ showPartnerPlans: false})}
+					onRequestClose={() => this.setState({ showPartnerPlans: false})}
+					contentContainerStyle={{backgroundColor: 'white', width: theme.width + 10, height: theme.height, position: 'absolute'}}
+				>
+				<PartnerPlans colors={this.state.product ? this.state.product.colors : null} planId={this.state.planId} partnersPlan={this.state.partnersPlan} logo={this.state.product ? this.state.product.logo : null} 
+									hideModal={this.hideModal.bind(this)} store_code={this.state.product? this.state.product.sid : null} navigation={this.props.navigation}
+									currentPlan={this.state.currentPlan} pushParameter={this.state.pushParameter}/>
 				</Modal>
 				<FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
 			</KeyboardAvoidingView>
@@ -1133,154 +1078,10 @@ const styles = StyleSheet.create({
 		borderRadius: 7,
 		marginLeft: theme.width*0.02
 	},
-	modalHeader : {
-		flexDirection: 'column',
-		width: theme.width * 0.9,
-		borderTopLeftRadius:20,
-		borderTopRightRadius:20,
-		padding:20,
-		position:'absolute',
-		marginLeft:0.001
-	},
-	modalContainer: {
-		width: theme.width * 0.9,
-		backgroundColor: 'white',
-		borderRadius: 20,
-		padding: 25,
-		paddingBottom:20,
-		shadowOffset: {
-			width: 0,
-			height: 2
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-		elevation: 5,
-		zIndex:0,
-	},
-	centeredView: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		marginTop: -(theme.height * 0.1),
-		paddingTop:theme.height * 0.1,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-	},
-	modalButtons: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-		marginBottom:theme.height * 0.04
-	},
-	cancelButton: {
-		paddingTop: 14,
-		paddingBottom: 14,
-		width:theme.width * 0.32,
-		elevation: 2,
-		backgroundColor: '#cccccc',
-		borderRadius: 14,
-		marginRight: theme.width * 0.02,
-	    flexDirection:'row',
-		justifyContent: 'center',
-	},
-	confirmButton: {
-		paddingTop: 14,
-		paddingBottom: 14,
-		width:theme.width * 0.32,
-		elevation: 2,
-		borderRadius: 14,
-		flexDirection: 'row',
-		justifyContent: 'center'
-	},
-	information: {
-		fontWeight: 'bold',
-		marginLeft: theme.width * 0.01,
-		marginBottom: theme.width * 0.02,
-		letterSpacing: 0.5,
-		marginTop: theme.width * 0.04,
-		fontSize: 15
-	},
-	paymentText: {
-		fontWeight:'bold',
-		fontSize: 15,
-		marginBottom: 7,
-		letterSpacing: 0.5
-	},
-	fab: {
-		position: 'absolute',
-		marginTop: theme.height * 0.75,
-		marginLeft: theme.width * 0.80,
-		padding: 5,
-	},
-	iconView: {
-		width: theme.width * 0.15,
-		height: theme.height*0.05,
-		alignSelf: 'flex-end'
-	},
-	modalText: {
-		marginTop: -(theme.height *  0.025),
-		fontSize: 20,
-		fontWeight: 'bold',
-		letterSpacing: 0.5,
-		alignSelf: 'center'
-	},
-	timesSolid: {
-		width: 15,
-		height: 15,
-		opacity: 0.4,
-		alignSelf: 'flex-end',
-	},
-	modalView: {
-		height: theme.height * 0.4,
-		marginTop: theme.height * 0.08,
-		paddingBottom: 50
-	},
-	scrollView: {
-		height: theme.height * 0.35,
-		marginTop: 0
-	},
-	partnersPlanView: {
-		borderRadius: 10,
-		marginBottom: 10,
-		marginRight: 5,
-		alignSelf: 'center',
-		backgroundColor: 'white'
-	},
-	selectedPlan: {
-		backgroundColor: 'white',
-		padding:15,
-		borderRadius: 10,
-		elevation: 2,
-		width: theme.width * 0.75,
-	},
-	planName: {
-		fontWeight: 'bold',
-		fontSize: 17,
-		marginBottom: 10,
-	},
-	planDescriptionView: {
-		flexDirection: 'row',
-		width: theme.width * 0.65
-	},
-	descriptionTitle: {
-		fontWeight:'bold',
-		flexWrap: 'wrap'
-	},
-	planDescription: {
-		flexWrap: 'wrap',
-		fontWeight:'400',
-		color: '#8f8f8f',
-		lineHeight:20
-	},
 	partnerButtonIcon: {
 		width: 22,
 		height: 20,
 		alignSelf: 'center',
-	},
-	buttonPartnerText: {
-		fontWeight: 'bold',
-		fontSize: 15,
-		letterSpacing: 1,
-		alignSelf: 'center',
-		marginLeft: 10,
 	},
 	partnerButton: {
 		elevation: 2,
@@ -1299,7 +1100,12 @@ const styles = StyleSheet.create({
 		height: theme.height * 0.03,
 		alignContent: 'center',
 		justifyContent:'flex-start'
-	}
-
-
+	},
+	buttonPartnerText: {
+		fontWeight: 'bold',
+		fontSize: 15,
+		letterSpacing: 1,
+		alignSelf: 'center',
+		marginLeft: 10,
+	},
 });

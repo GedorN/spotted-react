@@ -20,6 +20,7 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import SevenBannerArmy from "./layout/SevenBannerArmy";
 import LikeAPrayerductViewer from "./layout/LikeAPrayerductViewer";
+import PartnerPlans from "./Inputs/PartnerPlans";
 import {Button} from 'react-native-paper';
 import axios from 'react-native-axios';
 import moment from "moment";
@@ -41,17 +42,16 @@ export default class Store extends React.Component {
 			logo: null,
 			banner: null,
 			isRefreshing: false,
-			storeCode: null,
-			partnersPlan: [],
+			partnersPlan: null,
 			planId: [],
-			showPartnerModal: false,
-			selectedPlan: null,
 			validPlan: false,
 			discount: null,
 			discountType: null,
 			dueDatePlan: null,
 			plan: null,
-			showLoading:false
+			showPartnerPlans: false,
+			currentPlan: false,
+			pushParameter: 0
 		}
 	}
 
@@ -115,10 +115,15 @@ export default class Store extends React.Component {
 		let today = await heimdallr.getServerTime();
 
 		return new Promise((result) => {
+			
 			let userPlans = null;
 			let store_code =this.props.navigation.getParam('store');
+
 			if(heimdallr.userPlans != null && heimdallr.userPlans[store_code]){
+
 				userPlans = heimdallr.userPlans[store_code];
+				this.setState({currentPlan: userPlans[0]})
+
 				if(today < userPlans[0].due_date){
 					this.setState({
 						validPlan: true,
@@ -138,105 +143,6 @@ export default class Store extends React.Component {
 		BackHandler.removeEventListener('hardwareBackPress');
 	}
 
-	registerPartnerPlan = async () => {
-
-		this.setState({showLoading: true});
-
-	
-		let price = null;
-		let timeNow = null;
-		let user = {};
-		let selectedPlan = this.state.planId[this.state.selectedPlan];
-		let store_code = this.props.navigation.getParam('store');
-		let userParams = Object.assign({},this.state.partnersPlan[selectedPlan]);
-		let collectionParams = Object.assign({}, this.state.partnersPlan[selectedPlan]);
-
-		userParams.referenceId = await heimdallr.getUID();
-		userParams.signature_date = await heimdallr.getServerTime();
-		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').valueOf();
-		userParams.members = null;
-
-		user.user_name = heimdallr.user_name;
-		user.email = heimdallr.email;
-		user.image = heimdallr.user_image;
-		user.phone = heimdallr.phone;
-		user.referenceId = 	userParams.referenceId;
-
-		collectionParams.members_number = (collectionParams.members_number - 1);
-
-		timeNow = moment(userParams.signature_date).add(4,'m').format();
-		price = parseFloat(userParams.price.replace(',','.'));
-
-
-	 	axios({
-		method: 'post',
-		url: 'https://appws.picpay.com/ecommerce/public/payments',
-		headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
-		data: {
-			"referenceId":userParams.referenceId,
-			"callbackUrl": "http://www.spottedutfpr.com.br/callback",
-			"value": price,
-			"expiresAt": timeNow,
-			"buyer": {
-				"firstName": heimdallr.user_name.split(' ')[0],
-				"lastName": heimdallr.user_name.split(' ')[0],
-				"document": "123.456.789-10",
-				"email": heimdallr.email,
-				"phone": "+55 27 12345-6789"
-			}
-		}
-		}).then(
-			(resolve) => {
-
-				userParams.url = resolve.data.paymentUrl;
-				Linking.openURL(resolve.data.paymentUrl);
-
-
-				verify = setInterval(() => {
-					axios({
-						method: 'get',
-						url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
-						headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'}
-					}).then(
-						(resolve) => {
-							this.setState({ showPartnerModal : false, showLoading: false });
-							if(resolve.data.status === 'paid'){
-
-								clearInterval(verify);
-								showMessage({
-									message: "Compra realizada com sucesso",
-									type: "success",
-									icon: 'success'
-								});
-
-								heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
-								heimdallr.updateNewPartner(collectionParams.plan_id,user);
-								heimdallr.savePartnerPlan(store_code,userParams)
-									.then((result) => {
-										this.props.navigation.push('Store', { store: store_code });
-									});
-
-							}
-						},
-						(reject) => {
-							this.setState({ showPartnerModal : false, showLoading: false });
-						})
-				}, 5000);
-
-
-				setTimeout(() => {
-					clearInterval(verify);
-				},240000);
-			},
-			(reject) => {
-				clearInterval(verify);
- 				showMessage({
-					message: "Erro ao realizar a compra",
-					type: "danger",
-					icon: 'danger'
-				});
-			})
-	}
 
 
 	chipPressed = (chip) => {
@@ -266,10 +172,6 @@ export default class Store extends React.Component {
 		StatusBar.setBarStyle('dark-content');
 	}
 
-	partnerModal = () => {
-		this.setState({ showPartnerModal: true})
-			/* this.setState({ partnersPlan: resolve, showPartnerModal: true}); */
-	}
 
 	getTxtColor = (color) => {
 		let c = color.substring(1);      // strip #
@@ -286,6 +188,10 @@ export default class Store extends React.Component {
 			return '#000000'
 		}
 
+	}
+
+	hideModal = () => {
+		this.setState({showPartnerPlans: false});
 	}
 
 	render() {
@@ -310,7 +216,7 @@ export default class Store extends React.Component {
 					{
 						this.state.planId.length > 0 &&
 						<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
-							<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerModal : true})}>
+							<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerPlans : true})}>
 								<View style={styles.partnerButtonView}>
 									<Image
 										style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] === 'white' ? 'black' : 'white'}}
@@ -376,90 +282,18 @@ export default class Store extends React.Component {
 					}
 				/>
 				<Modal
-		            hardwareAccelerated={true}
-		            animationType='fade'
-		            transparent={true}
-		            visible={this.state.showPartnerModal}
-		            onRequestClose={() => { this.setState({showPartnerModal: false}) }}
-		            style = {{ height: 50, width: theme.width * 0.5 }}
-	            >
-					<View style = {styles.centeredView}>
-						<View style = {{ ...styles.modalContainer, height: this.state.planId.length > 1 ?  theme.height * 0.7 : theme.height * 0.55}}>
-							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.colors? this.state.colors[0]: null}}>
-								<TouchableOpacity onPress={() => {this.setState({showPartnerModal: false})}}>
-									<View style = {styles.iconView}>
-										<Image
-											style = {{ ...styles.timesSolid, tintColor: heimdallr.getTxtColor(this.state.colors[0] ? this.state.colors[0]: 'black') }}
-											source = {require('../../../../assets/images/times-solid.png')}
-										/>
-									</View>
-								</TouchableOpacity>
-								<Text style = {{ ...styles.modalText, color: (this.state.product ? this.state.product.colors[1] : null) }}>{'Opções de plano'}</Text>
-							</View>
-							{
-								!this.state.showLoading &&
-								<View>
-									<View style = {{ ...styles.modalView, height:  this.state.planId.length > 1 ? theme.height * 0.64 : theme.height * 0.5 }}>
-										<ScrollView style = {styles.scrollView} showsVerticalScrollIndicator = {false}>
-											<View>
-												<View style={{marginBottom: 20, marginLeft: 10}}>
-													<Text style={{color: '#8f8f8f', fontWeight: 'bold', marginTop: 10}}>Selecione o plano</Text>
-												</View>
-												{
-													this.state.planId.map(i =>
-													<View  key = {i} style={styles.partnersPlanView}>
-														<View style={{...styles.selectedPlan, borderColor: (this.state.selectedPlan === this.state.planId.indexOf(i) ? this.state.colors[0]: null), borderWidth: (this.state.selectedPlan === this.state.planId.indexOf(i) ? 3 : 0) }}>
-															<TouchableOpacity onPress={() => this.setState({selectedPlan: this.state.planId.indexOf(i)})}>
-																<Text style={{ ...styles.planName, color: this.state.colors[0] }}>{ 'Plano: ' + this.state.partnersPlan[i].name}</Text>
-																<View style={styles.planDescriptionView}>
-																	<Text style={styles.descriptionTitle}>{ 'Descrição: '}
-																		<Text style = {styles.planDescription}>{JSON.parse(this.state.partnersPlan[i].description) + '.'}</Text>
-																	</Text>
-																</View>
-																<View style={{ flexDirection: 'row', width: theme.width * 0.55 }}>
-																	<Text style={{ fontWeight:'bold', flexWrap: 'wrap' }}>{ 'Valor de desconto nas compras: ' }</Text>
-																	<Text style={{ color: '#8f8f8f', flexWrap: 'wrap' }}>{this.state.partnersPlan[i].type === 0 ? this.state.partnersPlan[i].value + '%' : 'R$' + parseFloat(this.state.partnersPlan[i].value).toFixed(2)}</Text>
-																</View>
-																<Text style={{ fontWeight: 'bold' }}>{'O plano é válido por ' + this.state.partnersPlan[i].vigor + ' dias.'}</Text>
-																<Text style={{fontWeight:'bold'}}>{'Preço: R$ ' + this.state.partnersPlan[i].price}</Text>
-															</TouchableOpacity>
-														</View>
-													</View>
-													)
-												}
-												<View style = {styles.modalButtons}>
-													<TouchableOpacity activeOpacity={1} onPress = { () => this.setState({ showPartnerModal: false }) }>
-														<View style = { styles.cancelButton }>
-															<Text style ={{ color: 'white', fontWeight: 'bold', letterSpacing: 0.5 }}>{ 'Cancelar' }</Text>
-														</View>
-													</TouchableOpacity>
-													<TouchableOpacity activeOpacity={1} onPress = { this.registerPartnerPlan.bind(this) }>
-														<View style = {{ ...styles.confirmButton, backgroundColor: this.state.colors[0]}}>
-															<Text style = {{ fontWeight: 'bold', letterSpacing: 0.5, color: this.state.colors[1] }}>{ 'Confirmar' }</Text>
-														</View>
-													</TouchableOpacity>
-												</View>
-											</View>
-										</ScrollView>
-									</View>
-								</View>
-							}
-							{
-								this.state.showLoading &&
-								<View style = {{marginTop: theme.height * 0.1}}>
-									<ActivityIndicator size="large" color={this.state.product? this.state.product.colors[0] : theme.primary} />
-									<View style={{flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap', justifyContent: 'center',marginTop:theme.height * 0.05 }}>
-										<Text style={{fontStyle: 'italic', fontWeight: 'bold', fontSize: 25, color: '#8f8f8f'}}>
-											HOOOOOOLD!
-										</Text>
-										<Text style={{fontWeight: 'bold', fontSize: 25, textAlign: 'center', marginTop: theme.height * 0.05, lineHeight: 50 }}>
-											Estamos registrando o seu plano ;)
-										</Text>
-									</View>
-								</View>
-							}
-						</View>
-					</View>
+					statusBarTranslucent={false}
+					transparent={true}
+					hardwareAccelerated={true}
+					animationType='slide'
+					visible={this.state.showPartnerPlans}
+					onDismiss={() => this.setState({ showPartnerPlans: false})}
+					onRequestClose={() => this.setState({ showPartnerPlans: false})}
+					contentContainerStyle={{backgroundColor: 'white', width: theme.width + 10, height: theme.height, position: 'absolute'}}
+				>
+					<PartnerPlans colors={this.state.colors} planId={this.state.planId} partnersPlan={this.state.partnersPlan} logo={this.state.logo} 
+								  hideModal={this.hideModal.bind(this)} store_code={this.props.navigation.getParam('store')} navigation={this.props.navigation}
+								  currentPlan={this.state.currentPlan} pushParameter={this.state.pushParameter}/>
 				</Modal>
 				<FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
 			</ScrollView>
@@ -474,82 +308,6 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		width:theme.width * 0.98
 	},
-	fab: {
-		position: 'absolute',
-		marginTop: theme.height * 0.75,
-		marginLeft: theme.width * 0.80,
-		padding: 5,
-	},
-	centeredView: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		marginTop: -(theme.height * 0.1),
-		paddingTop:theme.height * 0.1,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-	},
-	modalContainer: {
-		width: theme.width * 0.9,
-		backgroundColor: 'white',
-		borderRadius: 20,
-		padding: 25,
-		paddingBottom:20,
-		shadowOffset: {
-			width: 0,
-			height: 2
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-		elevation: 5,
-		zIndex:0,
-	},
-	modalHeader : {
-		flexDirection: 'column',
-		width: theme.width * 0.9,
-		borderTopLeftRadius:20,
-		borderTopRightRadius:20,
-		padding:20,
-		position:'absolute',
-		marginLeft:0.001
-	},
-	iconView: {
-		width: theme.width * 0.15,
-		height: theme.height*0.05,
-		alignSelf: 'flex-end'
-	},
-	modalText: {
-		marginTop: -(theme.height *  0.025),
-		fontSize: 20,
-		fontWeight: 'bold',
-		letterSpacing: 0.5,
-		alignSelf: 'center'
-	},
-	modalButtons: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-		marginBottom:theme.height * 0.04,
-		marginTop: theme.height * 0.05
-	},
-	cancelButton: {
-		paddingTop: 14,
-		paddingBottom: 14,
-		width:theme.width * 0.32,
-		elevation: 2,
-		backgroundColor: '#cccccc',
-		borderRadius: 14,
-		marginRight: theme.width * 0.02,
-	    flexDirection:'row',
-		justifyContent: 'center',
-	},
-	confirmButton: {
-		paddingTop: 14,
-		paddingBottom: 14,
-		width:theme.width * 0.32,
-		elevation: 2,
-		borderRadius: 14,
-		flexDirection: 'row',
-		justifyContent: 'center'
-	},
 	partnerButton: {
 		elevation: 2,
 		width: theme.width * 0.9,
@@ -560,68 +318,10 @@ const styles = StyleSheet.create({
 		alignContent :'center',
 		alignItems:'center',
 	},
-	messageView: {
-		width:theme.width * 0.8,
-		alignSelf: 'center',
-		marginBottom: 10
-	},
-	modalView: {
-		marginTop: theme.height * 0.08,
-		paddingBottom: 50
-	},
-	timesSolid: {
-		width: 15,
-		height: 15,
-		opacity: 0.4,
-		alignSelf: 'flex-end',
-	},
 	partnerButtonIcon: {
 		width: 22,
 		height: 20,
 		alignSelf: 'center',
-	},
-	partnersPlanView: {
-		borderRadius: 10,
-		marginBottom: 10,
-		marginRight: 5,
-		alignSelf: 'center',
-		backgroundColor: 'white'
-	},
-	selectedPlan: {
-		backgroundColor: 'white',
-		padding:15,
-		borderRadius: 10,
-		elevation: 2,
-		width: theme.width * 0.75,
-	},
-	planDescriptionView: {
-		flexDirection: 'row',
-		width: theme.width * 0.65
-	},
-	planDescription: {
-		flexWrap: 'wrap',
-		fontWeight:'400',
-		color: '#8f8f8f'
-	},
-	scrollView: {
-		height: theme.height * 0.35,
-		marginTop: 0
-	},
-	descriptionTitle: {
-		fontWeight:'bold',
-		flexWrap: 'wrap'
-	},
-	planName: {
-		fontWeight: 'bold',
-		fontSize: 17,
-		marginBottom: 10,
-	},
-	buttonPartnerText: {
-		fontWeight: 'bold',
-		fontSize: 15,
-		letterSpacing: 1,
-		alignSelf: 'center',
-		marginLeft: 10,
 	},
 	partnerButtonView: {
 		flexDirection : 'row',
@@ -630,5 +330,17 @@ const styles = StyleSheet.create({
 		height: theme.height * 0.03,
 		alignContent: 'center',
 		justifyContent:'flex-start'
-	}
+	},
+	messageView: {
+		width:theme.width * 0.8,
+		alignSelf: 'center',
+		marginBottom: 10
+	},
+	buttonPartnerText: {
+		fontWeight: 'bold',
+		fontSize: 15,
+		letterSpacing: 1,
+		alignSelf: 'center',
+		marginLeft: 10,
+	},
 });

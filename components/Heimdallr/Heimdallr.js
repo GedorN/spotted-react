@@ -651,6 +651,20 @@ function HeimdallrLib() {
 	  })
   }
 
+  this.verifyMembersNumber = function(store_code,plan_id){
+	let membersNumber = null;
+	return new Promise((resolve) => {
+		firebase.firestore().collection('partners_plan').doc(store_code).get().then(
+			(result) => {
+				membersNumber = result.data()[plan_id].members_number;
+				resolve();
+			}
+		)
+	}).then((resolve) => {
+		return membersNumber;
+	})
+}
+
   this.updateNewPartner = function(plan_id, user){
 	return new Promise((resolve) => {
 		firebase.firestore().collection('partners').doc(plan_id).get().then(
@@ -678,6 +692,25 @@ function HeimdallrLib() {
 			}
 		)
 	})
+  }
+
+
+  this.deletePreviousPlan = function(plan_id,reference_id){
+	  return new Promise((resolve) => {
+		  firebase.firestore().collection('partners').doc(plan_id).get().then(
+			  (result) => {
+				  let partners = result.data().members;
+				  let filteredMembers = partners.filter((item) => item.referenceId != reference_id);
+				  firebase.firestore().collection('partners').doc(plan_id).set({
+					  members: filteredMembers
+				  }).then((res) => {
+						resolve();
+				  },(error) => {
+					  console.log('erro',error);
+				  })
+			  }
+		  )
+	  })
   }
 
 
