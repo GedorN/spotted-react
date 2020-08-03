@@ -742,17 +742,20 @@ export default class ProductScreen extends React.Component {
 												<Text style = {{ fontWeight: 'bold' }}> { this.state.warning } </Text>
 											</View>
 										}
-										<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
-											<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerPlans : true})}>
-												<View style={styles.partnerButtonView}>
-													<Image
-														style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] === 'white' ? 'black' : 'white'}}
-														source = {require('../../../../assets/images/star-solid.png')}
-													/>
-													<Text style={{ ...styles.buttonPartnerText, color:  this.state.product && this.state.product.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>
-												</View>
-											</TouchableOpacity>
-										</View>
+										{
+											this.state.planId.length > 0 &&
+											<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
+												<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerPlans : true})}>
+													<View style={styles.partnerButtonView}>
+														<Image
+															style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] === 'white' ? 'black' : 'white'}}
+															source = {require('../../../../assets/images/star-solid.png')}
+														/>
+														<Text style={{ ...styles.buttonPartnerText, color:  this.state.product && this.state.product.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>
+													</View>
+												</TouchableOpacity>
+											</View>
+										}
 										{
 											this.state.product && this.state.product.description != "" && this.state.product.description != null &&
 											<View style = { styles.descriptionContainer }>
