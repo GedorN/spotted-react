@@ -244,7 +244,6 @@ export default class Home extends React.Component {
 					this.setState({ showAlert: false })
 				}}
 	      />
-
       </View>
     );
   }

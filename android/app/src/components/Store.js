@@ -29,7 +29,6 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 
 let scrolling = false;
-var verify = null;
 export default class Store extends React.Component {
 	constructor (props) {
 		super(props);
@@ -49,25 +48,11 @@ export default class Store extends React.Component {
 			discountType: null,
 			dueDatePlan: null,
 			plan: null,
-			showPartnerPlans: false,
 			currentPlan: false,
 			pushParameter: 0
 		}
 	}
 
-	onRefresh = () => {
-		this.setState({ isRefreshing: true });
-		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
-			(resolve) => {
-				if (resolve.docs.length > 0) {
-					let mappedDocs =  resolve.docs.map((d) => d._data);
-					mappedDocs = mappedDocs.filter((i) => i.stock > 0);
-					this.setState({ products: mappedDocs, filteredProducts: mappedDocs, isRefreshing: false });
-				}
-			}
-		)
-
-	}
 
 	componentDidMount(): void {
 		BackHandler.addEventListener('hardwareBackPress', () => {
@@ -75,12 +60,10 @@ export default class Store extends React.Component {
 			StatusBar.setBarStyle('dark-content');
 		});
 
-		heimdallr.getPartnersPlan(this.props.navigation.getParam('store'))
-		.then((resolve) => {
-			this.setState({ planId: Object.keys(resolve), partnersPlan: resolve })
-	 	});
+		this.createListener();
 
-		this.verifyPlan().then((result) => {
+
+		this.verifyPlan().then(() => {
 			heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
 				(resolve) => {
 					if (resolve.docs.length > 0) {
@@ -88,7 +71,6 @@ export default class Store extends React.Component {
 						mappedDocs = mappedDocs.filter((i) => i.stock > 0);
 						this.setState({ products: mappedDocs, filteredProducts: mappedDocs });
 					}
-					result();
 				}
 			)
 		});
@@ -110,28 +92,76 @@ export default class Store extends React.Component {
 
 	}
 
+	createListener = () => {
+		this.props.navigation.addListener('willFocus', () => {
+			if (heimdallr.newPlanAdded) {
+				this.verifyPlan().then(
+					() => {
+						this.setState({products: [], filteredProducts: []});
+						heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
+							(resolve) => {
+								if (resolve.docs.length > 0) {
+									let mappedDocs =  resolve.docs.map((d) => d._data);
+									mappedDocs = mappedDocs.filter((i) => i.stock > 0);
+									this.setState({ products: mappedDocs, filteredProducts: mappedDocs });
+								}
+							}
+						)
+					});
+
+
+				heimdallr.getStoreInfo(this.props.navigation.getParam('store')).then(
+					(resolve) => {
+						StatusBar.setBackgroundColor(resolve.colors[0]);
+						StatusBar.setBarStyle('light-content');
+						this.setState({
+							categories: resolve.categories,
+							colors: resolve.colors,
+							logo : resolve.logo,
+							banner: resolve.banner,
+						});
+					}
+
+				);
+
+			}
+		});
+	}
+
+	onRefresh = () => {
+		this.setState({ isRefreshing: true, products: [], filteredProducts: [] });
+		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
+			(resolve) => {
+				if (resolve.docs.length > 0) {
+					let mappedDocs =  resolve.docs.map((d) => d._data);
+					mappedDocs = mappedDocs.filter((i) => i.stock > 0);
+					this.setState({ products: mappedDocs, filteredProducts: mappedDocs, isRefreshing: false });
+				}
+			}
+		)
+
+	}
+
 	verifyPlan = async () => {
-
 		let today = await heimdallr.getServerTime();
-
 		return new Promise((result) => {
-			
 			let userPlans = null;
-			let store_code =this.props.navigation.getParam('store');
+			let store_code = this.props.navigation.getParam('store');
 
 			if(heimdallr.userPlans != null && heimdallr.userPlans[store_code]){
-
 				userPlans = heimdallr.userPlans[store_code];
-				this.setState({currentPlan: userPlans[0]})
 
-				if(today < userPlans[0].due_date){
+				if (today < userPlans[0].due_date && userPlans[0].active === 1) {
 					this.setState({
 						validPlan: true,
 						discount: userPlans[0].value,
 						discountType: userPlans[0].type,
 						plan: userPlans[0].name,
+						currentPlan: userPlans[0],
 						dueDatePlan: moment(userPlans[0].due_date).format('DD/MM/YYYY'),
 					});
+				} else {
+					this.setState({currentPlan: userPlans[0]});
 				}
 			}
 			result();
@@ -172,31 +202,23 @@ export default class Store extends React.Component {
 		StatusBar.setBarStyle('dark-content');
 	}
 
-
-	getTxtColor = (color) => {
-		let c = color.substring(1);      // strip #
-		let rgb = parseInt(c, 16);   // convert rrggbb to decimal
-		let r = (rgb >> 16) & 0xff;  // extract red
-		let g = (rgb >>  8) & 0xff;  // extract green
-		let b = (rgb >>  0) & 0xff;  // extract blue
-		let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
-
-
-		if (luma < 40) {
-			return 'white'
-		} else {
-			return '#000000'
-		}
-
+	goToPlans = () => {
+		const store = this.props.navigation.getParam('store');
+		this.props.navigation.push('Plans', {store: store, current_plan: this.state.currentPlan});
 	}
 
-	hideModal = () => {
-		this.setState({showPartnerPlans: false});
-	}
 
 	render() {
 		return (
-			<ScrollView style={styles.container} showsVerticalScrollIndicator = {false}>
+			<ScrollView
+				style={styles.container}
+				showsVerticalScrollIndicator = {false}
+				refreshControl={
+				<RefreshControl
+					refreshing={this.state.isRefreshing}
+					onRefresh={this.onRefresh.bind(this)}
+				/>
+			}>
 				<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
 					<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10, position: 'absolute', zIndex: 999}}>
 						<TouchableOpacity onPress={() => {this.clearStatusBar(); this.props.navigation.goBack()}}>
@@ -214,15 +236,14 @@ export default class Store extends React.Component {
 						</View>
 					}
 					{
-						this.state.planId.length > 0 &&
 						<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
-							<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerPlans : true})}>
+							<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.goToPlans.bind(this)}>
 								<View style={styles.partnerButtonView}>
 									<Image
-										style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] === 'white' ? 'black' : 'white'}}
+										style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}
 										source = {require('../../../../assets/images/star-solid.png')}
 									/>
-									<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>
+									<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
 								</View>
 							</TouchableOpacity>
 						</View>
@@ -281,21 +302,6 @@ export default class Store extends React.Component {
 					</View>
 					}
 				/>
-				<Modal
-					statusBarTranslucent={false}
-					transparent={true}
-					hardwareAccelerated={true}
-					animationType='slide'
-					visible={this.state.showPartnerPlans}
-					onDismiss={() => this.setState({ showPartnerPlans: false})}
-					onRequestClose={() => this.setState({ showPartnerPlans: false})}
-					contentContainerStyle={{backgroundColor: 'white', width: theme.width + 10, height: theme.height, position: 'absolute'}}
-				>
-					<PartnerPlans colors={this.state.colors} planId={this.state.planId} partnersPlan={this.state.partnersPlan} logo={this.state.logo} 
-								  hideModal={this.hideModal.bind(this)} store_code={this.props.navigation.getParam('store')} navigation={this.props.navigation}
-								  currentPlan={this.state.currentPlan} pushParameter={this.state.pushParameter}/>
-				</Modal>
-				<FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
 			</ScrollView>
 		);
 	}

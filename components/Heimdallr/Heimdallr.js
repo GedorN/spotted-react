@@ -19,6 +19,8 @@ function HeimdallrLib() {
   this.phone = null;
   this.userPlans = null;
 
+  this.newPlanAdded = false;
+
   // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
   this.test = function (uid, limit) {
   	let docs = null;
@@ -475,7 +477,7 @@ function HeimdallrLib() {
 	  let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
 
 
-	  if (luma < 40) {
+	  if (luma < 80) {
 		  return 'white'
 	  } else {
 		  return '#000000'
@@ -654,15 +656,17 @@ function HeimdallrLib() {
   this.verifyMembersNumber = function(store_code,plan_id){
 	let membersNumber = null;
 	return new Promise((resolve) => {
+		console.log('store_code: ', store_code);
+		console.log('plan', plan_id);
 		firebase.firestore().collection('partners_plan').doc(store_code).get().then(
 			(result) => {
+				console.log('doc:', result.data());
 				membersNumber = result.data()[plan_id].members_number;
-				resolve();
+				console.warn('numero:', membersNumber);
+				resolve(parseInt(result.data()[plan_id].members_number) < parseInt(result.data()[plan_id].userLimiter));
 			}
 		)
-	}).then((resolve) => {
-		return membersNumber;
-	})
+	});
 }
 
   this.updateNewPartner = function(plan_id, user){
@@ -727,7 +731,7 @@ function HeimdallrLib() {
 						firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 						userPlans: this.userPlans
 					}, {merge: true}).then((res) => {
-	
+
 						resolve();
 					})
 				  }
@@ -751,7 +755,7 @@ function HeimdallrLib() {
 				  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 					  userPlans: this.userPlans
 				  }, {merge: true}).then((res) => {
-	
+
 					  resolve();
 				  })
 			  }
@@ -1504,6 +1508,25 @@ function HeimdallrLib() {
 
 			}
 		)
+	}
+
+	this.validatePlanBeforeBuy = function (store, time) {
+  	    return new Promise((resolve, reject) => {
+			firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+				(result) => {
+					let user =  result.docs[0].data();
+					this.userPlans = user.userPlans ? user.userPlans : null;
+					if (user.userPlans && user.userPlans[store][0].due_date > time && user.userPlans[store][0].active === 1) {
+						resolve(true);
+					} else {
+						resolve(false);
+					}
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+        })
 	}
 }
 

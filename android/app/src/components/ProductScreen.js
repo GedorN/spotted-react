@@ -20,7 +20,6 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import FatBottomedButton from'./buttons/FatBottomedButton';
 import CustomizationTextArea from './CustomizationTexArea';
-import PartnerPlans from "./Inputs/PartnerPlans";
 import AwesomeAlert from "react-native-awesome-alerts";
 import CustomSelect from "./custom/CustomSelect";
 import CustomRadio from "./custom/CustomRadio";
@@ -29,6 +28,7 @@ import FlashMessage from "react-native-flash-message";
 import axios from 'react-native-axios';
 import CarouselModaFoka from "./layout/CarouselModaFoka";
 import moment from "moment";
+
 import {Button} from 'react-native-paper';
 
 var verify = null;
@@ -70,31 +70,20 @@ export default class ProductScreen extends React.Component {
 			settingPromotionalCode: false,
 			discountPicPayPrice: null,
 			discountPriceWithoutTax: null,
-			partnersPlan: null,
-			selectedPlan: null,
-			planId: [],
-			showPartnerPlans: false,
-			pushParameter: 1,
 			currentPlan: false,
 		}
 	}
 
 	componentDidMount = async () => {
+		this.props.navigation.addListener('willFocus', () => {
+			this.createListener();
+		});
 
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 
-
 		heimdallr.getProduct(this.state.iidProduct).then(
 			async (resolve) => {
-
-				heimdallr.getPartnersPlan(resolve.sid)
-					.then((resolve) => {
-						this.setState({ planId: Object.keys(resolve), partnersPlan: resolve })
-					});
-
-				this.planDiscount(resolve.sid, resolve.price);
 				heimdallr.sendEvent(`${resolve.sid}_product_click`);
-
 				const original_price = resolve.price;
 				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
 
@@ -105,7 +94,7 @@ export default class ProductScreen extends React.Component {
 					userPlans =  heimdallr.userPlans[resolve.sid];
 
 					// verifica se o plano ainda está dentro da validade
-					if(today < userPlans[0].due_date){
+					if (today < userPlans[0].due_date && userPlans[0].active === 1) {
 						// verifica se o desconte deve ser absoluto ou porcentagem
 						if( userPlans[0].type === 0 ){
 							let newPrice = original_price - (original_price * ((userPlans[0].value)/100));
@@ -116,11 +105,12 @@ export default class ProductScreen extends React.Component {
 								storePrice : original_price,
 								spottedPrice : resolve.price,
 								initialLoad: false,
+								currentPlan: userPlans[0],
 								PicPayPrice: (newPrice * 1.16).toFixed(2)
 							});
 						} else {
-							let newPrice = this.original_price- userPlans[0].value;
-							newPrice <= 0 ? newPrice = 0 : newPrice
+							let newPrice = original_price - parseFloat(userPlans[0].value).toFixed(2);
+							newPrice = newPrice <= 0 ? 0 : newPrice;
 							this.setState({
 								product: resolve,
 								productImages: resolve.images,
@@ -128,9 +118,20 @@ export default class ProductScreen extends React.Component {
 								storePrice : original_price,
 								spottedPrice : resolve.price,
 								initialLoad: false,
+								currentPlan: userPlans[0],
 								PicPayPrice: (newPrice * 1.16).toFixed(2),
 							});
 						}
+					} else {
+						this.setState({
+							product: resolve,
+							productImages: resolve.images,
+							price_without_tax: original_price,
+							storePrice : original_price,
+							spottedPrice : resolve.price,
+							initialLoad: false,
+							PicPayPrice : resolve.price
+						});
 					}
 
 				} else {
@@ -151,39 +152,81 @@ export default class ProductScreen extends React.Component {
 		)
 	}
 
-	planDiscount = async (store_code, store_price) =>{
+	createListener = () => {
+		heimdallr.newPlanAdded = false;
+		heimdallr.getProduct(this.state.iidProduct).then(
+			async (resolve) => {
 
-		let today = await heimdallr.getServerTime();
-		let userPlans = null;
+				heimdallr.sendEvent(`${resolve.sid}_product_click`);
+				const original_price = resolve.price;
+				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
 
-		if(heimdallr.userPlans != null && heimdallr.userPlans[store_code]){
-			userPlans = heimdallr.userPlans[store_code];
-			this.setState({currentPlan: userPlans[0]});
-			// verifica se o plano ainda está dentro da validade
-			if(today < userPlans[0].due_date){
-				// verifica se o desconte deve ser absoluto ou porcentagem
-				if( userPlans[0].type === 0 ){
-					let newPrice = store_price - (store_price * ((userPlans[0].value)/100));
-					this.setState({ PicPayPrice: (newPrice * 1.16).toFixed(2) });
+				let today = await heimdallr.getServerTime();
+				let userPlans = null;
+
+				if(heimdallr.userPlans != null && heimdallr.userPlans[resolve.sid]){
+					userPlans =  heimdallr.userPlans[resolve.sid];
+
+					// verifica se o plano ainda está dentro da validade
+					if(today < userPlans[0].due_date && userPlans[0].active === 1){
+						// verifica se o desconte deve ser absoluto ou porcentagem
+						if( userPlans[0].type === 0 ){
+							let newPrice = original_price - (original_price * ((userPlans[0].value)/100));
+							this.setState({
+								product: resolve,
+								productImages: resolve.images,
+								price_without_tax: original_price,
+								storePrice : original_price,
+								spottedPrice : resolve.price,
+								initialLoad: false,
+								PicPayPrice: (newPrice * 1.16).toFixed(2),
+								currentPlan: userPlans[0],
+							});
+						} else {
+							let newPrice = original_price - parseFloat(userPlans[0].value).toFixed(2);
+							newPrice = newPrice <= 0 ? 0 : newPrice;
+							this.setState({
+								product: resolve,
+								productImages: resolve.images,
+								price_without_tax: original_price,
+								storePrice : original_price,
+								spottedPrice : resolve.price,
+								initialLoad: false,
+								PicPayPrice: (newPrice * 1.16).toFixed(2),
+								currentPlan: userPlans[0]
+							});
+						}
+					} else {
+						this.setState({
+							product: resolve,
+							productImages: resolve.images,
+							price_without_tax: original_price,
+							storePrice : original_price,
+							spottedPrice : resolve.price,
+							initialLoad: false,
+							PicPayPrice : resolve.price
+						});
+					}
+
 				} else {
-					let newPrice = this.state.storePrice - userPlans[0].value;
-					newPrice <= 0 ? newPrice = 0 : newPrice
-					this.setState({ PicPayPrice: (newPrice * 1.16).toFixed(2) });
+					this.setState({
+						product: resolve,
+						productImages: resolve.images,
+						price_without_tax: original_price,
+						storePrice : original_price,
+						spottedPrice : resolve.price,
+						initialLoad: false,
+						PicPayPrice : resolve.price
+					});
 				}
+			},
+			() => {
+				this.setState({initialLoad: false})
 			}
-
-		} else {
-			this.setState({ PicPayPrice : this.state.spottedPrice});
-		}
+		)
 	}
 
-	renderPage({item}) {
-		return (
-            <View style = {{ height:theme.height * 0.40,width:theme.width * 0.8,alignSelf:'center',marginBottom:theme.height * 0.03}}>
-	            <Image style={{flex: 1, resizeMode: 'contain', width: theme.width * 0.75, height:theme.height * 0.45, alignSelf:'center'}} source={{ uri: item }} />
-            </View>
-        );
-	}
+
 	openAlert = () =>{
 		this.setState({showAlert : true,warning:null});
 	}
@@ -224,9 +267,23 @@ export default class ProductScreen extends React.Component {
 		}  */
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
+			const time = await heimdallr.getServerTime();
+
+			if (this.state.currentPlan) {
+				const check = await heimdallr.validatePlanBeforeBuy(this.state.product.sid, time);
+				if (!check) {
+					this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
+					showMessage({
+						message: "Plano expirado",
+						type: "danger",
+						icon: 'danger'
+					});
+					return ;
+				}
+			}
 			let params = {};
 			params.colors = this.state.product.colors;
-			params.date = await heimdallr.getServerTime();
+			params.date = time
 			params.iid = this.state.iidProduct;
 			params.image = this.state.productImages[0];
 			params.category = this.state.product.category;
@@ -544,117 +601,6 @@ export default class ProductScreen extends React.Component {
 	}
 
 
-	registerPartnerPlan = async () => {
-
-		this.setState({showLoading: true});
-
-		let price = null;
-		let timeNow = null;
-		let user = {};
-		let selectedPlan = this.state.planId[this.state.selectedPlan];
-		let store_code = this.state.product.sid;
-		let userParams = Object.assign({},this.state.partnersPlan[selectedPlan]);
-		let collectionParams = Object.assign({}, this.state.partnersPlan[selectedPlan]);
-
-		userParams.referenceId = await heimdallr.getUID();
-		userParams.signature_date = await heimdallr.getServerTime();
-		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').valueOf();
-		userParams.members = null;
-
-		user.user_name = heimdallr.user_name;
-		user.email = heimdallr.email;
-		user.image = heimdallr.user_image;
-		user.phone = heimdallr.phone;
-		user.referenceId = 	userParams.referenceId;
-
-		if(collectionParams.members &&collectionParams.members.length > 0){
-			collectionParams.members.push(user);
-		}
-		else{
-			let newUsers = [];
-			newUsers.push(user);
-			collectionParams.members = newUsers;
-		}
-		collectionParams.members_number = (collectionParams.members_number - 1);
-
-		timeNow = moment(userParams.signature_date).add(4,'m').format();
-		price = parseFloat(userParams.price.replace(',','.'));
-
-		axios({
-		method: 'post',
-		url: 'https://appws.picpay.com/ecommerce/public/payments',
-		headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
-		data: {
-			"referenceId": userParams.referenceId,
-			"callbackUrl": "http://www.spottedutfpr.com.br/callback",
-			"value": price,
-			"expiresAt": timeNow,
-			"buyer": {
-				"firstName": heimdallr.user_name.split(' ')[0],
-				"lastName": heimdallr.user_name.split(' ')[0],
-				"document": "123.456.789-10",
-				"email": heimdallr.email,
-				"phone": "+55 27 12345-6789"
-			}
-		}
-		}).then(
-			(resolve) => {
-
-				userParams.url = resolve.data.paymentUrl;
-				Linking.openURL(resolve.data.paymentUrl);
-
-
-				verify = setInterval(() => {
-					axios({
-						method: 'get',
-						url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
-						headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'}
-					}).then(
-						(resolve) => {
-							this.setState({ showPartnerModal : false, showLoading: false });
-							if(resolve.data.status === 'paid'){
-								clearInterval(verify);
-								showMessage({
-									message: "Compra realizada com sucesso",
-									type: "success",
-									icon: 'success'
-								});
-
-								heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
-								heimdallr.savePartnerPlan(store_code,userParams)
-									.then((result) => {
-										this.props.navigation.push('ProductScreen',
-											{
-												iid: this.state.iidProduct,
-												validPlan: true,
-												discount: userParams.value,
-												discountType: userParams.type,
-												/* partnersPlan: this.state.partnersPlan */
-											});
-									});
-							}
-						},
-						(reject) => {
-							this.setState({ showPartnerModal : false, showLoading: false });
-						})
-
-				}, 5000);
-
-				setTimeout(() => {
-					clearInterval(verify);
-				},240000);
-
-			},
-			(reject) => {
-				clearInterval(verify);
-				showMessage({
-					message: "Erro ao realizar a compra",
-					type: "danger",
-					icon: 'danger'
-				});
-			})
-	}
-
 
 	receivePromotionalCode = (value) => {
 		this.state.texInputCode = value;
@@ -664,8 +610,9 @@ export default class ProductScreen extends React.Component {
 		this.setState({ showAlert: false });
 	}
 
-	hideModal = () => {
-		this.setState({showPartnerPlans: false});
+	goToPlans = () => {
+		const store = this.props.navigation.getParam('store');
+		this.props.navigation.push('Plans', {store: this.state.product.sid, current_plan: this.state.currentPlan});
 	}
 
 	render() {
@@ -742,20 +689,17 @@ export default class ProductScreen extends React.Component {
 												<Text style = {{ fontWeight: 'bold' }}> { this.state.warning } </Text>
 											</View>
 										}
-										{
-											this.state.planId.length > 0 &&
-											<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
-												<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {()=> this.setState({ showPartnerPlans : true})}>
-													<View style={styles.partnerButtonView}>
-														<Image
-															style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] === 'white' ? 'black' : 'white'}}
-															source = {require('../../../../assets/images/star-solid.png')}
-														/>
-														<Text style={{ ...styles.buttonPartnerText, color:  this.state.product && this.state.product.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>
-													</View>
-												</TouchableOpacity>
-											</View>
-										}
+										<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
+											<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.goToPlans.bind(this)}>
+												<View style={styles.partnerButtonView}>
+													<Image
+														style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] ? heimdallr.getTxtColor(this.state.product.colors[0]) : 'white'}}
+														source = {require('../../../../assets/images/star-solid.png')}
+													/>
+													<Text style={{ ...styles.buttonPartnerText, color:  this.state.product && this.state.product.colors[0] ? heimdallr.getTxtColor(this.state.product.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
+												</View>
+											</TouchableOpacity>
+										</View>
 										{
 											this.state.product && this.state.product.description != "" && this.state.product.description != null &&
 											<View style = { styles.descriptionContainer }>
@@ -970,20 +914,6 @@ export default class ProductScreen extends React.Component {
 			            </View>
 		            </View>
 	            </Modal>
-				<Modal
-					statusBarTranslucent={false}
-					transparent={true}
-					hardwareAccelerated={true}
-					animationType='slide'
-					visible={this.state.showPartnerPlans}
-					onDismiss={() => this.setState({ showPartnerPlans: false})}
-					onRequestClose={() => this.setState({ showPartnerPlans: false})}
-					contentContainerStyle={{backgroundColor: 'white', width: theme.width + 10, height: theme.height, position: 'absolute'}}
-				>
-				<PartnerPlans colors={this.state.product ? this.state.product.colors : null} planId={this.state.planId} partnersPlan={this.state.partnersPlan} logo={this.state.product ? this.state.product.logo : null} 
-									hideModal={this.hideModal.bind(this)} store_code={this.state.product? this.state.product.sid : null} navigation={this.props.navigation}
-									currentPlan={this.state.currentPlan} pushParameter={this.state.pushParameter}/>
-				</Modal>
 				<FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
 			</KeyboardAvoidingView>
 		)
@@ -1110,5 +1040,77 @@ const styles = StyleSheet.create({
 		letterSpacing: 1,
 		alignSelf: 'center',
 		marginLeft: 10,
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: -(theme.height * 0.1),
+		paddingTop:theme.height * 0.1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	modalContainer: {
+		width: theme.width * 0.9,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 25,
+		paddingBottom:20,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		zIndex:0,
+	},
+	modalHeader : {
+		flexDirection: 'column',
+		width: theme.width * 0.9,
+		borderTopLeftRadius:20,
+		borderTopRightRadius:20,
+		padding:20,
+		position:'absolute',
+		marginLeft:0.001
+	},
+	information: {
+		fontWeight: 'bold',
+		marginLeft: theme.width * 0.01,
+		marginBottom: theme.width * 0.02,
+		letterSpacing: 0.5,
+		marginTop: theme.width * 0.04,
+		fontSize: 15
+	},
+	paymentText: {
+		fontWeight:'bold',
+		fontSize: 15,
+		marginBottom: 7,
+		letterSpacing: 0.5
+	},
+	modalButtons: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		marginBottom:theme.height * 0.04,
+		marginTop: theme.height * 0.05
+	},
+	cancelButton: {
+		paddingTop: 14,
+		paddingBottom: 14,
+		width:theme.width * 0.32,
+		elevation: 2,
+		backgroundColor: '#cccccc',
+		borderRadius: 14,
+		marginRight: theme.width * 0.02,
+		flexDirection:'row',
+		justifyContent: 'center',
+	},
+	confirmButton: {
+		paddingTop: 14,
+		paddingBottom: 14,
+		width:theme.width * 0.32,
+		elevation: 2,
+		borderRadius: 14,
+		flexDirection: 'row',
+		justifyContent: 'center'
 	},
 });

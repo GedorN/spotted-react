@@ -29,6 +29,7 @@ import Settings from "./Settings";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
 import {NavigationActions, StackActions} from "react-navigation";
+import FlashMessage from "react-native-flash-message";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -331,6 +332,7 @@ export default class MainScreen extends React.Component {
 					{/*>*/}
 					{/*</MenuDrawer>*/}
 				</View>
+
 			);
 		}
 	}

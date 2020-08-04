@@ -28,31 +28,55 @@ export default class PartnerPlans extends React.Component {
 		super(props);
 		this.state = {
 			selectedPlan: null,
-			showLoading: false
+			showLoading: false,
+			colors: [],
+			partnersPlan: null,
+			logo: null,
+			planId: [],
+			store: null,
+			loading: true,
 		}
     }
 
-    componentDidMount = () => {
-
+    componentDidMount(): void {
+		const store = this.props.navigation.getParam('store');
+	    heimdallr.getStoreInfo(this.props.navigation.getParam('store')).then(
+		    (resolve) => {
+			    StatusBar.setBackgroundColor(resolve.colors[0]);
+			    StatusBar.setBarStyle('light-content');
+			    heimdallr.getPartnersPlan(this.props.navigation.getParam('store')).then(
+			    	(result) => {
+					    this.setState({
+						    planId: Object.keys(result),
+						    partnersPlan: result,
+						    colors: resolve.colors,
+						    logo : resolve.logo,
+						    store: store,
+						    loading: false
+					    })
+				    });
+		    }
+	    );
     }
 
-    registerPartnerPlan = async () => {
+	registerPartnerPlan = async () => {
 
 		this.setState({showLoading: true});
 
-	
+
 		let price = null;
 		let timeNow = null;
 		let user = {};
-		let selectedPlan = this.props.planId[this.state.selectedPlan];
-		let store_code = this.props.store_code;
-		let userParams = Object.assign({},this.props.partnersPlan[selectedPlan]);
-		let collectionParams = Object.assign({}, this.props.partnersPlan[selectedPlan]);
+		let selectedPlan = this.state.planId[this.state.selectedPlan];
+		let store_code = this.state.store_code;
+		let userParams = Object.assign({},this.state.partnersPlan[selectedPlan]);
+		let collectionParams = Object.assign({}, this.state.partnersPlan[selectedPlan]);
 
 		userParams.referenceId = await heimdallr.getUID();
 		userParams.signature_date = await heimdallr.getServerTime();
 		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').valueOf();
 		userParams.members = null;
+		userParams.active = 1;
 
 		user.name = heimdallr.user_name;
 		user.email = heimdallr.email;
@@ -61,232 +85,240 @@ export default class PartnerPlans extends React.Component {
         user.referenceId = 	userParams.referenceId;
         user.signature_date = userParams.signature_date;
 
-		collectionParams.members_number = (collectionParams.members_number - 1);
+		collectionParams.members_number = (parseInt(collectionParams.members_number) + 1);
 
 		timeNow = moment(userParams.signature_date).add(4,'m').format();
 		price = parseFloat(userParams.price.replace(',','.'));
 
-		heimdallr.verifyMembersNumber(store_code,collectionParams.plan_id)
-		.then((resolve) => {
-
-			if(resolve > 0){
-
-				axios({
-					method: 'post',
-					url: 'https://appws.picpay.com/ecommerce/public/payments',
-					headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
-					data: {
-						"referenceId":userParams.referenceId,
-						"callbackUrl": "http://www.spottedutfpr.com.br/callback",
-						"value": price,
-						"expiresAt": timeNow,
-						"buyer": {
-							"firstName": heimdallr.user_name.split(' ')[0],
-							"lastName": heimdallr.user_name.split(' ')[0],
-							"document": "123.456.789-10",
-							"email": heimdallr.email,
-							"phone": "+55 27 12345-6789"
+		heimdallr.verifyMembersNumber(this.state.store,collectionParams.plan_id).then(
+			(resolve) => {
+				if(resolve){
+					axios({
+						method: 'post',
+						url: 'https://appws.picpay.com/ecommerce/public/payments',
+						headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
+						data: {
+							"referenceId":userParams.referenceId,
+							"callbackUrl": "http://www.spottedutfpr.com.br/callback",
+							"value": price,
+							"expiresAt": timeNow,
+							"buyer": {
+								"firstName": heimdallr.user_name.split(' ')[0],
+								"lastName": heimdallr.user_name.split(' ')[0],
+								"document": "123.456.789-10",
+								"email": heimdallr.email,
+								"phone": "+55 27 12345-6789"
+							}
 						}
-					}
-					}).then(
-						(resolve) => {
+						}).then(
+							(result) => {
+								this.setState({showLoading: false});
+								userParams.url = result.data.paymentUrl;
+								Linking.openURL(result.data.paymentUrl);
 
-							this.setState({showLoading: false});
-							this.props.hideModal();
-							userParams.url = resolve.data.paymentUrl;
-							Linking.openURL(resolve.data.paymentUrl);
-			
-							verify = setInterval(() => {
-								axios({
-									method: 'get',
-									url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
-									headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'}
-								}).then(
-									(resolve) => {
-			
-										if(resolve.data.status === 'paid'){
-			
-											showMessage({
-												message: "Compra realizada com sucesso",
-												type: "success",
-												icon: 'success'
-											});
-				
-											this.props.hideModal();
-											clearInterval(verify);
-											
-											if(this.props.currentPlan){
-						
-												heimdallr.deletePreviousPlan(this.props.currentPlan.plan_id, this.props.currentPlan.referenceId)
-													.then((result) => {
-														heimdallr.updateNewPartner(collectionParams.plan_id,user);
-													});
+								let verify = setInterval(() => {
+									axios({
+										method: 'get',
+										url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
+										headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'}
+									}).then(
+										(rest) => {
+											if(rest.data.status === 'paid'){
 
-												heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
-
-												heimdallr.savePartnerPlan(store_code,userParams)
-												.then((result) => {
-													if(this.props.pushParameter === 0){
-
-														this.props.navigation.push('Store', { store: store_code });
-													}
-													else{
-														this.props.navigation.push('ProductScreen', { iid: this.props.navigation.getParam('iid')});
-													}
+												showMessage({
+													message: "Compra realizada com sucesso",
+													type: "success",
+													icon: 'success'
 												});
-											} 
-											else{
 
-												heimdallr.updateNewPartner(collectionParams.plan_id,user);
+												clearInterval(verify);
+												const currentPlan = this.props.navigation.getParam('current_plan');
+												if(currentPlan){
+													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
+														() => {
+															heimdallr.updateNewPartner(collectionParams.plan_id, user);
+														});
 
-												heimdallr.updatePartnerPlan(store_code,selectedPlan,collectionParams);
+													heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
+													heimdallr.savePartnerPlan(this.state.store,userParams).then(
+														() => {
+															heimdallr.newPlanAdded = true;
+															this.props.navigation.goBack();
+														});
+												}
+												else{
+													heimdallr.updateNewPartner(collectionParams.plan_id,user);
 
-												heimdallr.savePartnerPlan(store_code,userParams)
-													.then((result) => {
-														if(this.props.pushParameter === 0){
+													heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
 
-															this.props.navigation.push('Store', { store: store_code });
-														}
-														else{
-															this.props.navigation.push('ProductScreen', { iid: this.props.navigation.getParam('iid')});
-														}
-													});
-									
+													heimdallr.savePartnerPlan(this.state.store, userParams).then(
+														() => {
+															heimdallr.newPlanAdded = true;
+															this.props.navigation.goBack();
+														});
+
+												}
 											}
-										}
-									},
-									(reject) => {
+										},
+										() => {
+											this.setState({showLoading: false});
 
-										this.setState({showLoading: false});
-										this.props.hideModal();
+										})
+								}, 5000);
 
-									})
-							}, 5000);
-						
-							setTimeout(() => {
+								setTimeout(() => {
+									clearInterval(verify);
+								},240000);
+							},
+							(reject) => {
 								clearInterval(verify);
-							},240000);
-						},
-						(reject) => {
-							
-							clearInterval(verify);
-							this.setState({showLoading: false});
-							
-							showMessage({
-								message: "Erro ao realizar a compra",
-								type: "danger",
-								icon: 'danger'
-							});
+								this.setState({showLoading: false});
 
-							this.props.hideModal();
-						})
-			}else{
-
-				this.props.hideModal();
-				this.setState({showLoading: false});
-
-				showMessage({
-					message: "Número de membros acabou de ser esgotado",
-					type: "danger",
-					icon: 'danger'
-				});
-			}
-		})
+								showMessage({
+									message: "Erro ao realizar a compra",
+									type: "danger",
+									icon: 'danger'
+								});
+							})
+				} else {
+					this.setState({showLoading: false});
+					showMessage({
+						message: "Número de membros acabou de ser esgotado",
+						type: "danger",
+						icon: 'danger'
+					});
+				}
+			})
 	}
 
     render() {
         return (
             <View style={styles.container}>
-				{
+	            {
 					!this.state.showLoading &&
 					<View style={styles.container}>
 						<View style = {styles.timesView}>
-							<TouchableOpacity onPress={() => this.props.hideModal()}>
+							<TouchableOpacity onPress={() => this.props.navigation.goBack()}>
 								<View style={styles.iconView}>
 									<Image
 										source={require('../../../../../assets/images/times-solid.png')}
-										style={{ width: 20, height: 20,marginRight: 5, opacity: 0.7, tintColor: this.props.colors[0] }}
+										style={{ width: 20, height: 20,marginRight: 5, opacity: 0.7, tintColor: this.state.colors[0] }}
 									/>
 								</View>
 							</TouchableOpacity>
 						</View>
 						<View style = {styles.header}>
-							<Text style = {styles.headerText}>{'Opções Plano Sócio'}</Text>
-							<View style = {styles.imageView}>
-								<View style = {styles.secondImageView}>
-									<Image
-										source = {{ uri: this.props.logo }}
-										style = {styles.logoImage}>
-									</Image>
+							<View style={{flexDirection: 'row'}}>
+								<Text style = {styles.headerText}>{'Opções Plano Sócio'}</Text>
+								<View style = {styles.imageView}>
+									<View style = {styles.secondImageView}>
+										<Image
+											source = {{ uri: this.state.logo }}
+											style = {styles.logoImage}>
+										</Image>
+									</View>
 								</View>
 							</View>
-						</View> 
+							{
+							this.state.selectedPlan != null &&
+							<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
+								<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.registerPartnerPlan.bind(this)}
+								>
+									<View style={styles.partnerButtonView}>
+										<Image
+											style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] === 'white' ? 'black' : 'white'}}
+											source = {require('../../../../../assets/images/star-solid.png')}
+										/>
+										<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>
+									</View>
+								</TouchableOpacity>
+							</View>
+							}
+						</View>
+						{
+						!this.state.loading &&
 						<View>
 							<View style = {{ ...styles.modalView, height:  theme.height * 0.8 }}>
 								<ScrollView style = {styles.scrollView} showsVerticalScrollIndicator = {false}>
 									<View style ={{ marginTop: 10, marginBottom: 50 }}>
-										<View style={styles.subtitleView}>
-											<Text style={{ ...styles.subtitleText, color: this.props.colors[0] }}>Selecione o plano e seja feliz</Text>
-										</View>
 										{
-											this.props.planId.map(i =>
+											this.state.planId.length > 0 ?
+												<View style={styles.subtitleView}>
+													<Text style={{ ...styles.subtitleText, color: this.state.colors[0] }}>Selecione o plano e seja feliz</Text>
+												</View>
+
+												:
+												<View style={styles.subtitleView}>
+													<Text style={{ ...styles.subtitleText, color: this.state.colors[0] }}>Esta entidade ainda não possui planos disponíveis ಠ︵ಠ</Text>
+												</View>
+										}
+										{
+											this.state.planId &&
+											this.state.planId.map(i =>
 											<View  key = {i} style={styles.partnersPlanView}>
-												<View style={{...styles.selectedPlan, opacity: (this.props.partnersPlan[i].members_number === 0 ? 0.8 : 1), borderColor: (this.state.selectedPlan === this.props.planId.indexOf(i) ? this.props.colors[0]: null), borderWidth: (this.state.selectedPlan === this.props.planId.indexOf(i) ? 3 : 0) }}>
-													<TouchableOpacity  disabled={this.props.partnersPlan[i].members_number === 0 ? true : false} onPress={() => this.setState({selectedPlan: this.props.planId.indexOf(i)})}>
-														<Text style={{ ...styles.planName, color: this.props.colors[0] }}>{ 'Plano ' + this.props.partnersPlan[i].name}</Text>
+												<View style={{...styles.selectedPlan, opacity: (this.state.partnersPlan[i].members_number === 0 || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? 0.8 : 1), borderColor: (this.state.selectedPlan === this.state.planId.indexOf(i) ? this.state.colors[0]: null), borderWidth: (this.state.selectedPlan === this.state.planId.indexOf(i) ? 3 : 0) }}>
+													<TouchableOpacity  disabled={this.state.partnersPlan[i].members_number === 0 || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? true : false} onPress={() => this.setState({selectedPlan: this.state.planId.indexOf(i)})}>
+														<Text style={{ ...styles.planName, color: this.state.colors[0] }}>{ 'Plano ' + this.state.partnersPlan[i].name}</Text>
 														<View style={styles.planDescriptionView}>
 															<Text style={styles.descriptionTitle}>{ 'Descrição: '}
-																<Text style = {styles.planDescription}>{JSON.parse(this.props.partnersPlan[i].description)}</Text>
+																<Text style = {styles.planDescription}>{JSON.parse(this.state.partnersPlan[i].description)}</Text>
 															</Text>
 														</View>
 														<View style={styles.discountView}>
 															<Text style={{ fontWeight:'bold', flexWrap: 'wrap' }}>{ 'Valor de desconto nas compras: ' }</Text>
-															<Text style={{ color: '#8f8f8f', flexWrap: 'wrap' }}>{this.props.partnersPlan[i].type === 0 ? this.props.partnersPlan[i].value + '%' : 'R$' + parseFloat(this.props.partnersPlan[i].value).toFixed(2)}</Text>
+															<Text style={{ color: '#8f8f8f', flexWrap: 'wrap' }}>{this.state.partnersPlan[i].type === 0 ? this.state.partnersPlan[i].value + '%' : 'R$' + parseFloat(this.state.partnersPlan[i].value).toFixed(2)}</Text>
 														</View>
-														<Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{'O plano é válido por ' + this.props.partnersPlan[i].vigor + ' dias.'}</Text>
-														<Text style={{fontWeight:'bold', marginBottom: 5}}>{'Preço: R$ ' + this.props.partnersPlan[i].price}</Text>
+														<Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{'O plano é válido por ' + this.state.partnersPlan[i].vigor + ' dias.'}</Text>
+														<Text style={{fontWeight:'bold', marginBottom: 5}}>{'Preço: R$ ' + this.state.partnersPlan[i].price}</Text>
 														{
-															this.props.partnersPlan[i].members_number === 0 &&
-															<Text style={{ ...styles.planName, color: this.props.colors[0] }}>Número de membros esgotado</Text>
+															this.state.partnersPlan[i].members_number === 0 &&
+															<Text style={{ ...styles.planName, color: this.state.colors[0] }}>Número de membros esgotado</Text>
+														}
+														{
+															this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id &&
+															<Text style={{ ...styles.planName, color: this.state.colors[0] }}>Seu plano atual</Text>
 														}
 													</TouchableOpacity>
 												</View>
 											</View>
 											)
 										}
-										<View style={{ ...styles.partnerButton, backgroundColor: this.props.colors[0], opacity: this.state.selectedPlan? 1 : 0.5}}>
-											<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.registerPartnerPlan.bind(this)} disabled={this.state.selectedPlan? false : true}>
-												<View style={styles.partnerButtonView}>
-													<Image
-														style = {{ ...styles.partnerButtonIcon, tintColor: this.props.colors[0] === 'white' ? 'black' : 'white'}}
-														source = {require('../../../../../assets/images/star-solid.png')}
-													/>
-													<Text style={{ ...styles.buttonPartnerText, color:  this.props.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>
-												</View>
-											</TouchableOpacity>
-										</View>
+										{/*{*/}
+										{/*	this.state.planId.length > 0 &&*/}
+										{/*	<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0], opacity: this.state.selectedPlan != null ? 1 : 0.5}}>*/}
+										{/*		<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.registerPartnerPlan.bind(this)} disabled={this.state.selectedPlan != null? false : true}>*/}
+										{/*			<View style={styles.partnerButtonView}>*/}
+										{/*				<Image*/}
+										{/*					style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] === 'white' ? 'black' : 'white'}}*/}
+										{/*					source = {require('../../../../../assets/images/star-solid.png')}*/}
+										{/*				/>*/}
+										{/*				<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>*/}
+										{/*			</View>*/}
+										{/*		</TouchableOpacity>*/}
+										{/*	</View>*/}
+										{/*}*/}
 									</View>
 								</ScrollView>
 							</View>
 						</View>
+						}
+						<FlashMessage position="top" ref={'plansMessage'} style={{ zIndex: 99 }} duration={2500}/>
 					</View>
-				}
+	            }
 				{
 					this.state.showLoading &&
 					<View style = {{marginTop: theme.height * 0.1}}>
-						<ActivityIndicator size="large" color={this.props.colors[0]} />
+						<ActivityIndicator size="large" color={this.state.colors[0]} />
 						<View style={{flexDirection: 'row', width: theme.width * 0.7, wordWrap: 'wrap' , flexWrap: 'wrap', justifyContent: 'center',marginTop:theme.height * 0.05 }}>
 							<Text style={{fontStyle: 'italic', fontWeight: 'bold', fontSize: 25, color: '#8f8f8f'}}>
 								Você está quaaaaaaase
 							</Text>
-							<Text style={{fontWeight: 'bold', fontSize: 25, textAlign: 'center', marginTop: theme.height * 0.05, lineHeight: 50, color: this.props.colors[0] }}>
+							<Text style={{fontWeight: 'bold', fontSize: 25, textAlign: 'center', marginTop: theme.height * 0.05, lineHeight: 50, color: this.state.colors[0] }}>
 								virando sócio!  ;)
 							</Text>
 						</View>
 					</View>
 				}
-				
-                <FlashMessage ref={'buyMessage'} style={{ zIndex: 99 }} duration={2500}/>
             </View>
         )
     }
@@ -307,30 +339,30 @@ const styles = StyleSheet.create({
 	header: {
 		paddingLeft: theme.width*0.06,
 		marginTop: 0,
-		flexDirection: 'row'
+		flexDirection: 'column'
 	},
 	headerText: {
 		fontSize: 20,
 		fontWeight: 'bold',
-		paddingTop: theme.width*0.05, 
+		paddingTop: theme.width*0.05,
 		marginRight: 5
 	},
 	imageView: {
 		width: theme.width * 0.5,
-		height: theme.height * 0.1, 
+		height: theme.height * 0.1,
 		marginBottom: theme.height * 0.03,
 		marginLeft: 5
 	},
 	secondImageView: {
 		width: theme.width * 0.35,
 		height: theme.height * 0.1,
-		marginBottom: theme.height * 0.03, 
+		marginBottom: theme.height * 0.03,
 		marginLeft: -20
 	},
 	logoImage: {
-		resizeMode: 'contain', 
-		flex: 1, 
-		width: null, 
+		resizeMode: 'contain',
+		flex: 1,
+		width: null,
 		height: null
 	},
     partnersPlanView: {
@@ -367,10 +399,10 @@ const styles = StyleSheet.create({
         lineHeight: 20,
 	},
 	discountView: {
-		flexDirection: 'row', 
-		width: theme.width * 0.55, 
-		marginTop: 5, 
-		marginBottom: 5 
+		flexDirection: 'row',
+		width: theme.width * 0.55,
+		marginTop: 5,
+		marginBottom: 5
 	},
     modalView: {
 		marginTop: theme.height * 0.01,
@@ -413,24 +445,24 @@ const styles = StyleSheet.create({
 		marginLeft: 10,
 	},
 	timesView: {
-		width: theme.width, 
-		paddingTop: 10, 
+		width: theme.width,
+		paddingTop: 10,
 		paddingRight: 10
 	},
 	iconView: {
 		width: 25,
-		height: 30, 
+		height: 30,
 		alignSelf: 'flex-end'
 	},
 	subtitleView: {
 		width: theme.width *0.9,
-		alignSelf: 'center', 
-		marginBottom: 20, 
+		alignSelf: 'center',
+		marginBottom: 20,
 		marginLeft: 10
 	},
 	subtitleText: {
-		fontWeight: 'bold', 
-		marginTop: 10, 
+		fontWeight: 'bold',
+		marginTop: 10,
 		fontSize: 15
 	}
 })
