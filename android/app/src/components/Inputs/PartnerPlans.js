@@ -208,7 +208,7 @@ export default class PartnerPlans extends React.Component {
 							</TouchableOpacity>
 						</View>
 						<View style = {styles.header}>
-							<View style={{flexDirection: 'row'}}>
+							<View style={{flexDirection: 'row', paddingLeft: theme.width * 0.1}}>
 								<Text style = {styles.headerText}>{'Opções Plano Sócio'}</Text>
 								<View style = {styles.imageView}>
 									<View style = {styles.secondImageView}>
@@ -222,8 +222,7 @@ export default class PartnerPlans extends React.Component {
 							{
 							this.state.selectedPlan != null &&
 							<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
-								<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.registerPartnerPlan.bind(this)}
-								>
+								<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.registerPartnerPlan.bind(this)}>
 									<View style={styles.partnerButtonView}>
 										<Image
 											style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] === 'white' ? 'black' : 'white'}}
@@ -240,7 +239,7 @@ export default class PartnerPlans extends React.Component {
 						<View>
 							<View style = {{ ...styles.modalView, height:  theme.height * 0.8 }}>
 								<ScrollView style = {styles.scrollView} showsVerticalScrollIndicator = {false}>
-									<View style ={{ marginTop: 10, marginBottom: 50 }}>
+									<View style ={{ marginTop: 10, marginBottom: (this.state.selectedPlan != null ? 50 : 20) }}>
 										{
 											this.state.planId.length > 0 ?
 												<View style={styles.subtitleView}>
@@ -256,8 +255,8 @@ export default class PartnerPlans extends React.Component {
 											this.state.planId &&
 											this.state.planId.map(i =>
 											<View  key = {i} style={styles.partnersPlanView}>
-												<View style={{...styles.selectedPlan, opacity: (this.state.partnersPlan[i].members_number === 0 || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? 0.8 : 1), borderColor: (this.state.selectedPlan === this.state.planId.indexOf(i) ? this.state.colors[0]: null), borderWidth: (this.state.selectedPlan === this.state.planId.indexOf(i) ? 3 : 0) }}>
-													<TouchableOpacity  disabled={this.state.partnersPlan[i].members_number === 0 || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? true : false} onPress={() => this.setState({selectedPlan: this.state.planId.indexOf(i)})}>
+												<View style={{...styles.selectedPlan, opacity: (this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? 0.8 : 1), borderColor: (this.state.selectedPlan === this.state.planId.indexOf(i) ? this.state.colors[0]: null), borderWidth: (this.state.selectedPlan === this.state.planId.indexOf(i) ? 3 : 0) }}>
+													<TouchableOpacity  disabled={this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? true : false} onPress={() => this.setState({selectedPlan: this.state.planId.indexOf(i)})}>
 														<Text style={{ ...styles.planName, color: this.state.colors[0] }}>{ 'Plano ' + this.state.partnersPlan[i].name}</Text>
 														<View style={styles.planDescriptionView}>
 															<Text style={styles.descriptionTitle}>{ 'Descrição: '}
@@ -271,7 +270,7 @@ export default class PartnerPlans extends React.Component {
 														<Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{'O plano é válido por ' + this.state.partnersPlan[i].vigor + ' dias.'}</Text>
 														<Text style={{fontWeight:'bold', marginBottom: 5}}>{'Preço: R$ ' + this.state.partnersPlan[i].price}</Text>
 														{
-															this.state.partnersPlan[i].members_number === 0 &&
+															this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) &&
 															<Text style={{ ...styles.planName, color: this.state.colors[0] }}>Número de membros esgotado</Text>
 														}
 														{
@@ -337,7 +336,7 @@ const styles = StyleSheet.create({
         zIndex: 99999
 	},
 	header: {
-		paddingLeft: theme.width*0.06,
+		/* paddingLeft: theme.width*0.06, */
 		marginTop: 0,
 		flexDirection: 'column'
 	},
@@ -406,12 +405,12 @@ const styles = StyleSheet.create({
 	},
     modalView: {
 		marginTop: theme.height * 0.01,
-		paddingBottom: 50
+		paddingBottom: 80,
     },
     scrollView: {
         height: theme.height * 0.35,
         width: theme.width,
-        marginTop: 0,
+		marginTop: 0,
     },
     partnerButton: {
 		elevation: 2,
@@ -422,7 +421,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignContent :'center',
         alignItems:'center',
-        marginTop: 20
+		marginTop: 20,
+		alignSelf: 'center'
     },
     partnerButtonView: {
 		flexDirection : 'row',
