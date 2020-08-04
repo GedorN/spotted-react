@@ -699,10 +699,12 @@ function HeimdallrLib() {
 	  return new Promise((resolve) => {
 		  firebase.firestore().collection('partners').doc(plan_id).get().then(
 			  (result) => {
+
 				  let partners = result.data().members;
-				  let filteredMembers = partners.filter((item) => item.referenceId != reference_id);
+				  partners.splice(partners.findIndex((item) => item.referenceId != reference_id),1);
+
 				  firebase.firestore().collection('partners').doc(plan_id).set({
-					  members: filteredMembers
+					  members: partners
 				  }).then((res) => {
 						resolve();
 				  },(error) => {
