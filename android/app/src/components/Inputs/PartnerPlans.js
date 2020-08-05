@@ -137,6 +137,7 @@ export default class PartnerPlans extends React.Component {
 													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
 														() => {
 															heimdallr.updateNewPartner(collectionParams.plan_id, user);
+															heimdallr.decrementMembersNumber(this.state.store,currentPlan.plan_id);
 														});
 
 													heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
