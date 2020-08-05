@@ -101,7 +101,7 @@ export default class ProductScreen extends React.Component {
 							this.setState({
 								product: resolve,
 								productImages: resolve.images,
-								price_without_tax: original_price,
+								price_without_tax: newPrice,
 								storePrice : original_price,
 								spottedPrice : resolve.price,
 								initialLoad: false,
@@ -114,7 +114,7 @@ export default class ProductScreen extends React.Component {
 							this.setState({
 								product: resolve,
 								productImages: resolve.images,
-								price_without_tax: original_price,
+								price_without_tax: newPrice,
 								storePrice : original_price,
 								spottedPrice : resolve.price,
 								initialLoad: false,
@@ -175,7 +175,7 @@ export default class ProductScreen extends React.Component {
 							this.setState({
 								product: resolve,
 								productImages: resolve.images,
-								price_without_tax: original_price,
+								price_without_tax: newPrice,
 								storePrice : original_price,
 								spottedPrice : resolve.price,
 								initialLoad: false,
@@ -188,7 +188,7 @@ export default class ProductScreen extends React.Component {
 							this.setState({
 								product: resolve,
 								productImages: resolve.images,
-								price_without_tax: original_price,
+								price_without_tax: newPrice,
 								storePrice : original_price,
 								spottedPrice : resolve.price,
 								initialLoad: false,
