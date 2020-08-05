@@ -92,102 +92,32 @@ export default class PartnerPlans extends React.Component {
 
 		heimdallr.verifyMembersNumber(this.state.store,collectionParams.plan_id).then(
 			(resolve) => {
-				if(resolve){
-					axios({
-						method: 'post',
-						url: 'https://appws.picpay.com/ecommerce/public/payments',
-						headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
-						data: {
-							"referenceId":userParams.referenceId,
-							"callbackUrl": "http://www.spottedutfpr.com.br/callback",
-							"value": price,
-							"expiresAt": timeNow,
-							"buyer": {
-								"firstName": heimdallr.user_name.split(' ')[0],
-								"lastName": heimdallr.user_name.split(' ')[0],
-								"document": "123.456.789-10",
-								"email": heimdallr.email,
-								"phone": "+55 27 12345-6789"
-							}
-						}
-						}).then(
-							(result) => {
-								this.setState({showLoading: false});
-								userParams.url = result.data.paymentUrl;
-								Linking.openURL(result.data.paymentUrl);
+				const currentPlan = this.props.navigation.getParam('current_plan');
+					if(currentPlan){
+						heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
+							() => {
+								heimdallr.updateNewPartner(collectionParams.plan_id, user);
+							});
 
-								let verify = setInterval(() => {
-									axios({
-										method: 'get',
-										url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
-										headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'}
-									}).then(
-										(rest) => {
-											if(rest.data.status === 'paid'){
+						heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
+						heimdallr.savePartnerPlan(this.state.store,userParams).then(
+							() => {
+								heimdallr.newPlanAdded = true;
+								this.props.navigation.goBack();
+							});
+					}
+					else{
+						heimdallr.updateNewPartner(collectionParams.plan_id,user);
 
-												showMessage({
-													message: "Compra realizada com sucesso",
-													type: "success",
-													icon: 'success'
-												});
+						heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
 
-												clearInterval(verify);
-												const currentPlan = this.props.navigation.getParam('current_plan');
-												if(currentPlan){
-													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
-														() => {
-															heimdallr.updateNewPartner(collectionParams.plan_id, user);
-														});
+						heimdallr.savePartnerPlan(this.state.store, userParams).then(
+							() => {
+								heimdallr.newPlanAdded = true;
+								this.props.navigation.goBack();
+							});
 
-													heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
-													heimdallr.savePartnerPlan(this.state.store,userParams).then(
-														() => {
-															heimdallr.newPlanAdded = true;
-															this.props.navigation.goBack();
-														});
-												}
-												else{
-													heimdallr.updateNewPartner(collectionParams.plan_id,user);
-
-													heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
-
-													heimdallr.savePartnerPlan(this.state.store, userParams).then(
-														() => {
-															heimdallr.newPlanAdded = true;
-															this.props.navigation.goBack();
-														});
-
-												}
-											}
-										},
-										() => {
-											this.setState({showLoading: false});
-
-										})
-								}, 5000);
-
-								setTimeout(() => {
-									clearInterval(verify);
-								},240000);
-							},
-							(reject) => {
-								clearInterval(verify);
-								this.setState({showLoading: false});
-
-								showMessage({
-									message: "Erro ao realizar a compra",
-									type: "danger",
-									icon: 'danger'
-								});
-							})
-				} else {
-					this.setState({showLoading: false});
-					showMessage({
-						message: "Número de membros acabou de ser esgotado",
-						type: "danger",
-						icon: 'danger'
-					});
-				}
+					}
 			})
 	}
 
@@ -225,10 +155,10 @@ export default class PartnerPlans extends React.Component {
 								<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.registerPartnerPlan.bind(this)}>
 									<View style={styles.partnerButtonView}>
 										<Image
-											style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] === 'white' ? 'black' : 'white'}}
+											style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}
 											source = {require('../../../../../assets/images/star-solid.png')}
 										/>
-										<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] === 'white' ? 'black' : 'white'}}>TORNE-SE SÓCIO</Text>
+										<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
 									</View>
 								</TouchableOpacity>
 							</View>
