@@ -705,7 +705,7 @@ function HeimdallrLib() {
 			  (result) => {
 
 				  let partners = result.data().members;
-				  partners.splice(partners.findIndex((item) => item.referenceId != reference_id),1);
+				  partners.splice(partners.findIndex((item) => item.referenceId === reference_id),1); 
 
 				  firebase.firestore().collection('partners').doc(plan_id).set({
 					  members: partners
