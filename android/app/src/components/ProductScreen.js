@@ -500,9 +500,74 @@ export default class ProductScreen extends React.Component {
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
-		heimdallr.getProduct(this.state.iidProduct).then((resolve) => {
-			this.setState({product: resolve, productImages: resolve.images, PicPayPrice : (parseFloat(resolve.price) * 1.1).toFixed(2), isRefreshing: false});
-		})
+		heimdallr.getProduct(this.state.iidProduct).then(
+			async (resolve) => {
+				const original_price = resolve.price;
+				resolve.price = (parseFloat(resolve.price) * 1.16).toFixed(2);
+
+				let today = await heimdallr.getServerTime();
+				let userPlans = null;
+
+				if(heimdallr.userPlans != null && heimdallr.userPlans[resolve.sid]){
+					userPlans =  heimdallr.userPlans[resolve.sid];
+
+					// verifica se o plano ainda está dentro da validade
+					if (today < userPlans[0].due_date && userPlans[0].active === 1) {
+						// verifica se o desconte deve ser absoluto ou porcentagem
+						if( userPlans[0].type === 0 ){
+							let newPrice = original_price - (original_price * ((userPlans[0].value)/100));
+							this.setState({
+								product: resolve,
+								productImages: resolve.images,
+								price_without_tax: newPrice,
+								storePrice : original_price,
+								spottedPrice : resolve.price,
+								isRefreshing: false,
+								currentPlan: userPlans[0],
+								PicPayPrice: (newPrice * 1.16).toFixed(2)
+							});
+						} else {
+							let newPrice = original_price - parseFloat(userPlans[0].value).toFixed(2);
+							newPrice = newPrice <= 0 ? 0 : newPrice;
+							this.setState({
+								product: resolve,
+								productImages: resolve.images,
+								price_without_tax: newPrice,
+								storePrice : original_price,
+								spottedPrice : resolve.price,
+								isRefreshing: false,
+								currentPlan: userPlans[0],
+								PicPayPrice: (newPrice * 1.16).toFixed(2),
+							});
+						}
+					} else {
+						this.setState({
+							product: resolve,
+							productImages: resolve.images,
+							price_without_tax: original_price,
+							storePrice : original_price,
+							spottedPrice : resolve.price,
+							isRefreshing: false,
+							PicPayPrice : resolve.price
+						});
+					}
+
+				} else {
+					this.setState({
+						product: resolve,
+						productImages: resolve.images,
+						price_without_tax: original_price,
+						storePrice : original_price,
+						spottedPrice : resolve.price,
+						isRefreshing: false,
+						PicPayPrice : resolve.price
+					});
+				}
+			},
+			() => {
+				this.setState({isRefreshing: false})
+			}
+		)
 	}
 
 
