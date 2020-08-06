@@ -69,7 +69,6 @@ export default class PartnerPlans extends React.Component {
 		let user = {};
 		let selectedPlan = this.state.planId[this.state.selectedPlan];
 		let userParams = Object.assign({},this.state.partnersPlan[selectedPlan]);
-		let collectionParams = Object.assign({}, this.state.partnersPlan[selectedPlan]);
 
 		userParams.referenceId = await heimdallr.getUID();
 		userParams.signature_date = await heimdallr.getServerTime();
@@ -82,15 +81,15 @@ export default class PartnerPlans extends React.Component {
 		user.image = heimdallr.user_image;
 		user.phone = heimdallr.phone;
         user.referenceId = 	userParams.referenceId;
-        user.signature_date = userParams.signature_date;
+		user.signature_date = userParams.signature_date;
+		user.due_date = userParams.due_date;
         user.uid = heimdallr.user_id;
 
-		collectionParams.members_number = (parseInt(collectionParams.members_number) + 1);
 
 		timeNow = moment(userParams.signature_date).add(4,'m').format();
 		price = parseFloat(userParams.price.replace(',','.'));
 
-		heimdallr.verifyMembersNumber(this.state.store, collectionParams.plan_id).then(
+		heimdallr.verifyMembersNumber(this.state.store, userParams.plan_id).then(
 			(resolve) => {
 				if(resolve){
 					axios({
@@ -136,11 +135,11 @@ export default class PartnerPlans extends React.Component {
 												if(currentPlan){
 													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
 														() => {
-															heimdallr.updateNewPartner(collectionParams.plan_id, user);
-															heimdallr.decrementMembersNumber(this.state.store,currentPlan.plan_id);
+															heimdallr.updateNewPartner(userParams.plan_id, user);
+															heimdallr.alterMembersNumber(this.state.store,currentPlan.plan_id,-1);
 														});
 
-													heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
+													heimdallr.alterMembersNumber(this.state.store,selectedPlan,1);
 													heimdallr.savePartnerPlan(this.state.store,userParams).then(
 														() => {
 															heimdallr.newPlanAdded = true;
@@ -148,10 +147,8 @@ export default class PartnerPlans extends React.Component {
 														});
 												}
 												else{
-													heimdallr.updateNewPartner(collectionParams.plan_id,user);
-
-													heimdallr.updatePartnerPlan(this.state.store, selectedPlan, collectionParams);
-
+													heimdallr.updateNewPartner(userParams.plan_id,user);
+													heimdallr.alterMembersNumber(this.state.store,selectedPlan,1);
 													heimdallr.savePartnerPlan(this.state.store, userParams).then(
 														() => {
 															heimdallr.newPlanAdded = true;

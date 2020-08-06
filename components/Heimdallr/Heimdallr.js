@@ -642,23 +642,12 @@ function HeimdallrLib() {
 	  })
   }
 
-  this.updatePartnerPlan = function(store_code,plan_doc,partner_plan){
-	  return new Promise((resolve) => {
-		  firebase.firestore().collection('partners_plan').doc(store_code).set({
-		  	[plan_doc]: partner_plan
-		  },{merge: true}).then((res) => {
-
-			  resolve();
-		  })
-	  })
-  }
-
-  this.decrementMembersNumber = function(store_code, plan_id){
+  this.alterMembersNumber = function(store_code, plan_id, plus){
 
 	firebase.firestore().collection('partners_plan').doc(store_code).get().then(
 		(resolve) => {
 			let partnerPlans = resolve.data();
-			partnerPlans[plan_id].members_number = (partnerPlans[plan_id].members_number - 1);
+			partnerPlans[plan_id].members_number = (partnerPlans[plan_id].members_number + plus);
 			firebase.firestore().collection('partners_plan').doc(store_code).set({
 				[plan_id]: partnerPlans[plan_id]
 			},  {merge: true})
