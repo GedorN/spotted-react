@@ -68,7 +68,6 @@ export default class PartnerPlans extends React.Component {
 		let timeNow = null;
 		let user = {};
 		let selectedPlan = this.state.planId[this.state.selectedPlan];
-		let store_code = this.state.store_code;
 		let userParams = Object.assign({},this.state.partnersPlan[selectedPlan]);
 		let collectionParams = Object.assign({}, this.state.partnersPlan[selectedPlan]);
 
@@ -84,13 +83,14 @@ export default class PartnerPlans extends React.Component {
 		user.phone = heimdallr.phone;
         user.referenceId = 	userParams.referenceId;
         user.signature_date = userParams.signature_date;
+        user.uid = heimdallr.user_id;
 
 		collectionParams.members_number = (parseInt(collectionParams.members_number) + 1);
 
 		timeNow = moment(userParams.signature_date).add(4,'m').format();
 		price = parseFloat(userParams.price.replace(',','.'));
 
-		heimdallr.verifyMembersNumber(this.state.store,collectionParams.plan_id).then(
+		heimdallr.verifyMembersNumber(this.state.store, collectionParams.plan_id).then(
 			(resolve) => {
 				if(resolve){
 					axios({
@@ -423,7 +423,6 @@ const styles = StyleSheet.create({
 		alignContent :'center',
         alignItems:'center',
 		marginTop: 20,
-		alignSelf: 'center'
     },
     partnerButtonView: {
 		flexDirection : 'row',
