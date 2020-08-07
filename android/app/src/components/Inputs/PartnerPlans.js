@@ -274,6 +274,11 @@ export default class PartnerPlans extends React.Component {
 																<Text style = {styles.planDescription}>{JSON.parse(this.state.partnersPlan[i].description)}</Text>
 															</Text>
 														</View>
+														<View style={styles.planRulesView}>
+															<Text style={styles.rulesTitle}>{ 'Regras: '}
+																<Text style = {styles.planRules}>{JSON.parse(this.state.partnersPlan[i].rules)}</Text>
+															</Text>
+														</View>
 														<View style={styles.discountView}>
 															<Text style={{ fontWeight:'bold', flexWrap: 'wrap' }}>{ 'Valor de desconto nas compras: ' }</Text>
 															<Text style={{ color: '#8f8f8f', flexWrap: 'wrap' }}>{this.state.partnersPlan[i].type === 0 ? this.state.partnersPlan[i].value + '%' : 'R$' + parseFloat(this.state.partnersPlan[i].value).toFixed(2)}</Text>
@@ -411,12 +416,26 @@ const styles = StyleSheet.create({
     planDescriptionView: {
 		flexDirection: 'row',
         width: theme.width * 0.82,
+	},
+	planRulesView: {
+		flexDirection: 'row',
+        width: theme.width * 0.82,
     },
     descriptionTitle: {
 		fontWeight:'bold',
 		flexWrap: 'wrap'
+	},
+	rulesTitle: {
+		fontWeight:'bold',
+		flexWrap: 'wrap'
     },
     planDescription: {
+		flexWrap: 'wrap',
+		fontWeight:'400',
+        color: '#8f8f8f',
+        lineHeight: 20,
+	},
+	planRules: {
 		flexWrap: 'wrap',
 		fontWeight:'400',
         color: '#8f8f8f',
