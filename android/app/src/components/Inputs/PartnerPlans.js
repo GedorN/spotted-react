@@ -37,6 +37,9 @@ export default class PartnerPlans extends React.Component {
 			store: null,
 			loading: true,
 			today: 0,
+			showRulesModal: false,
+			modalPlan: null,
+			planRules: null,
 		}
     }
 
@@ -193,6 +196,10 @@ export default class PartnerPlans extends React.Component {
 			})
 	}
 
+	opeRulesModal = (partnerPlan) => {
+		this.setState({ showRulesModal: true, modalPlan: partnerPlan.name, planRules: partnerPlan.rules});
+	}
+
     render() {
         return (
             <View style={styles.container}>
@@ -274,11 +281,6 @@ export default class PartnerPlans extends React.Component {
 																<Text style = {styles.planDescription}>{JSON.parse(this.state.partnersPlan[i].description)}</Text>
 															</Text>
 														</View>
-														<View style={styles.planRulesView}>
-															<Text style={styles.rulesTitle}>{ 'Regras: '}
-																<Text style = {styles.planRules}>{JSON.parse(this.state.partnersPlan[i].rules)}</Text>
-															</Text>
-														</View>
 														<View style={styles.discountView}>
 															<Text style={{ fontWeight:'bold', flexWrap: 'wrap' }}>{ 'Valor de desconto nas compras: ' }</Text>
 															<Text style={{ color: '#8f8f8f', flexWrap: 'wrap' }}>{this.state.partnersPlan[i].type === 0 ? this.state.partnersPlan[i].value + '%' : 'R$' + parseFloat(this.state.partnersPlan[i].value).toFixed(2)}</Text>
@@ -295,6 +297,13 @@ export default class PartnerPlans extends React.Component {
 															this.props.navigation.getParam('current_plan').due_date > this.state.today &&
 															<Text style={{ ...styles.planName, color: this.state.colors[0] }}>Seu plano atual</Text>
 														}
+														<TouchableOpacity onPress={this.opeRulesModal.bind(this,this.state.partnersPlan[i])}>
+															<View style={styles.planRulesView}>
+																<Text style={{ ...styles.rulesTitle, color: '#8f8f8f' }}>{ 'Ao assinar o plano você concorda com os '}
+																	<Text style={{fontWeight: 'bold', color: this.state.colors[0], textDecorationLine: 'underline'}}>{'termos'}</Text>
+																</Text>
+															</View>
+														</TouchableOpacity>
 													</TouchableOpacity>
 												</View>
 											</View>
@@ -348,6 +357,40 @@ export default class PartnerPlans extends React.Component {
 						</View>
 					</View>
 				}
+				<Modal
+		            hardwareAccelerated={true}
+		            animationType='fade'
+		            transparent={true}
+		            visible={this.state.showRulesModal}
+		            onRequestClose={() => { this.setState({showRulesModal: false})}}
+		            style = {{ height: 50, width: theme.width * 0.5 }}
+	            >
+		            <View style = {styles.centeredView}>
+			            <View style = {{ ...styles.modalContainer, height: theme.height * 0.7 }}>
+							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.colors[0] }}>
+								<TouchableOpacity onPress={() => this.setState({showRulesModal: false})}>
+									<View style = {{ width: theme.width * 0.15, height: theme.height*0.05, alignSelf: 'flex-end' }}>
+										<Image
+											style = {{ width: 15, height: 15, opacity: 0.4, alignSelf: 'flex-end', tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'black' }}
+											source = {require('../../../../../assets/images/times-solid.png')}
+										/>
+									</View>
+								</TouchableOpacity>
+								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>{'Plano ' + this.state.modalPlan}</Text>
+							</View>
+							<View style = {{ height: theme.height * 0.55, marginTop: theme.height * 0.1 }}>
+								<ScrollView style = {{ height: theme.height * 0.55, marginTop: 0 }} showsVerticalScrollIndicator = {false}>
+									<View style={{ marginBottom: 10}}>
+										<Text style={{ fontWeight: 'bold', color: this.state.colors[0], fontSize: 15 }}>Regras e termos do plano</Text>
+									</View>
+									<View>
+										<Text style={{color: '#8f8f8f',lineHeight: 20, textAlign: 'justify'}}>{JSON.parse(this.state.planRules)}</Text>
+									</View>
+								</ScrollView>
+							</View>
+						</View>
+					</View>
+				</Modal>
             </View>
         )
     }
@@ -419,23 +462,20 @@ const styles = StyleSheet.create({
 	},
 	planRulesView: {
 		flexDirection: 'row',
-        width: theme.width * 0.82,
+		width: theme.width * 0.82,
+		zIndex: 100,
+		paddingTop: 5,
+		paddingBottom: 5,
     },
     descriptionTitle: {
 		fontWeight:'bold',
 		flexWrap: 'wrap'
 	},
 	rulesTitle: {
-		fontWeight:'bold',
-		flexWrap: 'wrap'
+		flexWrap: 'wrap',
+		fontSize: 11,
     },
     planDescription: {
-		flexWrap: 'wrap',
-		fontWeight:'400',
-        color: '#8f8f8f',
-        lineHeight: 20,
-	},
-	planRules: {
 		flexWrap: 'wrap',
 		fontWeight:'400',
         color: '#8f8f8f',
@@ -507,5 +547,37 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		marginTop: 10,
 		fontSize: 15
-	}
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: -(theme.height * 0.1),
+		paddingTop:theme.height * 0.1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	modalContainer: {
+		width: theme.width * 0.9,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 25,
+		paddingBottom:20,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		zIndex:0,
+	},
+	modalHeader : {
+		flexDirection: 'column',
+		width: theme.width * 0.9,
+		borderTopLeftRadius:20,
+		borderTopRightRadius:20,
+		padding:20,
+		position:'absolute',
+		marginLeft:0.001
+	},
 })
