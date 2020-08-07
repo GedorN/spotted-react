@@ -656,15 +656,11 @@ function HeimdallrLib() {
   }
 
   this.verifyMembersNumber = function(store_code,plan_id){
-	let membersNumber = null;
 	return new Promise((resolve) => {
 		console.log('store_code: ', store_code);
 		console.log('plan', plan_id);
 		firebase.firestore().collection('partners_plan').doc(store_code).get().then(
 			(result) => {
-				console.log('doc:', result.data());
-				membersNumber = result.data()[plan_id].members_number;
-				console.warn('numero:', membersNumber);
 				resolve(parseInt(result.data()[plan_id].members_number) < parseInt(result.data()[plan_id].userLimiter));
 			}
 		)
@@ -707,7 +703,7 @@ function HeimdallrLib() {
 			  (result) => {
 
 				  let partners = result.data().members;
-				  partners.splice(partners.findIndex((item) => item.referenceId === reference_id),1); 
+				  partners.splice(partners.findIndex((item) => item.referenceId === reference_id),1);
 
 				  firebase.firestore().collection('partners').doc(plan_id).set({
 					  members: partners

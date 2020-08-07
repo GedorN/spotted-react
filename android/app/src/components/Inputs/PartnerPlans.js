@@ -35,13 +35,15 @@ export default class PartnerPlans extends React.Component {
 			planId: [],
 			store: null,
 			loading: true,
+			today: 0,
 		}
     }
 
-    componentDidMount(): void {
+    componentDidMount (): void {
 		const store = this.props.navigation.getParam('store');
 	    heimdallr.getStoreInfo(this.props.navigation.getParam('store')).then(
-		    (resolve) => {
+		    async (resolve) => {
+	            const time = await heimdallr.getServerTime();
 			    StatusBar.setBackgroundColor(resolve.colors[0]);
 			    StatusBar.setBarStyle('light-content');
 			    heimdallr.getPartnersPlan(this.props.navigation.getParam('store')).then(
@@ -52,7 +54,8 @@ export default class PartnerPlans extends React.Component {
 						    colors: resolve.colors,
 						    logo : resolve.logo,
 						    store: store,
-						    loading: false
+						    today: time,
+						    loading: false,
 					    })
 				    });
 		    }
@@ -253,8 +256,11 @@ export default class PartnerPlans extends React.Component {
 											this.state.planId &&
 											this.state.planId.map(i =>
 											<View  key = {i} style={styles.partnersPlanView}>
-												<View style={{...styles.selectedPlan, opacity: (this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? 0.8 : 1), borderColor: (this.state.selectedPlan === this.state.planId.indexOf(i) ? this.state.colors[0]: null), borderWidth: (this.state.selectedPlan === this.state.planId.indexOf(i) ? 3 : 0) }}>
-													<TouchableOpacity  disabled={this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) || this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id ? true : false} onPress={() => this.setState({selectedPlan: this.state.planId.indexOf(i)})}>
+												<View style={{...styles.selectedPlan, opacity: (this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) || (this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id && this.props.navigation.getParam('current_plan').active === 1 && this.props.navigation.getParam('current_plan').due_date > this.state.today) ? 0.8 : 1), borderColor: (this.state.selectedPlan === this.state.planId.indexOf(i) ? this.state.colors[0]: null), borderWidth: (this.state.selectedPlan === this.state.planId.indexOf(i) ? 3 : 0) }}>
+													<TouchableOpacity
+														disabled={this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) || (this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id && this.props.navigation.getParam('current_plan').active === 1 && this.props.navigation.getParam('current_plan').due_date > this.state.today) ? true : false}
+														onPress={() => this.setState({selectedPlan: this.state.planId.indexOf(i)})}
+													>
 														<Text style={{ ...styles.planName, color: this.state.colors[0] }}>{ 'Plano ' + this.state.partnersPlan[i].name}</Text>
 														<View style={styles.planDescriptionView}>
 															<Text style={styles.descriptionTitle}>{ 'Descrição: '}
@@ -273,6 +279,8 @@ export default class PartnerPlans extends React.Component {
 														}
 														{
 															this.props.navigation.getParam('current_plan').plan_id === this.state.partnersPlan[i].plan_id &&
+															this.props.navigation.getParam('current_plan').active === 1 &&
+															this.props.navigation.getParam('current_plan').due_date > this.state.today &&
 															<Text style={{ ...styles.planName, color: this.state.colors[0] }}>Seu plano atual</Text>
 														}
 													</TouchableOpacity>
