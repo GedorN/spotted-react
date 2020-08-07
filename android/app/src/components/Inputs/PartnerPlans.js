@@ -22,6 +22,7 @@ import moment from "moment";
 import 'moment/locale/pt-br';
 import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
 
 export default class PartnerPlans extends React.Component {
 	constructor (props) {
@@ -236,7 +237,7 @@ export default class PartnerPlans extends React.Component {
 							}
 						</View>
 						{
-						!this.state.loading &&
+						!this.state.loading ?
 						<View>
 							<View style = {{ ...styles.modalView, height:  theme.height * 0.8 }}>
 								<ScrollView style = {styles.scrollView} showsVerticalScrollIndicator = {false}>
@@ -252,6 +253,7 @@ export default class PartnerPlans extends React.Component {
 													<Text style={{ ...styles.subtitleText, color: this.state.colors[0] }}>Esta entidade ainda não possui planos disponíveis ಠ︵ಠ</Text>
 												</View>
 										}
+
 										{
 											this.state.planId &&
 											this.state.planId.map(i =>
@@ -306,6 +308,18 @@ export default class PartnerPlans extends React.Component {
 								</ScrollView>
 							</View>
 						</View>
+							:
+						<SkeletonPlaceholder>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center">
+								<SkeletonPlaceholder.Item width={theme.width * 0.9} height={190} borderRadius={10} />
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center">
+								<SkeletonPlaceholder.Item width={theme.width * 0.9} height={190} borderRadius={10} marginTop={6}/>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center" marginTop={6}>
+								<SkeletonPlaceholder.Item width={theme.width * 0.9} height={190} borderRadius={10} />
+							</SkeletonPlaceholder.Item>
+						</SkeletonPlaceholder>
 						}
 						<FlashMessage position="top" ref={'plansMessage'} style={{ zIndex: 99 }} duration={2500}/>
 					</View>
