@@ -237,7 +237,11 @@ export default class Store extends React.Component {
 					}
 					{
 						<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
-							<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.goToPlans.bind(this)}>
+							<TouchableOpacity
+								style ={{ padding:10, width: theme.width * 0.9 }}
+								onPress = {this.goToPlans.bind(this)}
+								onPressIn={() => heimdallr.sendEvent('partners_list_click')}
+							>
 								<View style={styles.partnerButtonView}>
 									<Image
 										style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}

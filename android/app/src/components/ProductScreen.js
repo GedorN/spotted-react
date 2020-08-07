@@ -755,7 +755,11 @@ export default class ProductScreen extends React.Component {
 											</View>
 										}
 										<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
-											<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.goToPlans.bind(this)}>
+											<TouchableOpacity
+												style ={{ padding:10, width: theme.width * 0.9 }}
+												onPress = {this.goToPlans.bind(this)}
+												onPressIn={() => heimdallr.sendEvent('partners_list_click')}
+											>
 												<View style={styles.partnerButtonView}>
 													<Image
 														style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] ? heimdallr.getTxtColor(this.state.product.colors[0]) : 'white'}}

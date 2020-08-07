@@ -200,7 +200,8 @@ export default class PartnerPlans extends React.Component {
 					!this.state.showLoading &&
 					<View style={styles.container}>
 						<View style = {styles.timesView}>
-							<TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+							<TouchableOpacity
+								onPress={() => this.props.navigation.goBack()}>
 								<View style={styles.iconView}>
 									<Image
 										source={require('../../../../../assets/images/times-solid.png')}
@@ -224,7 +225,11 @@ export default class PartnerPlans extends React.Component {
 							{
 							this.state.selectedPlan != null &&
 							<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
-								<TouchableOpacity style ={{ padding:10, width: theme.width * 0.9 }} onPress = {this.registerPartnerPlan.bind(this)}>
+								<TouchableOpacity
+									style ={{ padding:10, width: theme.width * 0.9 }}
+									onPress = {this.registerPartnerPlan.bind(this)}
+									onPressIn={() => heimdallr.sendEvent('partners_list_click')}
+								>
 									<View style={styles.partnerButtonView}>
 										<Image
 											style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}
