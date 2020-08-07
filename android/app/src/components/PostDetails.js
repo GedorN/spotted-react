@@ -359,7 +359,7 @@ export default class PostDetails extends React.Component {
 		return <View></View>;
 	}
 
-	triggerNotification = async (comment, cid) => {
+	triggerNotification = async (comment, cid, isAnonymous) => {
 		if(heimdallr.user_id != this.state.post.data().uid){
 			const notifications = {};
 			notifications.eid = this.state.post.data().pid;
@@ -367,7 +367,7 @@ export default class PostDetails extends React.Component {
 			notifications.uid_notification = heimdallr.user_id;
 			notifications.user_name = heimdallr.user_name;
 			notifications.user_image = heimdallr.user_image;
-			notifications.anonymous =  this.state.anonymousUser;
+			notifications.anonymous =  isAnonymous;
 			notifications.content = comment;
 			notifications.cid = cid;
 			notifications.date = await heimdallr.getServerTime();
@@ -410,7 +410,7 @@ export default class PostDetails extends React.Component {
 
 				heimdallr.saveComment(params);
 
-				this.triggerNotification(params.comment, uuid);
+				this.triggerNotification(params.comment, uuid, params.anonymous);
 			})
 
 		}
