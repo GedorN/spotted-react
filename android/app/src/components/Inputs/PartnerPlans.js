@@ -228,7 +228,7 @@ export default class PartnerPlans extends React.Component {
 								<TouchableOpacity
 									style ={{ padding:10, width: theme.width * 0.9 }}
 									onPress = {this.registerPartnerPlan.bind(this)}
-									onPressIn={() => heimdallr.sendEvent('partners_list_click')}
+									onPressIn={() => heimdallr.sendEvent('buy_plan')}
 								>
 									<View style={styles.partnerButtonView}>
 										<Image
