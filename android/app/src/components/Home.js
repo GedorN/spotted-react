@@ -35,12 +35,10 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
-  	heimdallr.sendEvent('app_open');
+	  heimdallr.sendEvent('app_open');
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
-  		console.log('peguei esses caras aqui', resolve);
   		if (resolve.length === 0 ) {
-  			console.warn('veio nada');
   			this.setState({ endPulling: true })
 	    }
   		resolve.forEach((doc) => {

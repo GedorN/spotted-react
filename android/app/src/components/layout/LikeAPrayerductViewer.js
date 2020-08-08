@@ -22,13 +22,14 @@ export default class LikeAPrayer extends React.Component{
 		}
 	}
 	componentDidMount(): void {
-		console.log('produto recebido: ', this.props.product);
 		this.state.price = this.props.product.price;
 		this.state.partnersPlan = this.props.partnersPlan;
-	
+
 		if(this.props.validPlan){
-		
+
 			this.planDiscount();
+		} else {
+			this.setState({});
 		}
 	}
 
@@ -42,12 +43,12 @@ export default class LikeAPrayer extends React.Component{
 			newPrice <= 0 ? newPrice = 0 : newPrice;
 			this.setState({ price: newPrice });
 		}
-	
+
 	}
 
 	goToProductScreen = () => {
 
-		this.props.navigation.push('ProductScreen', 
+		this.props.navigation.push('ProductScreen',
 		{
 			iid: this.props.product.iid,
 		})
