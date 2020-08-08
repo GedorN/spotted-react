@@ -1157,7 +1157,7 @@ function HeimdallrLib() {
 							firebase.firestore().collection('post').where('pid', '==', pid).get().then(
 								(res) => {
 									firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
-										comments: res.docs[0].data().comments + 1
+										comments: res.docs[0].data().comments - 1
 									}, {merge: true});
 								}
 							);
