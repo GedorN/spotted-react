@@ -296,8 +296,8 @@ export default class ProductScreen extends React.Component {
 			params.url = 'PicPay';
 			params.description = this.state.product.customization;
 			params.payment = 'PicPay';
-			params.product_price = this.state.discountApplied ? this.state.discountPicPayPrice : this.state.PicPayPrice;
-			params.no_tax_value = this.state.discountApplied ? this.state.discountPriceWithoutTax : this.state.price_without_tax;
+			params.product_price = this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2) : parseFloat(this.state.PicPayPrice).toFixed(2);
+			params.no_tax_value = this.state.discountApplied ? parseFloat(this.state.discountPriceWithoutTax).toFixed(2) : parseFloat(this.state.price_without_tax).toFixed(2);
 			params.buyer_name = heimdallr.user_name;
 			params.buyer_phone = heimdallr.phone;
 			params.buyer_email = heimdallr.email;
@@ -717,7 +717,7 @@ export default class ProductScreen extends React.Component {
 										</View>
 										<View style = { styles.payContainer }>
 											<Text style = {{ fontWeight: 'bold', fontSize: 20 }}>
-													{ 'Valor: R$ ' + (this.state.discountApplied ? this.state.discountPicPayPrice : this.state.PicPayPrice) }
+													{ 'Valor: R$ ' + (this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace('.',',') : parseFloat(this.state.PicPayPrice).toFixed(2).toString().replace('.',',')) }
 											</Text>
 											<View style = {{ flexDirection: 'row', marginTop: 5 }}>
 												<Text style = {{ fontWeight: 'bold', fontSize: 17 }}>{ 'Pago pelo ' }</Text>

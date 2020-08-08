@@ -376,11 +376,11 @@ export default class PartnerPlans extends React.Component {
 										/>
 									</View>
 								</TouchableOpacity>
-								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>{'Plano ' + this.state.modalPlan}</Text>
+								<Text  ellipsizeMode='tail' numberOfLines={1} style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white' }}>{'Plano ' + this.state.modalPlan}</Text>
 							</View>
 							<View style = {{ height: theme.height * 0.55, marginTop: theme.height * 0.1 }}>
 								<ScrollView style = {{ height: theme.height * 0.55, marginTop: 0 }} showsVerticalScrollIndicator = {false}>
-									<View style={{ marginBottom: 10}}>
+									<View style={{ marginBottom: 10 }}>
 										<Text style={{ fontWeight: 'bold', color: this.state.colors[0], fontSize: 15 }}>Regras e termos do plano</Text>
 									</View>
 									<View>
@@ -578,6 +578,7 @@ const styles = StyleSheet.create({
 		borderTopRightRadius:20,
 		padding:20,
 		position:'absolute',
-		marginLeft:0.001
+		marginLeft:0.001,
+		height: theme.height * 0.11
 	},
 })

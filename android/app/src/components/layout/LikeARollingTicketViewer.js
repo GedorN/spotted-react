@@ -114,7 +114,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 									</View>
 									<View style = {{...styles.ticketView, width:theme.width * 0.3 }}>
 										<Text style = {{...styles.ticketLetter, color:this.props.ticket.colors[0]}}>{'Pagamento'}</Text>
-										<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? this.props.ticket.product_price : '')}</Text>
+										<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? (this.props.ticket.product_price).toString().replace('.',',') : '')}</Text>
 										<Text style = {styles.paymentLetter}> {this.props.ticket ? this.props.ticket.payment : null} </Text>
 									</View>
 								</View>
