@@ -25,22 +25,24 @@ export default class LikeAPrayer extends React.Component{
 		console.log('produto recebido: ', this.props.product);
 		this.state.price = this.props.product.price;
 		this.state.partnersPlan = this.props.partnersPlan;
-		/* console.warn("PRICE", this.state.price); */
-		this.planDiscount();
+	
+		if(this.props.validPlan){
+		
+			this.planDiscount();
+		}
 	}
 
 	planDiscount = () =>{
 
-		if(this.props.validPlan){
-			if(this.props.discountType === 0){
-				let newPrice = this.state.price - (this.state.price * (this.props.discount/100));
-				this.setState({ price: newPrice });
-			}else{
-				let newPrice = this.state.price - this.props.discount;
-				newPrice <= 0 ? newPrice = 0 : newPrice;
-				this.setState({ price: newPrice });
-			}
+		if(this.props.discountType === 0){
+			let newPrice = this.state.price - (this.state.price * (this.props.discount/100));
+			this.setState({ price: newPrice });
+		}else{
+			let newPrice = this.state.price - this.props.discount;
+			newPrice <= 0 ? newPrice = 0 : newPrice;
+			this.setState({ price: newPrice });
 		}
+	
 	}
 
 	goToProductScreen = () => {
