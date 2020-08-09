@@ -94,7 +94,7 @@ export default class PartnerPlans extends React.Component {
 
 
 		timeNow = moment(userParams.signature_date).add(4,'m').format();
-		price = parseFloat(userParams.price.replace(',','.'));
+		price = (parseFloat(userParams.price.replace(',','.')) * 1.16).toFixed(2);
 
 		heimdallr.verifyMembersNumber(this.state.store, userParams.plan_id).then(
 			(resolve) => {
@@ -130,6 +130,8 @@ export default class PartnerPlans extends React.Component {
 									}).then(
 										(rest) => {
 											if(rest.data.status === 'paid'){
+												userParams.user_price = (parseFloat(userParams.price.replace(',','.')) * 1.16).toFixed(2);
+												heimdallr.newPlanTicket(userParams, this.state.store);
 
 												showMessage({
 													message: "Compra realizada com sucesso",
@@ -139,7 +141,7 @@ export default class PartnerPlans extends React.Component {
 
 												clearInterval(verify);
 												const currentPlan = this.props.navigation.getParam('current_plan');
-												if(currentPlan){
+												if (currentPlan) {
 													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
 														() => {
 															heimdallr.updateNewPartner(userParams.plan_id, user);
@@ -152,8 +154,7 @@ export default class PartnerPlans extends React.Component {
 															heimdallr.newPlanAdded = true;
 															this.props.navigation.goBack();
 														});
-												}
-												else{
+												} else {
 													heimdallr.updateNewPartner(userParams.plan_id,user);
 													heimdallr.alterMembersNumber(this.state.store,selectedPlan,1);
 													heimdallr.savePartnerPlan(this.state.store, userParams).then(
@@ -286,7 +287,7 @@ export default class PartnerPlans extends React.Component {
 															<Text style={{ color: '#8f8f8f', flexWrap: 'wrap' }}>{this.state.partnersPlan[i].type === 0 ? this.state.partnersPlan[i].value + '%' : 'R$' + parseFloat(this.state.partnersPlan[i].value).toFixed(2)}</Text>
 														</View>
 														<Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{'O plano é válido por ' + this.state.partnersPlan[i].vigor + ' dias.'}</Text>
-														<Text style={{fontWeight:'bold', marginBottom: 5}}>{'Preço: R$ ' + this.state.partnersPlan[i].price}</Text>
+														<Text style={{fontWeight:'bold', marginBottom: 5}}>{'Preço: R$ ' + (parseFloat(this.state.partnersPlan[i].price.replace(',','.')) * 1.16).toFixed(2)}</Text>
 														{
 															this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) &&
 															<Text style={{ ...styles.planName, color: this.state.colors[0] }}>Número de membros esgotado</Text>

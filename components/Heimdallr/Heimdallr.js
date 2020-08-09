@@ -1511,6 +1511,17 @@ function HeimdallrLib() {
 			)
         })
 	}
+
+	this.newPlanTicket = function (params, store) {
+		firebase.firestore().collection('plan_ticket').add({
+			no_tax_value: params.price,
+			date: params.signature_date,
+			price: (parseFloat(params.price.replace(',','.')) * 1.16).toFixed(2),
+			uid: this.user_id,
+			store: store,
+			referenceId: params.referenceId
+		});
+	}
 }
 
 const heimdallr = new HeimdallrLib();
