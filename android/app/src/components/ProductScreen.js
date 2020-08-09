@@ -48,7 +48,7 @@ export default class ProductScreen extends React.Component {
 			showAlert : false,
 			picPay : true,
 			directlyToStore: false,
-			PicPayPrice : '',
+			PicPayPrice : '0.00',
 			payment: false,
 			errorMissingValues: false,
 			showLoading: false,
@@ -68,7 +68,7 @@ export default class ProductScreen extends React.Component {
 			storePrice : null,
 			spottedPrice : null,
 			settingPromotionalCode: false,
-			discountPicPayPrice: null,
+			discountPicPayPrice: '0.00',
 			discountPriceWithoutTax: null,
 			currentPlan: false,
 		}
