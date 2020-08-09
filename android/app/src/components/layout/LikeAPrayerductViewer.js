@@ -102,7 +102,7 @@ export default class LikeAPrayer extends React.Component{
 								source={{ uri: this.props.product && this.props.product.images ? this.props.product.images[0] : null}}
 							/>
 						</View>
-						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ ('Valor: R$ ' + (parseFloat(this.state.price) * 1.16).toFixed(2))}</Text>
+						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ ('Valor: R$ ' + (parseFloat(this.state.price) * 1.16).toFixed(2).toString().replace('.',','))}</Text>
 					</View>
 				</Ripple>
 			</View>

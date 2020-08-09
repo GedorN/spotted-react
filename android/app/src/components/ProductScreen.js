@@ -921,7 +921,7 @@ export default class ProductScreen extends React.Component {
 														<View style = {{ flexDirection:'column', flexWrap: 'wrap'}}>
 															<View style={{ flexDirection: 'row' }}>
 																<Text style = {styles.paymentText} >
-																	{'R$ ' +(this.state.discountPicPayPrice != null ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace(".", ",") : this.state.PicPayPrice) + ' - Pago pelo '}
+																	{'R$ ' +(this.state.discountPicPayPrice != '0.00' ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace(".", ",") :  parseFloat(this.state.PicPayPrice).toFixed(2).toString().replace(".", ",")) + ' - Pago pelo '}
 																</Text>
 																<Image
 																	style = {{ width: 61, height: 20, marginLeft: 3, marginTop:0}}

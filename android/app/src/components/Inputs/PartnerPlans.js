@@ -287,7 +287,7 @@ export default class PartnerPlans extends React.Component {
 															<Text style={{ color: '#8f8f8f', flexWrap: 'wrap' }}>{this.state.partnersPlan[i].type === 0 ? this.state.partnersPlan[i].value + '%' : 'R$' + parseFloat(this.state.partnersPlan[i].value).toFixed(2)}</Text>
 														</View>
 														<Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{'O plano é válido por ' + this.state.partnersPlan[i].vigor + ' dias.'}</Text>
-														<Text style={{fontWeight:'bold', marginBottom: 5}}>{'Preço: R$ ' + (parseFloat(this.state.partnersPlan[i].price.replace(',','.')) * 1.16).toFixed(2)}</Text>
+														<Text style={{fontWeight:'bold', marginBottom: 5}}>{'Preço: R$ ' + (parseFloat(this.state.partnersPlan[i].price.replace(',','.')) * 1.16).toFixed(2).toString().replace('.',',')}</Text>
 														{
 															this.state.partnersPlan[i].members_number === parseInt(this.state.partnersPlan[i].userLimiter) &&
 															<Text style={{ ...styles.planName, color: this.state.colors[0] }}>Número de membros esgotado</Text>
