@@ -143,7 +143,6 @@ export default class PartnerPlans extends React.Component {
 												clearInterval(verify);
 												const currentPlan = this.props.navigation.getParam('current_plan');
 												if (currentPlan.active === 1 && currentPlan.due_date >= this.state.today) {
-													console.warn('no if');
 													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
 														() => {
 															heimdallr.updateNewPartner(userParams.plan_id, user);
@@ -157,7 +156,6 @@ export default class PartnerPlans extends React.Component {
 															this.props.navigation.goBack();
 														});
 												} else {
-													console.warn('e no else');
 													heimdallr.updateNewPartner(userParams.plan_id,user);
 													heimdallr.alterMembersNumber(this.state.store,selectedPlan,1);
 													heimdallr.savePartnerPlan(this.state.store, userParams).then(
