@@ -23,6 +23,7 @@ import 'moment/locale/pt-br';
 import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
+let verify = null;
 
 export default class PartnerPlans extends React.Component {
 	constructor (props) {
@@ -44,7 +45,7 @@ export default class PartnerPlans extends React.Component {
     }
 
     componentDidMount (): void {
-		const store = this.props.navigation.getParam('store');
+	    const store = this.props.navigation.getParam('store');
 	    heimdallr.getStoreInfo(this.props.navigation.getParam('store')).then(
 		    async (resolve) => {
 	            const time = await heimdallr.getServerTime();
@@ -122,7 +123,7 @@ export default class PartnerPlans extends React.Component {
 								userParams.url = result.data.paymentUrl;
 								Linking.openURL(result.data.paymentUrl);
 
-								let verify = setInterval(() => {
+								verify = setInterval(() => {
 									axios({
 										method: 'get',
 										url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
@@ -141,7 +142,8 @@ export default class PartnerPlans extends React.Component {
 
 												clearInterval(verify);
 												const currentPlan = this.props.navigation.getParam('current_plan');
-												if (currentPlan) {
+												if (currentPlan.active === 1 && currentPlan.due_date >= this.state.today) {
+													console.warn('no if');
 													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
 														() => {
 															heimdallr.updateNewPartner(userParams.plan_id, user);
@@ -155,6 +157,7 @@ export default class PartnerPlans extends React.Component {
 															this.props.navigation.goBack();
 														});
 												} else {
+													console.warn('e no else');
 													heimdallr.updateNewPartner(userParams.plan_id,user);
 													heimdallr.alterMembersNumber(this.state.store,selectedPlan,1);
 													heimdallr.savePartnerPlan(this.state.store, userParams).then(
