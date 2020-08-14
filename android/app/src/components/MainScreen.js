@@ -236,7 +236,7 @@ export default class MainScreen extends React.Component {
 						})}
 						acceptPan={true}
 						negotiatePan={true}
-						panThreshold={0.25}
+						panThreshold={0.1}
 						panOpenMask={0.1}
 					>
 						<View style={styles.header}>

@@ -27,6 +27,8 @@ import moment from "moment";
 import 'moment/locale/pt-br';
 import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
+
 
 let scrolling = false;
 export default class Store extends React.Component {
@@ -49,7 +51,7 @@ export default class Store extends React.Component {
 			dueDatePlan: null,
 			plan: null,
 			currentPlan: false,
-			pushParameter: 0
+			loaded: false,
 		}
 	}
 
@@ -64,7 +66,7 @@ export default class Store extends React.Component {
 					if (resolve.docs.length > 0) {
 						let mappedDocs =  resolve.docs.map((d) => d._data);
 						mappedDocs = mappedDocs.filter((i) => i.stock > 0);
-						this.setState({ products: mappedDocs, filteredProducts: mappedDocs });
+						this.setState({ products: mappedDocs, filteredProducts: mappedDocs, loaded: true });
 					}
 				}
 			)
@@ -214,93 +216,120 @@ export default class Store extends React.Component {
 					onRefresh={this.onRefresh.bind(this)}
 				/>
 			}>
-				<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
-					<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10, position: 'absolute', zIndex: 999}}>
-						<TouchableOpacity onPress={() => {this.clearStatusBar(); this.props.navigation.goBack()}}>
-							<Image
-								style={{width: 30, height: 30, marginTop:4, opacity: 0.6}}
-								source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
-							/>
-						</TouchableOpacity>
-					</View>
-					<SevenBannerArmy url={this.state.banner}/>
-					{
-						this.state.validPlan &&
-						<View style={styles.messageView}>
-							<Text style={{fontSize:12, color:'#8f8f8f', alignSelf:'center'}}>{'Seu plano ' + this.state.plan + ' é válido até ' + this.state.dueDatePlan}</Text>
-						</View>
-					}
-					{
-						<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
-							<TouchableOpacity
-								style ={{ padding:10, width: theme.width * 0.9 }}
-								onPress = {this.goToPlans.bind(this)}
-								onPressIn={() => heimdallr.sendEvent('partners_list_click')}
-							>
-								<View style={styles.partnerButtonView}>
-									<Image
-										style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}
-										source = {require('../../../../assets/images/star-solid.png')}
-									/>
-									<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
+				{
+					this.state.loaded ?
+						<View>
+							<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
+								<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10, position: 'absolute', zIndex: 999}}>
+									<TouchableOpacity onPress={() => {this.clearStatusBar(); this.props.navigation.goBack()}}>
+										<Image
+											style={{width: 30, height: 30, marginTop:4, opacity: 0.6}}
+											source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+										/>
+									</TouchableOpacity>
 								</View>
-							</TouchableOpacity>
-						</View>
-					}
-					<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
-						{
-							this.state.categories.map(i =>
-								<View style={{margin: 5}} key={i.name}>
-									<ImNotTheOnlyChip
-										selected={this.state.filteredCategories}
-										text={i.name}
-										id={i.key}
-										colors={this.state.colors ? this.state.colors : null}
-										cbFunction={this.chipPressed.bind(this)}
-									/>
+								<SevenBannerArmy url={this.state.banner}/>
+								{
+									this.state.validPlan &&
+									<View style={styles.messageView}>
+										<Text style={{fontSize:12, color:'#8f8f8f', alignSelf:'center'}}>{'Seu plano ' + this.state.plan + ' é válido até ' + this.state.dueDatePlan}</Text>
+									</View>
+								}
+								{
+									<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
+										<TouchableOpacity
+											style ={{ padding: 10, width: theme.width * 0.9 }}
+											onPress = {this.goToPlans.bind(this)}
+											onPressIn={() => heimdallr.sendEvent('partners_list_click')}
+										>
+											<View style={styles.partnerButtonView}>
+												<Image
+													style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}
+													source = {require('../../../../assets/images/star-solid.png')}
+												/>
+												<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
+											</View>
+										</TouchableOpacity>
+									</View>
+								}
+								<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
+									{
+										this.state.categories.map(i =>
+											<View style={{margin: 5}} key={i.name}>
+												<ImNotTheOnlyChip
+													selected={this.state.filteredCategories}
+													text={i.name}
+													id={i.key}
+													colors={this.state.colors ? this.state.colors : null}
+													cbFunction={this.chipPressed.bind(this)}
+												/>
+											</View>
+										)
+									}
 								</View>
-							)
-						}
-					</View>
-					<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
-						<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.05}}>{'Produtos '}</Text>
-						<View style = {{width:theme.width * 0.4, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: 5}}>
-							<View style = {{width:theme.width * 0.35, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: -20}}>
-								<Image
-									source = {{ uri: this.state.logo }}
-									style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
-								</Image>
+								<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
+									<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.05}}>{'Produtos '}</Text>
+									<View style = {{width:theme.width * 0.4, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: 5}}>
+										<View style = {{width:theme.width * 0.35, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: -20}}>
+											<Image
+												source = {{ uri: this.state.logo }}
+												style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
+											</Image>
+										</View>
+									</View>
+								</View>
 							</View>
+							<FlatList
+								numColumns={2}
+								showsVerticalScrollIndicator={false}
+								onScrollEndDrag={() => {scrolling = false}}
+								onScrollBeginDrag={() => {scrolling = false}}
+								keyExtractor={item => item.name}
+								data={this.state.filteredProducts}
+								refreshControl={
+									<RefreshControl
+										refreshing={this.state.isRefreshing}
+										onRefresh={this.onRefresh.bind(this)}
+									/>
+								}
+								renderItem={({item}) =>
+									<View style = {{width:theme.width*0.49, marginBottom:theme.width*0.07}}>
+										<LikeAPrayerductViewer
+											scrolling={scrolling}
+											product={item}
+											validPlan={this.state.validPlan}
+											discountType={this.state.discountType}
+											discount={this.state.discount}
+											colors={this.state.colors ? this.state.colors : null}
+											navigation={this.props.navigation}
+										/>
+									</View>
+								}
+							/>
 						</View>
-					</View>
-				</View>
-				<FlatList
-					numColumns={2}
-					showsVerticalScrollIndicator={false}
-					onScrollEndDrag={() => {scrolling = false}}
-					onScrollBeginDrag={() => {scrolling = false}}
-					keyExtractor={item => item.name}
-					data={this.state.filteredProducts}
-					refreshControl={
-						<RefreshControl
-							refreshing={this.state.isRefreshing}
-							onRefresh={this.onRefresh.bind(this)}
-						/>
-					}
-					renderItem={({item}) =>
-					<View style = {{width:theme.width*0.49,marginBottom:theme.width*0.07}}>
-						<LikeAPrayerductViewer
-							scrolling={scrolling}
-							product={item}
-							validPlan={this.state.validPlan}
-							discountType={this.state.discountType}
-							discount={this.state.discount}
-							colors={this.state.colors ? this.state.colors : null}
-							navigation={this.props.navigation}
-						/>
-					</View>
-					}
-				/>
+						:
+						<SkeletonPlaceholder>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center">
+								<SkeletonPlaceholder.Item width={theme.width * 0.98} height={theme.height * 0.23}  />
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center" alignSelf="center">
+								<SkeletonPlaceholder.Item width={theme.width * 0.9} height={theme.height * 0.08} padding={10} borderRadius={15} marginTop={10}/>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center" marginTop={6} marginLeft={22}>
+								<SkeletonPlaceholder.Item width={theme.width * 0.27} height={35} borderRadius={20} />
+								<SkeletonPlaceholder.Item width={theme.width * 0.27} height={35} marginLeft={7} borderRadius={20} />
+								<SkeletonPlaceholder.Item width={theme.width * 0.27} height={35} marginLeft={7} borderRadius={20} />
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center" marginTop={130} marginLeft={22}>
+								<SkeletonPlaceholder.Item width={theme.width * 0.43} height={theme.height * 0.4} borderRadius={30} />
+								<SkeletonPlaceholder.Item width={theme.width * 0.43} height={theme.height * 0.4} marginLeft={7} borderRadius={30} />
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item flexDirection="row" alignItems="center" marginTop={22} marginLeft={22}>
+								<SkeletonPlaceholder.Item width={theme.width * 0.43} height={theme.height * 0.4} borderRadius={30} />
+								<SkeletonPlaceholder.Item width={theme.width * 0.43} height={theme.height * 0.4} marginLeft={7} borderRadius={30} />
+							</SkeletonPlaceholder.Item>
+						</SkeletonPlaceholder>
+				}
 			</ScrollView>
 		);
 	}
