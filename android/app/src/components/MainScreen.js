@@ -82,8 +82,9 @@ export default class MainScreen extends React.Component {
 		notifications: this.getNotification,
 	});
 
-	postCall = () => {
-		this.homeScreen.onRefresh();
+	postCall = (item) => {
+		this.setState({ showModal: false });
+		this.homeScreen.addItem(item);
 	}
 
 	_hideModal = () => {
@@ -138,9 +139,7 @@ export default class MainScreen extends React.Component {
 
 	getBadge = (prop) => {
 		if (prop.route.key === 'notifications') {
-
 			if(this.state.numberBadge > 0){
-				console.log('type né: ', typeof(this.state.numberBadge));
 				return this.state.numberBadge;
 			}
 			else{

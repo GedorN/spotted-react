@@ -94,6 +94,12 @@ export default class Home extends React.Component {
     }
   }
 
+  addItem = (post) => {
+  	let posts = this.state.posts;
+  	posts.unshift({_data: post, _ref: {id: post.pid}});
+  	this.setState({ posts: posts });
+  }
+
 
   onRefresh = () => {
 	  this.setState({ isRefreshing: true });
@@ -193,6 +199,7 @@ export default class Home extends React.Component {
 									likes={item._data.likes}
 									liked_by={item._data.liked_by}
 									comments={item._data.comments}
+									new_post={item._data.newPost}
 							/>
               }
               refreshControl={

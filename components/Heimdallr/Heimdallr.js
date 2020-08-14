@@ -1248,7 +1248,15 @@ function HeimdallrLib() {
         }
       });
 
-      if (parametersOK) {
+      if (parametersOK && collection === 'post') {
+      	    returnValue = params.pid;
+	        heimdallr.saveCollection('unverified_post', params);
+	        firebase.firestore().collection(collection).doc(params.pid).set(params).then(
+		        () => {
+		        	resolve();
+		        }
+	        )
+      } else if (parametersOK) {
         const base = firebase.firestore().collection(collection);
         base.add(params).then(
           (docRef) => {
