@@ -446,10 +446,11 @@ export default class PostViewer extends React.Component {
   goToComments = () => {
   	heimdallr.sendEvent('post_click');
 	this.props.navigation.push('PostDetails', {
-	pid: this.props.pid,
-	userImage: this.props.userImage,
-	anonymous: this.props.anonymous?this.props.anonymous:'0',
-	userId: this.props.uid,
+		pid: this.props.pid,
+		userImage: this.props.userImage,
+		anonymous: this.props.anonymous?this.props.anonymous:'0',
+		userId: this.props.uid,
+		newPost: this.props.new_post,
     });
   }
 
@@ -468,8 +469,12 @@ export default class PostViewer extends React.Component {
 	        heimdallr.dislikePost(this.props.pid);
 	        this.setState({ liked: false, likes: this.state.likes -1 });
         } else {
-  	    	heimdallr.likePost(this.props.pid);
-  	        this.setState({ liked: true, likes: this.state.likes ? this.state.likes + 1 : 1 });
+  	    	try {
+	            heimdallr.likePost(this.props.pid);
+	            this.setState({ liked: true, likes: this.state.likes ? this.state.likes + 1 : 1 });
+	        } catch (e) {
+		        console.log('DEU RUIM PORRA', e);
+	        }
         }
 	}
 

@@ -22,6 +22,7 @@ import CommentaryViewer from "./CommentaryViewer";
 import Video from 'react-native-video';
 import moment from "moment";
 import 'moment/locale/pt-br';
+import AsyncStorage from "@react-native-community/async-storage";
 
 import RBSheet from "react-native-raw-bottom-sheet";
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -67,26 +68,27 @@ export default class PostDetails extends React.Component {
 		};
 	}
 
-	componentDidMount = () => {
+	componentDidMount = async () => {
 		this.setState({ pulling: true });
 		this.state.postId =  this.props.navigation.getParam('pid');
 		this.state.userId = this.props.navigation.getParam('userId');
 		if (this.props.navigation.getParam('userId') === heimdallr.user_id){
 			this.state.reportAlert = false;
 		}
-		let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
-		result.then((resolve) => {
-			if (resolve.length === 0) {
-				this.setState({ removedPost: true });
-				return ;
-			}
-			resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
-			console.log(resolve[0].data());
-			let liked = resolve[0].data().liked_by && resolve[0].data().liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
-			console.log('fui gostado:', liked);
-			this.setState( { post: resolve[0], likes: resolve[0].data().likes, liked: liked});
-			if (resolve[0].data().images) {
-				(resolve[0].data().images).forEach((img) => {
+
+		// Procedimento para o caso de uma postagem recem feita. Ou seja, não está no banco de dados
+		if (this.props.navigation.getParam('newPost')) {
+			// Construção de uma estrutura similar à que vem do banco de dados
+			let  resolve = {_data: null};
+			resolve._data = await AsyncStorage.getItem('new_post');
+			resolve._data = JSON.parse(resolve._data);
+			resolve.data = function () {return this._data};
+
+			resolve._data.date = moment(resolve._data.date).locale('pt-br').format('LLLL');
+			let liked = resolve._data.liked_by && resolve._data.liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
+			this.setState( { post: resolve, likes: resolve._data.likes, liked: liked});
+			if (resolve._data.images) {
+				(resolve._data.images).forEach((img) => {
 					let images = this.state.galleryObj;
 					images.push({url: img});
 					this.setState({ galleryObj: images });
@@ -94,8 +96,30 @@ export default class PostDetails extends React.Component {
 			}
 			this.forceUpdate();
 			this.setState({ pulling: false });
-			this.setState({ anonymousProfile: this.state.post.data().anonymous });
-		});
+			this.setState({ anonymousProfile: this.state.post._data.anonymous });
+		} else { // Procedimento para quando é uma postagem vinda do banco de dados
+			let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
+			result.then((resolve) => {
+				if (resolve.length === 0) {
+					this.setState({ removedPost: true });
+					return ;
+				}
+				resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
+				let liked = resolve[0].data().liked_by && resolve[0].data().liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
+				this.setState( { post: resolve[0], likes: resolve[0].data().likes, liked: liked});
+				if (resolve[0].data().images) {
+					(resolve[0].data().images).forEach((img) => {
+						let images = this.state.galleryObj;
+						images.push({url: img});
+						this.setState({ galleryObj: images });
+					});
+				}
+				this.forceUpdate();
+				this.setState({ pulling: false });
+				this.setState({ anonymousProfile: this.state.post.data().anonymous });
+			});
+		}
+
 
 		let res = heimdallr.getComments(this.props.navigation.getParam('pid'), this.state.pulledComments);
 		res.then((resolve) => {
@@ -152,151 +176,300 @@ export default class PostDetails extends React.Component {
 			return ;
 		}
 		if (this.state.post && this.state.post.data().images) {
-			if (this.state.post.data().video) {
-				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
-						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: width * 0.80, height: 235}}>
-								<Video
-									resizeMode={'cover'}
-									repeat={true}
-									source={{uri: this.state.post.data().images[0]}}
-									style={{width: width * 0.80, height: 235, borderRadius: 10}}
-								/>
-							</View>
-						</View>
-					</View>
-				)
-			} else if(this.state.post.data().gif) {
-				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
-						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)'}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[0]}}
+			if (this.props.navigation.getParam('newPost')) {
+				if (this.state.post.data().video) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.80, height: 235}}>
+									<Video
 										resizeMode={'cover'}
-										style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)', overlayColor: 'white'}}
+										repeat={true}
+										source={{uri: this.state.post.data().images[0]}}
+										style={{width: width * 0.80, height: 235, borderRadius: 10}}
 									/>
-								</TouchableOpacity>
+								</View>
 							</View>
 						</View>
-					</View>
-				)
+					)
+				} else if(this.state.post.data().gif) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)'}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[0]}}
+											resizeMode={'cover'}
+											style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)', overlayColor: 'white'}}
+										/>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</View>
+					)
 
-			} else if (this.state.post.data().images.length === 1) {
-				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
-						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: width * 0.80, height: 235}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[0]}}
-										style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
+				} else if (this.state.post.data().images.length === 1) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.80, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[0]}}
+											style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
 							</View>
 						</View>
-					</View>
-				)
-			} else if (this.state.post.data().images.length === 2) {
-				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
-						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: width * 0.40, height: 235}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[0]}}
-										style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
-							</View>
-							<View style={{width: width * 0.40, height: 235}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[1]}}
-										style={{width: width * 0.39, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
+					)
+				} else if (this.state.post.data().images.length === 2) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.40, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[0]}}
+											style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+								<View style={{width: width * 0.40, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[1]}}
+											style={{width: width * 0.39, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
 							</View>
 						</View>
-					</View>
-				)
-			} else if (this.state.post.data().images.length === 3) {
-				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
-						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: width * 0.40, height: 235}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[0]}}
-										style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
+					)
+				} else if (this.state.post.data().images.length === 3) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.40, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[0]}}
+											style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+								<View style={{flexDirection: 'column'}}>
+									<View style={{width: width * 0.40, height: 116}}>
+										<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+											<Image
+												source={{uri: 'file://' + this.state.post.data().images[1]}}
+												style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+											/>
+										</TouchableOpacity>
+									</View>
+									<View style={{width: width * 0.40, height: 116}}>
+										<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+											<Image
+												source={{uri: 'file://' + this.state.post.data().images[2]}}
+												style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+											/>
+										</TouchableOpacity>
+									</View>
+								</View>
 							</View>
-							<View style={{flexDirection: 'column'}}>
+						</View>
+					)
+				} else if (this.state.post.data().images.length === 4) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.40, height: 116}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[0]}}
+											style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+								<View style={{width: width * 0.40, height: 116}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[1]}}
+											style={{width: width * 0.39, height: 116, borderTopRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+							</View>
+							<View style={{ flexDirection: 'row',  marginTop: 5}}>
+								<View style={{width: width * 0.40, height: 116}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[2]}}
+											style={{width: width * 0.39, height: 116,  borderBottomLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+								<View style={{width: width * 0.40, height: 100}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
+										<Image
+											source={{uri: 'file://' + this.state.post.data().images[3]}}
+											style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</View>
+					)
+				}
+			} else {
+				if (this.state.post.data().video) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.80, height: 235}}>
+									<Video
+										resizeMode={'cover'}
+										repeat={true}
+										source={{uri: this.state.post.data().images[0]}}
+										style={{width: width * 0.80, height: 235, borderRadius: 10}}
+									/>
+								</View>
+							</View>
+						</View>
+					)
+				} else if(this.state.post.data().gif) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)'}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[0]}}
+											resizeMode={'cover'}
+											style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black', backgroundColor: 'rgba(217, 217, 217, 0.5)', overlayColor: 'white'}}
+										/>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</View>
+					)
+
+				} else if (this.state.post.data().images.length === 1) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.80, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[0]}}
+											style={{width: width * 0.80, height: 235, borderRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</View>
+					)
+				} else if (this.state.post.data().images.length === 2) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start',zIndex: 2}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.40, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[0]}}
+											style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+								<View style={{width: width * 0.40, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[1]}}
+											style={{width: width * 0.39, height: 235,  borderTopRightRadius: 10, borderBottomRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</View>
+					)
+				} else if (this.state.post.data().images.length === 3) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.40, height: 235}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[0]}}
+											style={{width: width * 0.39, height: 235, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+								<View style={{flexDirection: 'column'}}>
+									<View style={{width: width * 0.40, height: 116}}>
+										<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
+											<Image
+												source={{uri: this.state.post.data().images[1]}}
+												style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+											/>
+										</TouchableOpacity>
+									</View>
+									<View style={{width: width * 0.40, height: 116}}>
+										<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
+											<Image
+												source={{uri: this.state.post.data().images[2]}}
+												style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+											/>
+										</TouchableOpacity>
+									</View>
+								</View>
+							</View>
+						</View>
+					)
+				} else if (this.state.post.data().images.length === 4) {
+					return (
+						<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
+							<View style={{ flexDirection: 'row'}}>
+								<View style={{width: width * 0.40, height: 116}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[0]}}
+											style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
 								<View style={{width: width * 0.40, height: 116}}>
 									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
 										<Image
 											source={{uri: this.state.post.data().images[1]}}
-											style={{width: width * 0.39, height: 116,  borderTopRightRadius: 10, marginLeft: 2, borderWidth: 0.1, borderColor: 'black'}}
+											style={{width: width * 0.39, height: 116, borderTopRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 										/>
 									</TouchableOpacity>
 								</View>
+							</View>
+							<View style={{ flexDirection: 'row',  marginTop: 5}}>
 								<View style={{width: width * 0.40, height: 116}}>
 									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
 										<Image
 											source={{uri: this.state.post.data().images[2]}}
-											style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, marginLeft: 2, marginTop: 2, borderWidth: 0.1, borderColor: 'black'}}
+											style={{width: width * 0.39, height: 116,  borderBottomLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
+										/>
+									</TouchableOpacity>
+								</View>
+								<View style={{width: width * 0.40, height: 100}}>
+									<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
+										<Image
+											source={{uri: this.state.post.data().images[3]}}
+											style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
 										/>
 									</TouchableOpacity>
 								</View>
 							</View>
 						</View>
-					</View>
-				)
-			} else if (this.state.post.data().images.length === 4) {
-				return (
-					<View style={{alignItems: 'flex-start', alignSelf: 'flex-start', marginTop: 10}}>
-						<View style={{ flexDirection: 'row'}}>
-							<View style={{width: width * 0.40, height: 116}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 0 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[0]}}
-										style={{width: width * 0.39, height: 116, borderTopLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
-							</View>
-							<View style={{width: width * 0.40, height: 116}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 1 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[1]}}
-										style={{width: width * 0.39, height: 116, borderTopRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
-							</View>
-						</View>
-						<View style={{ flexDirection: 'row',  marginTop: 5}}>
-							<View style={{width: width * 0.40, height: 116}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 2 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[2]}}
-										style={{width: width * 0.39, height: 116,  borderBottomLeftRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
-							</View>
-							<View style={{width: width * 0.40, height: 100}}>
-								<TouchableOpacity  onPress={() => {this.setState({ showImages: true, indexImage: 3 })}}>
-									<Image
-										source={{uri: this.state.post.data().images[3]}}
-										style={{width: width * 0.39, height: 116, borderBottomRightRadius: 10, borderWidth: 0.1, borderColor: 'black'}}
-									/>
-								</TouchableOpacity>
-							</View>
-						</View>
-					</View>
-				)
+					)
+				}
 			}
+
 		} else {
 			return ;
 		}
@@ -563,7 +736,7 @@ export default class PostDetails extends React.Component {
 											<View style={styles.body}>
 												<View style={styles.post}>
 													<View style = {{width:theme.width * 0.77,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'center'}}>
-														<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}> {this.state.post ? this.state.post.data().text : null} </Text>
+														<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}>{this.state.post ? this.state.post.data().text : null}</Text>
 													</View>
 													<View style = {{marginLeft:theme.width * 0.01}}>
 														{this.getModalImagesLayout()}

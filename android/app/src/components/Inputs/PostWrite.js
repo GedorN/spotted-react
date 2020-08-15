@@ -20,6 +20,7 @@ import Video from 'react-native-video';
 import {Text} from "react-native-paper";
 var RNFS = require('react-native-fs');
 import {RNPhotoEditor} from "react-native-photo-editor";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -70,7 +71,6 @@ export default class PostWrite extends React.Component {
 		/* caso a postagem possua ao menos uma foto */
 		let posImagesLenght = this.state.postImages.length;
 		if (this.state.postImages.length > 0) {
-			console.log('é maior que 0 ué');
 			const params = {};
 			params.active = 1;
 			params.date = await heimdallr.getServerTime();
@@ -88,6 +88,7 @@ export default class PostWrite extends React.Component {
 			params.images = this.state.postImages.map(i => i.path);
 			params.pid = await heimdallr.getUID();
 			this.state.params = params;
+			AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
 			this.props.call({...params, newPost: true});
 
 			let urlArray = [];
@@ -121,7 +122,6 @@ export default class PostWrite extends React.Component {
 						},
 					)
 				} else {
-					console.log('tá entrando certo porra');
 					let link = heimdallr.uploadImage(img.uri);
 					link.then(function (resolve) {
 						checkedImages ++;
@@ -151,7 +151,8 @@ export default class PostWrite extends React.Component {
 			params.likes = 0;
 			params.pid = await heimdallr.getUID();
 			this.state.params = params;
-			this.props.call(params);
+			AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
+			this.props.call({...params, newPost: true});
 			this.savePost(1);
 		}
 	}
