@@ -105,12 +105,10 @@ export default class Home extends React.Component {
 	  this.setState({ isRefreshing: true });
 	  let result = heimdallr.getCollection('post', 10);
 	  result.then( (resolve) => {
-	  	for (let i = 0; i < resolve.length; i++) {
-		    if (!resolve[0].elapsed_time) {
-			    const time = moment(resolve[0].data().date).fromNow();
-			    resolve[0]._data.elapsed_time = heimdallr.getElapsedTime(time);
-		    }
-	    }
+	  	resolve.forEach((doc) => {
+		    const time = moment(doc.data().date).fromNow();
+		   doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+	    });
 	  	this.setState({ posts: [] });
 	  	this.setState({ posts: resolve, isRefreshing: false });
 	  });

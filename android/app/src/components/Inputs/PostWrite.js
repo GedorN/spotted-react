@@ -70,6 +70,7 @@ export default class PostWrite extends React.Component {
 		/* caso a postagem possua ao menos uma foto */
 		let posImagesLenght = this.state.postImages.length;
 		if (this.state.postImages.length > 0) {
+			console.log('é maior que 0 ué');
 			const params = {};
 			params.active = 1;
 			params.date = await heimdallr.getServerTime();
@@ -120,12 +121,13 @@ export default class PostWrite extends React.Component {
 						},
 					)
 				} else {
+					console.log('tá entrando certo porra');
 					let link = heimdallr.uploadImage(img.uri);
 					link.then(function (resolve) {
 						checkedImages ++;
 						console.log('URL resolve: ', resolve);
 						urlArray.push(resolve);
-						self.state.postImages = urlArray;
+						self.state.params.images = urlArray;
 						/* Save the post*/
 						self.savePost(checkedImages / posImagesLenght);
 					})
