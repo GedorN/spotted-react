@@ -45,6 +45,7 @@ export default class UserProfile extends React.Component {
 	}
 
 	componentDidMount = () => {
+		console.log('image: ', heimdallr.user_image);
 		const user_id = this.props.navigation.getParam('userId');
 		if (user_id) {
 

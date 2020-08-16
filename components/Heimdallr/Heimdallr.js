@@ -5,6 +5,7 @@
 * */
 
 import firebase from 'react-native-firebase';
+import AsyncStorage from "@react-native-community/async-storage";
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
 import theme from "../General/Theme";
@@ -613,16 +614,15 @@ function HeimdallrLib() {
   this.updateUserData = function (user) {
 	  return new Promise((resolve) => {
 	  	firebase.firestore().collection('user').where('uid', '==', user.uid).get().then(
-		    (result) => {
+		    async (result) => {
 		    	if (result && result.docs && result.docs[0]) {
 		    		let image = this.user_image;
 		    		let end = image.indexOf('&');
 		    		image = end > 0 ? image.substring(0, end) : image;
 		    		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
-					    user_image: user.user_image ? user.user_image : null,
 					    name: user.name,
+					    user_image: image
 				    }, {merge: true}).then((res) => {
-				    	console.warn('deu boa');
 				    	resolve();
 				    })
 			    }
@@ -755,9 +755,7 @@ function HeimdallrLib() {
 	  return new Promise((resolve) => {
 		  firebase.auth().currentUser.updateProfile({
 		      displayName: user.name,
-		      photoURL: user.user_image,
 		  }).then(function () {
-			  this.user_image = user.user_image ? user.user_image : null;
 			  this.user_name = user.name;
 		      resolve(true);
 		  }).catch(function (error) {
@@ -767,7 +765,7 @@ function HeimdallrLib() {
 	  });
   }
 
-  this.checkUser = function () {
+  this.checkUser = () => {
       let u = null;
       // firebase.auth().signOut().then(
       //     (sucess) => {
@@ -787,7 +785,7 @@ function HeimdallrLib() {
       // })
       return new Promise((resolve) => {
           firebase.auth().onAuthStateChanged(
-              (user) => {
+          	(user) => {
                   console.log('user checkado: ', user);
                   if (user) {
                       this.user_id = user._user.uid;
@@ -796,6 +794,7 @@ function HeimdallrLib() {
 					  this.email = user._user.email;
                       console.log('this.token', this.user_id);
                       this.getUserData(user);
+                      console.log(`e aqui?`, this.user_image);
                       u = user;
                   } else {
                       return false;
@@ -813,7 +812,9 @@ function HeimdallrLib() {
 	  (result) => {
 			  let user =  result.docs[0].data();
 			  this.phone = user.phone;
+			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
+			  AsyncStorage.setItem('user_image', user.user_image);
 		  	console.log(this.phone);
 		  }
 	  )
@@ -1322,6 +1323,28 @@ function HeimdallrLib() {
     })
   }
 
+  this.userEditImage = function (image) {
+  	return new Promise(async (resolve, reject) => {
+	    let begin = this.user_image.indexOf('img')
+	    let end = this.user_image.indexOf('?');
+	    const bucket = this.user_image.substring(begin, end);
+	    firebase.storage().ref(`${this.user_id}/${bucket}`).putFile(image).on('state_changed',
+		    (snapshot) => {
+			    let total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+			    console.log('progress: ' +  total + '%');
+			    if (total === 100 || snapshot.state === 'success') {
+				    console.log('Upload complete: ', snapshot.downloadURL);
+				    resolve(snapshot.downloadURL);
+			    }
+		    },
+		    (err) => {
+			    console.log('Error: ', err);
+			    reject();
+		    }
+	    );
+    })
+  }
+
   this.getDrawer = function () {
   	return new Promise((resolve, reject) => {
   		firebase.firestore().collection('sideDrawer').get().then(
@@ -1425,7 +1448,6 @@ function HeimdallrLib() {
 					this.dislikePost(pid);
 				} else {
 					let doc = resolve.docs[0].data();
-					console.log('aqui', doc);
 					const index = doc.liked_by.indexOf(this.user_id);
 					if (index != -1) {
 						doc.likes = doc.likes - 1;
