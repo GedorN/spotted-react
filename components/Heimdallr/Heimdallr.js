@@ -5,7 +5,6 @@
 * */
 
 import firebase from 'react-native-firebase';
-import AsyncStorage from "@react-native-community/async-storage";
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
 import theme from "../General/Theme";
@@ -814,7 +813,6 @@ function HeimdallrLib() {
 			  this.phone = user.phone;
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
-			  AsyncStorage.setItem('user_image', user.user_image);
 		  	console.log(this.phone);
 		  }
 	  )
