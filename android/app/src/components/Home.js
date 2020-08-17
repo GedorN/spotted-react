@@ -35,10 +35,11 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
-	  this.props.navigation.addListener('willFocus', () => {
-		  StatusBar.setBackgroundColor('white');
-		  StatusBar.setBarStyle('dark-content');
-	  });
+  	heimdallr.refreshKey = new Date();
+  	this.props.navigation.addListener('willFocus', () => {
+  		StatusBar.setBackgroundColor('white');
+  		StatusBar.setBarStyle('dark-content');
+  	});
     heimdallr.sendEvent('app_open');
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {

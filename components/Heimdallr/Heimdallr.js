@@ -19,6 +19,8 @@ function HeimdallrLib() {
   this.phone = null;
   this.userPlans = null;
 
+  this.refreshKey = null;
+
   this.newPlanAdded = false;
 
   // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
@@ -613,7 +615,9 @@ function HeimdallrLib() {
 	  	firebase.firestore().collection('user').where('uid', '==', user.uid).get().then(
 		    (result) => {
 		    	if (result && result.docs && result.docs[0]) {
-		    		console.warn('seguindo', result.docs[0]._ref.path.split('/')[1]);
+		    		let image = this.user_image;
+		    		let end = image.indexOf('&');
+		    		image = end > 0 ? image.substring(0, end) : image;
 		    		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 					    user_image: user.user_image ? user.user_image : null,
 					    name: user.name,
@@ -804,11 +808,10 @@ function HeimdallrLib() {
       })
   }
 
-  this.getUserData = function (user) {
-	  firebase.firestore().collection('user').where('uid', '==', user._user.uid).get().then(
-		  (resolve) => {
-			  let user =  resolve.docs[0].data();
-		  	console.log('resolve USER', user.phone);
+  this.getUserData = function (userData) {
+	  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
+	  (result) => {
+			  let user =  result.docs[0].data();
 			  this.phone = user.phone;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
 		  	console.log(this.phone);
@@ -819,14 +822,10 @@ function HeimdallrLib() {
   this.signIn = function (params) {
       let user = null;
       return new Promise((resolve) => {
-          console.log('params: ', params);
           if (params.user && params.password) {
-              console.log('vou enviar então');
               firebase.auth().signInWithEmailAndPassword(params.user, params.password)
                   .then(
                       (result) => {
-                          console.log('deu boa');
-                          console.log('resolve: ', result);
                           user = result;
                           resolve();
                       }
@@ -835,8 +834,6 @@ function HeimdallrLib() {
                   resolve();
                   });
 
-          } else {
-              console.log('vaza');
           }
       }).then(function (resolve) {
           return user;
