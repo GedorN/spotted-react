@@ -50,7 +50,11 @@ export default class PostViewer extends React.Component {
 	  if (this.props.images) {
 	  	this.props.images.forEach((img) => {
             let images = this.state.galleryObj;
-	  		images.push({url: img});
+            if (this.props.new_post) {
+	            images.push({url: 'file://' + img });
+            } else {
+	  		    images.push({url: img});
+            }
 	  		this.setState({ galleryObj: images });
 	    })
 	  }

@@ -90,7 +90,7 @@ export default class PostDetails extends React.Component {
 			if (resolve._data.images) {
 				(resolve._data.images).forEach((img) => {
 					let images = this.state.galleryObj;
-					images.push({url: img});
+					images.push({url: 'file://' + img});
 					this.setState({ galleryObj: images });
 				});
 			}

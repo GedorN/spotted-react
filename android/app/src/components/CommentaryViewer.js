@@ -55,7 +55,11 @@ export default class CommentaryViewer extends React.Component {
 		if (this.props.images) {
 			this.props.images.forEach((img) => {
 			  let images = this.state.galleryObj;
-				images.push({url: img});
+				if (this.props.newComment) {
+					images.push({url: 'file://' + img });
+				} else {
+					images.push({url: img});
+				}
 				this.setState({ galleryObj: images });
 		  })
 		}
