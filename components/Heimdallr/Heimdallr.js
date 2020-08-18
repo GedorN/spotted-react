@@ -89,11 +89,16 @@ function HeimdallrLib() {
 			let comments = [];
 			firebase.firestore().collection('comment').add(params).then(
 				(result) => {
+					console.log('aqui foi', params);
 					firebase.firestore().collection('post').where('pid', '==', params.pid).get().then(
 						(res) => {
+							console.log('aqui também')
 							firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
 								comments: res.docs[0].data().comments + 1
 							}, {merge: true});
+						},
+						(err) => {
+							console.log('asdasd', err);
 						}
 					);
 					resolve(result);
@@ -1467,39 +1472,44 @@ function HeimdallrLib() {
 	this.likeCommentary = async function (cid) {
 		firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 			async (resolve) => {
-				let doc = resolve.docs[0].data();
-				const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
-				if (index == -1) {
-					this.sendEvent('like_commentary');
-					doc.likes = doc.likes ? doc.likes + 1 : 1;
-					if (doc.liked_by) {
-						doc.liked_by.push(this.user_id);
-					} else {
-						doc.liked_by = [this.user_id];
-					}
-					firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
-						likes: doc.likes,
-						liked_by: doc.liked_by,
-					}, {merge: true});
-					if(this.user_id != doc.id_user){
-						const notifications = {};
-						notifications.eid = doc.pid;
-						notifications.uid = doc.id_user;
-						notifications.uid_notification = this.user_id;
-						notifications.user_name = this.user_name;
-						notifications.user_image = this.user_image;
-						notifications.content = `curtiu o seu comentário ❤`;
-						notifications.date = await this.getServerTime();
-						notifications.visualized = 0;
-						notifications.entity = "like";
-						this.incrementNotification(doc.id_user);
+				if (!resolve.docs[0]) {
+					this.likeCommentary(cid);
+				} else {
+					let doc = resolve.docs[0].data();
+					const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
+					if (index == -1) {
+						this.sendEvent('like_commentary');
+						doc.likes = doc.likes ? doc.likes + 1 : 1;
+						if (doc.liked_by) {
+							doc.liked_by.push(this.user_id);
+						} else {
+							doc.liked_by = [this.user_id];
+						}
+						firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
+							likes: doc.likes,
+							liked_by: doc.liked_by,
+						}, {merge: true});
+						if(this.user_id != doc.id_user){
+							const notifications = {};
+							notifications.eid = doc.pid;
+							notifications.uid = doc.id_user;
+							notifications.uid_notification = this.user_id;
+							notifications.user_name = this.user_name;
+							notifications.user_image = this.user_image;
+							notifications.content = `curtiu o seu comentário ❤`;
+							notifications.date = await this.getServerTime();
+							notifications.visualized = 0;
+							notifications.entity = "like";
+							this.incrementNotification(doc.id_user);
 
-						this.getUID().then((uuid) => {
-							notifications.nid = uuid;
-							this.saveNotification(notifications);
-						})
+							this.getUID().then((uuid) => {
+								notifications.nid = uuid;
+								this.saveNotification(notifications);
+							})
+						}
 					}
 				}
+
 			},
 			(reject) => {
 
@@ -1510,15 +1520,19 @@ function HeimdallrLib() {
 	this.dislikeCommentary = function (cid) {
 		firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 			(resolve) => {
-				let doc = resolve.docs[0].data();
-				const index = doc.liked_by.indexOf(this.user_id);
-				if (index != -1) {
-					doc.likes = doc.likes - 1;
-					doc.liked_by.splice(index, 1);
-					firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
-						likes: doc.likes,
-						liked_by: doc.liked_by,
-					}, {merge: true});
+				if (!resolve.docs[0]) {
+					this.dislikeCommentary(cid);
+				} else {
+					let doc = resolve.docs[0].data();
+					const index = doc.liked_by.indexOf(this.user_id);
+					if (index != -1) {
+						doc.likes = doc.likes - 1;
+						doc.liked_by.splice(index, 1);
+						firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
+							likes: doc.likes,
+							liked_by: doc.liked_by,
+						}, {merge: true});
+					}
 				}
 			},
 			(reject) => {

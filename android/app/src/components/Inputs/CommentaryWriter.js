@@ -22,6 +22,7 @@ import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
 import Video from 'react-native-video';
 import {RNPhotoEditor} from "react-native-photo-editor";
+import AsyncStorage from "@react-native-community/async-storage";
 var RNFS = require('react-native-fs');
 
 
@@ -39,6 +40,7 @@ export default class CommentaryWriter extends React.Component {
 			videoIncluded: false,
 			activity: false,
 			gifIncluded: false,
+			params: null
 		}
 	}
 
@@ -135,61 +137,22 @@ export default class CommentaryWriter extends React.Component {
 
 
 	async savePost(sendedImages) {
-		console.log('Semaphore: ', sendedImages);
 		/* Essa condição é equivalente ao conceito de barreira (só que com uma implementação muito mais simples)
 		 * Espera até que todas as fotos tenham sido enviadas para continuar
 		 * */
-		if (this.state.postImages.length === 0 ) {
+		if (sendedImages >= 1) {
 			heimdallr.sendEvent('commentary_write')
-			const params = {};
-			params.comment = this.state.postText;
-			params.date = await heimdallr.getServerTime();
-			params.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
-			params.user_name =!this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
-			params.anonymous =  this.state.anonymousUser;
-			params.id_user = heimdallr.user_id;
-			params.gif = this.state.gifIncluded;
-			params.images = this.state.postImages;
-			params.video = this.state.videoIncluded;
-			params.liked_by = [];
-			params.likes = 0;
-			heimdallr.getUID().then((uuid) => {
-				params.cid = uuid;
-				console.log('olha como vai', params);
-				/* this.props.call(); */
-				this.props.saveComment(params);
-			});
-
-		} else if (sendedImages >= 1) {
-			heimdallr.sendEvent('commentary_write')
-			const params = {};
-
-			params.pid = this.props.pid;
-			params.comment = this.state.postText;
-			params.date = await heimdallr.getServerTime();
-			params.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
-			params.user_name = !this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
-			params.anonymous =  this.state.anonymousUser;
-			params.id_user = heimdallr.user_id;
-			params.gif = this.state.gifIncluded;
-			params.images = this.state.postImages;
-			params.video = this.state.videoIncluded;
-
-			heimdallr.getUID().then((uuid) => {
-				params.cid = uuid;
-
-				heimdallr.saveComment(params).then((resolve) => {
-					if (!this.state.videoIncluded) {
-						const message = `${this.state.postText ? this.state.postText.substring(0, 34) + ' ' : ''}📷 Imagem`
-						this.triggerNotification(message, uuid)
-					} else {
-						const message = `${this.state.postText ? this.state.postText.substring(0, 34) + ' ' : ''}🎞 GIF`
-						this.triggerNotification(message, uuid)
-					}
-					console.log('result: ', resolve);
-					this.props.refresh();
-					this.props.close();
-				});
+			heimdallr.saveComment(this.state.params).then((resolve) => {
+				if (this.state.postImages.length === 0 ) {
+					const message = this.state.params.comment;
+					this.triggerNotification(message, this.state.params.cid)
+				} else if (!this.state.videoIncluded) {
+					const message = `${this.state.postText ? this.state.postText.substring(0, 34) + ' ' : ''}📷 Imagem`
+					this.triggerNotification(message, this.state.params.cid)
+				} else {
+					const message = `${this.state.postText ? this.state.postText.substring(0, 34) + ' ' : ''}🎞 GIF`
+					this.triggerNotification(message, this.state.params.cid)
+				}
 			});
 
 		} else {
@@ -198,17 +161,34 @@ export default class CommentaryWriter extends React.Component {
 	}
 
 
-	doPost = () => {
+	doPost = async () => {
 		if (!this.state.postText && this.state.postImages.length === 0) {
-			console.log('nothing to do...');
 			return ;
 		}
 
 		this.setState({activity: true});
 		/* caso a postagem possua ao menos uma foto */
+
+		const params = {};
+		params.pid = this.props.pid;
+		params.comment = this.state.postText;
+		params.date = await heimdallr.getServerTime();
+		params.user_image = !this.state.anonymousUser? heimdallr.user_image : null;
+		params.user_name =!this.state.anonymousUser? heimdallr.user_name : 'Anônimo';
+		params.anonymous =  this.state.anonymousUser;
+		params.id_user = heimdallr.user_id;
+		params.gif = this.state.gifIncluded;
+		params.images = this.state.postImages.map(i => i.path);
+		params.video = this.state.videoIncluded;
+		params.liked_by = [];
+		params.likes = 0;
+		params.cid = await heimdallr.getUID();
+		this.state.params = params;
+		AsyncStorage.setItem('new_comment', JSON.stringify({...params, newComment: true}));
+		this.props.newCommentary();
+
 		let posImagesLenght = this.state.postImages.length;
 		if (this.state.postImages.length > 0) {
-			console.log('with image');
 			let urlArray = [];
 			let self = this;
 			let checkedImages = 0;
@@ -233,7 +213,7 @@ export default class CommentaryWriter extends React.Component {
 									checkedImages ++;
 									console.log('URL resolve: ', result);
 									urlArray.push(result);
-									this.state.postImages = urlArray;
+									this.state.params.images = urlArray;
 									/* Save the post*/
 									this.savePost(checkedImages / posImagesLenght);
 							})
@@ -256,7 +236,6 @@ export default class CommentaryWriter extends React.Component {
 			})
 		} else {
 			// caso a postagem não contenha imagem
-			this.props.close();
 			this.savePost(1);
 		}
 	}

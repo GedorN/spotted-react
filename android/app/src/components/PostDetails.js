@@ -154,6 +154,16 @@ export default class PostDetails extends React.Component {
 		this.setState({ showCommentaryModal: false });
 	};
 
+	newCommentary = async () => {
+		this.setState({ showCommentaryModal: false });
+		let params = await AsyncStorage.getItem('new_comment');
+		params = JSON.parse(params);
+		let comments = this.state.comments;
+		comments.push(params);
+		this.setState({ comments: comments });
+
+	}
+
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
 		let result = heimdallr.getComments(this.state.post.data().pid, 10);
@@ -794,6 +804,7 @@ export default class PostDetails extends React.Component {
 										navigation={this.props.navigation}
 										liked_by={item.liked_by}
 										likes={item.likes}
+										newComment={item.newComment}
 									/>
 								}
 								keyExtractor={item => item.cid}
@@ -876,7 +887,7 @@ export default class PostDetails extends React.Component {
 					onRequestClose={this._hideModal.bind(this)}
 					contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
 				>
-					<CommentaryWriter close={this._hideModal.bind(this)} refresh = {this.onRefresh.bind(this)} pullCommentaries = {this.pullMoreCommentaries.bind(this)} saveComment={this.addCommentary.bind(this)} pid={this.state.post ? this.state.post.data().pid : null} uid={this.state.post ? this.state.post.data().uid : null}/>
+					<CommentaryWriter close={this._hideModal.bind(this)} newCommentary={this.newCommentary.bind(this)} refresh = {this.onRefresh.bind(this)} pullCommentaries = {this.pullMoreCommentaries.bind(this)} saveComment={this.addCommentary.bind(this)} pid={this.state.post ? this.state.post.data().pid : null} uid={this.state.post ? this.state.post.data().uid : null}/>
 				</Modal>
 			</KeyboardAvoidingView>
 		);

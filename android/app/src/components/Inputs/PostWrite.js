@@ -174,7 +174,6 @@ export default class PostWrite extends React.Component {
 		 * */
 		if (sendedImages >= 1) {
 			heimdallr.sendEvent('post_write');
-			heimdallr.sendEvent('post_created');
 			let result = heimdallr.saveCollection('post', this.state.params);
 			result.then((resolve) => {
 				this.postTextInput.clear();
