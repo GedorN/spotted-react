@@ -105,6 +105,7 @@ export default class MainScreen extends React.Component {
 			this.logOut();
 			return ;
 		}
+		heimdallr.sendEvent('app_open');
 		const anonymousRoutes =  [
 			{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 			{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },

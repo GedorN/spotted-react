@@ -1225,12 +1225,11 @@ function HeimdallrLib() {
 	}
 
 	this.sendEvent = function (eventName) {
-	    firebase.analytics().logEvent(eventName);
+	    // firebase.analytics().logEvent(eventName);
 	}
 
   this.saveCollection = function (collection, params) {
     let returnValue = null;
-    console.log('ue');
     return new Promise((resolve) => {
       console.log('checking params...');
       let parametersOK = true;
