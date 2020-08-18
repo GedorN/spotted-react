@@ -56,11 +56,6 @@ export default class BoardItemViewer extends React.Component {
 								<Text ellipsizeMode='tail' numberOfLines={2} style={{flexWrap:'wrap'}}>{this.props.text}</Text>
 							</View>
 						</View>
-						<View style={styles.commentIMage}>
-							<Image style={{width: 17, height: 17, marginTop:10}}
-								   source={require('../../../../../assets/images/comment-regular.png') }
-							/>
-						</View>
 					</View>
 				</TouchableOpacity>
 			</View>
