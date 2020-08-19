@@ -89,6 +89,10 @@ export default class AboutUs extends React.Component {
 						<Text style = {{alignSelf:'center',marginTop:theme.height * 0.01}}>
 							Anderson Candido: Idealização conjunta
 						</Text>
+						<Text style = {{alignSelf:'center',marginTop:theme.height * 0.01}}>
+							Mariana Borges: Artes de divulgação
+						</Text>
+
 				</View>
 			</View>
 		);

@@ -245,7 +245,6 @@ export default class MainScreen extends React.Component {
 						ref={(ref) => this._drawer = ref}
 						openDrawerOffset={100}
 						type='overlay'
-						open={this.state.open}
 						captureGestures={true}
 						tweenDuration={250}
 						openDrawerOffset={0.1} // 20% gap on the right side of drawer
@@ -259,6 +258,8 @@ export default class MainScreen extends React.Component {
 						negotiatePan={true}
 						panThreshold={0.1}
 						panOpenMask={0.1}
+						onOpen={() => this.state.open = true}
+						onClose={() => this.state.open = false}
 					>
 						<View style={styles.header}>
 							<TouchableOpacity
