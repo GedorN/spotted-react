@@ -8,6 +8,7 @@ import {
 	Image,
 	StatusBar,
 	Modal,
+	BackHandler
 } from 'react-native';
 
 
@@ -100,31 +101,50 @@ export default class MainScreen extends React.Component {
 		this.setState({ showSettingsModal: false });
 	}
 
+	componentWillUnmount = () => {
+		BackHandler.removeEventListener('hardwareBackPress');
+	}
+
 	componentDidMount =() => {
+		// Tratamento para click de voltar quando se está na raiz noa pp
+		BackHandler.addEventListener('hardwareBackPress', () => {
+			if (this.props.navigation.isFocused()) {
+				if (this.state.open) {
+					this._drawer.close();
+					return true;
+				} else if (this.state.index !== 0){
+					this.setState({ index: 0 });
+					return true;
+				}
+			}
+		})
+
+		// Tratamento para quando foi feito logOut mas o front não atualizou
 		if (this.props.navigation.getParam('logOut')) {
 			this.logOut();
 			return ;
 		}
+
+
 		heimdallr.sendEvent('app_open');
 		const anonymousRoutes =  [
 			{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 			{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
 		];
+
+		// Estilo da barra superior do S.O.
 		StatusBar.setBackgroundColor('white');
 		StatusBar.setBarStyle('dark-content', true);
+
 		let login = heimdallr.checkUser();
-		login.then((resolve) => {
+		login.then(() => {
 			if (heimdallr.user_id) {
 				this.setState({isLogged: true});
 				if (heimdallr.email === 'spotted@utfpr.com') {
 					this.setState({ routes: anonymousRoutes });
 				}
 			}
-		},
-			(reject) => {
-				console.log('o que tem? ', reject);
-			}
-		)
+		})
 
 
 		heimdallr.getNotificationsNumber(this);
@@ -225,6 +245,7 @@ export default class MainScreen extends React.Component {
 						ref={(ref) => this._drawer = ref}
 						openDrawerOffset={100}
 						type='overlay'
+						open={this.state.open}
 						captureGestures={true}
 						tweenDuration={250}
 						openDrawerOffset={0.1} // 20% gap on the right side of drawer
