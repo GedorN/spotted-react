@@ -23,7 +23,8 @@ export default class BoardItemViewer extends React.Component {
 
 	componentDidMount = () => {
 		const time = moment(this.props.date).fromNow();
-		this.setState({ boardItemDate: heimdallr.getElapsedTime(time) })
+		this.state.boardItemDate = heimdallr.getElapsedTime(time);
+		this.setState({  });
 	}
 
 	goToBoardItemDetails = () => {
