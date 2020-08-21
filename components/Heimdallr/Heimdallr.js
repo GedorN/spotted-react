@@ -1223,7 +1223,7 @@ function HeimdallrLib() {
 	}
 
 	this.sendEvent = function (eventName) {
-	    // firebase.analytics().logEvent(eventName);
+	    firebase.analytics().logEvent(eventName);
 	}
 
   this.saveCollection = function (collection, params) {

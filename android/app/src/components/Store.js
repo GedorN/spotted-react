@@ -173,7 +173,6 @@ export default class Store extends React.Component {
 
 
 	chipPressed = (chip) => {
-		heimdallr.sendEvent(`${this.props.navigation.getParam('store')}_category`)
 		let filteredCategories = this.state.filteredCategories;
 		let filteredProducts = [];
 		if (filteredCategories.find((fc) => fc === chip)) {
