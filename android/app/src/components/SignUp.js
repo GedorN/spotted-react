@@ -217,6 +217,8 @@ export default  class SignUp extends React.Component {
 		if (this.state.profileImage) {
 			let result = heimdallr.uploadImage(this.state.imageCompressed);
 			result.then((resolve) => {
+				let token = resolve.indexOf('&');
+				resolve = resolve.substring(0, token);
 				console.log('saving user with image...', user);
 				const params = {};
 				params.name = this.state.name;

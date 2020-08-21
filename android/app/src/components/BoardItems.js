@@ -52,6 +52,7 @@ export default class BoardItems extends React.Component {
 		heimdallr.getBoard(this.state.id).then(
 			(resolve) => {
 				const  n = this.state.pullItemsRef;
+				this.setState({allItems: null, items: null});
 				this.setState({ allItems: resolve, items: resolve.slice(0, (10 * n)), pullItemsRef: n + 1, isRefreshing: false });
 			}
 		)
@@ -64,11 +65,6 @@ export default class BoardItems extends React.Component {
 
 		let tempItems = this.state.allItems.filter((i) => i.title.toLowerCase().includes(text.toLowerCase()));
 		this.setState({ items: tempItems.slice(0, 10),  search: text });
-	}
-
-	componentWillMount(): void {
-		console.warn('e aqui?', this.props.id);
-		console.warn(this.props.navigation.getParam('id'));
 	}
 
 	componentDidMount(): void {

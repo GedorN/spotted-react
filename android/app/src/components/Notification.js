@@ -76,13 +76,24 @@ export default class Notification extends React.Component {
                 </TouchableOpacity>
                 <TouchableOpacity  onPress={this.goToDetails.bind(this)}>
                     <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', width: theme.width * 0.82,marginTop:14,marginLeft:7}}>
-                        <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.anonymous == '0'?this.props.user_name:'Anônimo'}</Text>
-                        <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
-                            comentou na sua postagem:
-                        </Text>
-                        <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
-                            "{this.props.notification_text}"
-                        </Text>
+	                    {
+	                    	this.props.entity === 'commentary' &&
+			                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+	                            <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.anonymous == '0'?this.props.user_name:'Anônimo'}</Text>
+			                    <Text style={{flexWrap: 'wrap', marginLeft: 4}}>comentou na sua postagem:</Text>
+		                        <Text style={{flexWrap: 'wrap', marginLeft: 4}}>
+		                            "{this.props.notification_text}"
+		                        </Text>
+			                </View>
+	                    }
+	                    {
+		                    this.props.entity === 'like' &&
+		                    <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+			                    <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.anonymous == '0'?this.props.user_name:'Anônimo'}</Text>
+			                    <Text style={{flexWrap: 'wrap', marginLeft: 4}}>{this.props.notification_text}</Text>
+		                    </View>
+	                    }
+
                     </View>
                 </TouchableOpacity>
             </View>

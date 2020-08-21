@@ -16,6 +16,7 @@ import {CardStackStyleInterpolator} from 'react-navigation-stack';
 import Board from "./android/app/src/components/Board";
 import BoardItems from "./android/app/src/components/BoardItems";
 import BoardItemDetails from "./android/app/src/components/BoardItemDetails";
+import PartnerPlans from "./android/app/src/components/Inputs/PartnerPlans";
 
 
 const config = {
@@ -45,7 +46,8 @@ const RootStack = createStackNavigator(
 		AboutUs: { screen: AboutUs },
 		Board: { screen: Board},
 		BoardItems: { screen: BoardItems },
-		BoardItemDetails: { screen: BoardItemDetails}
+		BoardItemDetails: { screen: BoardItemDetails},
+		Plans: {screen: PartnerPlans}
 
 
 	},

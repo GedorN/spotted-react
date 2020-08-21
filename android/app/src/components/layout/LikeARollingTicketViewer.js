@@ -114,7 +114,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 									</View>
 									<View style = {{...styles.ticketView, width:theme.width * 0.3 }}>
 										<Text style = {{...styles.ticketLetter, color:this.props.ticket.colors[0]}}>{'Pagamento'}</Text>
-										<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? this.props.ticket.product_price : '')}</Text>
+										<Text style = {{...styles.paymentLetter, textAlign:'justify'}}>{'R$ ' + (this.props.ticket ? (this.props.ticket.product_price).toString().replace('.',',') : '')}</Text>
 										<Text style = {styles.paymentLetter}> {this.props.ticket ? this.props.ticket.payment : null} </Text>
 									</View>
 								</View>
@@ -178,7 +178,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 										}
 										<Text style = {styles.modalLetter}>{'Data: ' +this.state.ticketDate }</Text>
 										<Text style = {styles.modalLetter}>
-										{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' +this.props.ticket.product_price }</Text>
+										{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' + (this.props.ticket.product_price.toString().replace('.',',')) }</Text>
 										<TouchableOpacity onPress={this.copyText.bind(this)}>
 											<View style={{flexDirection: 'row', alignItems: 'flex-start', alignContent: 'center',marginTop:theme.height * 0.01}}>
 												<Image

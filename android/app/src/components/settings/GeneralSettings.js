@@ -158,12 +158,11 @@ export default class GeneralSettings extends  React.Component {
 		this.setState({ showLoadingModal: true });
 		if (this.state.userImage !== heimdallr.user_image) {
 			heimdallr.uploadImage(this.state.imageCompressed).then(
-				(resolve) => {
+				() => {
 					const params = {};
 					params.name = this.state.userName;
-					params.user_image = resolve;
 					params.uid = heimdallr.user_id;
-					heimdallr.updateProfile(params).then((res) => {
+					heimdallr.userEditImage(this.state.userImage).then((res) => {
 						heimdallr.updateUserData(params);
 						if(res) {
 							showMessage({

@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-    StyleSheet,
-    View,
-    Text,
-    Image,
-    FlatList,
-    ActivityIndicator,
-	RefreshControl,
+	StyleSheet,
+	View,
+	Text,
+	Image,
+	FlatList,
+	ActivityIndicator,
+	RefreshControl, StatusBar,
 } from 'react-native';
 
 
@@ -35,12 +35,14 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
-  	heimdallr.sendEvent('app_open');
+  	heimdallr.refreshKey = new Date();
+  	this.props.navigation.addListener('willFocus', () => {
+  		StatusBar.setBackgroundColor('white');
+  		StatusBar.setBarStyle('dark-content');
+  	});
   	let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
-  		console.log('peguei esses caras aqui', resolve);
   		if (resolve.length === 0 ) {
-  			console.warn('veio nada');
   			this.setState({ endPulling: true })
 	    }
   		resolve.forEach((doc) => {
@@ -92,19 +94,23 @@ export default class Home extends React.Component {
     }
   }
 
+  addItem = (post) => {
+  	let posts = this.state.posts;
+  	posts.unshift({_data: post, _ref: {id: post.pid}});
+  	this.setState({ posts: posts });
+  }
+
 
   onRefresh = () => {
 	  this.setState({ isRefreshing: true });
 	  let result = heimdallr.getCollection('post', 10);
 	  result.then( (resolve) => {
-		  resolve.forEach((doc) => {
-			  if (!doc.elapsed_time) {
-				  const time = moment(doc.data().date).fromNow();
-				  doc._data.elapsed_time = heimdallr.getElapsedTime(time);
-			  }
-		  });
-		  this.setState({ posts: resolve });
-		  this.setState({ isRefreshing: false });
+	  	resolve.forEach((doc) => {
+		    const time = moment(doc.data().date).fromNow();
+		   doc._data.elapsed_time = heimdallr.getElapsedTime(time);
+	    });
+	  	this.setState({ posts: [] });
+	  	this.setState({ posts: resolve, isRefreshing: false });
 	  });
   }
 
@@ -160,7 +166,6 @@ export default class Home extends React.Component {
 			}
 		);
 		this.setState({ showDeleteAlert: false});
-		heimdallr.deleteUserPost(this.state.deletePost);
 		// heimdallr.deletePostComments('comment',this.state.deletePost);
 		// heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
 	}
@@ -175,14 +180,24 @@ export default class Home extends React.Component {
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
               renderItem={ ({item}) =>
-							<PostViewer text={item._data.text} anonymous = {item._data.anonymous?item._data.anonymous:'0'} pid={item._data.pid} uid={item._data.uid} images={item._data.images}
-									user={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_name:'Anônimo'):item._data.user_name}
+							<PostViewer
+									text={item._data.text}
+									anonymous = {item._data.anonymous?item._data.anonymous:'0'}
+									pid={item._data.pid} uid={item._data.uid}
+									images={item._data.images}
+									user={item._data.anonymous ?(item._data.anonymous == '0'?item._data.user_name:'Anônimo'):item._data.user_name}
 									userImage={item._data.anonymous?(item._data.anonymous == '0'?item._data.user_image:null):item._data.user_image}
-									elapsed_time={item._data.elapsed_time} navigation={this.props.navigation} scrolling={this.state.scrolling}
+									elapsed_time={item._data.elapsed_time}
+									navigation={this.props.navigation}
+									scrolling={this.state.scrolling}
 									video={item._data.video ? true : false}
 						            gif={item._data.gif ? true : false}
 								    closeAlert={this.confirmReport.bind(this)}
 						            confirmPostRm={this.confirmPostRm.bind(this)}
+									likes={item._data.likes}
+									liked_by={item._data.liked_by}
+									comments={item._data.comments}
+									new_post={item._data.newPost}
 							/>
               }
               refreshControl={
@@ -236,7 +251,6 @@ export default class Home extends React.Component {
 					this.setState({ showAlert: false })
 				}}
 	      />
-
       </View>
     );
   }

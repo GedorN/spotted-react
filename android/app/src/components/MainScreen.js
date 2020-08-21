@@ -8,6 +8,7 @@ import {
 	Image,
 	StatusBar,
 	Modal,
+	BackHandler
 } from 'react-native';
 
 
@@ -29,6 +30,7 @@ import Settings from "./Settings";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
 import {NavigationActions, StackActions} from "react-navigation";
+import FlashMessage from "react-native-flash-message";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -81,8 +83,9 @@ export default class MainScreen extends React.Component {
 		notifications: this.getNotification,
 	});
 
-	postCall = () => {
-		this.homeScreen.onRefresh();
+	postCall = (item) => {
+		this.setState({ showModal: false });
+		this.homeScreen.addItem(item);
 	}
 
 	_hideModal = () => {
@@ -98,30 +101,50 @@ export default class MainScreen extends React.Component {
 		this.setState({ showSettingsModal: false });
 	}
 
+	componentWillUnmount = () => {
+		BackHandler.removeEventListener('hardwareBackPress');
+	}
+
 	componentDidMount =() => {
+		// Tratamento para click de voltar quando se está na raiz noa pp
+		BackHandler.addEventListener('hardwareBackPress', () => {
+			if (this.props.navigation.isFocused()) {
+				if (this.state.open) {
+					this._drawer.close();
+					return true;
+				} else if (this.state.index !== 0){
+					this.setState({ index: 0 });
+					return true;
+				}
+			}
+		})
+
+		// Tratamento para quando foi feito logOut mas o front não atualizou
 		if (this.props.navigation.getParam('logOut')) {
 			this.logOut();
 			return ;
 		}
+
+
+		heimdallr.sendEvent('app_open');
 		const anonymousRoutes =  [
 			{ key: 'home', icon: require('../../../../assets/images/home-solid.png') },
 			{ key: 'search', icon: require('../../../../assets/images/search-solid.png') },
 		];
+
+		// Estilo da barra superior do S.O.
 		StatusBar.setBackgroundColor('white');
 		StatusBar.setBarStyle('dark-content', true);
+
 		let login = heimdallr.checkUser();
-		login.then((resolve) => {
+		login.then(() => {
 			if (heimdallr.user_id) {
 				this.setState({isLogged: true});
 				if (heimdallr.email === 'spotted@utfpr.com') {
 					this.setState({ routes: anonymousRoutes });
 				}
 			}
-		},
-			(reject) => {
-				console.log('o que tem? ', reject);
-			}
-		)
+		})
 
 
 		heimdallr.getNotificationsNumber(this);
@@ -137,9 +160,7 @@ export default class MainScreen extends React.Component {
 
 	getBadge = (prop) => {
 		if (prop.route.key === 'notifications') {
-
 			if(this.state.numberBadge > 0){
-				console.log('type né: ', typeof(this.state.numberBadge));
 				return this.state.numberBadge;
 			}
 			else{
@@ -235,8 +256,10 @@ export default class MainScreen extends React.Component {
 						})}
 						acceptPan={true}
 						negotiatePan={true}
-						panThreshold={0.25}
-						panOpenMask={0.05}
+						panThreshold={0.1}
+						panOpenMask={0.1}
+						onOpen={() => this.state.open = true}
+						onClose={() => this.state.open = false}
 					>
 						<View style={styles.header}>
 							<TouchableOpacity
@@ -331,6 +354,7 @@ export default class MainScreen extends React.Component {
 					{/*>*/}
 					{/*</MenuDrawer>*/}
 				</View>
+
 			);
 		}
 	}

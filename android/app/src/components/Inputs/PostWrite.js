@@ -10,6 +10,7 @@ import {
 	StatusBar,
 	Keyboard,
 } from 'react-native';
+import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ImagePicker from "react-native-image-picker";
 import theme from "../../../../../components/General/Theme";
@@ -19,6 +20,7 @@ import Video from 'react-native-video';
 import {Text} from "react-native-paper";
 var RNFS = require('react-native-fs');
 import {RNPhotoEditor} from "react-native-photo-editor";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -33,6 +35,8 @@ export default class PostWrite extends React.Component {
 			anonymousText: "Postar como anônimo ?",
 			videoIncluded: false,
 			gifIncluded: false,
+			params: null,
+			activity: false,
 		};
 	}
 
@@ -57,20 +61,39 @@ export default class PostWrite extends React.Component {
 		console.log('Depois, ', this.state.postImages);
 	}
 
-	doPost = () => {
-		if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0) {
-			console.log('nothing to do...');
+	doPost = async () => {
+		if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0 || this.state.activity) {
 			return ;
 		}
+
+		this.setState({activity: true});
 
 		/* caso a postagem possua ao menos uma foto */
 		let posImagesLenght = this.state.postImages.length;
 		if (this.state.postImages.length > 0) {
-			console.log('with image');
+			const params = {};
+			params.active = 1;
+			params.date = await heimdallr.getServerTime();
+			params.text = this.state.postText;
+			params.uid = heimdallr.user_id;
+			params.images = this.state.postImages;
+			params.user_name = heimdallr.user_name;
+			params.anonymous = this.state.anonymousUser;
+			params.user_image = heimdallr.user_image;
+			params.gif = this.state.gifIncluded;
+			params.comments = 0;
+			params.video = this.state.videoIncluded;
+			params.liked_by = [];
+			params.likes = 0;
+			params.images = this.state.postImages.map(i => i.path);
+			params.pid = await heimdallr.getUID();
+			this.state.params = params;
+			AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
+			this.props.call({...params, newPost: true});
+
 			let urlArray = [];
 			let self = this;
 			let checkedImages = 0;
-			this.props.closeAndRefresh();
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
 				if (this.state.gifIncluded) {
@@ -91,14 +114,12 @@ export default class PostWrite extends React.Component {
 								checkedImages ++;
 								console.log('URL resolve: ', resolve);
 								urlArray.push(resolve);
-								self.state.postImages = urlArray;
+								self.state.params.images = urlArray;
 								/* Save the post*/
 								self.savePost(checkedImages / posImagesLenght);
 							})
 
 						},
-						(reject) => {
-						}
 					)
 				} else {
 					let link = heimdallr.uploadImage(img.uri);
@@ -106,7 +127,7 @@ export default class PostWrite extends React.Component {
 						checkedImages ++;
 						console.log('URL resolve: ', resolve);
 						urlArray.push(resolve);
-						self.state.postImages = urlArray;
+						self.state.params.images = urlArray;
 						/* Save the post*/
 						self.savePost(checkedImages / posImagesLenght);
 					})
@@ -114,7 +135,24 @@ export default class PostWrite extends React.Component {
 			})
 		} else {
 			// caso a postagem não contenha imagem
-			this.props.closeAndRefresh();
+			const params = {};
+			params.active = 1;
+			params.date = await heimdallr.getServerTime();
+			params.text = this.state.postText;
+			params.uid = heimdallr.user_id;
+			params.images = this.state.postImages;
+			params.user_name = heimdallr.user_name;
+			params.anonymous = this.state.anonymousUser;
+			params.user_image = heimdallr.user_image;
+			params.gif = this.state.gifIncluded;
+			params.comments = 0;
+			params.video = this.state.videoIncluded;
+			params.liked_by = [];
+			params.likes = 0;
+			params.pid = await heimdallr.getUID();
+			this.state.params = params;
+			AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
+			this.props.call({...params, newPost: true});
 			this.savePost(1);
 		}
 	}
@@ -131,38 +169,16 @@ export default class PostWrite extends React.Component {
 	}
 
 	async savePost(sendedImages) {
-		console.log('Semaphore: ', sendedImages);
 		/* Essa condição é equivalente ao conceito de barreira (só que com uma implementação muito mais simples)
 		 * Espera até que todas as fotos tenham sido enviadas para continuar
 		 * */
 		if (sendedImages >= 1) {
 			heimdallr.sendEvent('post_write');
-			let self = this;
-			const params = {};
-			params.active = 1;
-			params.date = await heimdallr.getServerTime();
-			params.text = this.state.postText;
-			params.uid = heimdallr.user_id;
-			params.images = this.state.postImages;
-			params.user_name = heimdallr.user_name;
-			params.anonymous = this.state.anonymousUser;
-			params.user_image = heimdallr.user_image;
-			params.gif = this.state.gifIncluded;
-			params.comments = 0;
-			params.video = this.state.videoIncluded;
-			heimdallr.getUID().then((uuid) => {
-				params.pid = uuid;
-				this.props.call();
-				let result = heimdallr.saveCollection('post', params);
-				result.then((resolve) => {
-					console.log('result: ', resolve);
-					self.postTextInput.clear();
-					self.setState({postImages: []});
-					self.setState({showModal: false});
-				});
-			})
-		} else {
-			console.log(sendedImages, ' has already sended...');
+			let result = heimdallr.saveCollection('post', this.state.params);
+			result.then((resolve) => {
+				this.postTextInput.clear();
+				this.setState({postImages: [], params : null});
+			});
 		}
 	}
 
@@ -197,7 +213,6 @@ export default class PostWrite extends React.Component {
 
 				ImagePicker.showImagePicker(options, response => {
 					if (response.didCancel) {
-						console.log('User cancelled image picker');
 					} else if (response.error) {
 						console.log('ImagePicker Error: ', response.error);
 					} else if (response.customButton) {
@@ -213,18 +228,14 @@ export default class PostWrite extends React.Component {
 							RNPhotoEditor.Edit({
 								path: response.path,
 								onDone: (a) => {
-									console.log('e agora: ', a);
 									let images = this.state.postImages;
 									images.push(response);
 									this.setState({postImages: images});
-									console.log('Imagem: ', response);
 								}
 							});
 						}
 					}
 				});
-			} else {
-				console.log('Camera permission denied');
 			}
 		} catch (err) {
 			console.warn(err);
@@ -407,6 +418,7 @@ export default class PostWrite extends React.Component {
 			<View style={styles.container}>
 				<View>
 					<View>
+						<ProgressBar size="large" visible={this.state.activity} indeterminate color={theme.primary}/>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.props.close}>
 								<View style = {{ width: width * 0.1, height: height * 0.03, marginTop: height * 0.005 }}>

@@ -7,6 +7,7 @@
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
+import theme from "../General/Theme";
 
 
 function HeimdallrLib() {
@@ -16,7 +17,11 @@ function HeimdallrLib() {
   this.email = null;
   this.token = null;
   this.phone = null;
+  this.userPlans = null;
 
+  this.refreshKey = null;
+
+  this.newPlanAdded = false;
 
   // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
   this.test = function (uid, limit) {
@@ -82,27 +87,21 @@ function HeimdallrLib() {
 	this.saveComment = function (params) {
 		return new Promise((resolve) => {
 			let comments = [];
-			firebase.firestore().collection('comment').doc(params.pid).get().then(
+			firebase.firestore().collection('comment').add(params).then(
 				(result) => {
-					if (result.data()) {
-						let temp = result.data().comments;
-						temp.push(params);
-						comments = temp;
-					} else {
-						comments.push(params);
-					}
-					firebase.firestore().collection('comment').doc(params.pid).set(
-						{
-							comments: comments
-						},
-						{
-							merge: true
-						}
-					).then(
+					console.log('aqui foi', params);
+					firebase.firestore().collection('post').where('pid', '==', params.pid).get().then(
 						(res) => {
-							resolve(res);
+							console.log('aqui também')
+							firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
+								comments: res.docs[0].data().comments + 1
+							}, {merge: true});
+						},
+						(err) => {
+							console.log('asdasd', err);
 						}
 					);
+					resolve(result);
 				}
 			)
 		});
@@ -145,66 +144,51 @@ function HeimdallrLib() {
 		let returnValue = null;
 		return new Promise((resolve) => {
 			console.log('checking params...');
-			let parametersOK = true;
 			const collections = collectionsStructures;
 			const structure = collections['notification'];
 
-			structure.forEach((e) => {
-				if (e.required === true) {
-					if (!params[e.desc] || e.type != typeof(params[e.desc])) {
-						console.log('ERRO: parâmetro ', e.desc, ' incorreto');
-						if (e.type != typeof(params[e.desc])) {
-							console.log(`Parametro esperado: ${e.type} porém recebido um ${typeof(params[e.desc])}`);
-						}
-						parametersOK = false;
-					}
-				}
-			});
 
-			if (parametersOK) {
-				let notifications = [];
-				firebase.firestore().collection('notification').doc(params.uid).get().then(
-					(result) => {
-						console.log('dos paranue', params);
-						console.log('resultado novo: ', result);
-						if (result.data()) {
-							let temp = result.data().notifications;
-							temp.unshift(params);
-							notifications = temp;
-						} else {
-							notifications.push(params);
-						}
-						firebase.firestore().collection('notification').doc(params.uid).set(
-							{
-								notifications: notifications
-							},
-							{
-								merge: true
-							}
-						);
+			let notifications = [];
+			firebase.firestore().collection('notification').doc(params.uid).get().then(
+				(result) => {
+					console.log('dos paranue', params);
+					console.log('resultado novo: ', result);
+					if (result.data()) {
+						let temp = result.data().notifications;
+						temp.unshift(params);
+						notifications = temp;
+					} else {
+						notifications.push(params);
 					}
-				)
-				// const base = firebase.firestore().collection('notification').doc(params.uid);
-				// base.set(params).then(
-				// 	(docRef) => {
-				// 		// console.warn(`Documento ${docRef.id}`);
-				// 		// console.log(`Documento ${docRef.id}`);
-				// 		returnValue = docRef.id;
-				// 		if (collection === 'user') {
-				// 			this.user_image = params.user_image ? params.user_image : null;
-				// 			this.user_name = params.name;
-				// 			this.email = params.email;
-				// 			this.uid = params.uid;
-				// 		}
-				// 		resolve();
-				// 	},
-				// 	() => {
-				// 		console.log('Erro ao criar a notificação');
-				// 	}
-				// );
-			} else {
-				resolve();
-			}
+					firebase.firestore().collection('notification').doc(params.uid).set(
+						{
+							notifications: notifications
+						},
+						{
+							merge: true
+						}
+					);
+				}
+			)
+			// const base = firebase.firestore().collection('notification').doc(params.uid);
+			// base.set(params).then(
+			// 	(docRef) => {
+			// 		// console.warn(`Documento ${docRef.id}`);
+			// 		// console.log(`Documento ${docRef.id}`);
+			// 		returnValue = docRef.id;
+			// 		if (collection === 'user') {
+			// 			this.user_image = params.user_image ? params.user_image : null;
+			// 			this.user_name = params.name;
+			// 			this.email = params.email;
+			// 			this.uid = params.uid;
+			// 		}
+			// 		resolve();
+			// 	},
+			// 	() => {
+			// 		console.log('Erro ao criar a notificação');
+			// 	}
+			// );
+
 
 		}).then(function (resolve) {
 			return returnValue;
@@ -219,7 +203,7 @@ function HeimdallrLib() {
 	            console.log("reset Notifications", result);
 	          }
 	        )
-	      } catch (e) {p
+	      } catch (e) {
 	        console.log("erro reset notifications:",e);
 	      }
 	    })
@@ -321,6 +305,22 @@ function HeimdallrLib() {
 		}).then(function (res) {
 			return docs.data;
 		});
+	}
+
+	this.getPartnersPlan = (store_code) => {
+		let docs = null
+		return new Promise((resolve) => {
+				const store = firebase.firestore()
+				.collection('partners_plan').doc(store_code)
+				.get().then((result) => {
+					docs = result.data();
+					resolve();
+				}).catch((e) => {
+					console.warn("erro",e);
+				});
+		}).then(function (resolve) {
+			 return docs;
+		})
 	}
 
 	this.getCoupons = (store_code) => {
@@ -469,7 +469,7 @@ function HeimdallrLib() {
 	  let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
 
 
-	  if (luma < 40) {
+	  if (luma < 80) {
 		  return 'white'
 	  } else {
 		  return '#000000'
@@ -618,14 +618,15 @@ function HeimdallrLib() {
   this.updateUserData = function (user) {
 	  return new Promise((resolve) => {
 	  	firebase.firestore().collection('user').where('uid', '==', user.uid).get().then(
-		    (result) => {
+		    async (result) => {
 		    	if (result && result.docs && result.docs[0]) {
-		    		console.warn('seguindo', result.docs[0]._ref.path.split('/')[1]);
+		    		let image = this.user_image;
+		    		let end = image.indexOf('&');
+		    		image = end > 0 ? image.substring(0, end) : image;
 		    		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
-					    user_image: user.user_image ? user.user_image : null,
 					    name: user.name,
+					    user_image: image
 				    }, {merge: true}).then((res) => {
-				    	console.warn('deu boa');
 				    	resolve();
 				    })
 			    }
@@ -634,13 +635,131 @@ function HeimdallrLib() {
 	  })
   }
 
+  this.alterMembersNumber = function(store_code, plan_id, plus){
+
+	firebase.firestore().collection('partners_plan').doc(store_code).get().then(
+		(resolve) => {
+			let partnerPlans = resolve.data();
+			partnerPlans[plan_id].members_number = (partnerPlans[plan_id].members_number + plus);
+			firebase.firestore().collection('partners_plan').doc(store_code).set({
+				[plan_id]: partnerPlans[plan_id]
+			},  {merge: true})
+		}
+	)
+  }
+
+  this.verifyMembersNumber = function(store_code,plan_id){
+	return new Promise((resolve) => {
+		console.log('store_code: ', store_code);
+		console.log('plan', plan_id);
+		firebase.firestore().collection('partners_plan').doc(store_code).get().then(
+			(result) => {
+				resolve(parseInt(result.data()[plan_id].members_number) < parseInt(result.data()[plan_id].userLimiter));
+			}
+		)
+	});
+}
+
+  this.updateNewPartner = function(plan_id, user){
+	return new Promise((resolve) => {
+		firebase.firestore().collection('partners').doc(plan_id).get().then(
+			(result) => {
+				if(result.data()){
+					let partners = result.data().members;
+					partners.push(user);
+					firebase.firestore().collection('partners').doc(plan_id).set({
+						members: partners
+					},	{merge: true}).then((res) => {
+
+						resolve();
+					})
+				}
+				else{
+					let partners = [];
+					partners.push(user);
+					firebase.firestore().collection('partners').doc(plan_id).set({
+						members: partners
+					},	{merge: true}).then((res) => {
+
+						resolve();
+					})
+				}
+			}
+		)
+	})
+  }
+
+
+  this.deletePreviousPlan = function(plan_id,reference_id){
+	  return new Promise((resolve) => {
+		  firebase.firestore().collection('partners').doc(plan_id).get().then(
+			  (result) => {
+
+				  let partners = result.data().members;
+				  partners.splice(partners.findIndex((item) => item.referenceId === reference_id),1);
+
+				  firebase.firestore().collection('partners').doc(plan_id).set({
+					  members: partners
+				  }).then((res) => {
+						resolve();
+				  },(error) => {
+					  console.log('erro',error);
+				  })
+			  }
+		  )
+	  })
+  }
+
+
+  this.savePartnerPlan = function (store_code,partnerPlan) {
+
+	return new Promise((resolve) => {
+		firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+			(result) => {
+			  if(this.userPlans != null){
+				  if(this.userPlans[store_code]){
+						this.userPlans[store_code].unshift(partnerPlan);
+						firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+						userPlans: this.userPlans
+					}, {merge: true}).then((res) => {
+
+						resolve();
+					})
+				  }
+				  else{
+					  let plans = [];
+					  plans.push(partnerPlan);
+					  this.userPlans[store_code] = plans;
+					  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+						userPlans: this.userPlans
+					}, {merge: true}).then((res) => {
+
+						resolve();
+					})
+				  }
+			  }
+			  else {
+				let partnerPlans = {};
+				partnerPlans[store_code] = [];
+				partnerPlans[store_code].push(partnerPlan);
+				this.userPlans = partnerPlans;
+				  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+					  userPlans: this.userPlans
+				  }, {merge: true}).then((res) => {
+
+					  resolve();
+				  })
+			  }
+			})
+		})
+	}
+
+
   this.updateProfile = function (user) {
 	  return new Promise((resolve) => {
 		  firebase.auth().currentUser.updateProfile({
 		      displayName: user.name,
-		      photoURL: user.user_image,
 		  }).then(function () {
-			  this.user_image = user.user_image ? user.user_image : null;
 			  this.user_name = user.name;
 		      resolve(true);
 		  }).catch(function (error) {
@@ -650,7 +769,7 @@ function HeimdallrLib() {
 	  });
   }
 
-  this.checkUser = function () {
+  this.checkUser = () => {
       let u = null;
       // firebase.auth().signOut().then(
       //     (sucess) => {
@@ -670,15 +789,16 @@ function HeimdallrLib() {
       // })
       return new Promise((resolve) => {
           firebase.auth().onAuthStateChanged(
-              (user) => {
+          	(user) => {
                   console.log('user checkado: ', user);
                   if (user) {
                       this.user_id = user._user.uid;
                       this.user_image = user._user.photoURL;
                       this.user_name = user._user.displayName;
-                      this.email = user._user.email;
+					  this.email = user._user.email;
                       console.log('this.token', this.user_id);
                       this.getUserData(user);
+                      console.log(`e aqui?`, this.user_image);
                       u = user;
                   } else {
                       return false;
@@ -691,11 +811,13 @@ function HeimdallrLib() {
       })
   }
 
-  this.getUserData = function (user) {
-	  firebase.firestore().collection('user').where('uid', '==', user._user.uid).get().then(
-		  (resolve) => {
-		  	console.log('resolve USER', resolve.docs[0].data().phone);
-		  	this.phone = resolve.docs[0].data().phone;
+  this.getUserData = function (userData) {
+	  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
+	  (result) => {
+			  let user =  result.docs[0].data();
+			  this.phone = user.phone;
+			  this.user_image = user.user_image;
+			  this.userPlans = user.userPlans ? user.userPlans : null;
 		  	console.log(this.phone);
 		  }
 	  )
@@ -704,14 +826,10 @@ function HeimdallrLib() {
   this.signIn = function (params) {
       let user = null;
       return new Promise((resolve) => {
-          console.log('params: ', params);
           if (params.user && params.password) {
-              console.log('vou enviar então');
               firebase.auth().signInWithEmailAndPassword(params.user, params.password)
                   .then(
                       (result) => {
-                          console.log('deu boa');
-                          console.log('resolve: ', result);
                           user = result;
                           resolve();
                       }
@@ -720,8 +838,6 @@ function HeimdallrLib() {
                   resolve();
                   });
 
-          } else {
-              console.log('vaza');
           }
       }).then(function (resolve) {
           return user;
@@ -774,24 +890,24 @@ function HeimdallrLib() {
 
   this.getUserColletion = function (limit, uid) {
   	let docs = null;
-  	console.log('recebi:', limit, uid);
   	return new Promise((resolve) => {
         firebase.firestore()
-		    .collection('user_posts')
-	        .doc(uid)
+		    .collection('post')
+	        .where('uid', '==', uid)
 		    .get().then((result) => {
-			    console.log('asdasd', result);
-		    	if (result && result.data() && result.data().posts) {
-		    		let docs = result.data().posts.slice(0, limit);
+		    	if (result && result.docs) {
+		    		let docs = result.docs.slice(0, limit);
+		    		docs = docs.map((d) => d.data());
+				    docs.sort((a, b) => {
+					    return (b.date - a.date)
+				    });
 				    // docs = result.docs.filter((d) => {return !d.data().anonymous})
 			        // docs = docs.sort((a, b) => {
 				    //     return b.data().date - a.data().date;
 				    // console.log('ta´certo: ', docs);
-				    console.log('ué', docs);
 				    // });
 				    resolve(docs);
 			    } else {
-		    		console.log('caiu aqui');
 		    		resolve(null);
 			    }
 	        }).catch ((e) => {
@@ -806,15 +922,15 @@ function HeimdallrLib() {
 		return new Promise((resolve) => {
 			const post = firebase.firestore()
 				.collection('comment')
-				.doc(pid)
+				.where('pid', '==', pid)
 				.get().then((result) => {
+					docs = result.docs.slice(0, limit);
+					docs = docs.map((d) => d.data());
 					// docs = result.docs;
-					// docs.sort((a, b) => {
-					// 	return (b._data.date) - (a._data.date)
-					// });
+					docs.sort((a, b) => {
+						return (a.date) - (b.date)
+					});
 					// docs = docs.slice(0, limit);
-					console.log('so acheu isso', result);
-					docs = result.data() ? result.data().comments.slice(0, limit) : [];
 					resolve();
 				}).catch ((e) => {
 					console.log('Erro: ', e);
@@ -823,6 +939,27 @@ function HeimdallrLib() {
 		}).then(function (resolve) {
 			return docs;
 		})
+		// let docs = null;
+		// return new Promise((resolve) => {
+		// 	const post = firebase.firestore()
+		// 		.collection('comment')
+		// 		.doc(pid)
+		// 		.get().then((result) => {
+		// 			// docs = result.docs;
+		// 			// docs.sort((a, b) => {
+		// 			// 	return (b._data.date) - (a._data.date)
+		// 			// });
+		// 			// docs = docs.slice(0, limit);
+		// 			console.log('so acheu isso', result);
+		// 			docs = result.data() ? result.data().comments.slice(0, limit) : [];
+		// 			resolve();
+		// 		}).catch ((e) => {
+		// 			console.log('Erro: ', e);
+		// 		});
+		//
+		// }).then(function (resolve) {
+		// 	return docs;
+		// })
 	}
 
   this.getCollection = function (collection, limit) {
@@ -1014,21 +1151,20 @@ function HeimdallrLib() {
 		this.sendEvent('delete_comment');
 		let docs = [];
 		return new Promise((resolve, reject) => {
-			firebase.firestore().collection('comment').doc(pid).get().then(
+			firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 				(result) => {
-					let commentary = result.data().comments.find((item) => item.cid === cid);
-					let index = result.data().comments.indexOf(commentary);
-					let removed = result.data().comments.splice(index,1);
-					firebase.firestore().collection('comment').doc(pid).set(
-						{ comments: result.data().comments }, { merge: true }
-					).then(
+					firebase.firestore().collection('comment').doc(result.docs[0]._ref.path.split('/')[1]).delete().then(
 						() => {
+							firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+								(res) => {
+									firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
+										comments: res.docs[0].data().comments - 1
+									}, {merge: true});
+								}
+							);
 							resolve();
-						},
-						() => {
-							reject();
 						}
-					);
+					)
 
 				},
 				() => {
@@ -1067,11 +1203,9 @@ function HeimdallrLib() {
 	}
 
 	this.saveSpecificColletion = function (collection,params) {
-  	console.log('params.uid',params.uid);
 		return new Promise((resolve) => {
 			firebase.firestore().collection(collection).doc(params.uid).get().then(
 				(result) => {
-					console.log('result', result.data());
 					if (!result.data()) {
 						firebase.firestore().collection(collection).doc(params.uid).set({
 							dataArray: [params]
@@ -1094,7 +1228,6 @@ function HeimdallrLib() {
 
   this.saveCollection = function (collection, params) {
     let returnValue = null;
-    console.log('ue');
     return new Promise((resolve) => {
       console.log('checking params...');
       let parametersOK = true;
@@ -1113,7 +1246,15 @@ function HeimdallrLib() {
         }
       });
 
-      if (parametersOK) {
+      if (parametersOK && collection === 'post') {
+      	    returnValue = params.pid;
+	        heimdallr.saveCollection('unverified_post', params);
+	        firebase.firestore().collection(collection).doc(params.pid).set(params).then(
+		        () => {
+		        	resolve();
+		        }
+	        )
+      } else if (parametersOK) {
         const base = firebase.firestore().collection(collection);
         base.add(params).then(
           (docRef) => {
@@ -1123,9 +1264,6 @@ function HeimdallrLib() {
             if (collection === 'post') {
             	heimdallr.saveCollection('unverified_post', params);
             	console.log('deve entrar: ', params.anonymous);
-            	if (!params.anonymous) {
-            	    heimdallr.savePersonalColletion(params);
-	            }
             }
             if (collection === 'user') {
             	this.user_image = params.user_image ? params.user_image : null;
@@ -1185,6 +1323,28 @@ function HeimdallrLib() {
     })
   }
 
+  this.userEditImage = function (image) {
+  	return new Promise(async (resolve, reject) => {
+	    let begin = this.user_image.indexOf('img')
+	    let end = this.user_image.indexOf('?');
+	    const bucket = this.user_image.substring(begin, end);
+	    firebase.storage().ref(`${this.user_id}/${bucket}`).putFile(image).on('state_changed',
+		    (snapshot) => {
+			    let total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+			    console.log('progress: ' +  total + '%');
+			    if (total === 100 || snapshot.state === 'success') {
+				    console.log('Upload complete: ', snapshot.downloadURL);
+				    resolve(snapshot.downloadURL);
+			    }
+		    },
+		    (err) => {
+			    console.log('Error: ', err);
+			    reject();
+		    }
+	    );
+    })
+  }
+
   this.getDrawer = function () {
   	return new Promise((resolve, reject) => {
   		firebase.firestore().collection('sideDrawer').get().then(
@@ -1232,6 +1392,181 @@ function HeimdallrLib() {
 		  }
 	  )
   }
+
+  this.likePost = (pid) => {
+	  firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+		  async (resolve) => {
+		  	if (!resolve.docs[0]) {
+			    this.likePost(pid);
+		    } else {
+			    let doc = resolve.docs[0].data();
+			    const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
+			    if (index == -1) {
+				    this.sendEvent('like_post');
+				    doc.likes = doc.likes ? doc.likes + 1 : 1;
+				    if (doc.liked_by) {
+					    doc.liked_by.push(this.user_id);
+				    } else {
+					    doc.liked_by = [this.user_id];
+				    }
+				    firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
+					    likes: doc.likes,
+					    liked_by: doc.liked_by,
+				    }, {merge: true});
+
+				    if(this.user_id != doc.uid){
+					    const notifications = {};
+					    notifications.eid = doc.pid;
+					    notifications.uid = doc.uid;
+					    notifications.uid_notification = this.user_id;
+					    notifications.user_name = this.user_name;
+					    notifications.user_image = this.user_image;
+					    notifications.content = `curtiu a sua postagem ❤`;
+					    notifications.date = await this.getServerTime();
+					    notifications.visualized = 0;
+					    notifications.entity = "like";
+					    this.incrementNotification(doc.uid);
+
+					    this.getUID().then((uuid) => {
+						    notifications.nid = uuid;
+						    this.saveNotification(notifications);
+					    })
+				    }
+			    }
+		    }
+
+		  },
+		  (reject) => {
+		  }
+	  )
+  }
+
+	this.dislikePost = function (pid) {
+		firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+			(resolve) => {
+				if (!resolve.docs[0]) {
+					this.dislikePost(pid);
+				} else {
+					let doc = resolve.docs[0].data();
+					const index = doc.liked_by.indexOf(this.user_id);
+					if (index != -1) {
+						doc.likes = doc.likes - 1;
+						doc.liked_by.splice(index, 1);
+					}
+					firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
+						likes: doc.likes,
+						liked_by: doc.liked_by,
+					}, {merge: true});
+				}
+
+			},
+			(reject) => {
+
+			}
+		)
+	}
+
+	this.likeCommentary = async function (cid) {
+		firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
+			async (resolve) => {
+				if (!resolve.docs[0]) {
+					this.likeCommentary(cid);
+				} else {
+					let doc = resolve.docs[0].data();
+					const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
+					if (index == -1) {
+						this.sendEvent('like_commentary');
+						doc.likes = doc.likes ? doc.likes + 1 : 1;
+						if (doc.liked_by) {
+							doc.liked_by.push(this.user_id);
+						} else {
+							doc.liked_by = [this.user_id];
+						}
+						firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
+							likes: doc.likes,
+							liked_by: doc.liked_by,
+						}, {merge: true});
+						if(this.user_id != doc.id_user){
+							const notifications = {};
+							notifications.eid = doc.pid;
+							notifications.uid = doc.id_user;
+							notifications.uid_notification = this.user_id;
+							notifications.user_name = this.user_name;
+							notifications.user_image = this.user_image;
+							notifications.content = `curtiu o seu comentário ❤`;
+							notifications.date = await this.getServerTime();
+							notifications.visualized = 0;
+							notifications.entity = "like";
+							this.incrementNotification(doc.id_user);
+
+							this.getUID().then((uuid) => {
+								notifications.nid = uuid;
+								this.saveNotification(notifications);
+							})
+						}
+					}
+				}
+
+			},
+			(reject) => {
+
+			}
+		)
+	}
+
+	this.dislikeCommentary = function (cid) {
+		firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
+			(resolve) => {
+				if (!resolve.docs[0]) {
+					this.dislikeCommentary(cid);
+				} else {
+					let doc = resolve.docs[0].data();
+					const index = doc.liked_by.indexOf(this.user_id);
+					if (index != -1) {
+						doc.likes = doc.likes - 1;
+						doc.liked_by.splice(index, 1);
+						firebase.firestore().collection('comment').doc(resolve.docs[0]._ref.id).set({
+							likes: doc.likes,
+							liked_by: doc.liked_by,
+						}, {merge: true});
+					}
+				}
+			},
+			(reject) => {
+
+			}
+		)
+	}
+
+	this.validatePlanBeforeBuy = function (store, time) {
+  	    return new Promise((resolve, reject) => {
+			firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+				(result) => {
+					let user =  result.docs[0].data();
+					this.userPlans = user.userPlans ? user.userPlans : null;
+					if (user.userPlans && user.userPlans[store][0].due_date > time && user.userPlans[store][0].active === 1) {
+						resolve(true);
+					} else {
+						resolve(false);
+					}
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+        })
+	}
+
+	this.newPlanTicket = function (params, store) {
+		firebase.firestore().collection('plan_ticket').add({
+			no_tax_value: params.price,
+			date: params.signature_date,
+			price: (parseFloat(params.price.replace(',','.')) * 1.16).toFixed(2),
+			uid: this.user_id,
+			store: store,
+			referenceId: params.referenceId
+		});
+	}
 }
 
 const heimdallr = new HeimdallrLib();
