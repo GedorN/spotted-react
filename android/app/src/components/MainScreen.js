@@ -8,8 +8,9 @@ import {
 	Image,
 	StatusBar,
 	Modal,
-	BackHandler
+	BackHandler, KeyboardAvoidingView, Text
 } from 'react-native';
+import firebase from "react-native-firebase";
 
 
 import {
@@ -29,8 +30,10 @@ import theme from "../../../../components/General/Theme";
 import Settings from "./Settings";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
-import {NavigationActions, StackActions} from "react-navigation";
+import {NavigationActions, ScrollView, StackActions} from "react-navigation";
 import FlashMessage from "react-native-flash-message";
+import AsyncStorage from "@react-native-community/async-storage";
+import FatBottomedButton from "./buttons/FatBottomedButton";
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -57,6 +60,8 @@ export default class MainScreen extends React.Component {
 				{ key: 'notifications', icon: require('../../../../assets/images/bell.png')},
 				{ key: 'user', icon: require('../../../../assets/images/user-solid.png') },
 			],
+			showMessageModal: false,
+			message: {},
 		};
 	}
 	getHome = () => {return<Home ref={homeScreen => {this.homeScreen = homeScreen}} navigation={this.props.navigation}/>};
@@ -105,8 +110,10 @@ export default class MainScreen extends React.Component {
 		BackHandler.removeEventListener('hardwareBackPress');
 	}
 
-	componentDidMount =() => {
-		// Tratamento para click de voltar quando se está na raiz noa pp
+	componentDidMount = async () => {
+
+
+		// Tratamento para click de voltar quando se está na raiz no pp
 		BackHandler.addEventListener('hardwareBackPress', () => {
 			if (this.props.navigation.isFocused()) {
 				if (this.state.open) {
@@ -148,6 +155,21 @@ export default class MainScreen extends React.Component {
 
 
 		heimdallr.getNotificationsNumber(this);
+			let messages= await AsyncStorage.getItem('user_messages');
+				messages = JSON.parse(messages)
+				for (let i = 0; i < messages.length ; i++) {
+					console.log('passa');
+					if (!messages[i].viewed) {
+						console.log('entrou');
+						messages[i].viewed = true;
+						await AsyncStorage.setItem('user_messages', JSON.stringify(messages));
+						console.log('vou chamar');
+						heimdallr.updateUserMessages(i);
+						this.setState({ message:  messages[i], showMessageModal: true});
+						break;
+					}
+				}
+
 	}
 
 	_checkRoute = (route) => {
@@ -188,8 +210,6 @@ export default class MainScreen extends React.Component {
 	}
 
 	openModal = () => {
-		// heimdallr.signOut();
-		// this.forceUpdate();
 		this._drawer.open();
 	}
 
@@ -230,6 +250,19 @@ export default class MainScreen extends React.Component {
 		);
 	};
 
+	disableMessageModal = () => {
+		this.setState({ showMessageModal: false });
+	}
+
+	cancelButtonMessage = () => {
+		this.setState({ showMessageModal: false });
+	}
+
+	confirmButtonMessage = () => {
+		this.setState({ showMessageModal: false });
+	}
+
+
 	returnContent = () => {
 		if (!this.state.isLogged) {
 			return (
@@ -240,6 +273,56 @@ export default class MainScreen extends React.Component {
 		} else {
 			return (
 				<View style={styles.container}>
+					<Modal
+						hardwareAccelerated={true}
+						animationType='fade'
+						transparent={true}
+						visible={this.state.showMessageModal}
+						onRequestClose={() => { this.disableMessageModal() }}
+						style = {{ height: 50, width: theme.width * 0.5 }}
+					>
+						<View style = {styles.centeredView}>
+							<View  style = { styles.modalContainer }>
+								<View style = {styles.modalHeader }>
+									<TouchableOpacity
+										onPress={() => {this.disableMessageModal()}}>
+										<View style = {{ width: theme.width * 0.15, height: theme.height*0.05, alignSelf: 'flex-end' }}>
+											<Image
+												style = {{ width: 15, height: 15, alignSelf: 'flex-end', tintColor: 'white' }}
+												source = {require('../../../../assets/images/times-solid.png')}
+											/>
+										</View>
+									</TouchableOpacity>
+									<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: 'white'}}>{this.state.message.title}</Text>
+								</View>
+								<ScrollView style={ styles.modalBody}>
+										{
+											this.state.message.image &&
+											<View style={{width: theme.width * 0.85, height: theme.height * 0.4}}>
+												<Image
+													source={{uri: this.state.message.image}}
+													style={{resizeMode: 'contain', flex: 1}}
+												/>
+											</View>
+										}
+									<View style={{flex: 1, width: theme.width * 0.9, flexDirection: 'row'}}>
+										<Text style={{flex: 1, flexWrap:'wrap'}}>{this.state.message.text}</Text>
+									</View>
+									<View style={{marginTop: 10, flexDirection: 'row', marginBottom: 5}}>
+										{
+											this.state.message.cancelButton &&
+											<View style={{width: theme.width * 0.4}}>
+												<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={this.state.message.cancelButton} onTap={this.cancelButtonMessage.bind(this)} />
+											</View>
+										}
+										<View style={{width: this.state.message.cancelButton ? theme.width * 0.4 : theme.width * 0.8, marginLeft: this.state.message.cancelButton ? theme.width * 0.05 : 0}}>
+											<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={this.state.message.confirmButton} onTap={this.confirmButtonMessage.bind(this)} />
+										</View>
+									</View>
+								</ScrollView>
+							</View>
+						</View>
+					</Modal>
 					<Drawer
 						content={this.drawerContent()}
 						ref={(ref) => this._drawer = ref}
@@ -248,7 +331,6 @@ export default class MainScreen extends React.Component {
 						captureGestures={true}
 						tweenDuration={250}
 						openDrawerOffset={0.1} // 20% gap on the right side of drawer
-						// panCloseMask={0.9}
 						closedDrawerOffset={0}
 						tapToClose={true}
 						tweenHandler={(ratio) => ({
@@ -272,17 +354,11 @@ export default class MainScreen extends React.Component {
 											marginLeft:10}}/>
 							</View>
 							</TouchableOpacity>
-							{/*<Text style={{color: 'white', fontSize: 24, marginLeft: 100}}>*/}
-							{/*	Spotted*/}
-							{/*</Text>*/}
 							<Image
 								style={styles.headerImage}
 								source={require('../../../../assets/images/name.png')}
 							/>
 						</View>
-						{/*<View>*/}
-						{/*	<Home navigation={this.props.navigation}/>*/}
-						{/*</View>*/}
 						<BottomNavigation
 							navigationState={this.state}
 							onIndexChange={this._handleIndexChange}
@@ -290,7 +366,6 @@ export default class MainScreen extends React.Component {
 							barStyle={styles.bottomBar}
 							activeColor={theme.primary}
 							getBadge={this.getBadge.bind(this)}
-							// inactiveColor={'black'}
 							sceneAnimationEnabled={false}
 							shifting={false}
 							labeled={false}
@@ -319,17 +394,6 @@ export default class MainScreen extends React.Component {
 						>
 							<Settings close={this._hideSettingsModal} action={this.setAction}/>
 						</Modal>
-						{/*<Modal*/}
-						{/*	transparent={true}*/}
-						{/*	visible={this.state.showStore}*/}
-						{/*	onDismiss={this._hideSettingsModal}*/}
-						{/*	onRequestClose={() => {*/}
-						{/*		this.setState({ showStore: false });*/}
-						{/*	}}*/}
-						{/*	contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}*/}
-						{/*>*/}
-						{/*	<Store navigation={this.props.navigation} store={this.state.store}/>*/}
-						{/*</Modal>*/}
 						<Modal
 							transparent={true}
 							visible={this.state.showTickets}
@@ -343,16 +407,6 @@ export default class MainScreen extends React.Component {
 						</Modal>
 
 					</Drawer>
-					{/*<MenuDrawer*/}
-					{/*    open={this.state.open}*/}
-					{/*    drawerContent={this.drawerContent()}*/}
-					{/*    drawerPercentage={60}*/}
-					{/*    animationTime={100}*/}
-					{/*    overlay={true}*/}
-					{/*    opacity={0.4}*/}
-					{/*    style={{margin: 0, padding: 0, width: 0, height: 0, display: 'none'}}*/}
-					{/*>*/}
-					{/*</MenuDrawer>*/}
 				</View>
 
 			);
@@ -397,6 +451,15 @@ const styles = StyleSheet.create({
 		shadowRadius: 10.32,
 		elevation: 12,
 	},
+	modalHeader: {
+		flexDirection: 'column',
+		width: theme.width * 0.9,
+		borderTopLeftRadius:20,
+		borderTopRightRadius:20,
+		padding: 20,
+		height: theme.height * 0.15,
+		backgroundColor: theme.primary
+	},
 	animatedBox: {
 		flex: 1,
 		backgroundColor: "#38C8EC",
@@ -416,5 +479,37 @@ const styles = StyleSheet.create({
 		height: 40,
 		alignSelf: 'center',
 		marginLeft: theme.width * 0.15
+	},
+	modalBody: {
+		paddingLeft: 5,
+		paddingRight: 5,
+		marginBottom: 5,
+		height: theme.height * 1,
+		width: theme.width * 0.9,
+	},
+	modalContainer: {
+		width: theme.width * 0.9,
+		backgroundColor: '#FFFFFF',
+		borderRadius: 20,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		zIndex: 0,
+		height: theme.height * 0.8,
+		flexDirection: 'column',
+		padding: 0,
+
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: -(theme.height * 0.1),
+		paddingTop:theme.height * 0.1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 	},
 });

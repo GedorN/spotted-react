@@ -7,6 +7,7 @@
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
+import AsyncStorage from "@react-native-community/async-storage";
 import theme from "../General/Theme";
 
 
@@ -18,6 +19,7 @@ function HeimdallrLib() {
   this.token = null;
   this.phone = null;
   this.userPlans = null;
+  this.messages = null;
 
   this.refreshKey = null;
 
@@ -42,6 +44,20 @@ function HeimdallrLib() {
     });
 	}
 
+	this.testLink = () => {
+  	console.log('vamo ver esse link', firebase.links);
+  	try {
+	    firebase.links().getInitialLink().then(
+	        (link) => {
+	        console.log('O LINK TA AQUI', link);
+	    }
+	    )
+
+    } catch (e) {
+	    console.log('que porra de erro: ', e);
+    }
+	}
+
 	this.getUserTickets = function () {
 		return new Promise((resolve) => {
 			firebase.firestore().collection('tickets').where('uid', '==', this.user_id).get().then(
@@ -57,6 +73,7 @@ function HeimdallrLib() {
 	}
 
 
+
 	this.getNotificationsNumber = function (context) {
   	    return new Promise((resolve) => {
   	    	firebase.firestore().collection('rel_user_notification').where('uid', '==', this.user_id).onSnapshot(
@@ -67,6 +84,21 @@ function HeimdallrLib() {
 			        }
             })
         })
+	}
+
+	this.updateUserMessages = (index) => {
+  	console.log('CHEGA NESSA MERDA?', this.user_id);
+		// firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+		// 	async (result) => {
+		// 		let messages = await AsyncStorage.getItem('user_messages');
+		// 		messages = JSON.parse(messages);
+		// 		messages[index].viewed = true;
+		// 		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+		// 			messages: messages,
+		// 		}, {merge: true});
+		//
+		// 	}
+		// )
 	}
 
 	this.incrementNotification = function(uid){
@@ -799,7 +831,8 @@ function HeimdallrLib() {
                       console.log('this.token', this.user_id);
                       this.getUserData(user);
                       console.log(`e aqui?`, this.user_image);
-                      u = user;
+	                  AsyncStorage.setItem('uid', user._user.id);
+	                  u = user;
                   } else {
                       return false;
                   }
@@ -818,6 +851,7 @@ function HeimdallrLib() {
 			  this.phone = user.phone;
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
+			  AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
 	  )
