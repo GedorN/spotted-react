@@ -8,7 +8,10 @@ import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
 import AsyncStorage from "@react-native-community/async-storage";
+// import dynamicLink from 'react-native-firebase/links';
 import theme from "../General/Theme";
+
+
 
 
 function HeimdallrLib() {
@@ -44,18 +47,25 @@ function HeimdallrLib() {
     });
 	}
 
-	this.testLink = () => {
-  	console.log('vamo ver esse link', firebase.links);
-  	try {
-	    firebase.links().getInitialLink().then(
-	        (link) => {
-	        console.log('O LINK TA AQUI', link);
-	    }
-	    )
 
-    } catch (e) {
-	    console.log('que porra de erro: ', e);
-    }
+	this.testLink = () => {
+  	return new Promise((resolve, reject) => {
+	    try {
+		    firebase.links().getInitialLink().then(
+			    (link) => {
+				    if (link) {
+					    console.warn('O LINK TA AQUI', link);
+					    resolve();
+				    }
+			    }
+		    )
+
+	    } catch (e) {
+		    console.log('que porra de erro: ', e);
+		    reject();
+	    }
+    })
+
 	}
 
 	this.getUserTickets = function () {
@@ -87,18 +97,17 @@ function HeimdallrLib() {
 	}
 
 	this.updateUserMessages = (index) => {
-  	console.log('CHEGA NESSA MERDA?', this.user_id);
-		// firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
-		// 	async (result) => {
-		// 		let messages = await AsyncStorage.getItem('user_messages');
-		// 		messages = JSON.parse(messages);
-		// 		messages[index].viewed = true;
-		// 		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
-		// 			messages: messages,
-		// 		}, {merge: true});
-		//
-		// 	}
-		// )
+		firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+			async (result) => {
+				let messages = await AsyncStorage.getItem('user_messages');
+				messages = JSON.parse(messages);
+				messages[index].viewed = true;
+				firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+					messages: messages,
+				}, {merge: true});
+
+			}
+		)
 	}
 
 	this.incrementNotification = function(uid){

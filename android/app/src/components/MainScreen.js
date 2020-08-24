@@ -155,20 +155,22 @@ export default class MainScreen extends React.Component {
 
 
 		heimdallr.getNotificationsNumber(this);
-			let messages= await AsyncStorage.getItem('user_messages');
-				messages = JSON.parse(messages)
-				for (let i = 0; i < messages.length ; i++) {
-					console.log('passa');
-					if (!messages[i].viewed) {
-						console.log('entrou');
-						messages[i].viewed = true;
-						await AsyncStorage.setItem('user_messages', JSON.stringify(messages));
-						console.log('vou chamar');
-						heimdallr.updateUserMessages(i);
-						this.setState({ message:  messages[i], showMessageModal: true});
-						break;
-					}
-				}
+		heimdallr.testLink();
+		// Método para mostar notificações ao usuário
+		// let messages= await AsyncStorage.getItem('user_messages');
+		// 	messages = JSON.parse(messages)
+		// 	for (let i = 0; i < messages.length ; i++) {
+		// 		console.log('passa');
+		// 		if (!messages[i].viewed) {
+		// 			console.log('entrou');
+		// 			messages[i].viewed = true;
+		// 			await AsyncStorage.setItem('user_messages', JSON.stringify(messages));
+		// 			console.log('vou chamar');
+		// 			heimdallr.updateUserMessages(i);
+		// 			this.setState({ message:  messages[i], showMessageModal: true});
+		// 			break;
+		// 		}
+		// 	}
 
 	}
 
@@ -334,7 +336,7 @@ export default class MainScreen extends React.Component {
 						closedDrawerOffset={0}
 						tapToClose={true}
 						tweenHandler={(ratio) => ({
-							main: { opacity: !ratio ? 1 : 0.2, backgroundColor: !ratio ? null : 'black' }
+							main: { backgroundColor: !ratio ? null : 'black' }
 						})}
 						acceptPan={true}
 						negotiatePan={true}
