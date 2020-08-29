@@ -155,7 +155,7 @@ export default class MainScreen extends React.Component {
 
 
 		heimdallr.getNotificationsNumber(this);
-		heimdallr.testLink();
+		heimdallr.testLink(this.props.navigation);
 		// Método para mostar notificações ao usuário
 		// let messages= await AsyncStorage.getItem('user_messages');
 		// 	messages = JSON.parse(messages)

@@ -48,12 +48,23 @@ function HeimdallrLib() {
 	}
 
 
-	this.testLink = () => {
+	this.testLink = (navigator) => {
   	return new Promise((resolve, reject) => {
 	    try {
 		    firebase.links().getInitialLink().then(
 			    (link) => {
 				    if (link) {
+				    	if (link.indexOf('/store') > 0) {
+				    		if (link.indexOf('cac') > 0) {
+				    			navigator.navigate('Store', { store: 'cac'});
+						    } else if (link.indexOf('avalanche') > 0) {
+							    navigator.navigate('Store', { store: 'avalanche'});
+						    } else if(link.indexOf('metralhas') > 0) {
+							    navigator.navigate('Store', { store: 'metralhas'});
+						    } else if (link.indexOf('maleficoz') > 0) {
+							    navigator.navigate('Store', { store: 'maleficoz'});
+						    }
+					    }
 					    console.warn('O LINK TA AQUI', link);
 					    resolve();
 				    }
@@ -1264,6 +1275,7 @@ function HeimdallrLib() {
 			)
 		})
 	}
+
 
 	this.sendEvent = function (eventName) {
 	    firebase.analytics().logEvent(eventName);
