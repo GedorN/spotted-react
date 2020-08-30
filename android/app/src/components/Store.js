@@ -12,7 +12,6 @@ import {
 	StatusBar,
 	BackHandler,
 	Modal,
-	Linking,
 } from "react-native";
 
 import ImNotTheOnlyChip from "./layout/ImNotTheOnlyChip";

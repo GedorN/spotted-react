@@ -15,6 +15,7 @@ import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
+import theme from "../../../../components/General/Theme";
 
 
 export default class Home extends React.Component {
@@ -118,7 +119,7 @@ export default class Home extends React.Component {
 	  if (!this.state.endPulling) {
 		  return (
 			  <View style={{marginBottom: 70}}>
-				  <ActivityIndicator size="large" color="#0000ff" />
+				  <ActivityIndicator size="large" color={theme.primary} />
 			  </View>
 		  );
 	  }

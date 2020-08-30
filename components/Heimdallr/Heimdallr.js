@@ -7,7 +7,11 @@
 import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
+import AsyncStorage from "@react-native-community/async-storage";
+// import dynamicLink from 'react-native-firebase/links';
 import theme from "../General/Theme";
+
+
 
 
 function HeimdallrLib() {
@@ -18,6 +22,7 @@ function HeimdallrLib() {
   this.token = null;
   this.phone = null;
   this.userPlans = null;
+  this.messages = null;
 
   this.refreshKey = null;
 
@@ -42,6 +47,43 @@ function HeimdallrLib() {
     });
 	}
 
+
+	this.testLink = (navigator) => {
+  	return new Promise((resolve, reject) => {
+	    try {
+		    firebase.links().getInitialLink().then(
+			    (link) => {
+				    if (link) {
+				    	if (!this.user_id) {
+						    navigator.navigate('SignUp', {navigation: navigator})
+					    } else if (link.indexOf('/store') > 0) {
+				    		if (link.indexOf('cac') > 0) {
+				    			navigator.navigate('Store', { store: 'cac'});
+						    } else if (link.indexOf('avalanche') > 0) {
+							    navigator.navigate('Store', { store: 'avalanche'});
+						    } else if(link.indexOf('metralhas') > 0) {
+							    navigator.navigate('Store', { store: 'metralhas'});
+						    } else if (link.indexOf('maleficoz') > 0) {
+							    navigator.navigate('Store', { store: 'maleficoz'});
+						    }
+					    } else if (link.indexOf('/product') > 0) {
+				    		const index = link.indexOf('id') + 3;
+				    		const id = link.substring(index);
+						    navigator.navigate('ProductScreen', { iid: id })
+					    }
+					    resolve();
+				    }
+			    }
+		    )
+
+	    } catch (e) {
+		    console.log('que porra de erro: ', e);
+		    reject();
+	    }
+    })
+
+	}
+
 	this.getUserTickets = function () {
 		return new Promise((resolve) => {
 			firebase.firestore().collection('tickets').where('uid', '==', this.user_id).get().then(
@@ -57,6 +99,7 @@ function HeimdallrLib() {
 	}
 
 
+
 	this.getNotificationsNumber = function (context) {
   	    return new Promise((resolve) => {
   	    	firebase.firestore().collection('rel_user_notification').where('uid', '==', this.user_id).onSnapshot(
@@ -67,6 +110,20 @@ function HeimdallrLib() {
 			        }
             })
         })
+	}
+
+	this.updateUserMessages = (index) => {
+		firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+			async (result) => {
+				let messages = await AsyncStorage.getItem('user_messages');
+				messages = JSON.parse(messages);
+				messages[index].viewed = true;
+				firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+					messages: messages,
+				}, {merge: true});
+
+			}
+		)
 	}
 
 	this.incrementNotification = function(uid){
@@ -790,16 +847,14 @@ function HeimdallrLib() {
       return new Promise((resolve) => {
           firebase.auth().onAuthStateChanged(
           	(user) => {
-                  console.log('user checkado: ', user);
                   if (user) {
                       this.user_id = user._user.uid;
                       this.user_image = user._user.photoURL;
                       this.user_name = user._user.displayName;
 					  this.email = user._user.email;
-                      console.log('this.token', this.user_id);
                       this.getUserData(user);
-                      console.log(`e aqui?`, this.user_image);
-                      u = user;
+	                  AsyncStorage.setItem('uid', user._user.id);
+	                  u = user;
                   } else {
                       return false;
                   }
@@ -814,10 +869,11 @@ function HeimdallrLib() {
   this.getUserData = function (userData) {
 	  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
 	  (result) => {
-			  let user =  result.docs[0].data();
+			  let user =  result && result.docs[0] ? result.docs[0].data() : userData;
 			  this.phone = user.phone;
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
+			  AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
 	  )
@@ -1221,6 +1277,7 @@ function HeimdallrLib() {
 			)
 		})
 	}
+
 
 	this.sendEvent = function (eventName) {
 	    firebase.analytics().logEvent(eventName);
