@@ -54,7 +54,9 @@ function HeimdallrLib() {
 		    firebase.links().getInitialLink().then(
 			    (link) => {
 				    if (link) {
-				    	if (link.indexOf('/store') > 0) {
+				    	if (!this.user_id) {
+						    navigator.navigate('SignUp', {navigation: navigator})
+					    } else if (link.indexOf('/store') > 0) {
 				    		if (link.indexOf('cac') > 0) {
 				    			navigator.navigate('Store', { store: 'cac'});
 						    } else if (link.indexOf('avalanche') > 0) {
@@ -64,8 +66,11 @@ function HeimdallrLib() {
 						    } else if (link.indexOf('maleficoz') > 0) {
 							    navigator.navigate('Store', { store: 'maleficoz'});
 						    }
+					    } else if (link.indexOf('/product') > 0) {
+				    		const index = link.indexOf('id') + 3;
+				    		const id = link.substring(index);
+						    navigator.navigate('ProductScreen', { iid: id })
 					    }
-					    console.warn('O LINK TA AQUI', link);
 					    resolve();
 				    }
 			    }
@@ -842,15 +847,12 @@ function HeimdallrLib() {
       return new Promise((resolve) => {
           firebase.auth().onAuthStateChanged(
           	(user) => {
-                  console.log('user checkado: ', user);
                   if (user) {
                       this.user_id = user._user.uid;
                       this.user_image = user._user.photoURL;
                       this.user_name = user._user.displayName;
 					  this.email = user._user.email;
-                      console.log('this.token', this.user_id);
                       this.getUserData(user);
-                      console.log(`e aqui?`, this.user_image);
 	                  AsyncStorage.setItem('uid', user._user.id);
 	                  u = user;
                   } else {
@@ -867,7 +869,7 @@ function HeimdallrLib() {
   this.getUserData = function (userData) {
 	  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
 	  (result) => {
-			  let user =  result.docs[0].data();
+			  let user =  result && result.docs[0] ? result.docs[0].data() : userData;
 			  this.phone = user.phone;
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
