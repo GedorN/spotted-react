@@ -223,7 +223,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 												<Text style = {styles.textStatus}>{this.props.ticket.store_name}</Text>
 												<Text style = {styles.textStatus}>{' para retirar seu pedido.'}</Text>
 											</Text>
-										</View>	
+										</View>
 									}
 								</ScrollView>
 							</View>
@@ -276,7 +276,6 @@ const styles = StyleSheet.create({
 	ticketHeader : {
 		height: theme.height *0.05,
 		width: theme.width * 0.4,
-		marginTop: theme.height *  0.01,
 		alignSelf: 'center',
 		marginTop:theme.height * 0.015
 	},
@@ -348,7 +347,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		marginTop: 22,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 		paddingTop: theme.height * 0.1,
 		marginTop: -(theme.height * 0.1)

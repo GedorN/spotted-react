@@ -158,6 +158,9 @@ export default class Store extends React.Component {
 					});
 				} else {
 					this.setState({currentPlan: userPlans[0]});
+					if (today > userPlans[0].due_date && userPlans[0].active === 1) {
+						heimdallr.sendEvent('avalanche_plan_expired');
+					}
 				}
 			}
 			result();

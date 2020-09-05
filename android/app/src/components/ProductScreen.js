@@ -132,6 +132,9 @@ export default class ProductScreen extends React.Component {
 							initialLoad: false,
 							PicPayPrice : resolve.price
 						});
+						if (today > userPlans[0].due_date && userPlans[0].active === 1) {
+							heimdallr.sendEvent('avalanche_plan_expired');
+						}
 					}
 
 				} else {
