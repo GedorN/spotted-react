@@ -58,8 +58,7 @@ export default  class SignUp extends React.Component {
 		};
 	}
 
-	async componentDidMount(): void {
-
+	componentDidMount(): void {
 		// c.confirm('123456').then(
 		// 	(resolve) => {
 		// 		console.log('ai jesuis: ', resolve);
@@ -238,23 +237,42 @@ export default  class SignUp extends React.Component {
 				});
 			});
 		} else {
-			console.log('saving user...', user);
-			const params = {};
-			params.name = this.state.name;
-			params.email = this.state.email;
-			params.creation_date = new Date();
-			params.birth_date = this.state.birth;
-			params.phone = this.state.phone;
-			params.active = 1;
-			params.password = this.state.password;
-			params.uid = user.user.uid;
-			let success = heimdallr.saveCollection('user', params);
-			success.then((r) => {
-				this.forceUpdate();
-				this.updateUser(params);
-			});
+			RNFS.mkdir(RNFS.DocumentDirectoryPath + '/Spotted');
+			RNFS.downloadFile(
+				{
+					fromUrl: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/mask-solid.png?alt=media',
+					toFile: `${RNFS.DocumentDirectoryPath}/Spotted/mask.png`
+				}
+			).promise.then(
+				() => {
+					heimdallr.uploadImage(`${RNFS.DocumentDirectoryPath}/Spotted/mask.png`).then(
+						(resolve) => {
+							let token = resolve.indexOf('&');
+							resolve = resolve.substring(0, token);
+							console.log('saving user...', user);
+							const params = {};
+							params.name = this.state.name;
+							params.email = this.state.email;
+							params.creation_date = new Date();
+							params.birth_date = this.state.birth;
+							params.phone = this.state.phone;
+							params.active = 1;
+							params.password = this.state.password;
+							params.uid = user.user.uid;
+							params.user_image = resolve;
+							let success = heimdallr.saveCollection('user', params);
+							success.then((r) => {
+								this.forceUpdate();
+								this.updateUser(params);
+							});
+						}
+					);
+				},
+				(e) => {
+					console.log('que merda: ', e);
+				}
+			)
 		}
-
 	}
 
 	updateUser = (user) => {
