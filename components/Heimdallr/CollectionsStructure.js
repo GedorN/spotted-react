@@ -26,7 +26,7 @@ const collections = {
 	        },
             {
                 desc: 'creation_date',
-                type: 'object',
+                type: 'number',
 	            required: true,
             },
             {

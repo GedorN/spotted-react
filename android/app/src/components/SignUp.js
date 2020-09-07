@@ -215,15 +215,14 @@ export default  class SignUp extends React.Component {
 	saveUser = (user) => {
 		if (this.state.profileImage) {
 			let result = heimdallr.uploadImage(this.state.imageCompressed);
-			result.then((resolve) => {
+			result.then(async (resolve) => {
 				let token = resolve.indexOf('&');
 				resolve = resolve.substring(0, token);
 				console.log('saving user with image...', user);
 				const params = {};
 				params.name = this.state.name;
 				params.email = this.state.email;
-				params.creation_date = new Date();
-				params.birth_date = this.state.birth;
+				params.creation_date = await heimdallr.getServerTime();
 				params.active = 1;
 				params.phone = this.state.phone;
 				params.password = this.state.password;
@@ -246,15 +245,14 @@ export default  class SignUp extends React.Component {
 			).promise.then(
 				() => {
 					heimdallr.uploadImage(`${RNFS.DocumentDirectoryPath}/Spotted/mask.png`).then(
-						(resolve) => {
+						async (resolve) => {
 							let token = resolve.indexOf('&');
 							resolve = resolve.substring(0, token);
 							console.log('saving user...', user);
 							const params = {};
 							params.name = this.state.name;
 							params.email = this.state.email;
-							params.creation_date = new Date();
-							params.birth_date = this.state.birth;
+							params.creation_date = await heimdallr.getServerTime();
 							params.phone = this.state.phone;
 							params.active = 1;
 							params.password = this.state.password;

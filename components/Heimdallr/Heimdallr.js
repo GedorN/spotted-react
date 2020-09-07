@@ -95,7 +95,7 @@ function HeimdallrLib() {
 	}
 
 	this.getUserTickets = function () {
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			firebase.firestore().collection('tickets').where('uid', '==', this.user_id).get().then(
 				(result) => {
 					let docs = result.docs;
@@ -103,6 +103,8 @@ function HeimdallrLib() {
 						return (b.data().date - a.data().date)
 					});
 					resolve(docs);
+				},
+				(error) => {
 				}
 			)
 		})

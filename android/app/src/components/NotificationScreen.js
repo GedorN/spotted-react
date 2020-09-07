@@ -140,7 +140,7 @@ export default class NotificationScreen extends React.Component {
 				{
 					this.state.notifications === null &&
 					<View style = {{width: theme.width * 0.9, alignSelf: 'center', marginTop: theme.height * 0.025}}>
-						<Text style = {{ fontWeight: 'bold', color: '#8f8f8f', lineHeight: 25}}>Não há notificações no momento, mas  em breve poderá ter,  ou poderá não ter. </Text>
+						<Text style = {{ fontWeight: 'bold', color: '#8f8f8f', lineHeight: 25}}>Não há notificações no momento, mas  em breve poderá ter... ou poderá não ter. </Text>
 					</View>
 				}
             </View>

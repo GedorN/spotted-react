@@ -75,7 +75,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 
 	render() {
 		return (
-			<View style={{flex: 1, borderRadius: 25}}>
+			<View style={{flex: 1, borderRadius: 25, padding: 6}}>
 				<View style={styles.product_info}>
 					<Ripple
 						rippleOpacity={0.42}
