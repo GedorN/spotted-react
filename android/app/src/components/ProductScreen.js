@@ -866,7 +866,7 @@ export default class ProductScreen extends React.Component {
 							</View>
 						</TouchableOpacity>
 						<Text style={{ padding: 5, marginTop: 10, fontWeight: 'bold' }}>
-							Esta produto não está mais diponível (´;︵;`)
+							Este produto não está mais diponível (´;︵;`)
 						</Text>
 					</View>
 				}

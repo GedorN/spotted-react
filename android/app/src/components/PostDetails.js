@@ -699,7 +699,7 @@ export default class PostDetails extends React.Component {
 				{
 					this.state.removedPost &&
 					<Text style={{ padding: 5, marginTop: 10, fontWeight: 'bold' }}>
-						Esta post não está mais diponível (´;︵;`)
+						Este post não está mais diponível (´;︵;`)
 					</Text>
 
 				}
