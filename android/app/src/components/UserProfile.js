@@ -141,7 +141,7 @@ export default class UserProfile extends React.Component {
 				flex: 1,
 				height: 50,
 				flexDirection: 'row',
-				backgroundColor: '#aab512',
+				backgroundColor: theme.primary,
 				padding: 10,
 				shadowColor: "#000",
 				shadowOffset: {
@@ -154,8 +154,8 @@ export default class UserProfile extends React.Component {
 				alignItems: 'center',
 				justifyContent: 'center'
 			}}>
-				<Image source={require('../../../../assets/images/warning.png') } style={{height: 20, width: 25}}/>
-				<Text style={{marginLeft: 5}}>Não há mais postagens para serem vistas</Text>
+				<Image source={require('../../../../assets/images/warning.png') } style={{height: 20, width: 25, tintColor: '#FFFFFF'}}/>
+				<Text style={{marginLeft: 5, color: '#FFFFFF'}}>Não há mais postagens para serem vistas</Text>
 			</View>
 		)
 	};

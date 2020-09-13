@@ -70,6 +70,16 @@ function HeimdallrLib() {
 				    		const index = link.indexOf('id') + 3;
 				    		const id = link.substring(index);
 						    navigator.navigate('ProductScreen', { iid: id })
+					    } else if ('/plan') {
+						    if (link.indexOf('cac') > 0) {
+							    navigator.navigate('Plans', { store: 'cac', current_plan: {}});
+						    } else if (link.indexOf('avalanche') > 0) {
+							    navigator.navigate('Plans', { store: 'avalanche', current_plan: {}});
+						    } else if(link.indexOf('metralhas') > 0) {
+							    navigator.navigate('Plans', { store: 'metralhas', current_plan: {}});
+						    } else if (link.indexOf('maleficoz') > 0) {
+							    navigator.navigate('Plans', { store: 'maleficoz', current_plan: {}});
+						    }
 					    }
 					    resolve();
 				    }
@@ -85,7 +95,7 @@ function HeimdallrLib() {
 	}
 
 	this.getUserTickets = function () {
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			firebase.firestore().collection('tickets').where('uid', '==', this.user_id).get().then(
 				(result) => {
 					let docs = result.docs;
@@ -93,6 +103,8 @@ function HeimdallrLib() {
 						return (b.data().date - a.data().date)
 					});
 					resolve(docs);
+				},
+				(error) => {
 				}
 			)
 		})

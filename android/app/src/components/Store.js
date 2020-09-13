@@ -158,6 +158,10 @@ export default class Store extends React.Component {
 					});
 				} else {
 					this.setState({currentPlan: userPlans[0]});
+					if (today > userPlans[0].due_date && userPlans[0].active === 1) {
+						const store_code = this.props.navigation.getParam('store');
+						heimdallr.sendEvent(`${store_code}_plan_expired`);
+					}
 				}
 			}
 			result();
