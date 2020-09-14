@@ -877,10 +877,10 @@ export default class ProductScreen extends React.Component {
 		            transparent={true}
 		            visible={this.state.showAlert}
 		            onRequestClose={() => { this.disableModal() }}
-		            style = {{ height: 50, width: theme.width * 0.5 }}
+		            style = {{ height: 80, width: theme.width * 0.5 }}
 	            >
 		            <View style = {styles.centeredView}>
-			            <View style = {{ ...styles.modalContainer, height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.72 : theme.height * 0.69) }}>
+			            <View style = {{ ...styles.modalContainer, height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.72 : theme.height * 0.75) }}>
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.product?this.state.product.colors[0]: null}}>
 								<TouchableOpacity
 									onPressIn={() => heimdallr.sendEvent('buy_cancel')}
@@ -894,11 +894,11 @@ export default class ProductScreen extends React.Component {
 								</TouchableOpacity>
 								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: (this.state.product ? this.state.product.colors[1] : null)}}>{'Confirmação da compra'}</Text>
 							</View>
-							<View style = {{ height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.57 : theme.height * 0.55), marginTop: theme.height * 0.1 }}>
+							<View style = {{ height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.57 : theme.height * 0.60), marginTop: theme.height * 0.1 }}>
 								{
 									!this.state.showLoading &&
-									<ScrollView style = {{ height: theme.height * 0.5, marginTop: 0 }} showsVerticalScrollIndicator = {false}>
-										<View>
+									<ScrollView style = {{height: theme.height * 60, marginTop: 0 }} showsVerticalScrollIndicator = {false}>
+										<View >
 											<Text style = {{ fontWeight: 'bold', fontSize: 15, textAlign: 'justify', lineHeight: 25, marginLeft: theme.width * 0.007, letterSpacing: 0.5 }}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
 											{
 												this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
@@ -906,8 +906,8 @@ export default class ProductScreen extends React.Component {
 													<Text style = {{ flexDirection:'row', marginTop: theme.height * 0.01, textAlign: 'justify' }}>
 													{
 														this.state.product.customization.map(i =>
-														<Text key = {i.label} style = {{ flex: 1, flexWrap: 'wrap', fontWeight:'bold', color:'#8f8f8f', fontSize:15, letterSpacing: 0.5, textAlign: 'justify', lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
-															{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
+														<Text key = {i.label} style = {{ flex: 1, flexWrap: 'wrap', fontWeight:'bold', color:'#8f8f8f', fontSize:15, letterSpacing: 0.5, lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
+															{i.value?(i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ', ')):''}
 														</Text>
 														)
 													}
@@ -942,7 +942,7 @@ export default class ProductScreen extends React.Component {
 														</View>
 														<View style={{ flexDirection:'row' }}>
 															<Text style={styles.buyConfirmText}>
-																{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
+																{ 'ATENÇÃO: Você terá 20 minutos para efetuar o pagamento. Após este tempo o pedido será expirado e retirado da sua lista de pediddos. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
 															</Text>
 														</View>
 													</View>
@@ -1120,6 +1120,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginTop: -(theme.height * 0.1),
 		paddingTop:theme.height * 0.1,
+		paddingBottom: 0,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 	},
 	modalContainer: {
@@ -1127,7 +1128,7 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 25,
-		paddingBottom:20,
+		paddingBottom: 0,
 		shadowOffset: {
 			width: 0,
 			height: 2
