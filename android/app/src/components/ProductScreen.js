@@ -71,6 +71,7 @@ export default class ProductScreen extends React.Component {
 			discountPicPayPrice: '0.00',
 			discountPriceWithoutTax: null,
 			currentPlan: false,
+			couponHash: null,
 		}
 	}
 
@@ -270,7 +271,8 @@ export default class ProductScreen extends React.Component {
 		}  */
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
-			const time = await heimdallr.getServerTime();
+			let due_date = await heimdallr.getServerTime();
+			due_date = moment(due_date).add(20, 'm').format();
 
 			if (this.state.currentPlan) {
 				const check = await heimdallr.validatePlanBeforeBuy(this.state.product.sid, time);
@@ -285,26 +287,27 @@ export default class ProductScreen extends React.Component {
 				}
 			}
 			let params = {};
-			params.colors = this.state.product.colors;
-			params.date = time
-			params.iid = this.state.iidProduct;
+			params.colors = JSON.stringify(this.state.product.colors);
+			params.productId = this.state.iidProduct;
 			params.image = this.state.productImages[0];
 			params.category = this.state.product.category;
-			params.category_name = this.state.product.category_name;
-			params.product_name = this.state.product.name;
-			params.status = 'Pendente';
-			params.store_name = this.state.product.sid;
-			params.store_logo = this.state.product.logo;
-			params.uid = heimdallr.user_id;
+			params.categoryName = this.state.product.category_name;
+			params.productName = this.state.product.name;
+			params.storeName = this.state.product.sid;
+			params.storeLogo = this.state.product.logo;
+			params.userId = heimdallr.user_id;
 			params.url = 'PicPay';
-			params.description = this.state.product.customization;
+			params.description = JSON.stringify(this.state.product.customization);
 			params.payment = 'PicPay';
-			params.product_price = this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2) : parseFloat(this.state.PicPayPrice).toFixed(2);
-			params.no_tax_value = this.state.discountApplied ? parseFloat(this.state.discountPriceWithoutTax).toFixed(2) : parseFloat(this.state.price_without_tax).toFixed(2);
-			params.buyer_name = heimdallr.user_name;
-			params.buyer_phone = heimdallr.phone;
-			params.buyer_email = heimdallr.email;
+			params.productPrice = this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2) : parseFloat(this.state.PicPayPrice).toFixed(2);
+			params.noTaxValue = this.state.discountApplied ? parseFloat(this.state.discountPriceWithoutTax).toFixed(2) : parseFloat(this.state.price_without_tax).toFixed(2);
+			params.buyerName = heimdallr.user_name;
+			params.buyerPhone = heimdallr.phone;
+			params.buyerEmail = heimdallr.email;
 			params.referenceId = await heimdallr.getUID();
+			if (this.state.discountApplied) {
+				params.couponHash = this.state.couponHash;
+			}
 
 			if (params.product_price == 0) {
 				params.status = 'Pago';
@@ -313,7 +316,7 @@ export default class ProductScreen extends React.Component {
 				if(this.state.discountApplied){
 					heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
 					heimdallr.saveUserCoupon(this.state.userCouponsRegister);
-					this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
+					this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null, couponHash: null});
 				}
 
 				this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
@@ -329,9 +332,10 @@ export default class ProductScreen extends React.Component {
 					headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
 					data: {
 						"referenceId": params.referenceId,
-						"callbackUrl": "http://www.spottedutfpr.com.br/callback",
-						"value": params.product_price,
-						"expiresAt": moment().endOf('month').format(),
+						"callbackUrl": "http://3.23.33.91/purchase-status",
+						"returnUrl": "https://spottedutfpr.com/app/tickets",
+						"value": params.productPrice,
+						"expiresAt": due_date,
 						"buyer": {
 							"firstName": heimdallr.user_name.split(' ')[0],
 							"lastName": heimdallr.user_name.split(' ')[0],
@@ -342,19 +346,16 @@ export default class ProductScreen extends React.Component {
 					}
 				}).then(
 					(resolve) => {
-
 						params.url = resolve.data.paymentUrl;
-						heimdallr.saveTicketsRegister(params);
+						axios({
+							method: 'post',
+							url: 'http://3.23.33.91/allocate-product',
+							data: {
+								...params
+							}
+						})
 						Linking.openURL(resolve.data.paymentUrl);
-						if(this.state.discountApplied){
-							heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
-							heimdallr.saveUserCoupon(this.state.userCouponsRegister);
-							this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
-						}
-						setTimeout(() => {
-							heimdallr.checkTicketsStatus(heimdallr.user_id);
-						}, 20000);
-						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
+						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false, discountPicPayPrice : null, discountPriceWithoutTax : null, couponHash: null});
 						showMessage({
 							message: "Compra realizada com sucesso",
 							type: "success",
@@ -406,7 +407,7 @@ export default class ProductScreen extends React.Component {
 							userCoupons.push(this.state.newCoupon);
 							let index = coupons.indexOf(coupon);
 							coupons[index].quantity  = coupons[index].quantity - 1;
-							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true,ticketStore:'spotted'});
+							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:'spotted', couponHash: coupons[index].hash });
 							this.ticketsRegister();
 							heimdallr.sendEvent(`spotted_ticket_apply`)
 						} else {
@@ -441,7 +442,7 @@ export default class ProductScreen extends React.Component {
 									userCoupons.push(this.state.newCoupon);
 									let index = coupons.indexOf(coupon);
 									coupons[index].quantity  = coupons[index].quantity - 1;
-									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid});
+									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid, couponHash: coupons[index].hash});
 									this.ticketsRegister();
 									heimdallr.sendEvent(`${this.state.product.sid}_ticket_apply`)
 								} else {

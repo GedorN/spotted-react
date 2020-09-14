@@ -163,14 +163,14 @@ export default class LikeARollingTicketViewer extends React.Component {
 									showsVerticalScrollIndicator = {false}>
 									<View style = {{marginTop:theme.height*0.02}}>
 										<Text style = {{fontWeight:'bold',fontSize:15,marginBottom:4}}>
-										{'Produto : ' + this.props.ticket.product_name }</Text>
+										{'Produto : ' + this.props.ticket.product_name }
+										</Text>
 										{
 											this.props.ticket && this.props.ticket.description && this.props.ticket.description.length > 0 &&
 											<Text style = {{flexDirection:'row',textAlign: 'justify' ,marginBottom:10}}>
 											{
 												this.props.ticket.description.map(i =>
-													<Text key = {i.label} style = {styles.modalProduct}>
-													{i.value?(' ' + i.label + ' - ' + i.value + (this.props.ticket.description.indexOf(i) === (this.props.ticket.description.length - 1) ? '.' : ',')):''}
+													<Text key = {i.label} style = {styles.modalProduct}>{i.value?(' ' + i.label + ' - ' + i.value + (this.props.ticket.description.indexOf(i) === (this.props.ticket.description.length - 1) ? '.' : ',')):''}
 													</Text>
 													)
 											}
@@ -178,7 +178,7 @@ export default class LikeARollingTicketViewer extends React.Component {
 										}
 										<Text style = {styles.modalLetter}>{'Data: ' +this.state.ticketDate }</Text>
 										<Text style = {styles.modalLetter}>
-										{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' + (this.props.ticket.product_price.toString().replace('.',',')) }</Text>
+											{'Pagamento: ' +this.props.ticket.payment+  ' -  R$ ' + (this.props.ticket.product_price.toString().replace('.',',')) }</Text>
 										<TouchableOpacity onPress={this.copyText.bind(this)}>
 											<View style={{flexDirection: 'row', alignItems: 'flex-start', alignContent: 'center',marginTop:theme.height * 0.01}}>
 												<Image

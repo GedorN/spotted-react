@@ -30,7 +30,6 @@ export default class Tickets extends React.Component {
 			StatusBar.setBackgroundColor('white');
 			StatusBar.setBarStyle('dark-content');
 		});
-		heimdallr.checkTicketsStatus(heimdallr.user_id);
 		heimdallr.getUserTickets().then(
 			(resolve) => {
 				if (resolve.length <= 0) {
@@ -48,7 +47,6 @@ export default class Tickets extends React.Component {
 
 	onRefresh = () => {
 		this.setState({ isRefreshing: true });
-		heimdallr.checkTicketsStatus(heimdallr.user_id);
 		heimdallr.getUserTickets().then(
 			(resolve) => {
 				if (resolve.length <= 0) {
@@ -90,7 +88,7 @@ export default class Tickets extends React.Component {
 						:
 					this.state.tickets.length > 0 ?
 						<FlatList
-							style={{height: theme.height * 0.80}}
+							style={{height: theme.height * 0.90}}
 							ListHeaderComponent = {() =>
 								<View>
 									<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
