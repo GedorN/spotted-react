@@ -72,32 +72,20 @@ export default class PartnerPlans extends React.Component {
 		this.setState({showLoading: true});
 
 
-		let price = null;
-		let timeNow = null;
-		let user = {};
+		let payment_due_date = await heimdallr.getServerTime();
+		payment_due_date = moment(payment_due_date).add(20, 'm').format();
 		let selectedPlan = this.state.planId[this.state.selectedPlan];
-		let userParams = Object.assign({},this.state.partnersPlan[selectedPlan]);
 
-		userParams.referenceId = await heimdallr.getUID();
-		userParams.signature_date = await heimdallr.getServerTime();
-		userParams.due_date =  moment(userParams.signature_date).add(userParams.vigor,'d').valueOf();
-		userParams.members = null;
-		userParams.active = 1;
+		const params = {};
 
-		user.name = heimdallr.user_name;
-		user.email = heimdallr.email;
-		user.image = heimdallr.user_image;
-		user.phone = heimdallr.phone;
-        user.referenceId = 	userParams.referenceId;
-		user.signature_date = userParams.signature_date;
-		user.due_date = userParams.due_date;
-        user.uid = heimdallr.user_id;
+		params.store = this.state.store;
+		params.planId = selectedPlan;
+		params.referenceId = await heimdallr.getUID();
+		params.userId = heimdallr.user_id;
+		params.userPrice = (parseFloat(this.state.partnersPlan[selectedPlan].price.replace(',','.')) * 1.16).toFixed(2);
 
 
-		timeNow = moment(userParams.signature_date).add(4,'m').format();
-		price = (parseFloat(userParams.price.replace(',','.')) * 1.16).toFixed(2);
-
-		heimdallr.verifyMembersNumber(this.state.store, userParams.plan_id).then(
+		heimdallr.verifyMembersNumber(this.state.store, params.planId).then(
 			(resolve) => {
 				if(resolve){
 					axios({
@@ -105,10 +93,10 @@ export default class PartnerPlans extends React.Component {
 						url: 'https://appws.picpay.com/ecommerce/public/payments',
 						headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
 						data: {
-							"referenceId":userParams.referenceId,
-							"callbackUrl": "http://www.spottedutfpr.com.br/callback",
-							"value": price,
-							"expiresAt": timeNow,
+							"referenceId": params.referenceId,
+							"callbackUrl": "http://3.23.33.91/plan-status",
+							"value": params.userPrice,
+							"expiresAt": payment_due_date,
 							"buyer": {
 								"firstName": heimdallr.user_name.split(' ')[0],
 								"lastName": heimdallr.user_name.split(' ')[0],
@@ -119,63 +107,17 @@ export default class PartnerPlans extends React.Component {
 						}
 						}).then(
 							(result) => {
+								params.url = result.data.paymentUrl;
+								axios({
+									method: 'post',
+									url: 'http:3.23.33.91/allocate-plan',
+									data: {
+										...params
+									}
+								});
 								this.setState({showLoading: false});
-								userParams.url = result.data.paymentUrl;
 								Linking.openURL(result.data.paymentUrl);
 
-								verify = setInterval(() => {
-									axios({
-										method: 'get',
-										url: 'https://appws.picpay.com/ecommerce/public/payments/'+`${userParams.referenceId}`+'/status',
-										headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'}
-									}).then(
-										(rest) => {
-											if(rest.data.status === 'paid'){
-												userParams.user_price = (parseFloat(userParams.price.replace(',','.')) * 1.16).toFixed(2);
-												heimdallr.newPlanTicket(userParams, this.state.store);
-
-												showMessage({
-													message: "Compra realizada com sucesso",
-													type: "success",
-													icon: 'success'
-												});
-
-												clearInterval(verify);
-												const currentPlan = this.props.navigation.getParam('current_plan');
-												if (currentPlan.active === 1 && currentPlan.due_date >= this.state.today) {
-													heimdallr.deletePreviousPlan(currentPlan.plan_id, currentPlan.referenceId).then(
-														() => {
-															heimdallr.updateNewPartner(userParams.plan_id, user);
-															heimdallr.alterMembersNumber(this.state.store,currentPlan.plan_id,-1);
-														});
-
-													heimdallr.alterMembersNumber(this.state.store,selectedPlan,1);
-													heimdallr.savePartnerPlan(this.state.store,userParams).then(
-														() => {
-															heimdallr.newPlanAdded = true;
-															this.props.navigation.goBack();
-														});
-												} else {
-													heimdallr.updateNewPartner(userParams.plan_id,user);
-													heimdallr.alterMembersNumber(this.state.store,selectedPlan,1);
-													heimdallr.savePartnerPlan(this.state.store, userParams).then(
-														() => {
-															heimdallr.newPlanAdded = true;
-															this.props.navigation.goBack();
-														});
-
-												}
-											}
-										},
-										() => {
-											this.setState({showLoading: false});
-
-										})
-								}, 5000);
-
-								setTimeout(() => {
-									clearInterval(verify);
-								},240000);
 							},
 							(reject) => {
 								clearInterval(verify);
