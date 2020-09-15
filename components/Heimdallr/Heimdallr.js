@@ -157,16 +157,27 @@ function HeimdallrLib() {
 	    })
 	}
 
+	this.notifyNewCommentary = (pid, uid) => {
+		axios({
+			method: 'post',
+			url: 'http://3.23.33.91/comment-message',
+			data: {
+				destUserId: uid,
+				userName: this.user_name,
+				pid: pid,
+			}
+		});
+
+	}
+
 
 	this.saveComment = function (params) {
 		return new Promise((resolve) => {
 			let comments = [];
 			firebase.firestore().collection('comment').add(params).then(
 				(result) => {
-					console.log('aqui foi', params);
 					firebase.firestore().collection('post').where('pid', '==', params.pid).get().then(
 						(res) => {
-							console.log('aqui também')
 							firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
 								comments: res.docs[0].data().comments + 1
 							}, {merge: true});

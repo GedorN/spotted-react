@@ -142,6 +142,7 @@ export default class CommentaryWriter extends React.Component {
 		 * */
 		if (sendedImages >= 1) {
 			heimdallr.sendEvent('commentary_write')
+			heimdallr.notifyNewCommentary(this.state.params.pid, this.props.uid)
 			heimdallr.saveComment(this.state.params).then((resolve) => {
 				if (this.state.postImages.length === 0 ) {
 					const message = this.state.params.comment;
