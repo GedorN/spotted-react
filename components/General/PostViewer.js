@@ -20,6 +20,8 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import PostOptions from "../../android/app/src/components/Inputs/PostOptions";
 import theme from "./Theme";
 import PostDetails from "../../android/app/src/components/PostDetails";
+import axios from 'react-native-axios';
+
 
 export default class PostViewer extends React.Component {
   constructor () {
@@ -477,7 +479,6 @@ export default class PostViewer extends React.Component {
 	            heimdallr.likePost(this.props.pid);
 	            this.setState({ liked: true, likes: this.state.likes ? this.state.likes + 1 : 1 });
 	        } catch (e) {
-		        console.log('DEU RUIM PORRA', e);
 	        }
         }
 	}

@@ -8,6 +8,7 @@ import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
 import AsyncStorage from "@react-native-community/async-storage";
+import axios from 'react-native-axios';
 // import dynamicLink from 'react-native-firebase/links';
 import theme from "../General/Theme";
 
@@ -23,6 +24,7 @@ function HeimdallrLib() {
   this.phone = null;
   this.userPlans = null;
   this.messages = null;
+  this.deviceToken = null;
 
   this.refreshKey = null;
 
@@ -46,6 +48,7 @@ function HeimdallrLib() {
 	    return docs.data;
     });
 	}
+
 
 
 	this.testLink = (navigator) => {
@@ -531,6 +534,8 @@ function HeimdallrLib() {
     })
   }
 
+
+
   this.getTxtColor = (color) => {
 	  let c = color.substring(1);      // strip #
 	  let rgb = parseInt(c, 16);   // convert rrggbb to decimal
@@ -887,6 +892,7 @@ function HeimdallrLib() {
 			  this.phone = user.phone;
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
+			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
@@ -1500,6 +1506,15 @@ function HeimdallrLib() {
 
 					    this.getUID().then((uuid) => {
 						    notifications.nid = uuid;
+						    axios({
+							    method: 'post',
+							    url: 'http://3.23.33.91/like-message',
+							    data: {
+								    destUserId: doc.uid,
+								    userName: doc.user_name,
+								    pid: doc.pid,
+							    }
+						    });
 						    this.saveNotification(notifications);
 					    })
 				    }
@@ -1607,6 +1622,46 @@ function HeimdallrLib() {
 
 			}
 		)
+	}
+
+	this.testNotification = (navigator) => {
+		firebase.notifications().getInitialNotification().then(
+			(remoteMessage ) => {
+				// console.warn('pense na notify:', (remoteMessage.notification.data()));
+				console.warn('pense na notify:', (remoteMessage.notification._data.pid));
+				if (remoteMessage.notification._data.pid) {
+					navigator.push('PostDetails', {
+						pid: remoteMessage.notification._data.pid,
+						userId: this.user_id
+					})
+				}
+			}
+		)
+	}
+
+	this.saveToken = (token) => {
+  	console.warn('OLha token')
+		if (token !== this.deviceToken) {
+			firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+				(resolve) => {
+					firebase.firestore().collection('user').doc(resolve.docs[0]._ref.id).set({
+						deviceToken: token,
+					}, {merge: true});
+				}
+			)
+		}
+	}
+
+	this.getDeviceToken = () => {
+  	    firebase.messaging().getToken().then(
+	        (token) => {
+	        	this.saveToken(token);
+	        }
+        )
+		firebase.messaging().onTokenRefresh((token => {
+			this.saveToken(token);
+		}))
+
 	}
 
 	this.validatePlanBeforeBuy = function (store, time) {
