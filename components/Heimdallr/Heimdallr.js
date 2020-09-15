@@ -1511,7 +1511,7 @@ function HeimdallrLib() {
 							    url: 'http://3.23.33.91/like-message',
 							    data: {
 								    destUserId: doc.uid,
-								    userName: doc.user_name,
+								    userName: this.user_name,
 								    pid: doc.pid,
 							    }
 						    });
