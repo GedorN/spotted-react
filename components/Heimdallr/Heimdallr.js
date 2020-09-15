@@ -1645,13 +1645,32 @@ function HeimdallrLib() {
 						pid: remoteMessage.notification._data.pid,
 						userId: this.user_id
 					})
+				} else if (remoteMessage.notification._data.boardId) {
+					navigator.push('BoardItemDetails', {
+						pid: remoteMessage.notification._data.boardId,
+						docName: remoteMessage.notification._data.board,
+						origin: 'notification'
+					});
 				}
 			}
 		)
 	}
 
+	this.sendBoardCommentNotification = (notification) => {
+		axios({
+			method: 'post',
+			url: 'http://3.23.33.91/comment-board-message',
+			data: {
+				destUserId: notification.uid,
+				userName: this.user_name,
+				pid: notification.eid,
+				board: notification.board
+			}
+		});
+	}
+
+
 	this.saveToken = (token) => {
-  	console.warn('OLha token')
 		if (token !== this.deviceToken) {
 			firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 				(resolve) => {
