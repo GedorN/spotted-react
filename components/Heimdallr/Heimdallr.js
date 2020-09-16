@@ -1056,7 +1056,7 @@ function HeimdallrLib() {
             console.log('indo pegar com limite...');
             const post = firebase.firestore()
               .collection(collection)
-                .orderBy('date', 'desc')
+                .orderBy('sort_value', 'desc')
                 .limit(limit)
               .get().then((result) => {
                   console.log('chegou');
@@ -1488,7 +1488,9 @@ function HeimdallrLib() {
 			    this.likePost(pid);
 		    } else {
 			    let doc = resolve.docs[0].data();
+			    // Verifica se o usuário já deu like naquela publicação
 			    const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
+			    // caso não tenha dado like, a ação continua
 			    if (index == -1) {
 				    this.sendEvent('like_post');
 				    doc.likes = doc.likes ? doc.likes + 1 : 1;
@@ -1497,9 +1499,11 @@ function HeimdallrLib() {
 				    } else {
 					    doc.liked_by = [this.user_id];
 				    }
+				    // adiciona o like a acrescenta "5 min" da postagem
 				    firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
 					    likes: doc.likes,
 					    liked_by: doc.liked_by,
+					    sort_value: doc.sort_value + 300000
 				    }, {merge: true});
 
 				    if(this.user_id != doc.uid){
@@ -1553,6 +1557,7 @@ function HeimdallrLib() {
 					firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
 						likes: doc.likes,
 						liked_by: doc.liked_by,
+						sort_value: doc.sort_value - 300000
 					}, {merge: true});
 				}
 

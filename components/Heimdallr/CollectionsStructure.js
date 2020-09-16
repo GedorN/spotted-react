@@ -154,6 +154,11 @@ const collections = {
               type: 'number',
 	            required: true,
             },
+	        {
+	        	desc: 'sort_value',
+		        type: 'number',
+		        required: false
+	        },
             {
                 desc: 'images',
                 type: 'array',
