@@ -547,7 +547,7 @@ export default class PostViewer extends React.Component {
 			      <View style={styles.body}>
 			          <View style={styles.post}>
 			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.props.text}</Text>
-			              <View style = {{ height: this.getModalImagesLayout()? 230:0}}>
+			              <View style = {{ height: this.props.images.length > 0 ? 230 : 0}}>
 			                  {this.getModalImagesLayout()}
 			              </View>
 			          </View>
