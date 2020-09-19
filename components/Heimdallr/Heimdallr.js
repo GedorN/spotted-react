@@ -157,13 +157,13 @@ function HeimdallrLib() {
 	    })
 	}
 
-	this.notifyNewCommentary = (pid, uid) => {
+	this.notifyNewCommentary = (pid, uid, isAnonymous) => {
 		axios({
 			method: 'post',
 			url: 'http://3.23.33.91/comment-message',
 			data: {
 				destUserId: uid,
-				userName: this.user_name,
+				userName: isAnonymous ? 'Um anônimo' : this.user_name,
 				pid: pid,
 			}
 		});
