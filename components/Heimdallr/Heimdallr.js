@@ -8,6 +8,7 @@ import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
 import AsyncStorage from "@react-native-community/async-storage";
+import axios from 'react-native-axios';
 // import dynamicLink from 'react-native-firebase/links';
 import theme from "../General/Theme";
 
@@ -23,6 +24,7 @@ function HeimdallrLib() {
   this.phone = null;
   this.userPlans = null;
   this.messages = null;
+  this.deviceToken = null;
 
   this.refreshKey = null;
 
@@ -48,6 +50,7 @@ function HeimdallrLib() {
 	}
 
 
+
 	this.testLink = (navigator) => {
   	return new Promise((resolve, reject) => {
 	    try {
@@ -70,7 +73,7 @@ function HeimdallrLib() {
 				    		const index = link.indexOf('id') + 3;
 				    		const id = link.substring(index);
 						    navigator.navigate('ProductScreen', { iid: id })
-					    } else if ('/plan') {
+					    } else if (link.indexOf('/plan') > 0) {
 						    if (link.indexOf('cac') > 0) {
 							    navigator.navigate('Plans', { store: 'cac', current_plan: {}});
 						    } else if (link.indexOf('avalanche') > 0) {
@@ -80,6 +83,8 @@ function HeimdallrLib() {
 						    } else if (link.indexOf('maleficoz') > 0) {
 							    navigator.navigate('Plans', { store: 'maleficoz', current_plan: {}});
 						    }
+					    } else if (link.indexOf('/tickets') > 0) {
+						    navigator.navigate('Tickets',  {navigation: navigator})
 					    }
 					    resolve();
 				    }
@@ -152,16 +157,27 @@ function HeimdallrLib() {
 	    })
 	}
 
+	this.notifyNewCommentary = (pid, uid, isAnonymous) => {
+		axios({
+			method: 'post',
+			url: 'http://3.23.33.91/comment-message',
+			data: {
+				destUserId: uid,
+				userName: isAnonymous ? 'Um anônimo' : this.user_name,
+				pid: pid,
+			}
+		});
+
+	}
+
 
 	this.saveComment = function (params) {
 		return new Promise((resolve) => {
 			let comments = [];
 			firebase.firestore().collection('comment').add(params).then(
 				(result) => {
-					console.log('aqui foi', params);
 					firebase.firestore().collection('post').where('pid', '==', params.pid).get().then(
 						(res) => {
-							console.log('aqui também')
 							firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
 								comments: res.docs[0].data().comments + 1
 							}, {merge: true});
@@ -529,6 +545,8 @@ function HeimdallrLib() {
     })
   }
 
+
+
   this.getTxtColor = (color) => {
 	  let c = color.substring(1);      // strip #
 	  let rgb = parseInt(c, 16);   // convert rrggbb to decimal
@@ -885,6 +903,7 @@ function HeimdallrLib() {
 			  this.phone = user.phone;
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
+			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
@@ -1037,7 +1056,7 @@ function HeimdallrLib() {
             console.log('indo pegar com limite...');
             const post = firebase.firestore()
               .collection(collection)
-                .orderBy('date', 'desc')
+                .orderBy('sort_value', 'desc')
                 .limit(limit)
               .get().then((result) => {
                   console.log('chegou');
@@ -1469,7 +1488,9 @@ function HeimdallrLib() {
 			    this.likePost(pid);
 		    } else {
 			    let doc = resolve.docs[0].data();
+			    // Verifica se o usuário já deu like naquela publicação
 			    const index = doc.liked_by ? doc.liked_by.indexOf(this.user_id) : -1;
+			    // caso não tenha dado like, a ação continua
 			    if (index == -1) {
 				    this.sendEvent('like_post');
 				    doc.likes = doc.likes ? doc.likes + 1 : 1;
@@ -1478,9 +1499,11 @@ function HeimdallrLib() {
 				    } else {
 					    doc.liked_by = [this.user_id];
 				    }
+				    // adiciona o like a acrescenta "5 min" da postagem
 				    firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
 					    likes: doc.likes,
 					    liked_by: doc.liked_by,
+					    sort_value: doc.sort_value + 300000
 				    }, {merge: true});
 
 				    if(this.user_id != doc.uid){
@@ -1498,6 +1521,15 @@ function HeimdallrLib() {
 
 					    this.getUID().then((uuid) => {
 						    notifications.nid = uuid;
+						    axios({
+							    method: 'post',
+							    url: 'http://3.23.33.91/like-message',
+							    data: {
+								    destUserId: doc.uid,
+								    userName: this.user_name,
+								    pid: doc.pid,
+							    }
+						    });
 						    this.saveNotification(notifications);
 					    })
 				    }
@@ -1525,6 +1557,7 @@ function HeimdallrLib() {
 					firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
 						likes: doc.likes,
 						liked_by: doc.liked_by,
+						sort_value: doc.sort_value - 300000
 					}, {merge: true});
 				}
 
@@ -1605,6 +1638,65 @@ function HeimdallrLib() {
 
 			}
 		)
+	}
+
+	this.testNotification = (navigator) => {
+		firebase.notifications().getInitialNotification().then(
+			(remoteMessage ) => {
+				// console.warn('pense na notify:', (remoteMessage.notification.data()));
+				console.warn('pense na notify:', (remoteMessage.notification._data.pid));
+				if (remoteMessage.notification._data.pid) {
+					navigator.push('PostDetails', {
+						pid: remoteMessage.notification._data.pid,
+						userId: this.user_id
+					})
+				} else if (remoteMessage.notification._data.boardId) {
+					navigator.push('BoardItemDetails', {
+						pid: remoteMessage.notification._data.boardId,
+						docName: remoteMessage.notification._data.board,
+						origin: 'notification'
+					});
+				}
+			}
+		)
+	}
+
+	this.sendBoardCommentNotification = (notification) => {
+		axios({
+			method: 'post',
+			url: 'http://3.23.33.91/comment-board-message',
+			data: {
+				destUserId: notification.uid,
+				userName: this.user_name,
+				pid: notification.eid,
+				board: notification.board
+			}
+		});
+	}
+
+
+	this.saveToken = (token) => {
+		if (token !== this.deviceToken) {
+			firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+				(resolve) => {
+					firebase.firestore().collection('user').doc(resolve.docs[0]._ref.id).set({
+						deviceToken: token,
+					}, {merge: true});
+				}
+			)
+		}
+	}
+
+	this.getDeviceToken = () => {
+  	    firebase.messaging().getToken().then(
+	        (token) => {
+	        	this.saveToken(token);
+	        }
+        )
+		firebase.messaging().onTokenRefresh((token => {
+			this.saveToken(token);
+		}))
+
 	}
 
 	this.validatePlanBeforeBuy = function (store, time) {

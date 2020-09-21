@@ -74,6 +74,7 @@ export default class PostWrite extends React.Component {
 			const params = {};
 			params.active = 1;
 			params.date = await heimdallr.getServerTime();
+			params.sort_value = params.date;
 			params.text = this.state.postText;
 			params.uid = heimdallr.user_id;
 			params.images = this.state.postImages;
@@ -138,6 +139,7 @@ export default class PostWrite extends React.Component {
 			const params = {};
 			params.active = 1;
 			params.date = await heimdallr.getServerTime();
+			params.sort_value = params.date;
 			params.text = this.state.postText;
 			params.uid = heimdallr.user_id;
 			params.images = this.state.postImages;

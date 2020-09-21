@@ -71,6 +71,7 @@ export default class ProductScreen extends React.Component {
 			discountPicPayPrice: '0.00',
 			discountPriceWithoutTax: null,
 			currentPlan: false,
+			couponHash: null,
 		}
 	}
 
@@ -270,7 +271,8 @@ export default class ProductScreen extends React.Component {
 		}  */
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
-			const time = await heimdallr.getServerTime();
+			let due_date = await heimdallr.getServerTime();
+			due_date = moment(due_date).add(20, 'm').format();
 
 			if (this.state.currentPlan) {
 				const check = await heimdallr.validatePlanBeforeBuy(this.state.product.sid, time);
@@ -285,26 +287,27 @@ export default class ProductScreen extends React.Component {
 				}
 			}
 			let params = {};
-			params.colors = this.state.product.colors;
-			params.date = time
-			params.iid = this.state.iidProduct;
+			params.colors = JSON.stringify(this.state.product.colors);
+			params.productId = this.state.iidProduct;
 			params.image = this.state.productImages[0];
 			params.category = this.state.product.category;
-			params.category_name = this.state.product.category_name;
-			params.product_name = this.state.product.name;
-			params.status = 'Pendente';
-			params.store_name = this.state.product.sid;
-			params.store_logo = this.state.product.logo;
-			params.uid = heimdallr.user_id;
+			params.categoryName = this.state.product.category_name;
+			params.productName = this.state.product.name;
+			params.storeName = this.state.product.sid;
+			params.storeLogo = this.state.product.logo;
+			params.userId = heimdallr.user_id;
 			params.url = 'PicPay';
-			params.description = this.state.product.customization;
+			params.description = JSON.stringify(this.state.product.customization);
 			params.payment = 'PicPay';
-			params.product_price = this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2) : parseFloat(this.state.PicPayPrice).toFixed(2);
-			params.no_tax_value = this.state.discountApplied ? parseFloat(this.state.discountPriceWithoutTax).toFixed(2) : parseFloat(this.state.price_without_tax).toFixed(2);
-			params.buyer_name = heimdallr.user_name;
-			params.buyer_phone = heimdallr.phone;
-			params.buyer_email = heimdallr.email;
+			params.productPrice = this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2) : parseFloat(this.state.PicPayPrice).toFixed(2);
+			params.noTaxValue = this.state.discountApplied ? parseFloat(this.state.discountPriceWithoutTax).toFixed(2) : parseFloat(this.state.price_without_tax).toFixed(2);
+			params.buyerName = heimdallr.user_name;
+			params.buyerPhone = heimdallr.phone;
+			params.buyerEmail = heimdallr.email;
 			params.referenceId = await heimdallr.getUID();
+			if (this.state.discountApplied) {
+				params.couponHash = this.state.couponHash;
+			}
 
 			if (params.product_price == 0) {
 				params.status = 'Pago';
@@ -313,7 +316,7 @@ export default class ProductScreen extends React.Component {
 				if(this.state.discountApplied){
 					heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
 					heimdallr.saveUserCoupon(this.state.userCouponsRegister);
-					this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
+					this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null, couponHash: null});
 				}
 
 				this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
@@ -329,9 +332,10 @@ export default class ProductScreen extends React.Component {
 					headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
 					data: {
 						"referenceId": params.referenceId,
-						"callbackUrl": "http://www.spottedutfpr.com.br/callback",
-						"value": params.product_price,
-						"expiresAt": moment().endOf('month').format(),
+						"callbackUrl": "http://3.23.33.91/purchase-status",
+						"returnUrl": "https://spottedutfpr.com/app/tickets",
+						"value": params.productPrice,
+						"expiresAt": due_date,
 						"buyer": {
 							"firstName": heimdallr.user_name.split(' ')[0],
 							"lastName": heimdallr.user_name.split(' ')[0],
@@ -342,19 +346,16 @@ export default class ProductScreen extends React.Component {
 					}
 				}).then(
 					(resolve) => {
-
 						params.url = resolve.data.paymentUrl;
-						heimdallr.saveTicketsRegister(params);
+						axios({
+							method: 'post',
+							url: 'http://3.23.33.91/allocate-product',
+							data: {
+								...params
+							}
+						})
 						Linking.openURL(resolve.data.paymentUrl);
-						if(this.state.discountApplied){
-							heimdallr.StoreCoupons(this.state.storeCoupons, this.state.ticketStore);
-							heimdallr.saveUserCoupon(this.state.userCouponsRegister);
-							this.setState({discountPicPayPrice : null, discountPriceWithoutTax : null});
-						}
-						setTimeout(() => {
-							heimdallr.checkTicketsStatus(heimdallr.user_id);
-						}, 20000);
-						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
+						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false, discountPicPayPrice : null, discountPriceWithoutTax : null, couponHash: null});
 						showMessage({
 							message: "Compra realizada com sucesso",
 							type: "success",
@@ -406,7 +407,7 @@ export default class ProductScreen extends React.Component {
 							userCoupons.push(this.state.newCoupon);
 							let index = coupons.indexOf(coupon);
 							coupons[index].quantity  = coupons[index].quantity - 1;
-							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true,ticketStore:'spotted'});
+							this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:'spotted', couponHash: coupons[index].hash });
 							this.ticketsRegister();
 							heimdallr.sendEvent(`spotted_ticket_apply`)
 						} else {
@@ -441,7 +442,7 @@ export default class ProductScreen extends React.Component {
 									userCoupons.push(this.state.newCoupon);
 									let index = coupons.indexOf(coupon);
 									coupons[index].quantity  = coupons[index].quantity - 1;
-									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid});
+									this.setState({userCouponsRegister : userCoupons, storeCoupons : coupons, discountApplied : true, ticketStore:this.state.product.sid, couponHash: coupons[index].hash});
 									this.ticketsRegister();
 									heimdallr.sendEvent(`${this.state.product.sid}_ticket_apply`)
 								} else {
@@ -876,10 +877,10 @@ export default class ProductScreen extends React.Component {
 		            transparent={true}
 		            visible={this.state.showAlert}
 		            onRequestClose={() => { this.disableModal() }}
-		            style = {{ height: 50, width: theme.width * 0.5 }}
+		            style = {{ height: 80, width: theme.width * 0.5 }}
 	            >
 		            <View style = {styles.centeredView}>
-			            <View style = {{ ...styles.modalContainer, height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.72 : theme.height * 0.69) }}>
+			            <View style = {{ ...styles.modalContainer, height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.72 : theme.height * 0.75) }}>
 							<View style = {{ ...styles.modalHeader , backgroundColor: this.state.product?this.state.product.colors[0]: null}}>
 								<TouchableOpacity
 									onPressIn={() => heimdallr.sendEvent('buy_cancel')}
@@ -893,11 +894,11 @@ export default class ProductScreen extends React.Component {
 								</TouchableOpacity>
 								<Text style = {{ marginTop: -(theme.height *  0.025), fontSize: 20, fontWeight: 'bold', letterSpacing: 0.5, alignSelf: 'center', color: (this.state.product ? this.state.product.colors[1] : null)}}>{'Confirmação da compra'}</Text>
 							</View>
-							<View style = {{ height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.57 : theme.height * 0.55), marginTop: theme.height * 0.1 }}>
+							<View style = {{ height: (this.state.product && this.state.product.customization && this.state.product.customization.length > 0  ? theme.height * 0.57 : theme.height * 0.60), marginTop: theme.height * 0.1 }}>
 								{
 									!this.state.showLoading &&
-									<ScrollView style = {{ height: theme.height * 0.5, marginTop: 0 }} showsVerticalScrollIndicator = {false}>
-										<View>
+									<ScrollView style = {{height: theme.height * 60, marginTop: 0 }} showsVerticalScrollIndicator = {false}>
+										<View >
 											<Text style = {{ fontWeight: 'bold', fontSize: 15, textAlign: 'justify', lineHeight: 25, marginLeft: theme.width * 0.007, letterSpacing: 0.5 }}>{'Produto : ' + (this.state.product?this.state.product.name : '')}</Text>
 											{
 												this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
@@ -905,8 +906,8 @@ export default class ProductScreen extends React.Component {
 													<Text style = {{ flexDirection:'row', marginTop: theme.height * 0.01, textAlign: 'justify' }}>
 													{
 														this.state.product.customization.map(i =>
-														<Text key = {i.label} style = {{ flex: 1, flexWrap: 'wrap', fontWeight:'bold', color:'#8f8f8f', fontSize:15, letterSpacing: 0.5, textAlign: 'justify', lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
-															{i.value?(' ' + i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ',')):''}
+														<Text key = {i.label} style = {{ flex: 1, flexWrap: 'wrap', fontWeight:'bold', color:'#8f8f8f', fontSize:15, letterSpacing: 0.5, lineHeight: (this.state.product.customization.length > 0 ? 25 : 0) }}>
+															{i.value?(i.label + ' - ' + i.value + (this.state.product.customization.indexOf(i) === (this.state.product.customization.length - 1) ? '.' : ', ')):''}
 														</Text>
 														)
 													}
@@ -941,7 +942,7 @@ export default class ProductScreen extends React.Component {
 														</View>
 														<View style={{ flexDirection:'row' }}>
 															<Text style={styles.buyConfirmText}>
-																{ 'O pagamento é rapidamente efetivado, com opções de parcelamento oferecidas pelo PicPay. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
+																{ 'ATENÇÃO: Você terá 20 minutos para efetuar o pagamento. Após este tempo o pedido será expirado e retirado da sua lista de pediddos. '+(this.state.product? this.state.product.store_name : 'o reponsável') + ' receberá automaticamente o comprovante de seu pagamento e a retirada do produto será realizada com o mesmo.' }
 															</Text>
 														</View>
 													</View>
@@ -1119,6 +1120,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginTop: -(theme.height * 0.1),
 		paddingTop:theme.height * 0.1,
+		paddingBottom: 0,
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 	},
 	modalContainer: {
@@ -1126,7 +1128,7 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 25,
-		paddingBottom:20,
+		paddingBottom: 0,
 		shadowOffset: {
 			width: 0,
 			height: 2

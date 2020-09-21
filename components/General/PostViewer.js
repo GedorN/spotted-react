@@ -20,6 +20,8 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import PostOptions from "../../android/app/src/components/Inputs/PostOptions";
 import theme from "./Theme";
 import PostDetails from "../../android/app/src/components/PostDetails";
+import axios from 'react-native-axios';
+
 
 export default class PostViewer extends React.Component {
   constructor () {
@@ -477,7 +479,6 @@ export default class PostViewer extends React.Component {
 	            heimdallr.likePost(this.props.pid);
 	            this.setState({ liked: true, likes: this.state.likes ? this.state.likes + 1 : 1 });
 	        } catch (e) {
-		        console.log('DEU RUIM PORRA', e);
 	        }
         }
 	}
@@ -546,7 +547,7 @@ export default class PostViewer extends React.Component {
 			      <View style={styles.body}>
 			          <View style={styles.post}>
 			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.props.text}</Text>
-			              <View style = {{ height: this.getModalImagesLayout()? 230:0}}>
+			              <View style = {{ height: this.props.images.length > 0 ? 230 : 0}}>
 			                  {this.getModalImagesLayout()}
 			              </View>
 			          </View>

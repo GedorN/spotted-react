@@ -183,7 +183,7 @@ export default class BoardItemDetails extends React.Component {
 			notifications.visualized = 0;
 			notifications.entity = "commentary";
 			heimdallr.incrementNotification(this.state.uid);
-
+			heimdallr.sendBoardCommentNotification(notifications);
 			heimdallr.getUID().then((uuid) => {
 				notifications.nid = uuid;
 				let result = heimdallr.saveNotification(notifications);
