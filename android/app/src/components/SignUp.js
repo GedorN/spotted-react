@@ -380,7 +380,7 @@ export default  class SignUp extends React.Component {
 				<View style={styles.container}>
 					<Image
 						style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.5}}
-						source={require('../../../../assets/images/simbol.png')}
+						source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fsimbol.png?alt=media&token=59f607da-634a-4eae-b6fe-c3ef845c1a67' }}
 					/>
 					<View style = {{ borderRadius: 25, padding: 20, backgroundColor: 'white', elevation: 4, paddingBottom: 30 }}>
 						<View style={{justifyContent: 'center', alignContent: 'center'}}>
