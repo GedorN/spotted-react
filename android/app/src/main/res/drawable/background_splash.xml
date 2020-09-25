@@ -2,11 +2,11 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:drawable="@color/splashprimary"/>
+            android:drawable="@color/splashscreen_bg"/>
 
     <item
-            android:width="300dp"
-            android:height="300dp"
+            android:width="115dp"
+            android:height="150dp"
             android:drawable="@mipmap/splash_icon"
             android:gravity="center" />
 

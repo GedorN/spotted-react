@@ -10,8 +10,7 @@ import {
 	Modal,
 	BackHandler, KeyboardAvoidingView, Text
 } from 'react-native';
-import firebase from "react-native-firebase";
-
+import SplashScreen from 'react-native-splash-screen'
 
 import {
 	BottomNavigation,
