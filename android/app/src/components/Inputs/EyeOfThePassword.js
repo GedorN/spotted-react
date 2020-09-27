@@ -55,6 +55,7 @@ export default class EyeOfThePassword extends React.Component {
 					secureTextEntry={ this.props.secureTextEntry ? this.props.secureTextEntry : false }
 					multiline={false}
 					onFocus={ this.props.onFocus }
+					value={this.props.value ? this.props.value : null}
 					style={{
 						height: this.props.height ? this.props.height : 40,
 						borderBottomWidth: this.props.borderBottomWidth ? this.props.borderBottomWidth : 1,

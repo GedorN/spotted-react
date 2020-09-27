@@ -2,7 +2,7 @@ import React from 'react';
 import { createStackNavigator, StackViewTransitionConfigs } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import MainScreen from './android/app/src/components/MainScreen';
-import SignUp from "./android/app/src/components/SignUp";
+import SignUp from "./android/app/src/components/SIgnUp/SignUp";
 import PasswordRestore from "./android/app/src/components/PasswordRestore";
 import PresentationProfile from "./android/app/src/components/PresentationProfile";
 import PostDetails from "./android/app/src/components/PostDetails";

@@ -21,6 +21,14 @@ export default class PasswordRestore extends React.Component{
 		};
 	}
 
+	componentDidMount(): void {
+		const email = this.props.navigation.getParam('email');
+		if (email) {
+			this.state.user = email;
+			this.setState({ user: email });
+		}
+	}
+
 	recover = () => {
 		if (!this.state.user) {
 			return ;
@@ -61,6 +69,7 @@ export default class PasswordRestore extends React.Component{
 								keyboardType='email-address'
 								textContentType='emailAddress'
 								borderBottomColor={'#b2b5b1'}
+								value={this.state.user}
 								autoFocus={true}
 								onChangeText={text => this.setState({ user: text })}
 							/>
