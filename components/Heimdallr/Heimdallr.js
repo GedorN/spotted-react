@@ -1053,35 +1053,26 @@ function HeimdallrLib() {
       let docs = null;
       return new Promise((resolve) => {
           if (limit) {
-            console.log('indo pegar com limite...');
             const post = firebase.firestore()
               .collection(collection)
                 .orderBy('sort_value', 'desc')
                 .limit(limit)
               .get().then((result) => {
-                  console.log('chegou');
-                  let orderByDesc = [];
                   docs = result.docs;
                   resolve();
-              }).catch ((e) => {
-                  console.log('que caca: ', e);
+              }).catch (() => {
               });
           } else {
-              console.log('indo pegar sem limite...');
-              const post = firebase.firestore()
+              firebase.firestore()
                   .collection(collection)
                   .get().then((result) => {
                       docs = result.docs;
-                      // result.docs.forEach(e => {
-                      //     console.log(e);
-                      // });
                       resolve();
-                  }).catch ((e) => {
-                      console.log('que caca: ', e);
+                  }).catch (() => {
                   });
           }
 
-      }).then(function (resolve) {
+      }).then(function () {
           return docs;
       })
   }

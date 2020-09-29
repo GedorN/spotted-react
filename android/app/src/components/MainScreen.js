@@ -8,9 +8,9 @@ import {
 	Image,
 	StatusBar,
 	Modal,
-	BackHandler, KeyboardAvoidingView, Text
+	BackHandler,
+	Text
 } from 'react-native';
-import SplashScreen from 'react-native-splash-screen'
 
 import {
 	BottomNavigation,
@@ -30,8 +30,6 @@ import Settings from "./Settings";
 import NotificationScreen from "./NotificationScreen";
 import Tickets from "./Tickets";
 import {NavigationActions, ScrollView, StackActions} from "react-navigation";
-import FlashMessage from "react-native-flash-message";
-import AsyncStorage from "@react-native-community/async-storage";
 import FatBottomedButton from "./buttons/FatBottomedButton";
 
 const width = Dimensions.get('screen').width;
@@ -110,8 +108,6 @@ export default class MainScreen extends React.Component {
 	}
 
 	componentDidMount = async () => {
-
-
 		// Tratamento para click de voltar quando se está na raiz no pp
 		BackHandler.addEventListener('hardwareBackPress', () => {
 			if (this.props.navigation.isFocused()) {
@@ -176,7 +172,6 @@ export default class MainScreen extends React.Component {
 	}
 
 	_checkRoute = (route) => {
-		// console.warn(route);
 		if (route.route.key === 'home' && this.state.index === 0) {
 			this.homeScreen.onRefresh();
 			this.homeScreen.scrollToTop();
@@ -199,7 +194,6 @@ export default class MainScreen extends React.Component {
 		if (!data.user || data.user === '' || !data.password || data.password === '') {
 			return false;
 		}
-		let loggedState = false;
 		let user = heimdallr.signIn(data);
 		await user.then((resolve) => {
 			if (resolve.user) {
@@ -393,7 +387,7 @@ export default class MainScreen extends React.Component {
 							onRequestClose={() => {
 								this.setState({ showSettingsModal: false });
 							}}
-							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+							contentContainerStyle={{backgroundColor: 'white', width: theme.width + 10, height: theme.height, position: 'absolute'}}
 						>
 							<Settings close={this._hideSettingsModal} action={this.setAction}/>
 						</Modal>
@@ -404,7 +398,7 @@ export default class MainScreen extends React.Component {
 							onRequestClose={() => {
 								this.setState({ showTickets: false });
 							}}
-							contentContainerStyle={{backgroundColor: 'white', width: width + 10, height: height, position: 'absolute'}}
+							contentContainerStyle={{backgroundColor: 'white', width: theme.width + 10, height: theme.height, position: 'absolute'}}
 						>
 							<Tickets />
 						</Modal>
@@ -432,17 +426,13 @@ const styles = StyleSheet.create({
 		margin: 0,
 		flex: 1,
 		zIndex: 0,
-		// backgroundColor:'blue'
 	},
 	header: {
 		backgroundColor: 'white',
 		width: width + 10,
 		height: 55,
 		borderBottomWidth: 0.01,
-		// justifyContent: 'center',
-		// alignItems: 'center',
 		flexDirection: 'row',
-		// padding: 5,
 		margin: 0,
 		paddingHorizontal: 10,
 		shadowColor: "#000",
