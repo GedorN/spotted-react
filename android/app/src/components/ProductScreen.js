@@ -28,6 +28,7 @@ import axios from 'react-native-axios';
 import CarouselModaFoka from "./layout/CarouselModaFoka";
 import RNFetchBlob from 'rn-fetch-blob';
 import moment from "moment";
+import {NavigationActions, StackActions} from "react-navigation";
 
 export default class ProductScreen extends React.Component {
 	constructor(props) {
@@ -241,6 +242,7 @@ export default class ProductScreen extends React.Component {
 			due_date = moment(due_date).add(20, 'm').format();
 
 			if (this.state.currentPlan) {
+				const time = await heimdallr.getServerTime();
 				const check = await heimdallr.validatePlanBeforeBuy(this.state.product.sid, time);
 				if (!check) {
 					this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false});
@@ -329,6 +331,12 @@ export default class ProductScreen extends React.Component {
 							type: "success",
 							icon: 'success'
 						});
+						const resetAction = StackActions.reset({
+							index: 0,
+							actions: [NavigationActions.navigate({ routeName: 'Home' })],
+						});
+						this.props.navigation.dispatch(resetAction);
+						this.props.navigation.push('Tickets');
 					},
 					(reject) => {
 						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true});

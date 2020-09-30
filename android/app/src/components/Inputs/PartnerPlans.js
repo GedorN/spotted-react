@@ -117,6 +117,7 @@ export default class PartnerPlans extends React.Component {
 								);
 								this.setState({showLoading: false});
 								Linking.openURL(result.data.paymentUrl);
+								this.props.navigation.goBack();
 
 							},
 							(reject) => {
