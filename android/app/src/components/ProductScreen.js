@@ -131,7 +131,7 @@ export default class ProductScreen extends React.Component {
 							PicPayPrice : resolve.price
 						});
 						if (today > userPlans[0].due_date && userPlans[0].active === 1) {
-							heimdallr.sendEvent(`${resolve.sid}avalanche_plan_expired`);
+							heimdallr.sendEvent(`${resolve.sid}_plan_expired`);
 						}
 					}
 
