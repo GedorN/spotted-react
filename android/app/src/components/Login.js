@@ -97,7 +97,7 @@ export default class Login extends React.Component {
 							!this.state.keyboardIsOpen &&
 			                <Image
 				                style={{width: 210, height: 258, padding: 0,  zIndex: -1, alignSelf:'flex-start', borderColor:theme.primary}}
-				                source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fsimbol.png?alt=media&token=59f607da-634a-4eae-b6fe-c3ef845c1a67' }}
+				                source={require('../../../../assets/images/simbol.png')}
 			                />
 						}
 					</View>

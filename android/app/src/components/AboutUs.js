@@ -33,7 +33,7 @@ export default class AboutUs extends React.Component {
 				<View style={styles.header}>
 					<Image
 						style={styles.headerImage}
-						source={require('../../../../assets/images/name.png')}
+						source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fname.png?alt=media&token=48124908-21cf-4f9d-9832-2245297842c7' }}
 					/>
 				</View>
 				<View style={styles.body}>
@@ -48,7 +48,7 @@ export default class AboutUs extends React.Component {
 							<Text style={{fontWeight: 'bold'}}>
 								Camila Antiqueira
 							</Text>
-							<Image style={styles.devImage} source={require('../../../../assets/images/ela.png')}/>
+							<Image style={styles.devImage} source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fela.png?alt=media&token=70d6617d-f004-4617-811f-3d565b171fb2' }}/>
 							<Text style = {{marginTop:theme.height * 0.005}}>
 								Reclamações e elogios
 							</Text>
@@ -67,7 +67,7 @@ export default class AboutUs extends React.Component {
 							<Text style={{fontWeight: 'bold'}}>
 								Gedor Neto
 							</Text>
-							<Image style={styles.devImage} source={require('../../../../assets/images/eu.png')}/>
+							<Image style={styles.devImage} source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Feu.png?alt=media&token=fdb00e1b-9d94-47e2-9b6b-5e4687526d76' }}/>
 							<Text style = {{marginTop:theme.height * 0.005}}>
 								Críticas e sugestões
 							</Text>

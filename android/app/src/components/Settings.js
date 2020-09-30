@@ -2,24 +2,11 @@ import React from 'react';
 import {
 	StyleSheet,
 	View,
-	Text,
 	Dimensions,
-	TouchableOpacity,
-	Image,
 } from 'react-native';
 
-import {
-	TextInput,
-} from 'react-native-paper'
-
-import UserImgProfile from "../../../../components/General/UserImgProfile";
-import heimdallr from "../../../../components/Heimdallr/Heimdallr";
-import RUMineTextInput from "./Inputs/RUMineTextInput";
-import FatBottomedButton from "./buttons/FatBottomedButton";
-import theme from "../../../../components/General/Theme";
 import GeneralSettings from "./settings/GeneralSettings";
 import ChangePassword from "./settings/ChangePassword";
-import FlashMessage from "react-native-flash-message";
 
 const height = Dimensions.get('screen').height;
 
@@ -47,10 +34,6 @@ export default class Settings extends React.Component {
 				<GeneralSettings changePassword={this.toggleChangepassword.bind(this)} navigation={this.props.navigation} action={this.props.action}/>
 			)
 		}
-	}
-
-	saveEdition = () => {
-
 	}
 
 	render () {

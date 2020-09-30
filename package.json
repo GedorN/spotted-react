@@ -18,11 +18,9 @@
   "dependencies": {
     "@react-native-community/async-storage": "1.11.0",
     "@react-native-community/cameraroll": "1.2.1",
-    "@react-native-community/datetimepicker": "2.1.0",
     "jetifier": "1.6.4",
     "lottie-react-native": "^3.5.0",
     "moment": "2.24.0",
-    "moment-timezone": "0.5.28",
     "react": "16.8.6",
     "react-native": "0.60.5",
     "react-native-animated-loader": "0.0.8",
@@ -38,6 +36,7 @@
     "react-native-image-resizer": "1.1.0",
     "react-native-image-zoom-viewer": "2.2.27",
     "react-native-linear-gradient": "2.5.6",
+    "react-native-reanimated": "1.4.0",
     "react-native-masked-text": "1.13.0",
     "react-native-material-ripple": "0.9.1",
     "react-native-modal": "11.4.0",
@@ -45,7 +44,6 @@
     "react-native-paper": "3.6.0",
     "react-native-photo-editor": "1.0.6",
     "react-native-raw-bottom-sheet": "2.1.0",
-    "react-native-reanimated": "1.4.0",
     "react-native-screens": "1.0.0-alpha.23",
     "react-native-side-drawer": "1.2.5",
     "react-native-skeleton-placeholder": "2.0.7",
@@ -56,7 +54,8 @@
     "react-native-video": "4.4.5",
     "react-navigation": "4.0.10",
     "react-navigation-material-bottom-tabs": "2.2.1",
-    "react-navigation-stack": "1.10.3"
+    "react-navigation-stack": "1.10.3",
+    "rn-fetch-blob": "^0.12.0"
   },
   "devDependencies": {
     "@babel/core": "7.6.0",

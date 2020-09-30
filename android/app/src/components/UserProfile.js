@@ -9,7 +9,6 @@ import {
 	ActivityIndicator,
 	RefreshControl,
 	Modal,
-
 } from 'react-native';
 
 import PostViewer from "../../../../components/General/PostViewer";
@@ -19,6 +18,7 @@ import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
+const PULL_QUANTITY = 100;
 
 
 export default class UserProfile extends React.Component {
@@ -28,7 +28,7 @@ export default class UserProfile extends React.Component {
 			userId:'',
 			userName: null,
 			posts: null,
-			pulledPosts: 10,
+			pulledPosts: PULL_QUANTITY,
 			loading: false,
 			pulling: false,
 			endPulling: false,
@@ -45,11 +45,8 @@ export default class UserProfile extends React.Component {
 	}
 
 	componentDidMount = () => {
-		console.log('image: ', heimdallr.user_image);
 		const user_id = this.props.navigation.getParam('userId');
 		if (user_id) {
-
-			console.log('navigation: ', this.props);
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
 					if(resolve != null){
@@ -74,8 +71,7 @@ export default class UserProfile extends React.Component {
 						this.setState({findUser :false});
 					}
 				},
-				(reject) => {
-					console.warn('Deu ruim: ', reject);
+				() => {
 				});
 		} else {
 			this.state.userId = heimdallr.user_id;
@@ -103,10 +99,9 @@ export default class UserProfile extends React.Component {
 	pullMorePosts = (distanceFromEnd) => {
 		if (!this.state.endPulling) {
 			if (!this.state.pulling) {
-				console.log('int pullling');
 				this.setState({ pulling: true });
 				let n = this.state.pulledPosts;
-				n = 5 + n;
+				n = PULL_QUANTITY + n;
 				let result = heimdallr.getUserColletion(n, this.state.userId);
 				result.then((resolve) => {
 					if (resolve.length === this.state.posts.length) {
@@ -119,10 +114,7 @@ export default class UserProfile extends React.Component {
 
 						}
 					});
-					console.log(`resolve do carai? `, resolve);
-					this.setState({posts: resolve});
-					this.setState({pulledPosts: n});
-					this.setState({ pulling: false });
+					this.setState({ posts: resolve, pulledPosts: n, pulling: false });
 				});
 			}
 		}
@@ -183,7 +175,7 @@ export default class UserProfile extends React.Component {
 
 	}
 
-	confirmReport = (deleteAction, pid) => {
+	confirmReport = () => {
 		this.setState({ showAlert: true });
 	}
 
@@ -201,7 +193,6 @@ export default class UserProfile extends React.Component {
 		return (
 
 			<View style={{}}>
-
 				{ this.state.findUser ?
 					<View>
 						<Modal
@@ -299,9 +290,9 @@ export default class UserProfile extends React.Component {
 
 						<View style = {{alignSelf:'center'/* , borderColor:'black',borderWidth:1 */ ,marginTop:theme.height * 0.04,alignItems:'center'}}>
 							<Image
-											style={{width: theme.width * 0.7, height: theme.height * 0.25, marginTop:4 ,opacity:0.5,marginBottom:theme.height * 0.04}}
-											source={require('../../../../assets/images/mask-solid.png')}
-										/>
+								style={{width: theme.width * 0.7, height: theme.height * 0.25, marginTop:4 ,opacity:0.5,marginBottom:theme.height * 0.04}}
+								source={require('../../../../assets/images/mask-solid.png')}
+							/>
 
 							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>Ih, o usuário vazou,</Text>
 							<Text style = {{fontSize:20,fontWeight:'bold',marginTop:theme.height * 0.01,opacity:0.5}}>ou mudou de nome.</Text>
@@ -366,12 +357,4 @@ const styles = StyleSheet.create({
 		height: 120,
 		padding: 10,
 	},
-	headerText: {
-		alignItems: 'center',
-		alignContent: 'center',
-		justifyContent: 'center',
-		marginLeft: 20,
-	},
 });
-
-// user profile

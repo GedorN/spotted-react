@@ -8,12 +8,7 @@ import firebase from 'react-native-firebase';
 import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
 import AsyncStorage from "@react-native-community/async-storage";
-import axios from 'react-native-axios';
-// import dynamicLink from 'react-native-firebase/links';
-import theme from "../General/Theme";
-
-
-
+import RNFetchBlob from 'rn-fetch-blob';
 
 function HeimdallrLib() {
   this.user_id = /*'Yt5eZ0SGpy1U9QPTmIbI'*/ null;
@@ -29,6 +24,20 @@ function HeimdallrLib() {
   this.refreshKey = null;
 
   this.newPlanAdded = false;
+
+  this.tt = () => {
+	  RNFetchBlob.config({
+		  trusty: true
+	  }).fetch('POST', 'https://3.23.33.91/teste',  { 'Content-Type': 'application/json'},
+		  JSON.stringify({ hey: 'blabla' })).then(
+		  (res) => {
+		  	console.warn('reposta loka: ', res);
+		  },
+		  (err) => {
+		  	console.warn('cagou tudo: ', err);
+		  }
+	  )
+  }
 
   // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
   this.test = function (uid, limit) {
@@ -158,16 +167,17 @@ function HeimdallrLib() {
 	}
 
 	this.notifyNewCommentary = (pid, uid, isAnonymous) => {
-		axios({
-			method: 'post',
-			url: 'http://3.23.33.91/comment-message',
-			data: {
+		RNFetchBlob.config({
+			trusty: true
+		}).fetch('POST',
+			'https://3.23.33.91/comment-message',
+			{ 'Content-Type': 'application/json'},
+			JSON.stringify({
 				destUserId: uid,
 				userName: isAnonymous ? 'Um anônimo' : this.user_name,
 				pid: pid,
-			}
-		});
-
+			})
+		);
 	}
 
 
@@ -1512,15 +1522,17 @@ function HeimdallrLib() {
 
 					    this.getUID().then((uuid) => {
 						    notifications.nid = uuid;
-						    axios({
-							    method: 'post',
-							    url: 'http://3.23.33.91/like-message',
-							    data: {
+						    RNFetchBlob.config({
+							    trusty: true
+						    }).fetch('POST',
+							    'https://3.23.33.91/like-message',
+							    { 'Content-Type': 'application/json'},
+							    JSON.stringify({
 								    destUserId: doc.uid,
 								    userName: this.user_name,
 								    pid: doc.pid,
-							    }
-						    });
+							    })
+						    );
 						    this.saveNotification(notifications);
 					    })
 				    }
@@ -1635,7 +1647,6 @@ function HeimdallrLib() {
 		firebase.notifications().getInitialNotification().then(
 			(remoteMessage ) => {
 				// console.warn('pense na notify:', (remoteMessage.notification.data()));
-				console.warn('pense na notify:', (remoteMessage.notification._data.pid));
 				if (remoteMessage.notification._data.pid) {
 					navigator.push('PostDetails', {
 						pid: remoteMessage.notification._data.pid,
@@ -1653,16 +1664,18 @@ function HeimdallrLib() {
 	}
 
 	this.sendBoardCommentNotification = (notification) => {
-		axios({
-			method: 'post',
-			url: 'http://3.23.33.91/comment-board-message',
-			data: {
+		RNFetchBlob.config({
+			trusty: true
+		}).fetch('POST',
+			'https://3.23.33.91/comment-board-message',
+			{ 'Content-Type': 'application/json'},
+			JSON.stringify({
 				destUserId: notification.uid,
 				userName: this.user_name,
 				pid: notification.eid,
 				board: notification.board
-			}
-		});
+			})
+		);
 	}
 
 

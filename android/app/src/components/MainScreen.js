@@ -152,7 +152,7 @@ export default class MainScreen extends React.Component {
 		heimdallr.getNotificationsNumber(this);
 		heimdallr.testLink(this.props.navigation);
 		heimdallr.getDeviceToken();
-		heimdallr.testNotification(this.props.navigation)
+		heimdallr.testNotification(this.props.navigation);
 		// Método para mostar notificações ao usuário
 		// let messages= await AsyncStorage.getItem('user_messages');
 		// 	messages = JSON.parse(messages)
@@ -353,7 +353,7 @@ export default class MainScreen extends React.Component {
 							</TouchableOpacity>
 							<Image
 								style={styles.headerImage}
-								source={require('../../../../assets/images/name.png')}
+								source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fname.png?alt=media&token=48124908-21cf-4f9d-9832-2245297842c7' }}
 							/>
 						</View>
 						<BottomNavigation

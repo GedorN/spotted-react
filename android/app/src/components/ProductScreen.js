@@ -20,7 +20,6 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import FatBottomedButton from'./buttons/FatBottomedButton';
 import CustomizationTextArea from './CustomizationTexArea';
-import AwesomeAlert from "react-native-awesome-alerts";
 import CustomSelect from "./custom/CustomSelect";
 import CustomRadio from "./custom/CustomRadio";
 import { showMessage, hideMessage } from "react-native-flash-message";
@@ -28,10 +27,6 @@ import FlashMessage from "react-native-flash-message";
 import axios from 'react-native-axios';
 import CarouselModaFoka from "./layout/CarouselModaFoka";
 import moment from "moment";
-
-import {Button} from 'react-native-paper';
-
-var verify = null;
 
 export default class ProductScreen extends React.Component {
 	constructor(props) {
@@ -239,36 +234,6 @@ export default class ProductScreen extends React.Component {
 		if (this.state.showLoading) {
 			return ;
 		}
-		/* if (this.state.directlyToStore ){
-			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
-
-			let params = {};
-			params.colors = this.state.product.colors;
-			params.date = await heimdallr.getServerTime();
-			params.iid = this.state.iidProduct;
-			params.image = this.state.productImages[0];
-			params.product_name = this.state.product.name;
-			params.status = 'Pendente';
-			params.store_name = this.state.product.sid;
-			params.store_logo = this.state.product.logo;
-			params.uid = heimdallr.user_id;
-			params.description = this.state.product.customization;
-			params.payment = this.state.product.sid;
-			params.product_price = this.state.product.price;
-			params.referenceId = await heimdallr.getUID();
-			params.buyer_email = heimdallr.email;
-			params.buyer_phone= heimdallr.phone;
-			params.buyer_name = heimdallr.user_name;
-
-			heimdallr.saveTicketsRegister(params);
-
-			this.setState({showAlert : false, showLoading: true});
-			showMessage({
-				message: "Compra realizada com sucesso",
-				type: "success",
-				icon: 'success'
-			});
-		}  */
 			this.setState({showLoading: true, showConfirmButton: false, showCancelButton: false});
 
 			let due_date = await heimdallr.getServerTime();
@@ -669,8 +634,6 @@ export default class ProductScreen extends React.Component {
 
 	}
 
-
-
 	receivePromotionalCode = (value) => {
 		this.state.texInputCode = value;
 	}
@@ -680,7 +643,6 @@ export default class ProductScreen extends React.Component {
 	}
 
 	goToPlans = () => {
-		const store = this.props.navigation.getParam('store');
 		this.props.navigation.push('Plans', {store: this.state.product.sid, current_plan: this.state.currentPlan});
 	}
 

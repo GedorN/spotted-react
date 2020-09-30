@@ -6,7 +6,6 @@ import {
 	TouchableOpacity,
 	Image,
 	PermissionsAndroid,
-    Keyboard,
 } from 'react-native';
 import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
@@ -49,8 +48,7 @@ export default class BoardItemWriter extends React.Component {
 	}
 
 	deletePostImg = (pos) => {
-		let images = [];
-		images = Object.assign([], this.state.postImages);
+		let images = Object.assign([], this.state.postImages);
 		let newImg = [];
 		for (let i = 0; i < images.length; i++) {
 			if (i != pos) {
@@ -58,13 +56,10 @@ export default class BoardItemWriter extends React.Component {
 			}
 		}
 		this.setState({postImages: Object.assign([], newImg), videoIncluded: false});
-		console.log('o que vem daqui? ', Object.assign([], newImg));
-		console.log('Depois, ', this.state.postImages);
 	}
 
 	doPost = () => {
 		if (!this.state.postText || this.state.postText == '' || !this.state.titleText || this.state.titleText == '' || this.state.activity) {
-			console.log('nothing to do...');
 			return ;
 		}
 
@@ -216,10 +211,6 @@ export default class BoardItemWriter extends React.Component {
 		} catch (err) {
 			console.warn(err);
 		}
-	}
-
-	_onImageChange = (event) => {
-		return ;
 	}
 
 	getModalImagesLayout = ({item}) => {

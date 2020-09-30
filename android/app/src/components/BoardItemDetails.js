@@ -2,14 +2,11 @@ import React from 'react';
 import {
 	Text,
 	StyleSheet,
-	Dimensions,
 	View,
-	TextInput,
 	Image,
 	TouchableOpacity,
 	FlatList,
 	ActivityIndicator,
-	KeyboardAvoidingView,
 	RefreshControl,
 	Modal,
 } from 'react-native';
@@ -19,7 +16,6 @@ import { FAB } from 'react-native-paper';
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
-import CommentaryViewer from "./CommentaryViewer";
 import BoardCommentaryViewer from "./layout/BoardCommentaryViewer";
 import PostOptions from "./Inputs/PostOptions";
 import BoardCommentaryWriter from "./Inputs/BoardCommentaryWriter";
@@ -28,16 +24,9 @@ import CarouselModaFoka from "./layout/CarouselModaFoka";
 import Video from 'react-native-video';
 import moment from "moment";
 import 'moment/locale/pt-br';
-import OptionsMenu from "react-native-options-menu";
 import RBSheet from "react-native-raw-bottom-sheet";
-import ReportGod from "./Inputs/ReportGod";
 import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
-
-
-
-
-
 
 export default class BoardItemDetails extends React.Component {
     constructor(props) {

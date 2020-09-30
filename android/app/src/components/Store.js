@@ -5,13 +5,11 @@ import {
 	Text,
 	FlatList,
 	Image,
-	ActivityIndicator,
 	TouchableOpacity,
 	RefreshControl,
 	ScrollView,
 	StatusBar,
 	BackHandler,
-	Modal,
 } from "react-native";
 
 import ImNotTheOnlyChip from "./layout/ImNotTheOnlyChip";
@@ -19,13 +17,8 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import SevenBannerArmy from "./layout/SevenBannerArmy";
 import LikeAPrayerductViewer from "./layout/LikeAPrayerductViewer";
-import PartnerPlans from "./Inputs/PartnerPlans";
-import {Button} from 'react-native-paper';
-import axios from 'react-native-axios';
 import moment from "moment";
 import 'moment/locale/pt-br';
-import { showMessage, hideMessage } from "react-native-flash-message";
-import FlashMessage from "react-native-flash-message";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
 
 
@@ -57,7 +50,6 @@ export default class Store extends React.Component {
 
 	componentDidMount(): void {
 		this.createListener();
-
 
 		this.verifyPlan().then(() => {
 			heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(

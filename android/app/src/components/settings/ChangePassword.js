@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 
 import FatBottomedButton from "../buttons/FatBottomedButton";
-import RUMineTextInput from "../Inputs/RUMineTextInput";
 import theme from "../../../../../components/General/Theme";
 import EyeOfThePassword from "../Inputs/EyeOfThePassword";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";

@@ -2,7 +2,6 @@ import React from 'react';
 import {
 	StyleSheet,
 	View,
-	Dimensions,
 	Image,
 	FlatList,
 } from 'react-native';
@@ -11,7 +10,6 @@ import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import {Text} from "react-native-paper";
 import UserBannerView from "../../../../components/General/UserBannerView";
 import theme from '../../../../components/General/Theme';
-const width = Dimensions.get('screen').width;
 
 export default class UsersSearch extends React.Component {
 	constructor(props) {
@@ -25,43 +23,31 @@ export default class UsersSearch extends React.Component {
 		};
 	}
 
-	componentDidMount = () => {
-
-	}
-
 	changeText = (text) => {
 		if (!text || text === '') {
 			heimdallr.sendEvent('searching_user');
 		}
 		if(this.state.unicSearch){
-			let users = heimdallr.getCollection('user');
-			users.then((resolve) => {
-			console.log('Resultado de todos os usuários: ', resolve);
-			this.setState({ users: resolve.slice(0, 9) });
-			this.setState({ allUsers: resolve });
-			this.setState({unicSearch: false});
-			console.log("state unic search", this.state.unicSearch);
-			this.setState({show: false});
-			})
+			heimdallr.getCollection('user').then(
+				(resolve) => {
+					this.setState({ users: resolve.slice(0, 9), allUsers: resolve, unicSearch: false, show: false });
+				}
+			)
 
 		}
 
-
-		console.log("digitado",text);
-		this.setState({ search: text });
-		console.log('carai: ', this.state.allUsers.filter((i) => i._data.name.includes(text)));
 		let tempUser = this.state.allUsers.filter((i) => i._data.name.toLowerCase().includes(text.toLowerCase()));
-		this.setState({ users: tempUser.slice(0, 9)});
+		this.setState({ users: tempUser.slice(0, 9), search: text });
 
 	}
 
 	render() {
 		return (
-			<View style={styles.container}>
-				<View style={styles.headerSearch}>
+			<View style={ styles.container }>
+				<View style={ styles.headerSearch }>
 					<Image
-						source={require('../../../../assets/images/search-solid.png')}
-						style={{height: 30, width: 30, opacity:0.5, marginLeft:20}}
+						source={ require('../../../../assets/images/search-solid.png') }
+						style={{ height: 30, width: 30, opacity: 0.5, marginLeft: 20 }}
 					/>
 					<View style={styles.search}>
 						<RUMineTextInput
@@ -100,7 +86,7 @@ const styles = StyleSheet.create({
 	},
 	search: {
 		flexDirection: 'row',
-		width: width*0.85,
+		width: theme.width * 0.85,
 		marginLeft: 17,
 		marginTop:20,
 

@@ -5,11 +5,10 @@ import {
 	Text,
 	Image,
 	FlatList,
-	Modal, RefreshControl, TouchableOpacity
+	TouchableOpacity
 } from 'react-native';
 
 import theme from "../../../../components/General/Theme";
-import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import BoardMessage from "./layout/BoardMessage";
 
 

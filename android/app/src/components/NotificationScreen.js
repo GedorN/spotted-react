@@ -1,30 +1,17 @@
 import React from 'react';
 import {
-	Dimensions,
 	StyleSheet,
 	View,
 	Text,
-	TextInput,
-	Image,
-	TouchableOpacity,
-	PermissionsAndroid,
 	FlatList,
 	ActivityIndicator,
 	RefreshControl,
-	Modal,
 } from 'react-native';
 
-import CameraRoll from '@react-native-community/cameraroll';
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
-import UserImgProfile from '../../../../components/General/UserImgProfile';
-import UUIDGenerator from 'react-native-uuid-generator';
-import ImageViewer from "react-native-image-zoom-viewer";
-import MainScreen from "./MainScreen";
 import Notification from "./Notification";
-import moment from "moment";
 import theme from "../../../../components/General/Theme";
 
-const width = Dimensions.get('screen').width;
 
 export default class NotificationScreen extends React.Component {
 
@@ -52,9 +39,7 @@ export default class NotificationScreen extends React.Component {
 	    this.setState({ pulling: true });
 	    heimdallr.getUserNotifications( heimdallr.user_id, this.state.pulledNotifications).then(
 		    (resolve) => {
-				console.log('devolve dessa forma: ', resolve);
-					this.setState({notifications: resolve, pulling: false});
-
+				this.setState({notifications: resolve, pulling: false});
 		    }
 	    );
 
@@ -69,7 +54,7 @@ export default class NotificationScreen extends React.Component {
 		});
     }
 
-    pullMoreNotifications = (distanceFromEnd) => {
+    pullMoreNotifications = () => {
 		if (!this.state.endPulling) {
 			if (!this.state.pulling) {
 				this.setState({ pulling: true });
@@ -77,7 +62,6 @@ export default class NotificationScreen extends React.Component {
 				n = n + 5;
 				let result = heimdallr.getUserNotifications(heimdallr.user_id,n);
 				result.then((resolve) => {
-					console.log('buscou: ', resolve);
 					if (resolve.length === this.state.notifications.length) {
 						this.setState({ endPulling: true });
 					}
@@ -151,18 +135,6 @@ export default class NotificationScreen extends React.Component {
 
 
 const styles = StyleSheet.create({
-    post: {
-        alignSelf: 'flex-start',
-        padding: 2,
-        marginLeft: 10,
-        marginTop:5,
-        borderRadius: 8,
-        color: 'black',
-        flexDirection: 'row',
-        borderBottomWidth: 0.2,
-        borderColor: 'rgba(59, 56, 50, 0.2)',
-        paddingBottom: 15,
-    },
 	container: {
     	width: theme.width * 0.8,
 		backgroundColor: 'red',
