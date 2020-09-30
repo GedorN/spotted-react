@@ -25,6 +25,16 @@ function HeimdallrLib() {
 
   this.newPlanAdded = false;
 
+  this.logCall = (call, params, result) => {
+  	return new Promise(() => {
+	    firebase.firestore().collection('log').add({
+		    doc: call,
+		    params: JSON.stringify(params),
+		    result: JSON.stringify(result),
+	    });
+    })
+  }
+
   this.tt = () => {
 	  RNFetchBlob.config({
 		  trusty: true
@@ -43,8 +53,6 @@ function HeimdallrLib() {
   this.test = function (uid, limit) {
   	let docs = null;
   	return new Promise((resolve) => {
-	    var antes = Date.now();
-  		console.log('la vou eu')
         firebase.functions().httpsCallable('getTime')({ uid: uid, limit: limit }).then(
 		    (result) => {
 		        docs = result;
@@ -61,51 +69,49 @@ function HeimdallrLib() {
 
 
 	this.testLink = (navigator) => {
-  	return new Promise((resolve, reject) => {
-	    try {
-		    firebase.links().getInitialLink().then(
-			    (link) => {
-				    if (link) {
-				    	if (!this.user_id) {
-						    navigator.navigate('SignUp', {navigation: navigator})
-					    } else if (link.indexOf('/store') > 0) {
-				    		if (link.indexOf('cac') > 0) {
-				    			navigator.navigate('Store', { store: 'cac'});
-						    } else if (link.indexOf('avalanche') > 0) {
-							    navigator.navigate('Store', { store: 'avalanche'});
-						    } else if(link.indexOf('metralhas') > 0) {
-							    navigator.navigate('Store', { store: 'metralhas'});
-						    } else if (link.indexOf('maleficoz') > 0) {
-							    navigator.navigate('Store', { store: 'maleficoz'});
+	    return new Promise((resolve, reject) => {
+		    try {
+			    firebase.links().getInitialLink().then(
+				    (link) => {
+					    if (link) {
+					        if (!this.user_id) {
+							    navigator.navigate('SignUp', {navigation: navigator})
+						    } else if (link.indexOf('/store') > 0) {
+					            if (link.indexOf('cac') > 0) {
+					                navigator.navigate('Store', { store: 'cac'});
+							    } else if (link.indexOf('avalanche') > 0) {
+								    navigator.navigate('Store', { store: 'avalanche'});
+							    } else if(link.indexOf('metralhas') > 0) {
+								    navigator.navigate('Store', { store: 'metralhas'});
+							    } else if (link.indexOf('maleficoz') > 0) {
+								    navigator.navigate('Store', { store: 'maleficoz'});
+							    }
+						    } else if (link.indexOf('/product') > 0) {
+					            const index = link.indexOf('id') + 3;
+					            const id = link.substring(index);
+							    navigator.navigate('ProductScreen', { iid: id })
+						    } else if (link.indexOf('/plan') > 0) {
+							    if (link.indexOf('cac') > 0) {
+								    navigator.navigate('Plans', { store: 'cac', current_plan: {}});
+							    } else if (link.indexOf('avalanche') > 0) {
+								    navigator.navigate('Plans', { store: 'avalanche', current_plan: {}});
+							    } else if(link.indexOf('metralhas') > 0) {
+								    navigator.navigate('Plans', { store: 'metralhas', current_plan: {}});
+							    } else if (link.indexOf('maleficoz') > 0) {
+								    navigator.navigate('Plans', { store: 'maleficoz', current_plan: {}});
+							    }
+						    } else if (link.indexOf('/tickets') > 0) {
+							    navigator.navigate('Tickets',  {navigation: navigator})
 						    }
-					    } else if (link.indexOf('/product') > 0) {
-				    		const index = link.indexOf('id') + 3;
-				    		const id = link.substring(index);
-						    navigator.navigate('ProductScreen', { iid: id })
-					    } else if (link.indexOf('/plan') > 0) {
-						    if (link.indexOf('cac') > 0) {
-							    navigator.navigate('Plans', { store: 'cac', current_plan: {}});
-						    } else if (link.indexOf('avalanche') > 0) {
-							    navigator.navigate('Plans', { store: 'avalanche', current_plan: {}});
-						    } else if(link.indexOf('metralhas') > 0) {
-							    navigator.navigate('Plans', { store: 'metralhas', current_plan: {}});
-						    } else if (link.indexOf('maleficoz') > 0) {
-							    navigator.navigate('Plans', { store: 'maleficoz', current_plan: {}});
-						    }
-					    } else if (link.indexOf('/tickets') > 0) {
-						    navigator.navigate('Tickets',  {navigation: navigator})
+						    resolve();
 					    }
-					    resolve();
 				    }
-			    }
-		    )
+			    )
 
-	    } catch (e) {
-		    console.log('que porra de erro: ', e);
-		    reject();
-	    }
-    })
-
+		    } catch (e) {
+			    reject();
+		    }
+	    })
 	}
 
 	this.getUserTickets = function () {
@@ -118,7 +124,7 @@ function HeimdallrLib() {
 					});
 					resolve(docs);
 				},
-				(error) => {
+				() => {
 				}
 			)
 		})
@@ -130,7 +136,6 @@ function HeimdallrLib() {
   	    return new Promise((resolve) => {
   	    	firebase.firestore().collection('rel_user_notification').where('uid', '==', this.user_id).onSnapshot(
   	    		(querySnapshot) => {
-  	    			console.log('foi alterado', querySnapshot.docs);
 	                if (querySnapshot.docs[0]) {
 		                    context.setState( { numberBadge: querySnapshot.docs[0].data().counter });
 			        }
@@ -157,11 +162,10 @@ function HeimdallrLib() {
 	      try{
 	          firebase.functions().httpsCallable('incrementUserNotification')({uid:uid}).then(
 	            (result) => {
-	              console.log("increment notification",result);
+	            	this.logCall('incrementUserNotification', {uid}, result);
 	            }
 	          )
 	      } catch (e) {
-	        console.log("erro increment function",e);
 	      }
 	    })
 	}
@@ -183,7 +187,6 @@ function HeimdallrLib() {
 
 	this.saveComment = function (params) {
 		return new Promise((resolve) => {
-			let comments = [];
 			firebase.firestore().collection('comment').add(params).then(
 				(result) => {
 					firebase.firestore().collection('post').where('pid', '==', params.pid).get().then(
@@ -191,9 +194,10 @@ function HeimdallrLib() {
 							firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
 								comments: res.docs[0].data().comments + 1
 							}, {merge: true});
+							this.logCall('comment', params, res);
 						},
 						(err) => {
-							console.log('asdasd', err);
+							this.logCall('comment', params, err);
 						}
 					);
 					resolve(result);
@@ -204,12 +208,9 @@ function HeimdallrLib() {
 
 	this.saveBoardPost = function (params) {
 		return new Promise((resolve) => {
-
 			let posts = [];
 			firebase.firestore().collection('board').doc(params.docName).get().then(
 				(result) => {
-					console.log('dos paranue', params);
-					console.log('resultado novo: ', result);
 					if (result.data()) {
 						let temp = result.data().docs;
 						temp.unshift(params);
@@ -226,7 +227,11 @@ function HeimdallrLib() {
 						}
 					).then(
 						(res) => {
+							this.logCall('board', params, res);
 							resolve(res);
+						},
+						(err) => {
+							this.logCall('board', params, err);
 						}
 					);
 				}
@@ -238,16 +243,11 @@ function HeimdallrLib() {
 	this.saveNotification = function (params) {
 		let returnValue = null;
 		return new Promise((resolve) => {
-			console.log('checking params...');
 			const collections = collectionsStructures;
 			const structure = collections['notification'];
-
-
 			let notifications = [];
 			firebase.firestore().collection('notification').doc(params.uid).get().then(
 				(result) => {
-					console.log('dos paranue', params);
-					console.log('resultado novo: ', result);
 					if (result.data()) {
 						let temp = result.data().notifications;
 						temp.unshift(params);
@@ -262,30 +262,17 @@ function HeimdallrLib() {
 						{
 							merge: true
 						}
+					).then(
+						(res) => {
+							this.logCall('notification', params, res);
+						},
+						(err) => {
+							this.logCall('notification', params, err);
+						}
 					);
 				}
 			)
-			// const base = firebase.firestore().collection('notification').doc(params.uid);
-			// base.set(params).then(
-			// 	(docRef) => {
-			// 		// console.warn(`Documento ${docRef.id}`);
-			// 		// console.log(`Documento ${docRef.id}`);
-			// 		returnValue = docRef.id;
-			// 		if (collection === 'user') {
-			// 			this.user_image = params.user_image ? params.user_image : null;
-			// 			this.user_name = params.name;
-			// 			this.email = params.email;
-			// 			this.uid = params.uid;
-			// 		}
-			// 		resolve();
-			// 	},
-			// 	() => {
-			// 		console.log('Erro ao criar a notificação');
-			// 	}
-			// );
-
-
-		}).then(function (resolve) {
+		}).then(function () {
 			return returnValue;
 		})
 	}
@@ -294,19 +281,16 @@ function HeimdallrLib() {
 	    return new Promise((resolve) => {
 	      try{
 	        firebase.functions().httpsCallable('resetUserNotifications')({uid:uid}).then(
-	          (result) => {
-	            console.log("reset Notifications", result);
+	          () => {
 	          }
 	        )
 	      } catch (e) {
-	        console.log("erro reset notifications:",e);
 	      }
 	    })
   }
 
 
 	this.getUserNotifications = function (uid, limit) {
-  	let docs = null;
   	return new Promise((resolve) => {
         const post = firebase.firestore()
 		    .collection('notification')
@@ -314,19 +298,12 @@ function HeimdallrLib() {
 		    .get().then((result) => {
 		    	console.log('result not; ', result);
 		    	if (result && result.data() && result.data().notifications && result.data().notifications.length > 0) {
-			        // console.log('user notification: ', result.docs[0].data());
-			        // docs = result.docs.sort((a, b) => {
-				    //     console.log('a:', a.data().date );
-				    //     return b.data().date - a.data().date;
-					// });
-
 			        resolve(result.data().notifications.slice(0, limit));
 			    } else {
 		    		console.warn('null');
 		    		resolve(null);
 			    }
 	        }).catch ((e) => {
-				console.warn('notifications error: ', e);
             });
     })
 	}
@@ -337,8 +314,7 @@ function HeimdallrLib() {
 		  (result) => {
 		  	resolve(result);
 		  },
-		  (reject) => {
-		  	console.log('Erro ao pegar produtos da loja do: ', store);
+		  () => {
 		  },
 	  )
 
@@ -364,7 +340,6 @@ function HeimdallrLib() {
 
 
   this.getStoreInfo = function (store) {
-  	let info = null;
   	return new Promise((resolve) => {
   		try {
 		        console.log('store info from ', store);
@@ -374,15 +349,12 @@ function HeimdallrLib() {
 				    		console.log('resultado ', result);
 				            resolve(result.docs[0].data().store_info);
 					    }
-				        console.log('resutlado dos docs: ', result.data());
 				    },
-				    (error) => {
-				        console.log('deu merdinha: ', error);
+				    () => {
 				    }
 			    )
 
 	    } catch (e) {
-		    console.log('peguei caca: ', e);
 	    }
     })
   }
@@ -405,7 +377,7 @@ function HeimdallrLib() {
 	this.getPartnersPlan = (store_code) => {
 		let docs = null
 		return new Promise((resolve) => {
-				const store = firebase.firestore()
+				firebase.firestore()
 				.collection('partners_plan').doc(store_code)
 				.get().then((result) => {
 					docs = result.data();
@@ -439,7 +411,14 @@ function HeimdallrLib() {
 			try {
 				firebase.firestore().collection('coupons').doc(store).set({
 					coupons:saveCoupons
-				}, {merge : true});
+				}, {merge : true}).then(
+					(res) => {
+						this.logCall('coupons', {saveCoupons, store}, res);
+					},
+					(err) => {
+						this.logCall('coupons', {saveCoupons, store}, err);
+					}
+				);
 			 } catch (e) {
 				 console.warn('peguei: ', e);
 				 reject();
@@ -450,18 +429,24 @@ function HeimdallrLib() {
 	}
 
 	this.saveUserCoupon = function (userCoupons){
-
 		return new Promise((resolve, reject) => {
 			try {
 				firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 					(res) => {
 						firebase.firestore().collection('user').doc(res.docs[0]._ref.path.split('/')[1]).set({
 							coupons:userCoupons
-						}, {merge : true});
+						}, {merge : true}).then(
+							(res) => {
+								this.logCall('user', userCoupons, res);
+
+							},
+							(err) => {
+								this.logCall('user', userCoupons, err);
+							}
+						);
 					}
 				)
 			 } catch (e) {
-				 console.warn('peguei: ', e);
 				 reject();
 			 }
 			 resolve();
@@ -470,7 +455,6 @@ function HeimdallrLib() {
 
 
 	this.getUserCoupons = function (){
-
 		let docs = null;
 		return new Promise((resolve) => {
 				const store = firebase.firestore()
@@ -485,14 +469,13 @@ function HeimdallrLib() {
 	}
 
   this.sendVerificationMessage = async (number) => {
-  	console.log('to na verifica: ', number);
   	try {
 	   return await firebase.auth().signInWithPhoneNumber(number);
     } catch (e) {
-	    console.log('peguei: ', e);
     }
 
   }
+
 	this.deleteUser = function (user, password) {
 		return new Promise((resolve, reject) => {
 			try{
@@ -525,10 +508,12 @@ function HeimdallrLib() {
 			firebase.auth().signInWithEmailAndPassword(this.email, oldPass).then(
 				() => {
 					firebase.auth().currentUser.updatePassword(newPass).then(
-						() => {
+						(res) => {
+							this.logCall('editPassword', {}, res);
 							resolve();
 						},
 						(err) => {
+							this.logCall('editPassword', {}, err);
 							reject({err});
 						}
 					)
@@ -545,11 +530,12 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
 	  firebase.auth().currentUser.delete().then(
 		  (success) => {
+		  	this.logCall('deleteConectedUser', {}, success);
 		    resolve(success);
 		  },
 		  (error) => {
-		  	console.warn('deu merda pra deletar', error);
-		  	reject(error);
+			  this.logCall('deleteConectedUser', {}, error);
+			  reject(error);
 		  }
 	  )
     })
@@ -575,12 +561,18 @@ function HeimdallrLib() {
   }
 
 	this.saveTicketsRegister = function (item){
-
 		return new Promise((resolve) => {
 			try{
 				firebase.firestore().collection('tickets').add({
 					...item
-				});
+				}).then(
+					(res) => {
+						this.logCall('saveTicketsRegister', item, res);
+					},
+					(err) => {
+						this.logCall('saveTicketsRegister', item, err);
+					}
+				);
 				firebase.firestore().collection('products').where('iid', '==', item.iid).get().then(
 					(res) => {
 						firebase.firestore().collection('products').doc(res.docs[0]._ref.path.split('/')[1]).set({
@@ -589,31 +581,11 @@ function HeimdallrLib() {
 					}
 				)
 			} catch (e) {
-				console.warn("erro save tickets", e);
 				resolve();
 			}
 			resolve();
 		})
 	}
-
-  this.saveData = function (chave, data) {
-	  return new Promise((resolve) => {
-	  	try{
-		  firebase.firestore().collection('errors').add({
-			  problem: data,
-			  from: chave
-		  });
-
-	    } catch (e) {
-		    console.warn('aconteceu isso: ', e);
-		    resolve();
-	    }
-		  resolve();
-
-    })
-  }
-
-
 
   this.getElapsedTime = function (elapsedTime) {
 	  if (elapsedTime ===  'há poucos segundos') {
@@ -676,34 +648,16 @@ function HeimdallrLib() {
     });
   }
 
-  this.getSimilarUser = function () {
-  	return new Promise((resolve) => {
-	    firebase.firestore()
-		    .collection('user')
-		    .orderBy('name')
-		    .startAt('Triade')
-		    .endAt('Tria'+"\uf8ff").once("name").get().then(
-		    (result) => {
-		    	console.log('Similares: ', result);
-		    }
-	    )
-
-    })
-  }
-
   this.signOut = function () {
 	  return new Promise((resolve) => {
 		  firebase.auth().signOut().then(
-		      (sucess) => {
-		          console.log('sign out sucess: ', sucess);
+		      () => {
 		          resolve();
 		      },
-		      (fail) => {
-		          console.log('fail in signOut:', fail);
+		      () => {
 		      }
 		  );
 	  }).then(function (resolve) {
-	  	console.log('Sign out successfully');
 		  this.user_id = null;
 		  this.user_image = 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
 		  this.user_name = 'Anônimo';
@@ -724,7 +678,8 @@ function HeimdallrLib() {
 					    name: user.name,
 					    user_image: image
 				    }, {merge: true}).then((res) => {
-				    	resolve();
+					    this.logCall('user', user, res);
+					    resolve();
 				    })
 			    }
 		    }
@@ -732,23 +687,8 @@ function HeimdallrLib() {
 	  })
   }
 
-  this.alterMembersNumber = function(store_code, plan_id, plus){
-
-	firebase.firestore().collection('partners_plan').doc(store_code).get().then(
-		(resolve) => {
-			let partnerPlans = resolve.data();
-			partnerPlans[plan_id].members_number = (partnerPlans[plan_id].members_number + plus);
-			firebase.firestore().collection('partners_plan').doc(store_code).set({
-				[plan_id]: partnerPlans[plan_id]
-			},  {merge: true})
-		}
-	)
-  }
-
   this.verifyMembersNumber = function(store_code,plan_id){
 	return new Promise((resolve) => {
-		console.log('store_code: ', store_code);
-		console.log('plan', plan_id);
 		firebase.firestore().collection('partners_plan').doc(store_code).get().then(
 			(result) => {
 				resolve(parseInt(result.data()[plan_id].members_number) < parseInt(result.data()[plan_id].userLimiter));
@@ -757,133 +697,23 @@ function HeimdallrLib() {
 	});
 }
 
-  this.updateNewPartner = function(plan_id, user){
-	return new Promise((resolve) => {
-		firebase.firestore().collection('partners').doc(plan_id).get().then(
-			(result) => {
-				if(result.data()){
-					let partners = result.data().members;
-					partners.push(user);
-					firebase.firestore().collection('partners').doc(plan_id).set({
-						members: partners
-					},	{merge: true}).then((res) => {
-
-						resolve();
-					})
-				}
-				else{
-					let partners = [];
-					partners.push(user);
-					firebase.firestore().collection('partners').doc(plan_id).set({
-						members: partners
-					},	{merge: true}).then((res) => {
-
-						resolve();
-					})
-				}
-			}
-		)
-	})
-  }
-
-
-  this.deletePreviousPlan = function(plan_id,reference_id){
-	  return new Promise((resolve) => {
-		  firebase.firestore().collection('partners').doc(plan_id).get().then(
-			  (result) => {
-
-				  let partners = result.data().members;
-				  partners.splice(partners.findIndex((item) => item.referenceId === reference_id),1);
-
-				  firebase.firestore().collection('partners').doc(plan_id).set({
-					  members: partners
-				  }).then((res) => {
-						resolve();
-				  },(error) => {
-					  console.log('erro',error);
-				  })
-			  }
-		  )
-	  })
-  }
-
-
-  this.savePartnerPlan = function (store_code,partnerPlan) {
-
-	return new Promise((resolve) => {
-		firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
-			(result) => {
-			  if(this.userPlans != null){
-				  if(this.userPlans[store_code]){
-						this.userPlans[store_code].unshift(partnerPlan);
-						firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
-						userPlans: this.userPlans
-					}, {merge: true}).then((res) => {
-
-						resolve();
-					})
-				  }
-				  else{
-					  let plans = [];
-					  plans.push(partnerPlan);
-					  this.userPlans[store_code] = plans;
-					  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
-						userPlans: this.userPlans
-					}, {merge: true}).then((res) => {
-
-						resolve();
-					})
-				  }
-			  }
-			  else {
-				let partnerPlans = {};
-				partnerPlans[store_code] = [];
-				partnerPlans[store_code].push(partnerPlan);
-				this.userPlans = partnerPlans;
-				  firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
-					  userPlans: this.userPlans
-				  }, {merge: true}).then((res) => {
-
-					  resolve();
-				  })
-			  }
-			})
-		})
-	}
-
-
   this.updateProfile = function (user) {
 	  return new Promise((resolve) => {
 		  firebase.auth().currentUser.updateProfile({
 		      displayName: user.name,
-		  }).then(function () {
-			  this.user_name = user.name;
-		      resolve(true);
-		  }).catch(function (error) {
-		      console.warn('update profile error: ', error);
-		      resolve(false);
+		  }).then((res) => {
+		  	this.logCall('updateProfile', user, res);
+		  	this.user_name = user.name;
+		  	resolve(true);
+		  }).catch((error) => {
+			  this.logCall('updateProfile', user, error);
+			  resolve(false);
 		  })
 	  });
   }
 
   this.checkUser = () => {
       let u = null;
-      // firebase.auth().signOut().then(
-      //     (sucess) => {
-      //         console.log('sign out sucess: ', sucess);
-      //     },
-      //     (fail) => {
-      //         console.log('fail in signOut:', fail);
-      //     }
-      // );
-      // firebase.auth().currentUser.updateProfile({
-      //     displayName: 'Triade',
-      //     photoURL: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4'
-      // }).then(function () {
-      //     console.log('update sucessful');
-      // }).catch(function (error) {
-      //     console.log('update error: ', error);
-      // })
       return new Promise((resolve) => {
           firebase.auth().onAuthStateChanged(
           	(user) => {
@@ -946,17 +776,17 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
 	    firebase.auth().createUserWithEmailAndPassword(params.email, params.password).then(
 		    (success) => {
-		    	console.log('sucessso: ', success);
+		    	this.logCall('signUp', {email: parmas.email}, success);
 		    	newUser = success;
 			    resolve();
 		    },
 		    (error) => {
-		    	console.log('deu ruim: ',error);
-		    	reject(error);
+			    this.logCall('signUp', {email: parmas.email}, error);
+			    reject(error);
 		    }
 	    )
 
-    }).then(function (resolve) {
+    }).then(function () {
 	    return newUser;
     })
   }
@@ -986,7 +816,6 @@ function HeimdallrLib() {
   }
 
   this.getUserColletion = function (limit, uid) {
-  	let docs = null;
   	return new Promise((resolve) => {
         firebase.firestore()
 		    .collection('post')
@@ -1036,27 +865,6 @@ function HeimdallrLib() {
 		}).then(function (resolve) {
 			return docs;
 		})
-		// let docs = null;
-		// return new Promise((resolve) => {
-		// 	const post = firebase.firestore()
-		// 		.collection('comment')
-		// 		.doc(pid)
-		// 		.get().then((result) => {
-		// 			// docs = result.docs;
-		// 			// docs.sort((a, b) => {
-		// 			// 	return (b._data.date) - (a._data.date)
-		// 			// });
-		// 			// docs = docs.slice(0, limit);
-		// 			console.log('so acheu isso', result);
-		// 			docs = result.data() ? result.data().comments.slice(0, limit) : [];
-		// 			resolve();
-		// 		}).catch ((e) => {
-		// 			console.log('Erro: ', e);
-		// 		});
-		//
-		// }).then(function (resolve) {
-		// 	return docs;
-		// })
 	}
 
   this.getCollection = function (collection, limit) {
@@ -1108,28 +916,6 @@ function HeimdallrLib() {
 		})
 	}
 
-	this.savePersonalColletion = function (params) {
-  	console.log('recebi po');
-		return new Promise((resolve) => {
-			firebase.firestore().collection('user_posts').doc(params.uid).get().then().then(
-				(result) => {
-					console.log('o que tem aqui', result);
-					if (!result.data()) {
-						firebase.firestore().collection('user_posts').doc(params.uid).set({
-							posts: [params]
-						});
-					} else {
-						let posts = result.data().posts;
-						posts.unshift(params);
-						firebase.firestore().collection('user_posts').doc(params.uid).set({
-							posts: posts
-						});
-					}
-				}
-			)
-		})
-	}
-
 	this.deletePost = function (pid) {
   	    this.sendEvent('delete_post');
 		return new Promise((resolve, reject) => {
@@ -1152,97 +938,14 @@ function HeimdallrLib() {
 		})
 	}
 
-	this.deletePostComments = function (collection,pid){
-		firebase.firestore().collection(collection).doc(pid).delete().then(function(){
-			console.log("post comments deleted");
-		}).catch(function(error) {
-			console.log("Error removing document: ", error);
-		})
-	}
-
-	this.deletePostNotifications = function (collection,userId,pid){
-		let docs = null;
-		return new Promise((resolve) => {
-			firebase.firestore().collection(collection).doc(userId).get().then(
-				(result) => {
-					docs = result.data().notifications.filter(item => item.eid != pid);
-					firebase.firestore().collection('notification').doc(userId).set(
-						{
-							notifications: docs
-						},
-						{
-							merge: true
-						}
-					);
-
-				}
-			)
-		}).catch(function(error){
-			console.log("error get commentary",error);
-		})
-	}
-
-
-	this.deleteUserPost = function (pid) {
-		let docs = [];
-		return new Promise((resolve, reject) => {
-			firebase.firestore().collection('user_posts').doc(this.user_id).get().then(
-				(result) => {
-					const post = result.data().posts.find((item) => item.pid === pid);
-					const index = result.data().posts.indexOf(post);
-					const removed = result.data().posts.splice(index,1);
-					firebase.firestore().collection('user_posts').doc(this.user_id).set(
-						{ posts: result.data().posts }, {merge: true}).then(
-						()=> {
-							resolve();
-						},
-						(error) => {
-							reject(error);
-						}
-					);
-				})
-		}).catch(function(error){
-			console.log("error get commentary",error);
-			reject();
-		})
-	}
-
-	this.deleteCommentNotification = function (collection, cid, userId){
-		let docs = [];
-		return new Promise((resolve) => {
-			firebase.firestore().collection(collection).doc(userId).get().then(
-				(result) => {
-					let notification = null;
-					let index = null;
-					let removed = null;
-					notification = result.data().notifications.find((item) => item.cid === cid);
-					index = result.data().notifications.indexOf(notification);
-					removed = result.data().notifications.splice(index,1);
-					firebase.firestore().collection('notification').doc(userId).set(
-						{
-							notifications: result.data().notifications
-						},
-						{
-							merge: true
-						}
-					);
-
-				}
-			)
-		}).catch(function(error){
-			console.log("error get commentary",error);
-		})
-	}
-
-
 	this.deleteCommentary = function (pid, cid) {
 		this.sendEvent('delete_comment');
-		let docs = [];
 		return new Promise((resolve, reject) => {
 			firebase.firestore().collection('comment').where('cid', '==', cid).get().then(
 				(result) => {
 					firebase.firestore().collection('comment').doc(result.docs[0]._ref.path.split('/')[1]).delete().then(
-						() => {
+						(res) => {
+							this.logCall('deleteCommentary', {pid, cid}, res);
 							firebase.firestore().collection('post').where('pid', '==', pid).get().then(
 								(res) => {
 									firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
@@ -1251,16 +954,17 @@ function HeimdallrLib() {
 								}
 							);
 							resolve();
+						},
+						(err) => {
+							this.logCall('deleteCommentary', {pid, cid}, err);
 						}
 					)
-
 				},
 				() => {
 					reject();
 				}
 			)
 		}).catch(function(error){
-			console.log("error get commentary",error);
 		})
 	}
 
@@ -1272,10 +976,12 @@ function HeimdallrLib() {
 					firebase.firestore().collection('board').doc(docName).set(
 						{ docs: board }, { merge: true }
 					).then(
-						() => {
+						(res) => {
+							this.logCall('deleteBoardItem', {pid, docName}, res);
 							resolve();
 						},
-						() => {
+						(err) => {
+							this.logCall('deleteBoardItem', {pid, docName}, err);
 							reject();
 						}
 					);
@@ -1286,30 +992,8 @@ function HeimdallrLib() {
 				}
 			)
 		}).catch(function(error){
-			console.log("error delete board item",error);
 		})
 	}
-
-	this.saveSpecificColletion = function (collection,params) {
-		return new Promise((resolve) => {
-			firebase.firestore().collection(collection).doc(params.uid).get().then(
-				(result) => {
-					if (!result.data()) {
-						firebase.firestore().collection(collection).doc(params.uid).set({
-							dataArray: [params]
-						});
-					} else {
-						let saveData = result.data().dataArray;
-						saveData.unshift(params);
-						firebase.firestore().collection(collection).doc(params.uid).set({
-							dataArray: saveData
-						});
-					}
-				}
-			)
-		})
-	}
-
 
 	this.sendEvent = function (eventName) {
 	    firebase.analytics().logEvent(eventName);
@@ -1318,7 +1002,6 @@ function HeimdallrLib() {
   this.saveCollection = function (collection, params) {
     let returnValue = null;
     return new Promise((resolve) => {
-      console.log('checking params...');
       let parametersOK = true;
       const collections = collectionsStructures;
       const structure = collections[collection];
@@ -1347,9 +1030,8 @@ function HeimdallrLib() {
         const base = firebase.firestore().collection(collection);
         base.add(params).then(
           (docRef) => {
-          	// console.warn(`Documento ${docRef.id}`);
-            // console.log(`Documento ${docRef.id}`);
-            returnValue = docRef.id;
+	          this.logCall(collection, params, docRef);
+	          returnValue = docRef.id;
             if (collection === 'post') {
             	heimdallr.saveCollection('unverified_post', params);
             	console.log('deve entrar: ', params.anonymous);
@@ -1362,8 +1044,8 @@ function HeimdallrLib() {
             }
             resolve();
           },
-          () => {
-            console.log('Erro ao criar o documento');
+          (err) => {
+	          this.logCall(collection, params, err);
           }
         );
       } else {
@@ -1540,7 +1222,7 @@ function HeimdallrLib() {
 		    }
 
 		  },
-		  (reject) => {
+		  () => {
 		  }
 	  )
   }
@@ -1637,8 +1319,7 @@ function HeimdallrLib() {
 					}
 				}
 			},
-			(reject) => {
-
+			() => {
 			}
 		)
 	}
@@ -1686,6 +1367,7 @@ function HeimdallrLib() {
 					firebase.firestore().collection('user').doc(resolve.docs[0]._ref.id).set({
 						deviceToken: token,
 					}, {merge: true});
+					this.logCall('saveToken', {token}, resolve);
 				}
 			)
 		}
@@ -1720,17 +1402,6 @@ function HeimdallrLib() {
 				}
 			)
         })
-	}
-
-	this.newPlanTicket = function (params, store) {
-		firebase.firestore().collection('plan_ticket').add({
-			no_tax_value: params.price,
-			date: params.signature_date,
-			price: (parseFloat(params.price.replace(',','.')) * 1.16).toFixed(2),
-			uid: this.user_id,
-			store: store,
-			referenceId: params.referenceId
-		});
 	}
 }
 

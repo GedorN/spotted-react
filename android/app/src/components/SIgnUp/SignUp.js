@@ -92,20 +92,12 @@ export default  class SignUp extends React.Component {
 					() => {
 						this.register();
 					},
-					(reject) => {
-						heimdallr.saveData('reject_deleteUser', JSON.stringify(reject));
+					() => {
 					}
 				)
 			},
 			() => {
-				heimdallr.deleteConectedUser().then(
-					(sucess) => {
-						heimdallr.saveData('resolve_deleteUserdaReject', JSON.stringify(sucess));
-					},
-					(fracasso) => {
-						heimdallr.saveData('fracasso_deleteUser', JSON.stringify(fracasso));
-					}
-				)
+				heimdallr.deleteConectedUser();
 				this.setState({ creatingAccount: false, inputedWrongCode: true });
 			}
 		)
@@ -122,7 +114,6 @@ export default  class SignUp extends React.Component {
 					this.saveUser(resolve);
 			},
 			(reject) => {
-				heimdallr.saveData('reject_updadte', JSON.stringify(reject));
 				if (reject.message ==  "The email address is already in use by another account.") {
 					this.setState({ creatingAccount: false, showEmailAlreadyInUse: true });
 					Animated.timing(this.state.thirdStepSize, {
