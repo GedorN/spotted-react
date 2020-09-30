@@ -26,6 +26,7 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import axios from 'react-native-axios';
 import CarouselModaFoka from "./layout/CarouselModaFoka";
+import RNFetchBlob from 'rn-fetch-blob';
 import moment from "moment";
 
 export default class ProductScreen extends React.Component {
@@ -312,13 +313,15 @@ export default class ProductScreen extends React.Component {
 				}).then(
 					(resolve) => {
 						params.url = resolve.data.paymentUrl;
-						axios({
-							method: 'post',
-							url: 'http://3.23.33.91/allocate-product',
-							data: {
+						RNFetchBlob.config({
+							trusty: true
+						}).fetch('POST',
+							'https://3.23.33.91/allocate-product',
+							{ 'Content-Type': 'application/json'},
+							JSON.stringify({
 								...params
-							}
-						})
+							})
+						);
 						Linking.openURL(resolve.data.paymentUrl);
 						this.setState({showAlert : false, showLoading: false, showConfirmButton: true, showCancelButton: true,  warning: null, discountApplied: false, discountPicPayPrice : null, discountPriceWithoutTax : null, couponHash: null});
 						showMessage({
