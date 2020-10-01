@@ -776,12 +776,12 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
 	    firebase.auth().createUserWithEmailAndPassword(params.email, params.password).then(
 		    (success) => {
-		    	this.logCall('signUp', {email: parmas.email}, success);
+		    	this.logCall('signUp', {email: params.email}, success);
 		    	newUser = success;
 			    resolve();
 		    },
 		    (error) => {
-			    this.logCall('signUp', {email: parmas.email}, error);
+			    this.logCall('signUp', {email: params.email}, error);
 			    reject(error);
 		    }
 	    )
