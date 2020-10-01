@@ -42,13 +42,6 @@ export default class FirstStep extends React.Component {
 			this.props.profileImage = this.props.profileImage;
 			this.state.showEmailAlreadyInUse = this.props.showEmailAlreadyInUse;
 			this.state.showEmailBadlyFormatted = this.props.showEmailBadlyFormatted;
-			this.setState({
-				name: this.props.name,
-				email: this.props.email,
-				profileImage: this.props.profileImage,
-				showEmailBadlyFormatted: this.props.showEmailBadlyFormatted,
-				showEmailAlreadyInUse: this.props.showEmailAlreadyInUse
-			})
 		}
 	}
 
@@ -187,7 +180,7 @@ export default class FirstStep extends React.Component {
 							keyboardType='email-address'
 							textContentType='emailAddress'
 							borderBottomWidth={1}
-							value={this.props.email}
+							value={this.state.email}
 							borderBottomColor={'#b2b5b1'}
 						/>
 					</View>
