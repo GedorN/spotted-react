@@ -489,6 +489,14 @@ function HeimdallrLib() {
 					() => {
 						firebase.auth().currentUser.delete().then(
 							(success) => {
+								firebase.firestore().collection('user').where('uid', '==', this.user_id).then(
+									(res) => {
+										firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+											deleted: true,
+										}, {merge: true});
+									}
+								);
+								this.logCall('deleteUser', { user: user }, success);
 								resolve();
 							},
 							(error) => {
