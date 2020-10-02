@@ -228,6 +228,7 @@ export default  class SignUp extends React.Component {
 					index: 0,
 					actions: [NavigationActions.navigate({ routeName: 'Home' })],
 				});
+				heimdallr.encryptUserData(user.uid);
 				this.props.navigation.dispatch(resetAction);
 			}
 		);

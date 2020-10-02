@@ -184,6 +184,12 @@ function HeimdallrLib() {
 		);
 	}
 
+	this.encryptUserData = (uid) => {
+  	    firebase.functions().httpsCallable('encryptUserData')({ user_id: uid });
+	}
+
+
+
 
 	this.saveComment = function (params) {
 		return new Promise((resolve) => {
