@@ -285,13 +285,14 @@ function HeimdallrLib() {
 
 	this.resetNotifications = function(uid){
 	    return new Promise((resolve) => {
-	      try{
-	        firebase.functions().httpsCallable('resetUserNotifications')({uid:uid}).then(
-	          () => {
-	          }
-	        )
-	      } catch (e) {
-	      }
+	    	firebase.firestore().collection('rel_user_notification').where('uid','==', this.user_id).get().then(
+			    (result) => {
+			    	firebase.firestore().collection('rel_user_notification').doc(result.docs[0]._ref.path.split('/')[1]).set({
+					    counter: 0,
+				    }, {merge: true});
+			    },
+			    () => {}
+		    )
 	    })
   }
 
