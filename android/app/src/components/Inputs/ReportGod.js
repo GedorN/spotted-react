@@ -33,7 +33,7 @@ export default class ReportGod extends React.Component {
 			params.category = idReport;
 			params.uid = this.props.idEntity;
 			params.date = await heimdallr.getServerTime();
-			heimdallr.saveSpecificColletion('commentary_report',params);
+			heimdallr.saveCollection('commentary_report',params);
 
 		}
 
@@ -43,7 +43,7 @@ export default class ReportGod extends React.Component {
 			params.category = idReport;
 			params.uid = this.props.idEntity;
 			params.date = await heimdallr.getServerTime();
-			heimdallr.saveSpecificColletion('post_report',params);
+			heimdallr.saveCollection('post_report',params);
 		}
 
 	}

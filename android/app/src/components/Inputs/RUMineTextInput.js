@@ -33,6 +33,7 @@ export default class RUMineTextInput extends React.Component {
 		}
 	}
 
+
 	render () {
 		return (
 			<TextInput
@@ -44,6 +45,9 @@ export default class RUMineTextInput extends React.Component {
 				textContentType = { this.props.textContentType ? this.props.textContentType : 'none'}
 				secureTextEntry={ this.props.secureTextEntry ? this.props.secureTextEntry : false }
 				onFocus={ this.props.onFocus }
+				autoFocus={ this.props.autoFocus ? this.props.autoFocus : false }
+				value={ this.props.value ? this.props.value : null }
+				ref={(input) => this.input = input}
 				style={{
 					height: this.props.height ? this.props.height : 40,
 					borderBottomWidth: this.props.borderBottomWidth ? this.props.borderBottomWidth : 0,

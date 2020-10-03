@@ -4,7 +4,6 @@ import {
 	View,
 	TouchableOpacity,
 	Text,
-	Dimensions,
 } from 'react-native';
 
 import UserImgProfile from "../../../../components/General/UserImgProfile";
@@ -15,7 +14,6 @@ export default class Notification extends React.Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-
 		};
     }
 
@@ -59,13 +57,6 @@ export default class Notification extends React.Component {
 		} else {
 			this.goToPostDetails();
 		}
-
-        // if(this.props.origin && this.props.origin === 1){
-        //     this.goToBoardItemDetails();
-        // }
-        // else{
-        //     this.goToPostDetails();
-        // }
     }
 
     render = () => {
@@ -115,7 +106,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderWidth: 0.2,
         borderColor: 'rgba(59, 56, 50, 0.2)',
-
     },
     noVisualized: {
         backgroundColor: '#e0e0eb',
@@ -130,7 +120,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderWidth:0.2,
         borderColor: 'rgba(59, 56, 50, 0.2)',
-
     },
 
 })

@@ -3,14 +3,11 @@ import {
 	View,
 	StyleSheet,
 	Text,
-	FlatList,
 	Image,
 	ActivityIndicator,
 	TouchableOpacity,
-	RefreshControl,
 	ScrollView,
 	StatusBar,
-	BackHandler,
 	Modal,
 	Linking,
 } from "react-native";
@@ -23,6 +20,7 @@ import 'moment/locale/pt-br';
 import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
+import RNFetchBlob from 'rn-fetch-blob';
 let verify = null;
 
 export default class PartnerPlans extends React.Component {
@@ -108,15 +106,18 @@ export default class PartnerPlans extends React.Component {
 						}).then(
 							(result) => {
 								params.url = result.data.paymentUrl;
-								axios({
-									method: 'post',
-									url: 'http:3.23.33.91/allocate-plan',
-									data: {
+								RNFetchBlob.config({
+									trusty: true
+								}).fetch('POST',
+									'https://3.23.33.91/allocate-plan',
+									{ 'Content-Type': 'application/json'},
+									JSON.stringify({
 										...params
-									}
-								});
+									})
+								);
 								this.setState({showLoading: false});
 								Linking.openURL(result.data.paymentUrl);
+								this.props.navigation.goBack();
 
 							},
 							(reject) => {

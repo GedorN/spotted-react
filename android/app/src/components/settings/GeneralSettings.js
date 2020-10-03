@@ -3,7 +3,6 @@ import {
 	StyleSheet,
 	View,
 	Text,
-	Dimensions,
 	TouchableOpacity,
 	Image,
 	PermissionsAndroid,
@@ -19,7 +18,6 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
-import RUMineTextInput from "../Inputs/RUMineTextInput";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import theme from "../../../../../components/General/Theme";
 import ImagePicker from "react-native-image-picker";
@@ -50,7 +48,6 @@ export default class GeneralSettings extends  React.Component {
 	}
 
 	componentDidMount = () => {
-		// this.setState({ email: heimdallr.user })
 	}
 
 	toggleSecureEntry = () => {
@@ -122,11 +119,8 @@ export default class GeneralSettings extends  React.Component {
 
 					}
 				});
-			} else {
-				console.log('Camera permission denied');
 			}
 		} catch (err) {
-			console.warn(err);
 		}
 	}
 
@@ -135,7 +129,7 @@ export default class GeneralSettings extends  React.Component {
 			return ;
 		}
 		heimdallr.deleteUser(heimdallr.email, this.state.password).then(
-			(resolve) => {
+			() => {
 				this.setState({ showConfirmCodeModal: false});
 				const resetAction = StackActions.reset({
 					index: 0,
@@ -143,7 +137,7 @@ export default class GeneralSettings extends  React.Component {
 				});
 				this.props.navigation.dispatch(resetAction);
 			},
-			(reject) => {
+			() => {
 				this.setState({ showConfirmCodeModal: false});
 				this.refs.message.showMessage({
 					message: "Usuário ou senha incorreto. Tente novamente",
@@ -372,7 +366,6 @@ export default class GeneralSettings extends  React.Component {
 
 const styles = StyleSheet.create({
 	modalContainer: {
-		// height: 150,
 		width: 300,
 		backgroundColor: 'white',
 		borderRadius: 20,

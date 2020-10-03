@@ -2,14 +2,11 @@ import React from 'react';
 import {
 	StyleSheet,
 	View,
-	TextInput,
-	Button,
-	Dimensions,
 	Image,
 	Text,
+	KeyboardAvoidingView
 } from 'react-native';
 
-const width = Dimensions.get('screen').width;
 import theme from "../../../../components/General/Theme";
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
@@ -24,17 +21,22 @@ export default class PasswordRestore extends React.Component{
 		};
 	}
 
+	componentDidMount(): void {
+		const email = this.props.navigation.getParam('email');
+		if (email) {
+			this.state.user = email;
+			this.setState({ user: email });
+		}
+	}
+
 	recover = () => {
 		if (!this.state.user) {
 			return ;
 		}
 		const params = {};
 		params.email = this.state.user;
-		let recovery = heimdallr.PasswordRestore(params);
+		heimdallr.PasswordRestore(params);
 		this.setState( {emailSent: true} );
-		recovery.then((resolve) => {
-			console.log('resolve: ', resolve);
-		});
 	}
 
 	cancel = () => {
@@ -44,16 +46,13 @@ export default class PasswordRestore extends React.Component{
 
 	render() {
 		return (
-			<View style={styles.container}>
-				{/*<Image*/}
-				{/*	style={{width: 210, height: 258, padding: 0,  zIndex: -1}}*/}
-				{/*	source={require('../../../../assets/images/simbol.png')}*/}
-				{/*/>*/}
+			<KeyboardAvoidingView behavior={'height'} style={styles.container}>
 				<Image
 					style={{width: theme.width, height: theme.height, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.1}}
-					source={require('../../../../assets/images/simbol.png')}
+					source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fsimbol.png?alt=media&token=59f607da-634a-4eae-b6fe-c3ef845c1a67' }}
 				/>
-				{ !this.state.emailSent &&
+				{
+					!this.state.emailSent &&
 					<View style = {{ borderRadius: 25, padding: 20, backgroundColor: 'white', elevation: 4, paddingBottom: 50, alignItems: 'center', alignSelf: 'center' }}>
 						<Text style={{fontWeight: 'bold', marginTop: 20, fontSize: 16, lineHeight: 25, alignSelf: 'flex-start'}}>
 							Esqueceu sua senha?
@@ -70,6 +69,8 @@ export default class PasswordRestore extends React.Component{
 								keyboardType='email-address'
 								textContentType='emailAddress'
 								borderBottomColor={'#b2b5b1'}
+								value={this.state.user}
+								autoFocus={true}
 								onChangeText={text => this.setState({ user: text })}
 							/>
 							<View style={{marginTop: 50}}>
@@ -81,7 +82,8 @@ export default class PasswordRestore extends React.Component{
 						</View>
 					</View>
 				}
-				{ this.state.emailSent &&
+				{
+					this.state.emailSent &&
 					<View>
 						<View style={styles.form}>
 							<Text style={{fontWeight: 'bold', marginBottom: 30, fontSize: 16}}>
@@ -93,7 +95,7 @@ export default class PasswordRestore extends React.Component{
 						</View>
 					</View>
 				}
-			</View>
+			</KeyboardAvoidingView>
 		);
 	}
 }
@@ -107,6 +109,6 @@ const styles = StyleSheet.create({
 		justifyContent:'center'
 	},
 	form: {
-		width: width * 0.8,
+		width: theme.width * 0.8,
 	},
 });

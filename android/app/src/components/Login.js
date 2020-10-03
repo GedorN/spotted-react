@@ -2,13 +2,13 @@ import React from 'react';
 import {
 	StyleSheet,
 	View,
-	TextInput,
-	Dimensions,
-	Button,
 	Text,
 	TouchableOpacity,
-	Image, Modal,
+	Image,
+	Modal,
+	Keyboard
 } from 'react-native';
+
 import heimdallr from "../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../components/General/Theme";
 import FatBottomedButton from "./buttons/FatBottomedButton";
@@ -16,8 +16,6 @@ import RUMineTextInput from "./Inputs/RUMineTextInput";
 import EyeOfThePassword from "./Inputs/EyeOfThePassword";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {ActivityIndicator} from "react-native-paper";
-const width = Dimensions.get('screen').width;
-const height = Dimensions.get('screen').height;
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -29,9 +27,20 @@ export default class Login extends React.Component {
 	        securePassword: true,
 	        showAlert: false,
 	        showConfirmCodeModal: false,
+	        keyboardIsOpen: false,
         };
     }
 
+    componentDidMount(): void {
+    	// If keyboard is open, hide the spotted image
+	    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => this.setState({ keyboardIsOpen: true }));
+	    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => this.setState({ keyboardIsOpen: false }));
+    }
+
+    componentWillUnmount(): void {
+	    this.keyboardDidShowListener.remove();
+	    this.keyboardDidHideListener.remove();
+    }
 
 	showAlert = () => {
 		this.setState({
@@ -39,12 +48,14 @@ export default class Login extends React.Component {
 		});
 	};
 
+    // anonymous mode alert
 	hideAlert = () => {
 		this.setState({
 			showAlert: false
 		});
 	};
 
+	// change password to visible mode
     toggleSecureEntry = () => {
     	this.setState({ securePassword: !this.state.securePassword });
     }
@@ -54,7 +65,7 @@ export default class Login extends React.Component {
     		return ;
 	    }
     	this.setState({ showConfirmCodeModal: true });
-	    let result = await this.props.login({ user: this.state.user, password: this.state.password }).then().catch((e) => {
+	    await this.props.login({ user: this.state.user, password: this.state.password }).then().catch(() => {
 	    	this.setState({ showAttemptFail: true });
 		    this.setState({ showConfirmCodeModal: false });
 	    });
@@ -67,7 +78,7 @@ export default class Login extends React.Component {
 		const params = {};
     	params.user = 'spotted@utfpr.com';
     	params.password = 'angeca123';
-    	heimdallr.signIn(params).then((resolve) => {
+    	heimdallr.signIn(params).then(() => {
 		    this.setState({ showConfirmCodeModal: true });
 		    this.setState({ showAlert: false });
 		    const resetAction = StackActions.reset({
@@ -80,54 +91,57 @@ export default class Login extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
-			<View style = {{width:width*0.6}}>
-                <Image
-	                style={{width: 210, height: 258, padding: 0,  zIndex: -1, alignSelf:'flex-start',borderColor:theme.primary}}
-	                source={require('../../../../assets/images/simbol.png')}
-                />
-			</View>
-	            {
-	            	this.state.showAttemptFail ?
-			            <Text style={{color: 'red', marginTop: 10}}> *Usuário ou senha incorretos </Text> :
-			            null
-	            }
-                <View style={styles.form}>
-                    <RUMineTextInput
-	                    placeholder='Email'
-	                    autoCompleteType='email'
-	                    keyboardType='email-address'
-	                    textContentType='emailAddress'
-						borderBottomWidth={1}
-						borderBottomColor={'#b2b5b1'}
-	                    onChangeText={text => this.setState({user: text})}
-                    />
-                    <EyeOfThePassword
-	                    secureTextEntry={this.state.securePassword}
-	                    toggleSecureEntry={this.toggleSecureEntry.bind(this)}
-	                    placeholder='Senha'
-	                    autoCompleteType='password'
-						textContentType='password'
-						borderBottomColor={'#b2b5b1'}
-	                    onChangeText={text => this.setState({password: text})}
-                    />
-                    <TouchableOpacity style={styles.forgotPassword} onPress={() => this.props.navigation.navigate('PasswordRestore')}>
-	                    <Text style={{color: theme.primary, textDecorationLine: 'underline'}}>
-		                    Esqueci minha senha
-	                    </Text>
-                    </TouchableOpacity>
-	                <View style={{marginBottom: 10}}>
-		                <FatBottomedButton color={'white'} backgroundColor={theme.primary} text={'Entrar'}  height={50} onTap={this.doLogin.bind(this)} />
+            <View style={ styles.container }>
+					<View style = {{ width: theme.width * 0.6 }}>
+						{
+							!this.state.keyboardIsOpen &&
+			                <Image
+				                style={{width: 210, height: 258, padding: 0,  zIndex: -1, alignSelf:'flex-start', borderColor:theme.primary}}
+				                source={require('../../../../assets/images/simbol.png')}
+			                />
+						}
+					</View>
+		            {
+		                this.state.showAttemptFail ?
+				            <Text style={{color: 'red', marginTop: 10}}> *Usuário ou senha incorretos </Text> :
+				            null
+		            }
+	                <View style={styles.form}>
+	                    <RUMineTextInput
+		                    placeholder='Email'
+		                    autoCompleteType='email'
+		                    keyboardType='email-address'
+		                    textContentType='emailAddress'
+							borderBottomWidth={1}
+							borderBottomColor={'#b2b5b1'}
+		                    onChangeText={text => this.setState({user: text})}
+	                    />
+	                    <EyeOfThePassword
+		                    secureTextEntry={this.state.securePassword}
+		                    toggleSecureEntry={this.toggleSecureEntry.bind(this)}
+		                    placeholder='Senha'
+		                    autoCompleteType='password'
+							textContentType='password'
+							borderBottomColor={'#b2b5b1'}
+		                    onChangeText={text => this.setState({password: text})}
+	                    />
+	                    <TouchableOpacity style={styles.forgotPassword} onPress={() => this.props.navigation.navigate('PasswordRestore')}>
+		                    <Text style={{color: theme.primary, textDecorationLine: 'underline'}}>
+			                    Esqueci minha senha
+		                    </Text>
+	                    </TouchableOpacity>
+		                <View style={{marginBottom: 10}}>
+			                <FatBottomedButton color={'white'} backgroundColor={theme.primary} text={'Entrar'}  height={50} onTap={this.doLogin.bind(this)} />
+		                </View>
+		                <View>
+			                <FatBottomedButton color={theme.primary} text={'Registrar-se'}  height={50} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
+		                </View>
 	                </View>
-	                <View>
-		                <FatBottomedButton color={theme.primary} text={'Registrar-se'}  height={50} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
-	                </View>
-                </View>
-	            <View style={{position: 'absolute', top: height * 0.85, width: width, paddingLeft: 10, alignItems: 'flex-start'}}>
-	                <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>
-			            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
-	                </TouchableOpacity>
-	            </View>
+		            <View style={{position: 'absolute', top: theme.height * 0.85, width: theme.width, paddingLeft: 10, alignItems: 'flex-start'}}>
+		                <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>
+				            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
+		                </TouchableOpacity>
+		            </View>
 	            <AwesomeAlert
 		            show={this.state.showAlert}
 		            showProgress={false}
@@ -176,7 +190,6 @@ const styles = StyleSheet.create({
 		paddingTop:theme.height * 0.05
     },
 	modalContainer: {
-		// height: 150,
 		width: 300,
 		backgroundColor: 'white',
 		borderRadius: 20,
@@ -202,7 +215,7 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
     form: {
-        width: width * 0.8,
+        width: theme.width * 0.8,
 	    marginTop: 20,
     },
 	forgotPassword: {

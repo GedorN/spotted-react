@@ -6,7 +6,8 @@ import {
 	Image,
 	TouchableOpacity,
 	FlatList,
-	Modal, RefreshControl, StatusBar
+	RefreshControl,
+	StatusBar
 } from 'react-native';
 
 import theme from "../../../../components/General/Theme";

@@ -10,12 +10,13 @@ import {
 } from 'react-native';
 
 
-import Ripple from "react-native-material-ripple";
 import PostViewer from "../../../../components/General/PostViewer";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
 import theme from "../../../../components/General/Theme";
+
+const PULL_QUANTITY = 100;
 
 
 export default class Home extends React.Component {
@@ -23,7 +24,7 @@ export default class Home extends React.Component {
     super(props);
     this.state = {
         posts: null,
-        pulledPosts: 40,
+        pulledPosts: PULL_QUANTITY,
         loading: false,
 	    pulling: false,
 	    endPulling: false,
@@ -65,16 +66,11 @@ export default class Home extends React.Component {
 
   pullMorePosts = (distanceFromEnd) => {
   	if (!this.state.endPulling) {
-	    console.log('interval?', distanceFromEnd);
-	    console.log('state before: ', this.state);
 	    if (!this.state.pulling) {
 	    	heimdallr.sendEvent('pulling_more_posts');
-	        console.log('int pullling');
 	        this.setState({ pulling: true });
-		    console.log('chegou');
 		    let n = this.state.pulledPosts;
-		    n = 30 + n;
-		    console.log('puxando: ', n);
+		    n = PULL_QUANTITY + n;
 		    let result = heimdallr.getCollection('post', n);
 		    result.then((resolve) => {
 			    resolve.forEach((doc) => {
@@ -86,10 +82,7 @@ export default class Home extends React.Component {
 			    if (resolve.length === this.state.posts.length) {
 				    this.setState({ endPulling: true });
 			    }
-		        this.setState({posts: resolve});
-		        this.setState({pulledPosts: n});
-			    this.setState({ pulling: false });
-			    console.log()
+		        this.setState({posts: resolve, pulledPosts: n, pulling: false});
 		    });
 	    }
     }
@@ -104,7 +97,7 @@ export default class Home extends React.Component {
 
   onRefresh = () => {
 	  this.setState({ isRefreshing: true });
-	  let result = heimdallr.getCollection('post', 10);
+	  let result = heimdallr.getCollection('post', PULL_QUANTITY);
 	  result.then( (resolve) => {
 	  	resolve.forEach((doc) => {
 		    const time = moment(doc.data().date).fromNow();
@@ -167,8 +160,6 @@ export default class Home extends React.Component {
 			}
 		);
 		this.setState({ showDeleteAlert: false});
-		// heimdallr.deletePostComments('comment',this.state.deletePost);
-		// heimdallr.deletePostNotifications('notification',heimdallr.user_id,this.state.deletePost);
 	}
 
 
@@ -258,7 +249,5 @@ export default class Home extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        marginTop: 20,
-    },
+
 });

@@ -6,7 +6,6 @@ import {
 	TouchableOpacity,
 	Image,
 	PermissionsAndroid,
-	Dimensions,
 	StatusBar,
 	Keyboard,
 } from 'react-native';
@@ -21,9 +20,6 @@ import {Text} from "react-native-paper";
 var RNFS = require('react-native-fs');
 import {RNPhotoEditor} from "react-native-photo-editor";
 import AsyncStorage from "@react-native-community/async-storage";
-
-const width = Dimensions.get('screen').width;
-const height = Dimensions.get('screen').height;
 
 export default class PostWrite extends React.Component {
 	constructor(props) {
@@ -46,10 +42,7 @@ export default class PostWrite extends React.Component {
 	}
 
 	deletePostImg (pos) {
-		console.log('é pra apagar qual: ', pos);
-		console.log('antes:', this.state.postImages);
-		let images = [];
-		images = this.state.postImages;
+		let images = this.state.postImages;
 		let newImg = [];
 		for (let i = 0; i < images.length; i++) {
 			if (i != pos) {
@@ -57,8 +50,6 @@ export default class PostWrite extends React.Component {
 			}
 		}
 		this.setState({postImages: newImg, videoIncluded: false, gifIncluded: false});
-		console.log('o que vem daqui? ', Object.assign([], newImg));
-		console.log('Depois, ', this.state.postImages);
 	}
 
 	doPost = async () => {
@@ -229,7 +220,7 @@ export default class PostWrite extends React.Component {
 							response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
 							RNPhotoEditor.Edit({
 								path: response.path,
-								onDone: (a) => {
+								onDone: () => {
 									let images = this.state.postImages;
 									images.push(response);
 									this.setState({postImages: images});
@@ -240,7 +231,6 @@ export default class PostWrite extends React.Component {
 				});
 			}
 		} catch (err) {
-			console.warn(err);
 		}
 	}
 
@@ -423,7 +413,7 @@ export default class PostWrite extends React.Component {
 						<ProgressBar size="large" visible={this.state.activity} indeterminate color={theme.primary}/>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={this.props.close}>
-								<View style = {{ width: width * 0.1, height: height * 0.03, marginTop: height * 0.005 }}>
+								<View style = {{ width: theme.width * 0.1, height: theme.height * 0.03, marginTop: theme.height * 0.005 }}>
 									<Image
 										source={require('../../../../../assets/images/times-solid.png')}
 										style={{width: 20, height: 20,marginRight:5}}
@@ -431,12 +421,11 @@ export default class PostWrite extends React.Component {
 								</View>
 							</TouchableOpacity>
 						</View>
-						{/*<UserImgProfile circular height={50} width={50} uri={heimdallr.user_image}/>*/}
-						<View style = {{borderColor: '#f2f2f2', borderBottomWidth: 2, marginTop: height * 0.02 }}>
+						<View style = {{borderColor: '#f2f2f2', borderBottomWidth: 2, marginTop: theme.height * 0.02 }}>
 							<TextInput
-								style={{width: width * 0.9,
+								style={{width: theme.width * 0.9,
 									alignSelf:'center',
-									height: this.state.postImages.length > 0 ? height * 0.38 : height * 0.69,
+									height: this.state.postImages.length > 0 ? theme.height * 0.38 : theme.height * 0.69,
 								}}
 								onChangeText={text => this.setState({postText: text})}
 								onImageChange={this._onImageChange}
@@ -473,8 +462,8 @@ export default class PostWrite extends React.Component {
 								/>
 							</TouchableOpacity>
 						</View>
-						<View style={{marginTop:5, width: width * 0.9, alignSelf:'center'}}>
-							<FatBottomedButton backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
+						<View style={{marginTop:5, width: theme.width * 0.9, alignSelf:'center'}}>
+							<FatBottomedButton backgroundColor = {theme.primary} color={theme.secondary} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
 				</View>
@@ -486,7 +475,7 @@ export default class PostWrite extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		height: height,
+		height: theme.height,
 		alignItems: 'center',
 		alignContent: 'center',
 		position: 'absolute',
@@ -494,26 +483,11 @@ const styles = StyleSheet.create({
 		zIndex: 99999
 	},
 	header: {
-		width: width,
+		width: theme.width,
 		height: 20,
 		alignItems: 'flex-end',
 		padding: 4,
 		marginTop: 10,
-	},
-	postWriter: {
-		// width: width + 10,
-		// borderBottomWidth: 1,
-		// borderColor: theme.primary,
-		// height: this.state.postImages.length > 0 ? 300 : 500,
-	},
-	imageButtonSelect: {
-		height: height * 0.1,
-		width: width + 10,
-		marginTop: 2,
-		justifyContent: 'center',
-		alignItems: 'center',
-		alignContent: 'center',
-		backgroundColor: 'rgba(99, 96, 96, 0.2)',
 	},
 	deleteImgIcon: {
 		width: 20,
