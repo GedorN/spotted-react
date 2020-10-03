@@ -186,7 +186,7 @@ export default class FirstStep extends React.Component {
 					</View>
 				</View>
 				<View style={{paddingBottom: 20}}>
-					<FatBottomedButton text='Acançar' backgroundColor={theme.primary} color={theme.secondary} onTap={this.goToForward.bind(this)}/>
+					<FatBottomedButton text='Avançar' backgroundColor={theme.primary} color={theme.secondary} onTap={this.goToForward.bind(this)}/>
 				</View>
 			</KeyboardAvoidingView>
 		)
