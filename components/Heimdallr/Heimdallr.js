@@ -146,12 +146,12 @@ function HeimdallrLib() {
 	this.updateUserMessages = (index) => {
 		firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 			async (result) => {
-				let messages = await AsyncStorage.getItem('user_messages');
-				messages = JSON.parse(messages);
-				messages[index].viewed = true;
-				firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
-					messages: messages,
-				}, {merge: true});
+				// let messages = await AsyncStorage.getItem('user_messages');
+				// messages = JSON.parse(messages);
+				// messages[index].viewed = true;
+				// firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
+				// 	messages: messages,
+				// }, {merge: true});
 
 			}
 		)
@@ -738,7 +738,7 @@ function HeimdallrLib() {
                       this.user_name = user._user.displayName;
 					  this.email = user._user.email;
                       this.getUserData(user);
-	                  AsyncStorage.setItem('uid', user._user.id);
+	                  // AsyncStorage.setItem('uid', user._user.id);
 	                  u = user;
                   } else {
                       return false;
@@ -759,7 +759,7 @@ function HeimdallrLib() {
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
-			  AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
+			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
 	  )
