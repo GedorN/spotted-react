@@ -15,6 +15,7 @@ import ThirdStep from "./ThirdStep";
 import AnimatedLoader from "react-native-animated-loader";
 var interval = null;
 var RNFS = require('react-native-fs');
+var backButtonListner = null;
 
 
 
@@ -111,7 +112,8 @@ export default  class SignUp extends React.Component {
 		let result = heimdallr.signUp(params);
 		result.then(
 			(resolve) => {
-					this.saveUser(resolve);
+				backButtonListner.remove();
+				this.saveUser(resolve);
 			},
 			(reject) => {
 				if (reject.message ==  "The email address is already in use by another account.") {
@@ -209,16 +211,12 @@ export default  class SignUp extends React.Component {
 
 	componentDidMount(): void {
 		// Tratamento para click de voltar quando se está na raiz no pp
-		BackHandler.addEventListener('hardwareBackPress', () => {
+		backButtonListner = BackHandler.addEventListener('hardwareBackPress', () => {
 			if (this.state.currentStep > 0) {
 				this.goBack();
 				return true;
 			}
 		})
-	}
-
-	componentWillUnmount(): void {
-		BackHandler.removeEventListener('hardwareBackPress');
 	}
 
 	updateUser = (user) => {
@@ -253,9 +251,11 @@ export default  class SignUp extends React.Component {
 	}
 
 	goBack = () => {
+		console.warn('estou no goBack');
 		switch (this.state.currentStep) {
 			case 1:
 				this.setState({ pastStep: 1, currentStep: 0 });
+				backButtonListner.remove();
 				const resetAction = StackActions.reset({
 					index: 0,
 					actions: [NavigationActions.navigate({ routeName: 'Home' })],
