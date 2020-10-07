@@ -9,6 +9,7 @@ import collectionsStructures from "./CollectionsStructure";
 import UUIDGenerator from 'react-native-uuid-generator';
 import AsyncStorage from "@react-native-community/async-storage";
 import RNFetchBlob from 'rn-fetch-blob';
+import {Linking} from 'react-native';
 
 function HeimdallrLib() {
   this.user_id = /*'Yt5eZ0SGpy1U9QPTmIbI'*/ null;
@@ -1354,6 +1355,8 @@ function HeimdallrLib() {
 						docName: remoteMessage.notification._data.board,
 						origin: 'notification'
 					});
+				} else if (remoteMessage.notification._data.url) {
+					Linking.openURL(remoteMessage.notification._data.url)
 				}
 			}
 		)
