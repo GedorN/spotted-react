@@ -38,7 +38,7 @@ export default class AboutUs extends React.Component {
 				</View>
 				<View style={styles.body}>
 					<Text style= {{textAlign:'justify'}}>
-						Somos alunos do Curso de Sistemas de Informação da UTFPR. Desenvolvemos o Spotted como um meio melhor para conectar a universidade e deixar seus serviços mais acessíveis. Esperamos que estajam gostando ;)
+						Somos alunos do Curso de Sistemas de Informação da UTFPR. Desenvolvemos o Spotted como um meio melhor para conectar a universidade e deixar seus serviços mais acessíveis. Esperamos que estejam gostando ;)
 					</Text>
 					<Text style={{marginTop: theme.height * 0.025,fontWeight:'bold',marginBottom:theme.height * 0.02 ,alignSelf:'center'}}>
 						Desenvolvedores e responsáveis pelo Spotted:
