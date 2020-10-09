@@ -291,6 +291,7 @@ function HeimdallrLib() {
 			    	firebase.firestore().collection('rel_user_notification').doc(result.docs[0]._ref.path.split('/')[1]).set({
 					    counter: 0,
 				    }, {merge: true});
+				    firebase.functions().httpsCallable('resetUserNotifications')({uid:uid});
 			    },
 			    () => {}
 		    )

@@ -22,6 +22,9 @@ export default class Notification extends React.Component {
     }
 
     goToUserProfile = () => {
+		if (this.props.origin === 'spotted') {
+			return ;
+		}
 		 this.props.navigation.push('UserProfile', {
 			userId: this.props.uid_notification,
 		});
