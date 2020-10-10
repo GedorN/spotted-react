@@ -1422,6 +1422,22 @@ function HeimdallrLib() {
 			)
         })
 	}
+
+	this.setLastSeen =  function () {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+				async (result) => {
+					let time = await this.getServerTime();
+					firebase.firestore().collection('user').doc(result.docs[0]._ref.id).set({
+						lastSeen: time,
+					}, {merge: true});
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+		})
+	}
 }
 
 const heimdallr = new HeimdallrLib();

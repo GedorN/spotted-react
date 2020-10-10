@@ -3,7 +3,6 @@ import {
 	StyleSheet,
 	View,
 	Text,
-	TouchableOpacity,
 	Image,
 } from 'react-native';
 
@@ -19,11 +18,13 @@ export default class LikeAPrayer extends React.Component{
 			opacityValueScrolling: 1,
 			price: '',
 			partnersPlan: null,
+			stock: 1,
 		}
 	}
 	componentDidMount(): void {
 		this.state.price = this.props.product.price;
 		this.state.partnersPlan = this.props.partnersPlan;
+		this.state.stock = this.props.product.stock;
 
 		if(this.props.validPlan){
 
@@ -57,12 +58,13 @@ export default class LikeAPrayer extends React.Component{
 
 	render() {
 		return (
-			<View style={styles.container}>
+			<View style={{ ...styles.container, opacity: this.state.stock > 0 ? 1 : 0.7}}>
 				<Ripple
 					rippleOpacity={0.42}
 					rippleColor="rgba(143, 143, 143, .8)"
 					onPress={this.goToProductScreen.bind(this)}
 					activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue}
+					disabled={this.state.stock <= 0}
 				>
 					<View>
 						<View style={{
@@ -102,7 +104,7 @@ export default class LikeAPrayer extends React.Component{
 								source={{ uri: this.props.product && this.props.product.images ? this.props.product.images[0] : null}}
 							/>
 						</View>
-						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ ('Valor: R$ ' + (parseFloat(this.state.price) * 1.16).toFixed(2).toString().replace('.',','))}</Text>
+						<Text style = {{fontWeight:'bold', color:'#8f8f8f', alignSelf:'center'}}>{ this.state.stock > 0 ? ('Valor: R$ ' + (parseFloat(this.state.price) * 1.16).toFixed(2).toString().replace('.',',')) : 'ESGOTADO'}</Text>
 					</View>
 				</Ripple>
 			</View>

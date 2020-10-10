@@ -153,6 +153,7 @@ export default class MainScreen extends React.Component {
 		heimdallr.testLink(this.props.navigation);
 		heimdallr.getDeviceToken();
 		heimdallr.testNotification(this.props.navigation);
+		heimdallr.setLastSeen();
 		// Método para mostar notificações ao usuário
 		// let messages= await AsyncStorage.getItem('user_messages');
 		// 	messages = JSON.parse(messages)
