@@ -30,7 +30,7 @@ export default class CarouselModaFoka extends React.Component {
 	}
 
 	disableModal () {
-		this.setState({ showImages: false });
+		this.setState({ showImageFull: false });
 	}
 
 	showImageFull = (image) => {
