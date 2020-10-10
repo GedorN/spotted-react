@@ -56,7 +56,6 @@ export default class Store extends React.Component {
 				(resolve) => {
 					if (resolve.docs.length > 0) {
 						let mappedDocs =  resolve.docs.map((d) => d._data);
-						mappedDocs = mappedDocs.filter((i) => i.stock > 0);
 						this.setState({ products: mappedDocs, filteredProducts: mappedDocs, loaded: true });
 					}
 				}
@@ -287,7 +286,7 @@ export default class Store extends React.Component {
 									/>
 								}
 								renderItem={({item}) =>
-									<View style = {{width:theme.width*0.49, marginBottom:theme.width*0.07}}>
+									<View style = {{width: theme.width * 0.49, marginBottom: theme.width * 0.07}}>
 										<LikeAPrayerductViewer
 											scrolling={scrolling}
 											product={item}
