@@ -121,7 +121,6 @@ export default class Store extends React.Component {
 			(resolve) => {
 				if (resolve.docs.length > 0) {
 					let mappedDocs =  resolve.docs.map((d) => d._data);
-					mappedDocs = mappedDocs.filter((i) => i.stock > 0);
 					this.setState({ products: mappedDocs, filteredProducts: mappedDocs, isRefreshing: false });
 				}
 			}
