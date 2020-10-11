@@ -76,7 +76,7 @@ export default class ProductScreen extends React.Component {
 		this.props.navigation.addListener('willFocus', () => {
 			this.createListener();
 		});
-
+		
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 
 		heimdallr.getProduct(this.state.iidProduct).then(
@@ -90,9 +90,8 @@ export default class ProductScreen extends React.Component {
 
 				if(heimdallr.userPlans != null && heimdallr.userPlans[resolve.sid]){
 					userPlans =  heimdallr.userPlans[resolve.sid];
-
 					// verifica se o plano ainda está dentro da validade
-					if (today < userPlans[0].due_date && userPlans[0].active === 1) {
+					if (today < userPlans[0].due_date && userPlans[0].active === 1 && !resolve.no_plan_discount) {
 						// verifica se o desconte deve ser absoluto ou porcentagem
 						if( userPlans[0].type === 0 ){
 							let newPrice = original_price - (original_price * ((userPlans[0].value)/100));
@@ -165,7 +164,7 @@ export default class ProductScreen extends React.Component {
 				let today = await heimdallr.getServerTime();
 				let userPlans = null;
 
-				if(heimdallr.userPlans != null && heimdallr.userPlans[resolve.sid]){
+				if(heimdallr.userPlans != null && heimdallr.userPlans[resolve.sid] && !resolve.no_plan_discount){
 					userPlans =  heimdallr.userPlans[resolve.sid];
 
 					// verifica se o plano ainda está dentro da validade
