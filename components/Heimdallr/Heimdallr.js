@@ -415,6 +415,23 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.getNominalCoupons = (code) => {
+  	    return new Promise((resolve, reject) => {
+  	    	firebase.firestore().collection('nominal_coupons').where('hash', '==', code).get().then(
+		        (result) => {
+		        	if (result && result.docs && result.docs.length > 0) {
+		        		resolve(result.docs.map(i => i.data()));
+			        } else {
+		        	    resolve([]);
+			        }
+		        },
+		        () => {
+		        	reject();
+		        }
+	        )
+        });
+	}
+
 	this.StoreCoupons = function (saveCoupons,store){
 		return new Promise((resolve, reject) => {
 			try {

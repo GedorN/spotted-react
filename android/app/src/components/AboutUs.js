@@ -56,7 +56,7 @@ export default class AboutUs extends React.Component {
 								Contato:
 							</Text>
 							<Text style={{fontSize: 11}}>
-								contato@camilaantiqueira.dev
+								camila@spottedutfpr.com
 							</Text>
 							<Text style = {{marginTop:theme.height * 0.004}}>
 								(41) 98450-5660
@@ -75,7 +75,7 @@ export default class AboutUs extends React.Component {
 								Contato:
 							</Text>
 							<Text style={{fontSize: 12}}>
-								contato@gedor.dev
+								gedor@spottedutfpr.com
 							</Text>
 							<Text style = {{marginTop:theme.height * 0.004}}>
 								(41) 99804-6357

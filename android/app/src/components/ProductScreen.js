@@ -76,7 +76,7 @@ export default class ProductScreen extends React.Component {
 		this.props.navigation.addListener('willFocus', () => {
 			this.createListener();
 		});
-		
+
 		this.state.iidProduct =  this.props.navigation.getParam('iid');
 
 		heimdallr.getProduct(this.state.iidProduct).then(
@@ -560,14 +560,9 @@ export default class ProductScreen extends React.Component {
 		}
 	}
 
-	setPromotionalCode = () => {
-		if (!this.state.texInputCode) {
-			return ;
-		}
-		this.setState({ settingPromotionalCode: true, warning: null, discountApplied: false});
-		let coupons = null;
+	verifyGeneralCoupons = () => {
 		let coupon = null;
-
+		let coupons = null;
 		heimdallr.getCoupons('spotted').then((result) =>{
 
 			coupons = result;
@@ -641,7 +636,63 @@ export default class ProductScreen extends React.Component {
 
 			}
 		})
+	}
 
+	setPromotionalCode = () => {
+		if (!this.state.texInputCode) {
+			return ;
+		}
+		this.setState({ settingPromotionalCode: true, warning: null, discountApplied: false});
+
+		heimdallr.getNominalCoupons(this.state.texInputCode).then(
+			(result) => {
+				if (result.length > 0) {
+					let coupon = result.filter((i) => (i.user === heimdallr.phone || i.user === heimdallr.email) && (i.store_code === this.state.product.sid || i.store_code === 'spotted') && i.active );
+					if (coupon.length > 0) {
+						coupon = coupon[0];
+						if (coupon.quantity > 0) {
+							if (coupon.store_code === 'spotted') {
+								let discount = ((coupon.value / 100) * this.state.PicPayPrice);
+								let finalValue = ((this.state.PicPayPrice - discount).toFixed(2));
+								if (finalValue <= 0) {
+									finalValue = 0;
+								}
+								this.setState({discountPicPayPrice : finalValue, discountApplied : true, newCoupon : coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false,discountPriceWithoutTax : this.state.storePrice});
+							} else {
+
+								if(coupon.type === 0){
+									let discount = ((coupon.value / 100) * this.state.PicPayPrice);
+									const no_tax_discount = ((coupon.value / 100) * this.state.price_without_tax);
+									this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true, newCoupon : coupon, discountPriceWithoutTax : (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
+								}
+								else {
+									let tempDiscountPriceWithoutTax = parseFloat(parseFloat(this.state.price_without_tax) - parseFloat(coupon.value)).toFixed(2);
+									let finalValue = parseFloat(parseFloat(this.state.PicPayPrice) - parseFloat(coupon.value)).toFixed(2);
+									if (finalValue <= 0) {
+										finalValue = 0
+									}
+									if (tempDiscountPriceWithoutTax <= 0) {
+										tempDiscountPriceWithoutTax = 0;
+									}
+									this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon, discountPriceWithoutTax :tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false });
+								}
+
+							}
+						} else {
+							this.setState({warning : 'Cupom esgotado', settingPromotionalCode: false, discountApplied : false});
+						}
+
+					} else {
+						this.verifyGeneralCoupons();
+					}
+				} else {
+					this.verifyGeneralCoupons();
+				}
+			},
+			() => {
+				this.verifyGeneralCoupons();
+			}
+		);
 	}
 
 	receivePromotionalCode = (value) => {
