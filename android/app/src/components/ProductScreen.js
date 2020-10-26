@@ -562,7 +562,7 @@ export default class ProductScreen extends React.Component {
 			} else {
 				heimdallr.getCoupons( this.state.product.sid ).then((resolve) => {
 					if (!result) {
-						this.setState({warning:'Código inválido', settingPromotionalCode: false, discountApplied : false, texInputCode: null});
+						this.setState({warning:'Código inválido', settingPromotionalCode: false, discountApplied : false, texInputCode: null, nominalDiscountApplied: false});
 						return ;
 					}
 					coupons = resolve;
@@ -570,7 +570,7 @@ export default class ProductScreen extends React.Component {
 
 					if (coupon) {
 						if(coupon.quantity === 0){
-							this.setState({warning : 'Cupom esgotado', settingPromotionalCode: false, discountApplied : false});
+							this.setState({warning : 'Cupom esgotado', settingPromotionalCode: false, discountApplied : false, nominalDiscountApplied: false});
 						} else if (!coupon.active) {
 							this.setState({warning : 'Cupom fora da validade', settingPromotionalCode: false, discountApplied : false, nominalDiscountApplied: false,});
 						} else {
@@ -591,17 +591,17 @@ export default class ProductScreen extends React.Component {
 										if (tempDiscountPriceWithoutTax <= 0) {
 											tempDiscountPriceWithoutTax = 0;
 										}
-										this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon, discountPriceWithoutTax :tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.hash });
+										this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon, discountPriceWithoutTax :tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.hash, nominalDiscountApplied: false });
 									}
 								} else{
-									this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false, texInputCode: null});
+									this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false, texInputCode: null, nominalDiscountApplied: false});
 								}
 							});
 
 						}
 					}
 					else {
-						this.setState({warning:'Código inválido', settingPromotionalCode: false, discountApplied : false, texInputCode: null});
+						this.setState({warning:'Código inválido', settingPromotionalCode: false, discountApplied : false, texInputCode: null, nominalDiscountApplied: false});
 					}
 				})
 
