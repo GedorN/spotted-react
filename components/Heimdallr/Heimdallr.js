@@ -597,7 +597,7 @@ function HeimdallrLib() {
 	this.saveTicketsRegister = function (item){
 		return new Promise((resolve) => {
 			try{
-				firebase.firestore().collection('tickets').add({
+				firebase.firestore().collection('tickets').doc(item.referenceId).set({
 					...item
 				}).then(
 					(res) => {
@@ -1454,6 +1454,24 @@ function HeimdallrLib() {
 				}
 			)
 		})
+	}
+
+	this.saveNominalCouponUsage = function (hash) {
+		return new Promise((resolve, reject) => {
+			console.warn('hash: ', hash);
+			firebase.firestore().collection('nominal_coupons').doc(hash).get().then(
+				(result) => {
+					console.warn('achei aqui', result.data());
+					let quantity = result.data().quantity - 1;
+					firebase.firestore().collection('nominal_coupons').doc(hash).set({
+						quantity: quantity
+					}, {merge: true});
+				},
+				(error) => {
+
+				}
+			)
+		});
 	}
 }
 
