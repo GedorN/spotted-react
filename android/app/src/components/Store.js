@@ -48,7 +48,7 @@ export default class Store extends React.Component {
 	}
 
 
-	componentDidMount(): void {
+	componentDidMount() {
 		this.createListener();
 
 		this.verifyPlan().then(() => {
@@ -121,7 +121,6 @@ export default class Store extends React.Component {
 			(resolve) => {
 				if (resolve.docs.length > 0) {
 					let mappedDocs =  resolve.docs.map((d) => d._data);
-					mappedDocs = mappedDocs.filter((i) => i.stock > 0);
 					this.setState({ products: mappedDocs, filteredProducts: mappedDocs, isRefreshing: false });
 				}
 			}
@@ -137,8 +136,7 @@ export default class Store extends React.Component {
 
 			if(heimdallr.userPlans != null && heimdallr.userPlans[store_code]){
 				userPlans = heimdallr.userPlans[store_code];
-
-				if (today < userPlans[0].due_date && userPlans[0].active === 1) {
+				if (today < userPlans[0].due_date && userPlans[0].active === 1 ) {
 					this.setState({
 						validPlan: true,
 						discount: userPlans[0].value,

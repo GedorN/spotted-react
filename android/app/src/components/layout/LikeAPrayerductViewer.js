@@ -21,12 +21,12 @@ export default class LikeAPrayer extends React.Component{
 			stock: 1,
 		}
 	}
-	componentDidMount(): void {
+	componentDidMount() {
 		this.state.price = this.props.product.price;
 		this.state.partnersPlan = this.props.partnersPlan;
 		this.state.stock = this.props.product.stock;
 
-		if(this.props.validPlan){
+		if(this.props.validPlan && !this.props.product.no_plan_discount){
 
 			this.planDiscount();
 		} else {

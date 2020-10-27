@@ -415,6 +415,23 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.getNominalCoupons = (code) => {
+  	    return new Promise((resolve, reject) => {
+  	    	firebase.firestore().collection('nominal_coupons').where('hash', '==', code).get().then(
+		        (result) => {
+		        	if (result && result.docs && result.docs.length > 0) {
+		        		resolve(result.docs.map(i => i.data()));
+			        } else {
+		        	    resolve([]);
+			        }
+		        },
+		        () => {
+		        	reject();
+		        }
+	        )
+        });
+	}
+
 	this.StoreCoupons = function (saveCoupons,store){
 		return new Promise((resolve, reject) => {
 			try {
@@ -580,7 +597,7 @@ function HeimdallrLib() {
 	this.saveTicketsRegister = function (item){
 		return new Promise((resolve) => {
 			try{
-				firebase.firestore().collection('tickets').add({
+				firebase.firestore().collection('tickets').doc(item.referenceId).set({
 					...item
 				}).then(
 					(res) => {
@@ -1437,6 +1454,24 @@ function HeimdallrLib() {
 				}
 			)
 		})
+	}
+
+	this.saveNominalCouponUsage = function (hash) {
+		return new Promise((resolve, reject) => {
+			console.warn('hash: ', hash);
+			firebase.firestore().collection('nominal_coupons').doc(hash).get().then(
+				(result) => {
+					console.warn('achei aqui', result.data());
+					let quantity = result.data().quantity - 1;
+					firebase.firestore().collection('nominal_coupons').doc(hash).set({
+						quantity: quantity
+					}, {merge: true});
+				},
+				(error) => {
+
+				}
+			)
+		});
 	}
 }
 
