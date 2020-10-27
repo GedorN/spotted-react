@@ -70,6 +70,7 @@ export default class ProductScreen extends React.Component {
 			discountPriceWithoutTax: null,
 			currentPlan: false,
 			couponHash: null,
+			couponSource: null,
 		}
 	}
 
@@ -326,8 +327,10 @@ export default class ProductScreen extends React.Component {
 
 				if (this.state.nominalDiscountApplied) {
 					params.nominalCoupon = this.state.couponHash;
+					params.couponSource = this.state.couponSource;
 				} else if (this.state.discountApplied) {
 					params.couponHash = this.state.couponHash;
+					params.couponSource = this.state.couponSource;
 				}
 
 				axios({
@@ -553,7 +556,7 @@ export default class ProductScreen extends React.Component {
 							if (finalValue <= 0) {
 								finalValue = 0;
 							}
-							this.setState({discountPicPayPrice : finalValue, discountApplied : true, nominalDiscountApplied: false, newCoupon : coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false,discountPriceWithoutTax : this.state.storePrice, couponHash: coupon.hash });
+							this.setState({discountPicPayPrice : finalValue, discountApplied : true, nominalDiscountApplied: false, newCoupon : coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false,discountPriceWithoutTax : this.state.storePrice, couponHash: coupon.hash, couponSource: 'spotted' });
 						} else {
 							this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false, nominalDiscountApplied: false, texInputCode: null });
 						}
@@ -580,7 +583,7 @@ export default class ProductScreen extends React.Component {
 									if(coupon.type === 0){
 										let discount = ((coupon.value / 100) * this.state.PicPayPrice);
 										const no_tax_discount = ((coupon.value / 100) * this.state.price_without_tax);
-										this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true, newCoupon : coupon, discountPriceWithoutTax : (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.hash, nominalDiscountApplied: false });
+										this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied : true, newCoupon : coupon, discountPriceWithoutTax : (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.hash, nominalDiscountApplied: false, couponSource: this.state.product.sid });
 									}
 									else {
 										let tempDiscountPriceWithoutTax = parseFloat(parseFloat(this.state.price_without_tax) - parseFloat(coupon.value)).toFixed(2);
@@ -591,7 +594,7 @@ export default class ProductScreen extends React.Component {
 										if (tempDiscountPriceWithoutTax <= 0) {
 											tempDiscountPriceWithoutTax = 0;
 										}
-										this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon, discountPriceWithoutTax :tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.hash, nominalDiscountApplied: false });
+										this.setState({discountPicPayPrice: finalValue, discountApplied : true, newCoupon : coupon, discountPriceWithoutTax :tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.hash, nominalDiscountApplied: false, couponSource: this.state.product.sid });
 									}
 								} else{
 									this.setState({warning : 'Código já utilizado', settingPromotionalCode: false, discountApplied : false, texInputCode: null, nominalDiscountApplied: false});
@@ -628,13 +631,13 @@ export default class ProductScreen extends React.Component {
 								if (finalValue <= 0) {
 									finalValue = 0;
 								}
-								this.setState({discountPicPayPrice : finalValue, nominalDiscountApplied: true, discountApplied: true, newCoupon: coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, discountPriceWithoutTax: this.state.storePrice , couponHash: coupon.id });
+								this.setState({discountPicPayPrice : finalValue, nominalDiscountApplied: true, discountApplied: true, newCoupon: coupon, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, discountPriceWithoutTax: this.state.storePrice , couponHash: coupon.id, couponSource: 'spotted' });
 							} else {
 
 								if(coupon.type === 0){
 									let discount = ((coupon.value / 100) * this.state.PicPayPrice);
 									const no_tax_discount = ((coupon.value / 100) * this.state.price_without_tax);
-									this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied: true, nominalDiscountApplied: true, newCoupon: coupon, discountPriceWithoutTax: (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.id });
+									this.setState({discountPicPayPrice : (this.state.PicPayPrice - discount), discountApplied: true, nominalDiscountApplied: true, newCoupon: coupon, discountPriceWithoutTax: (this.state.price_without_tax - no_tax_discount), warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.id, couponSource: this.state.product.sid });
 								}
 								else {
 									let tempDiscountPriceWithoutTax = parseFloat(parseFloat(this.state.price_without_tax) - parseFloat(coupon.value)).toFixed(2);
@@ -645,7 +648,7 @@ export default class ProductScreen extends React.Component {
 									if (tempDiscountPriceWithoutTax <= 0) {
 										tempDiscountPriceWithoutTax = 0;
 									}
-									this.setState({discountPicPayPrice: finalValue, nominalDiscountApplied: true, discountApplied: true, newCoupon: coupon, discountPriceWithoutTax: tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.id });
+									this.setState({discountPicPayPrice: finalValue, nominalDiscountApplied: true, discountApplied: true, newCoupon: coupon, discountPriceWithoutTax: tempDiscountPriceWithoutTax, warning: 'Desconto aplicado ;)', settingPromotionalCode: false, couponHash: coupon.id, couponSource: this.state.product.sid });
 								}
 
 							}
