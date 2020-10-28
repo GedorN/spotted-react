@@ -509,11 +509,9 @@ function HeimdallrLib() {
 					() => {
 						firebase.auth().currentUser.delete().then(
 							(success) => {
-								firebase.firestore().collection('user').where('uid', '==', this.user_id).then(
+								firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 									(res) => {
-										firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
-											deleted: true,
-										}, {merge: true});
+										firebase.firestore().collection('user').doc(res.docs[0]._ref.id).delete();
 									}
 								);
 								this.logCall('deleteUser', { user: user }, success);
@@ -564,11 +562,11 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
 	  firebase.auth().currentUser.delete().then(
 		  (success) => {
-		  	this.logCall('deleteConectedUser', {}, success);
+		  	this.logCall('deleteConectedUser', {user: this.user_name, uid: this.user_id, email: this.email}, success);
 		    resolve(success);
 		  },
 		  (error) => {
-			  this.logCall('deleteConectedUser', {}, error);
+			  this.logCall('deleteConectedUser -error', {user: this.user_name, uid: this.user_id, email: this.email}, error);
 			  reject(error);
 		  }
 	  )
