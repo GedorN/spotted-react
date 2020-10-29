@@ -18,6 +18,7 @@ import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
+import { FAB } from 'react-native-paper';
 const PULL_QUANTITY = 100;
 
 
@@ -41,6 +42,7 @@ export default class UserProfile extends React.Component {
 			showAlert: false,
 			deletePost: '',
 			showDeleteAlert: false,
+			phoneAlert: false,
 		};
 	}
 
@@ -120,6 +122,25 @@ export default class UserProfile extends React.Component {
 		}
 	}
 
+	showPhoneAlert = () => {
+
+		this.setState({ phoneAlert: true });
+	}
+
+	askForPhone = async () => {
+		const requestPhone = {};
+		requestPhone.sender_id = heimdallr.user_id;
+		requestPhone.receiver_id = this.state.userId;
+		requestPhone.reading_status = false;
+		requestPhone.allowed = false;
+		requestPhone.date = await heimdallr.getServerTime();
+
+		heimdallr.savePhoneRequest(requestPhone);
+
+		this.setState({phoneAlert: false});
+
+	}
+
 	renderFooter = () =>  {
 		if (!this.state.endPulling) {
 			return (
@@ -195,89 +216,103 @@ export default class UserProfile extends React.Component {
 			<View style={{}}>
 				{ this.state.findUser ?
 					<View>
-						<Modal
-							visible={this.state.showImage}
-							transparent={true}
-							onRequestClose={() => {
-								this.setState({ showImage: false });
-							}}
-						>
-							<ImageViewer
-								imageUrls={this.state.userImageUrl? this.state.userImageUrl: null}
-								swipeDownThreshold={0.5}
-								enableSwipeDown={true}
-								onSwipeDown={() => {this.setState({ showImage: false })}}
-							/>
-						</Modal>
-						<FlatList
-						data = {this.state.posts}
-						onScrollEndDrag={() => this.setState({ scrolling: false })}
-						onScrollBeginDrag={() => this.setState({ scrolling: true })}
-						renderItem={ ({item}) =>
-								item.anonymous !== true &&
-								<PostViewer
-									confirmPostRm={this.deletePostConfirm.bind(this)}
-									closeAlert={this.confirmReport.bind(this)}
-									video={item.video ? true : false}
-									text={item.text}
-									pid={item.pid}
-									elapsed_time={item.elapsed_time}
-									uid={item.uid}
-									images={item.images}
-									user={item.user_name}
-									userImage={item.user_image}
-									navigation={this.props.navigation}
-									scrolling={this.state.scrolling}
-									likes={item.likes}
-									liked_by={item.liked_by}
-									comments={item.comments}
+						<View>
+							<Modal
+								visible={this.state.showImage}
+								transparent={true}
+								onRequestClose={() => {
+									this.setState({ showImage: false });
+								}}
+							>
+								<ImageViewer
+									imageUrls={this.state.userImageUrl? this.state.userImageUrl: null}
+									swipeDownThreshold={0.5}
+									enableSwipeDown={true}
+									onSwipeDown={() => {this.setState({ showImage: false })}}
 								/>
-						}
-						ListHeaderComponent={() =>
-							<View style={styles.profileHeader}>
-								{
-									this.props.navigation.getParam('userId') &&
-									<View style = {{alignSelf:'flex-start'}}>
-										<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
-											<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
-												<Image
-													style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
-													source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
-												/>
-											</View>
+							</Modal>
+							<FlatList
+							data = {this.state.posts}
+							onScrollEndDrag={() => this.setState({ scrolling: false })}
+							onScrollBeginDrag={() => this.setState({ scrolling: true })}
+							renderItem={ ({item}) =>
+									item.anonymous !== true &&
+									<PostViewer
+										confirmPostRm={this.deletePostConfirm.bind(this)}
+										closeAlert={this.confirmReport.bind(this)}
+										video={item.video ? true : false}
+										text={item.text}
+										pid={item.pid}
+										elapsed_time={item.elapsed_time}
+										uid={item.uid}
+										images={item.images}
+										user={item.user_name}
+										userImage={item.user_image}
+										navigation={this.props.navigation}
+										scrolling={this.state.scrolling}
+										likes={item.likes}
+										liked_by={item.liked_by}
+										comments={item.comments}
+									/>
+							}
+							ListHeaderComponent={() =>
+								<View style={styles.profileHeader}>
+									{
+										this.props.navigation.getParam('userId') &&
+										<View style = {{alignSelf:'flex-start'}}>
+											<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+												<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
+													<Image
+														style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
+														source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+													/>
+												</View>
+											</TouchableOpacity>
+										</View>
+									}
+									<Image
+										style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
+										source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fsimbol.png?alt=media&token=59f607da-634a-4eae-b6fe-c3ef845c1a67' }}
+									/>
+									<View style = {{ marginTop: -(this.props.navigation.getParam('userId') ? theme.height * 0.03 : theme.height * 0.01 ) }}>
+										<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
+											<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
 										</TouchableOpacity>
 									</View>
-								}
-								<Image
-									style={{width: theme.width, height: 120, padding: 0, position: 'absolute', zIndex: -1, opacity: 0.2}}
-									source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/app-icons%2Fsimbol.png?alt=media&token=59f607da-634a-4eae-b6fe-c3ef845c1a67' }}
+									<View>
+										<Text style={{marginTop: 5}}>{this.state.userName}</Text>
+									</View>
+								</View>
+							}
+							refreshControl={
+								<RefreshControl
+									refreshing={this.state.isRefreshing}
+									onRefresh={this.onRefresh.bind(this)}
 								/>
-								<View style = {{ marginTop: -(this.props.navigation.getParam('userId') ? theme.height * 0.03 : theme.height * 0.01 ) }}>
-									<TouchableOpacity disabled={!this.state.userImage} onPress={() => {this.setState({ showImage: true })}}>
-										<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
-									</TouchableOpacity>
-								</View>
-								<View>
-									<Text style={{marginTop: 5}}>{this.state.userName}</Text>
-								</View>
-							</View>
-						}
-						refreshControl={
-							<RefreshControl
-								refreshing={this.state.isRefreshing}
-								onRefresh={this.onRefresh.bind(this)}
-							/>
-						}
-						keyExtractor={item => item.pid}
-						onEndReachedThreshold={0.3}
-						onEndReached={({ distanceFromEnd }) => {
-							this.pullMorePosts(distanceFromEnd);
-						}}
-						ListFooterComponent={ this.renderFooter.bind(this)}
+							}
+							keyExtractor={item => item.pid}
+							onEndReachedThreshold={0.3}
+							onEndReached={({ distanceFromEnd }) => {
+								this.pullMorePosts(distanceFromEnd);
+							}}
+							ListFooterComponent={ this.renderFooter.bind(this)}
 
-					/>
+							/>
+						</View>
+						{
+
+							this.state.userId != '' && heimdallr.email !== 'spotted@utfpr.com' && heimdallr.user_id != this.state.userId &&
+
+							<FAB
+								style={styles.fab}
+								small
+								icon={require('../../../../assets/images/mobile-alt-solid.png')}
+								onPress={this.showPhoneAlert.bind(this)}
+							/>
+
+						}
 					</View>
-					 :
+					:
 					 <View>
 						<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
 							<View style={{flexDirection: 'row', marginTop: theme.height * 0.01,  paddingLeft: theme.width * 0.02,width:theme.width * 0.2,height:theme.height * 0.04}}>
@@ -332,8 +367,26 @@ export default class UserProfile extends React.Component {
 					showConfirmButton={true}
 					confirmText= {"OK"}
 					confirmButtonColor={'green'}
+					cancelText = {"Não"}
 					onConfirmPressed={() => {
 						this.setState({ showAlert: false })
+					}}
+				/>
+
+				<AwesomeAlert
+					show={this.state.phoneAlert}
+					showProgress={false}
+					title= {"Deseja solicitar o telefone de " + this.state.userName + "?"}
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showConfirmButton={true}
+					confirmText= {"Sim"}
+					confirmButtonColor={'green'}
+					showCancelButton = {true}
+			  		cancelText = {"Não"}
+					onConfirmPressed={this.askForPhone.bind(this)}
+					onCancelPressed={() => {
+						this.setState({ phoneAlert: false })
 					}}
 				/>
 
@@ -357,4 +410,11 @@ const styles = StyleSheet.create({
 		height: 120,
 		padding: 10,
 	},
+	fab: {
+		position: 'absolute',
+		backgroundColor: '#a01722',
+		marginTop: theme.height * 0.55,
+		marginLeft: theme.width * 0.80,
+		padding: 5,
+	}
 });

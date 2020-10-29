@@ -1031,6 +1031,17 @@ function HeimdallrLib() {
 	    firebase.analytics().logEvent(eventName);
 	}
 
+
+	this.savePhoneRequest = function(params) {
+		firebase.firestore().collection("phone_request").add(params)
+		.then(function(docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch(function(error) {
+			console.log("Error adding document: ", error);
+		});
+	}
+
   this.saveCollection = function (collection, params) {
     let returnValue = null;
     return new Promise((resolve) => {
