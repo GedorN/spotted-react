@@ -633,10 +633,10 @@ function HeimdallrLib() {
 		  return `1d`;
 	  } else if (elapsedTime.split(' ')[2] === 'dias') {
 		  return `${elapsedTime.split(' ')[1]}d`;
-	  } else if (elapsedTime.split(' ')[1] === 'mes') {
-		  return `1mo`;
-	  } else if (elapsedTime.split(' ')[1] === 'meses') {
-		  return `${elapsedTime.split(' ')[1]}mo`;
+	  } else if (elapsedTime.split(' ')[2] === 'mês') {
+		  return `1m`;
+	  } else if (elapsedTime.split(' ')[2] === 'meses') {
+		  return `${elapsedTime.split(' ')[1]}m`;
 	  } else if (elapsedTime.split(' ')[1] === 'ano') {
 		  return `1y`;
 	  } else if (elapsedTime.split(' ')[1] === 'anos') {
