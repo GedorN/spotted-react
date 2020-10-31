@@ -132,7 +132,6 @@ function HeimdallrLib() {
 	}
 
 
-
 	this.getNotificationsNumber = function (context) {
   	    return new Promise((resolve) => {
   	    	firebase.firestore().collection('rel_user_notification').where('uid', '==', this.user_id).onSnapshot(
@@ -1033,13 +1032,47 @@ function HeimdallrLib() {
 
 
 	this.savePhoneRequest = function(params) {
-		firebase.firestore().collection("phone_request").add(params)
-		.then(function(docRef) {
-			console.log("Document written with ID: ", docRef.id);
+		let saved = false;
+		return new Promise((resolve, reject) => {
+		firebase.firestore().collection('phone_request').add(params)
+			.then((result) => {
+				console.log("Document written with ID: ", result.id);
+				saved = true
+				resolve();
+			},
+			(error) => {
+				reject(error);
+			})
+		}).then((resolve) => {
+			return saved;
 		})
-		.catch(function(error) {
-			console.log("Error adding document: ", error);
-		});
+	}
+
+	this.getPhoneRequestsReceived = function (receiverId) {
+		let docs = null;
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('phone_request').where('receiver_id', '==', receiverId).get().then(
+				(result) => {
+					let previous = null;
+					const phoneRequests = result.docs;
+
+					previous = phoneRequests.filter((item) => {return item._data.sender_id === this.user_id});
+					
+					if(previous.length > 0) {
+						docs = previous._data;
+					}
+					
+					resolve();
+					
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+
+		}).then(function (resolve) {
+			return docs;
+		})
 	}
 
   this.saveCollection = function (collection, params) {

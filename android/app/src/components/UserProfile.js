@@ -43,6 +43,9 @@ export default class UserProfile extends React.Component {
 			deletePost: '',
 			showDeleteAlert: false,
 			phoneAlert: false,
+			previousPhoneRequest: null,
+			showProgress: false,
+			phoneRequestMade: false,
 		};
 	}
 
@@ -53,6 +56,11 @@ export default class UserProfile extends React.Component {
 				(resolve) => {
 					if(resolve != null){
 						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
+						heimdallr.getPhoneRequestsReceived(this.state.userId).then(
+							(resolve) => {
+								this.setState({previousPhoneRequest: resolve});
+							}
+						);
 						heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
 							if(!resolve || resolve.length === 0){
@@ -128,16 +136,29 @@ export default class UserProfile extends React.Component {
 	}
 
 	askForPhone = async () => {
-		const requestPhone = {};
-		requestPhone.sender_id = heimdallr.user_id;
-		requestPhone.receiver_id = this.state.userId;
-		requestPhone.reading_status = false;
-		requestPhone.allowed = false;
-		requestPhone.date = await heimdallr.getServerTime();
+		if(this.state.phoneRequestMade) {
+			this.setState({phoneAlert: false});
+		}
+		else {
+			this.setState({showProgress: true, previousPhoneRequest: true});
+			const requestPhone = {};
+			requestPhone.sender_name = heimdallr.user_name;
+			requestPhone.sender_image = heimdallr.user_image;
+			requestPhone.sender_email = heimdallr.email;
+			requestPhone.sender_id = heimdallr.user_id;
+			requestPhone.receiver_id = this.state.userId;
+			requestPhone.reading_status = false;
+			requestPhone.allowed = false;
+			requestPhone.date = await heimdallr.getServerTime();
 
-		heimdallr.savePhoneRequest(requestPhone);
-
-		this.setState({phoneAlert: false});
+			heimdallr.savePhoneRequest(requestPhone).then(
+				(result) => {
+					if(result) {
+						this.setState({showProgress: false, phoneRequestMade: true});
+					}
+				}
+			);
+		}
 
 	}
 
@@ -301,7 +322,7 @@ export default class UserProfile extends React.Component {
 						</View>
 						{
 
-							this.state.userId != '' && heimdallr.email !== 'spotted@utfpr.com' && heimdallr.user_id != this.state.userId &&
+							this.state.userId != '' && this.state.previousPhoneRequest === null && heimdallr.email !== 'spotted@utfpr.com' && heimdallr.user_id != this.state.userId && 
 
 							<FAB
 								style={styles.fab}
@@ -375,14 +396,14 @@ export default class UserProfile extends React.Component {
 
 				<AwesomeAlert
 					show={this.state.phoneAlert}
-					showProgress={false}
-					title= {"Deseja solicitar o telefone de " + this.state.userName + "?"}
+					showProgress={this.state.showProgress}
+					title= {this.state.phoneRequestMade? "Solicitação enviada" : "Deseja solicitar o telefone de " + this.state.userName + "?"}
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showConfirmButton={true}
-					confirmText= {"Sim"}
+					confirmText= {this.state.phoneRequestMade? "Ok" : "Sim"}
 					confirmButtonColor={'green'}
-					showCancelButton = {true}
+					showCancelButton = {this.state.phoneRequestMade? false : true}
 			  		cancelText = {"Não"}
 					onConfirmPressed={this.askForPhone.bind(this)}
 					onCancelPressed={() => {
@@ -412,7 +433,7 @@ const styles = StyleSheet.create({
 	},
 	fab: {
 		position: 'absolute',
-		backgroundColor: '#a01722',
+		backgroundColor: theme.primary,
 		marginTop: theme.height * 0.55,
 		marginLeft: theme.width * 0.80,
 		padding: 5,
