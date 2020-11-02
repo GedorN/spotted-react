@@ -9,6 +9,8 @@ import {
 	ActivityIndicator,
 	RefreshControl,
 	Modal,
+	Animated,
+	Easing,
 } from 'react-native';
 
 import PostViewer from "../../../../components/General/PostViewer";
@@ -18,9 +20,11 @@ import theme from "../../../../components/General/Theme";
 import ImageViewer from "react-native-image-zoom-viewer";
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
-import { FAB } from 'react-native-paper';
+import RBSheet from "react-native-raw-bottom-sheet";
+import PostOptions from "./Inputs/PostOptions";
 const PULL_QUANTITY = 100;
 
+const spinValue = new Animated.Value(0);
 
 export default class UserProfile extends React.Component {
 	constructor(props) {
@@ -46,8 +50,13 @@ export default class UserProfile extends React.Component {
 			previousPhoneRequest: null,
 			showProgress: false,
 			phoneRequestMade: false,
+			spin: spinValue.interpolate({
+				inputRange: [0, 1],
+				outputRange: ['0deg', '-180deg']
+			})
 		};
 	}
+
 
 	componentDidMount = () => {
 		const user_id = this.props.navigation.getParam('userId');
@@ -230,6 +239,42 @@ export default class UserProfile extends React.Component {
 		);
 	}
 
+	openUserOptions = () => {
+		Animated.timing(
+			spinValue,
+			{
+				toValue: 1,
+				duration: 200,
+				easing: Easing.linear, // Easing is an additional import from react-native
+				useNativeDriver: true  // To make use of native driver for performance
+			}
+		).start();
+		this.RBSheet.open();
+		this.setState({ showUserOptions: true });
+	}
+
+	closeUserOptions = () => {
+		Animated.timing(
+			spinValue,
+			{
+				toValue: 0,
+				duration: 200,
+				easing: Easing.linear, // Easing is an additional import from react-native
+				useNativeDriver: true  // To make use of native driver for performance
+			}
+		).start();
+	}
+
+	goToMyPhoneSolicitations = () => {
+		this.RBSheet.close();
+		this.closeUserOptions();
+	}
+
+	newPhoneRequest = () => {
+		this.RBSheet.close();
+		this.closeUserOptions();
+	}
+
 
 	render() {
 		return (
@@ -279,13 +324,36 @@ export default class UserProfile extends React.Component {
 							ListHeaderComponent={() =>
 								<View style={styles.profileHeader}>
 									{
-										this.props.navigation.getParam('userId') &&
-										<View style = {{alignSelf:'flex-start'}}>
-											<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
-												<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
-													<Image
-														style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
-														source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+										this.props.navigation.getParam('userId') ?
+										<View style={{flexDirection: 'row', padding: 0, margin: 0, width: theme.width, justifyContent: 'space-between' }}>
+
+											<View style = {{alignSelf:'flex-start'}}>
+												<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+													<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
+														<Image
+															style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
+															source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+														/>
+													</View>
+												</TouchableOpacity>
+											</View>
+											<View style = {{alignSelf:'flex-end', alignItems: 'flex-end', positionRight: 5 }}>
+												<TouchableOpacity  onPress={this.openUserOptions.bind(this)}>
+													<View style={{width:20 , height:30 , marginTop: 6, marginRight: 4, alignItems: 'flex-end' }}>
+														<Animated.Image
+															style={{ width: 20, height: 30, transform: [{rotate: this.state.spin}] }}
+															source={require('../../../../assets/images/sort-down-solid.png')}
+														/>
+													</View>
+												</TouchableOpacity>
+											</View>
+										</View> :
+										<View style = {{alignSelf:'flex-end' }}>
+											<TouchableOpacity  onPress={this.openUserOptions.bind(this)}>
+												<View style={{width:20 , height:30 , marginTop: 6, marginRight: 4, alignItems: 'flex-end' }}>
+													<Animated.Image
+														style={{ width: 20, height: 30, transform: [{rotate: this.state.spin}] }}
+														source={require('../../../../assets/images/sort-down-solid.png')}
 													/>
 												</View>
 											</TouchableOpacity>
@@ -303,6 +371,7 @@ export default class UserProfile extends React.Component {
 									<View>
 										<Text style={{marginTop: 5}}>{this.state.userName}</Text>
 									</View>
+
 								</View>
 							}
 							refreshControl={
@@ -320,18 +389,6 @@ export default class UserProfile extends React.Component {
 
 							/>
 						</View>
-						{
-
-							this.state.userId != '' && this.state.previousPhoneRequest === null && heimdallr.email !== 'spotted@utfpr.com' && heimdallr.user_id != this.state.userId && 
-
-							<FAB
-								style={styles.fab}
-								small
-								icon={require('../../../../assets/images/mobile-alt-solid.png')}
-								onPress={this.showPhoneAlert.bind(this)}
-							/>
-
-						}
 					</View>
 					:
 					 <View>
@@ -410,6 +467,47 @@ export default class UserProfile extends React.Component {
 						this.setState({ phoneAlert: false })
 					}}
 				/>
+				<RBSheet
+					ref={ref => {
+						this.RBSheet = ref;
+					}}
+					onClose={this.closeUserOptions.bind(this)}
+					height={this.state.userId === heimdallr.user_id ? 170: 80}
+					animationType={'slide'}
+					duration={250}
+				>
+					{
+						this.state.userId === heimdallr.user_id &&
+						<View style={{ padding: 10,flexDirection: `column`, flex: 1 }}>
+							<TouchableOpacity
+								onPressIn={this.goToMyPhoneSolicitations.bind(this)}
+							>
+								<View style={{alignItems: 'center', justifyContent: 'center', fontSize: 18, height: theme.height * 0.1 }}>
+									<Text> Minhas solicitações de telefone </Text>
+								</View>
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPressIn={this.goToMyPhoneSolicitations.bind(this)}
+							>
+								<View style={{alignItems: 'center', justifyContent: 'center', fontSize: 18, height: theme.height * 0.1 }}>
+									<Text> Solicitações de telefone recebidas</Text>
+								</View>
+							</TouchableOpacity>
+						</View>
+					}
+					{
+						this.state.userId !== heimdallr.user_id &&
+						<View style={{ padding: 10,flexDirection: `column`, flex: 1 }}>
+							<TouchableOpacity
+								onPressIn={this.newPhoneRequest.bind(this)}
+							>
+								<View style={{alignItems: 'center', justifyContent: 'center', fontSize: 18, height: theme.height * 0.1 }}>
+									<Text> Pedir número de telefone </Text>
+								</View>
+							</TouchableOpacity>
+						</View>
+					}
+				</RBSheet>
 
 			</View>
 		);
