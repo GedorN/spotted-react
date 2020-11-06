@@ -1059,7 +1059,7 @@ function HeimdallrLib() {
 					previous = phoneRequests.filter((item) => {return item._data.sender_id === this.user_id});
 					
 					if(previous.length > 0) {
-						docs = previous._data;
+						docs = previous;
 					}
 					
 					resolve();

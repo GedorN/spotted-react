@@ -22,6 +22,7 @@ import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
 import RBSheet from "react-native-raw-bottom-sheet";
 import PostOptions from "./Inputs/PostOptions";
+import FatBottomedButton from "./buttons/FatBottomedButton"
 const PULL_QUANTITY = 100;
 
 const spinValue = new Animated.Value(0);
@@ -32,6 +33,8 @@ export default class UserProfile extends React.Component {
 		this.state = {
 			userId:'',
 			userName: null,
+			userEmail: null,
+			deviceToken: null,
 			posts: null,
 			pulledPosts: PULL_QUANTITY,
 			loading: false,
@@ -50,6 +53,7 @@ export default class UserProfile extends React.Component {
 			previousPhoneRequest: null,
 			showProgress: false,
 			phoneRequestMade: false,
+			showModal: false,
 			spin: spinValue.interpolate({
 				inputRange: [0, 1],
 				outputRange: ['0deg', '-180deg']
@@ -64,10 +68,12 @@ export default class UserProfile extends React.Component {
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
 					if(resolve != null){
-						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userImageUrl: [{url: resolve.user_image}]});
+						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userEmail: resolve.email, deviceToken: resolve.deviceToken, userImageUrl: [{url: resolve.user_image}]});
 						heimdallr.getPhoneRequestsReceived(this.state.userId).then(
 							(resolve) => {
-								this.setState({previousPhoneRequest: resolve});
+								if(resolve) {
+									this.setState({phoneRequestMade: true});
+								}
 							}
 						);
 						heimdallr.getUserColletion(10, this.state.userId).then(
@@ -146,16 +152,21 @@ export default class UserProfile extends React.Component {
 
 	askForPhone = async () => {
 		if(this.state.phoneRequestMade) {
-			this.setState({phoneAlert: false});
+			this.setState({showModal: false});
 		}
 		else {
-			this.setState({showProgress: true, previousPhoneRequest: true});
+			this.setState({showProgress: true, phoneRequestMade: true});
 			const requestPhone = {};
 			requestPhone.sender_name = heimdallr.user_name;
 			requestPhone.sender_image = heimdallr.user_image;
 			requestPhone.sender_email = heimdallr.email;
 			requestPhone.sender_id = heimdallr.user_id;
+			requestPhone.sender_device_token = heimdallr.deviceToken;
 			requestPhone.receiver_id = this.state.userId;
+			requestPhone.receiver_name = this.state.userName;
+			requestPhone.receiver_email = this.state.userEmail;
+			requestPhone.receiver_image = this.state.userImageUrl;
+			requestPhone.receiver_device_token = this.state.deviceToken;
 			requestPhone.reading_status = false;
 			requestPhone.allowed = false;
 			requestPhone.date = await heimdallr.getServerTime();
@@ -163,7 +174,7 @@ export default class UserProfile extends React.Component {
 			heimdallr.savePhoneRequest(requestPhone).then(
 				(result) => {
 					if(result) {
-						this.setState({showProgress: false, phoneRequestMade: true});
+						this.setState({showProgress: false, previousPhoneRequest: true});
 					}
 				}
 			);
@@ -271,8 +282,13 @@ export default class UserProfile extends React.Component {
 	}
 
 	newPhoneRequest = () => {
+		this.setState({showModal: true});
 		this.RBSheet.close();
 		this.closeUserOptions();
+	}
+
+	disableModal = () => {
+		this.setState({ showModal: false });
 	}
 
 
@@ -329,7 +345,7 @@ export default class UserProfile extends React.Component {
 
 											<View style = {{alignSelf:'flex-start'}}>
 												<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
-													<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 5,width:theme.width * 0.2,height:theme.height * 0.04}}>
+													<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 15, width:theme.width * 0.2,height:theme.height * 0.04}}>
 														<Image
 															style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
 															source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
@@ -339,7 +355,7 @@ export default class UserProfile extends React.Component {
 											</View>
 											<View style = {{alignSelf:'flex-end', alignItems: 'flex-end', positionRight: 5 }}>
 												<TouchableOpacity  onPress={this.openUserOptions.bind(this)}>
-													<View style={{width:20 , height:30 , marginTop: 6, marginRight: 4, alignItems: 'flex-end' }}>
+													<View style={{width:20 , height:30 , marginTop: 6, marginRight: 15, alignItems: 'flex-end' }}>
 														<Animated.Image
 															style={{ width: 20, height: 30, transform: [{rotate: this.state.spin}] }}
 															source={require('../../../../assets/images/sort-down-solid.png')}
@@ -478,36 +494,117 @@ export default class UserProfile extends React.Component {
 				>
 					{
 						this.state.userId === heimdallr.user_id &&
-						<View style={{ padding: 10,flexDirection: `column`, flex: 1 }}>
+						<View style={{ padding: 10, paddingBottom: 0, flexDirection: `column`, flex: 1, alignContent :'space-between', justifyContent: 'space-between'  }}>
 							<TouchableOpacity
 								onPressIn={this.goToMyPhoneSolicitations.bind(this)}
 							>
-								<View style={{alignItems: 'center', justifyContent: 'center', fontSize: 18, height: theme.height * 0.1 }}>
-									<Text> Minhas solicitações de telefone </Text>
+								<View style = {{flexDirection: 'row'}}>
+									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, alignSelf: 'flex-start', justifyContent: 'center'}}>
+											<Image
+												style = {{width: 25, height: 20, alignSelf: 'center'}}
+												source = {require('../../../../assets/images/sender_phone.png')}
+											/>
+									</View>
+									<View style={{alignItems: 'flex-start', justifyContent: 'center', fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7 }}>
+										<Text> Minhas solicitações de telefone </Text>
+									</View>
 								</View>
 							</TouchableOpacity>
 							<TouchableOpacity
 								onPressIn={this.goToMyPhoneSolicitations.bind(this)}
 							>
-								<View style={{alignItems: 'center', justifyContent: 'center', fontSize: 18, height: theme.height * 0.1 }}>
-									<Text> Solicitações de telefone recebidas</Text>
+								<View style = {{flexDirection: 'row'}}>
+									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, alignSelf: 'flex-start', justifyContent: 'center'}}>
+											<Image
+												style = {{width: 25, height: 20, alignSelf: 'center'}}
+												source = {require('../../../../assets/images/receiver_phone.png')}
+											/>
+									</View>
+									<View style={{alignItems: 'flex-start', justifyContent: 'center', fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7 }}>
+										<Text> Solicitações de telefone recebidas </Text>
+									</View>
 								</View>
 							</TouchableOpacity>
 						</View>
 					}
 					{
 						this.state.userId !== heimdallr.user_id &&
-						<View style={{ padding: 10,flexDirection: `column`, flex: 1 }}>
+						<View style={{ padding: 10, paddingBottom: 0, flexDirection: `column`, flex: 1, alignContent :'space-between', justifyContent: 'space-between'  }}>
 							<TouchableOpacity
 								onPressIn={this.newPhoneRequest.bind(this)}
 							>
-								<View style={{alignItems: 'center', justifyContent: 'center', fontSize: 18, height: theme.height * 0.1 }}>
-									<Text> Pedir número de telefone </Text>
+								<View style = {{flexDirection: 'row'}}>
+									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, alignSelf: 'flex-start', justifyContent: 'center'}}>
+										<Image
+											style = {{width: 25, height: 35, alignSelf: 'center'}}
+											source = {require('../../../../assets/images/phone_heart.png')}
+										/>
+									</View>
+									<View style={{alignItems: 'flex-start', justifyContent: 'center', fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7}}>
+										<Text> Pedir número de telefone </Text>
+									</View>
 								</View>
 							</TouchableOpacity>
 						</View>
 					}
 				</RBSheet>
+
+				<Modal
+		            hardwareAccelerated={true}
+		            animationType='fade'
+		            transparent={true}
+		            visible={this.state.showModal}
+		            onRequestClose={() => {
+			            this.disableModal();
+		            }}
+		            style={{ height: 50, width: theme.width * 0.5 }}
+	            >
+		            <View style={styles.centeredView}>
+
+			            <View style={styles.modalContainer}>
+							<View style = { styles.modalHeader }>
+								<TouchableOpacity onPress={() => {this.disableModal()}}>
+								<View style = {{width:theme.width * 0.15,height:theme.height*0.05,alignSelf:'flex-end'}}>
+									<Image
+										style = {{width: 15, height: 15,opacity:0.4, alignSelf: 'flex-end', tintColor: theme.primary}}
+										source = {require('../../../../assets/images/times-solid.png')}
+									/>
+								</View>
+								</TouchableOpacity>
+							</View>
+							<View style = {{ height: theme.height * 0.40, flexDirection: 'column', alignContent :'space-between', justifyContent: 'space-between' }}>
+								<View style = {{ marginTop: theme.height * 0.05, flexDirection: 'row', alignContent: 'space-between', justifyContent: 'space-between' }}>
+									<View>
+										<UserImgProfile circular height={70} width={70}  uri={heimdallr.user_image}/>
+									</View>
+									<View style = {{ marginTop: 20}}>
+										<Image
+											style = {{width: 40, height: 40, opacity:0.4, tintColor: theme.primary}}
+											source = {require('../../../../assets/images/heart-solid.png')}
+										/>
+									</View>
+									<View>
+										<UserImgProfile circular height={70} width={70}  uri={this.state.userImage}/>
+									</View>
+								</View>
+								{
+									this.state.phoneRequestMade? 
+									<View style = {{ width: theme.width * 0.8, alignSelf: 'center' }}>
+										<Text style = {{ fontSize: 17, color: theme.primary, alignSelf: 'center', fontWeight: 'bold', opacity: 0.4 }}>{'Solicitação enviada'}</Text>
+									</View>
+									:
+									<View style = {{ width: theme.width * 0.8, alignSelf: 'center' }}>
+										<Text style = {{ fontSize: 15, color: theme.primary, alignSelf: 'center' }}>{'Deseja pedir o telefone de ' + this.state.userName + ' ?'}</Text>
+									</View>
+								}
+								<View style={{marginTop:5, width: this.state.phoneRequestMade ? theme.width * 0.5 : theme.width * 0.7, alignSelf:'center'}}>
+									<FatBottomedButton backgroundColor = {theme.primary} color={theme.secondary} text={this.state.phoneRequestMade? ' OK ' : 'Pedir telefone'} onTap={this.askForPhone.bind(this)}/>
+								</View>
+
+							</View>
+			            </View>
+		            </View>
+	            </Modal>
 
 			</View>
 		);
@@ -529,11 +626,39 @@ const styles = StyleSheet.create({
 		height: 120,
 		padding: 10,
 	},
-	fab: {
-		position: 'absolute',
-		backgroundColor: theme.primary,
-		marginTop: theme.height * 0.55,
-		marginLeft: theme.width * 0.80,
-		padding: 5,
-	}
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		paddingTop: theme.height * 0.1,
+		marginTop: -(theme.height * 0.1)
+	},
+	modalContainer: {
+		width: theme.width * 0.9,
+		height: theme.height * 0.50,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 35,
+		paddingBottom:20,
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		zIndex:0,
+	},
+	modalHeader : {
+		flexDirection: 'column',
+		width: theme.width * 0.9,
+		borderTopLeftRadius:20,
+		borderTopRightRadius:20,
+		padding: 20,
+		paddingBottom: 0,
+		position:'absolute',
+		marginLeft:0.001,
+	},
+
 });
