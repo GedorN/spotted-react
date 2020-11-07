@@ -49,7 +49,6 @@ export default class UserProfile extends React.Component {
 			showAlert: false,
 			deletePost: '',
 			showDeleteAlert: false,
-			phoneAlert: false,
 			previousPhoneRequest: null,
 			showProgress: false,
 			phoneRequestMade: false,
@@ -65,17 +64,15 @@ export default class UserProfile extends React.Component {
 	componentDidMount = () => {
 		const user_id = this.props.navigation.getParam('userId');
 		if (user_id) {
+			heimdallr.checkRequestPhone(user_id).then(
+				() => {
+					this.setState({phoneRequestMade: true});
+				}
+			);
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
 					if(resolve != null){
 						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userEmail: resolve.email, deviceToken: resolve.deviceToken, userImageUrl: [{url: resolve.user_image}]});
-						heimdallr.getPhoneRequestsReceived(this.state.userId).then(
-							(resolve) => {
-								if(resolve) {
-									this.setState({phoneRequestMade: true});
-								}
-							}
-						);
 						heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
 							if(!resolve || resolve.length === 0){
@@ -145,11 +142,6 @@ export default class UserProfile extends React.Component {
 		}
 	}
 
-	showPhoneAlert = () => {
-
-		this.setState({ phoneAlert: true });
-	}
-
 	askForPhone = async () => {
 		if(this.state.phoneRequestMade) {
 			this.setState({showModal: false});
@@ -165,11 +157,12 @@ export default class UserProfile extends React.Component {
 			requestPhone.receiver_id = this.state.userId;
 			requestPhone.receiver_name = this.state.userName;
 			requestPhone.receiver_email = this.state.userEmail;
-			requestPhone.receiver_image = this.state.userImageUrl;
+			requestPhone.receiver_image = this.state.userImageUrl[0].url;
 			requestPhone.receiver_device_token = this.state.deviceToken;
 			requestPhone.reading_status = false;
 			requestPhone.allowed = false;
 			requestPhone.date = await heimdallr.getServerTime();
+			requestPhone.request_id = requestPhone.date;
 
 			heimdallr.savePhoneRequest(requestPhone).then(
 				(result) => {
@@ -279,6 +272,13 @@ export default class UserProfile extends React.Component {
 	goToMyPhoneSolicitations = () => {
 		this.RBSheet.close();
 		this.closeUserOptions();
+		this.props.navigation.push('MyPhoneRequests');
+	}
+
+	goToReceivedPhoneSolicitations = () => {
+		this.RBSheet.close();
+		this.closeUserOptions();
+		this.props.navigation.push('ReceivedRequests');
 	}
 
 	newPhoneRequest = () => {
@@ -394,6 +394,7 @@ export default class UserProfile extends React.Component {
 								<RefreshControl
 									refreshing={this.state.isRefreshing}
 									onRefresh={this.onRefresh.bind(this)}
+									colors={[theme.primary, '#000000']}
 								/>
 							}
 							keyExtractor={item => item.pid}
@@ -467,22 +468,6 @@ export default class UserProfile extends React.Component {
 					}}
 				/>
 
-				<AwesomeAlert
-					show={this.state.phoneAlert}
-					showProgress={this.state.showProgress}
-					title= {this.state.phoneRequestMade? "Solicitação enviada" : "Deseja solicitar o telefone de " + this.state.userName + "?"}
-					closeOnTouchOutside={true}
-					closeOnHardwareBackPress={false}
-					showConfirmButton={true}
-					confirmText= {this.state.phoneRequestMade? "Ok" : "Sim"}
-					confirmButtonColor={'green'}
-					showCancelButton = {this.state.phoneRequestMade? false : true}
-			  		cancelText = {"Não"}
-					onConfirmPressed={this.askForPhone.bind(this)}
-					onCancelPressed={() => {
-						this.setState({ phoneAlert: false })
-					}}
-				/>
 				<RBSheet
 					ref={ref => {
 						this.RBSheet = ref;
@@ -506,12 +491,12 @@ export default class UserProfile extends React.Component {
 											/>
 									</View>
 									<View style={{alignItems: 'flex-start', justifyContent: 'center', fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7 }}>
-										<Text> Minhas solicitações de telefone </Text>
+										<Text> Minhas solicitações </Text>
 									</View>
 								</View>
 							</TouchableOpacity>
 							<TouchableOpacity
-								onPressIn={this.goToMyPhoneSolicitations.bind(this)}
+								onPressIn={this.goToReceivedPhoneSolicitations.bind(this)}
 							>
 								<View style = {{flexDirection: 'row'}}>
 									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, alignSelf: 'flex-start', justifyContent: 'center'}}>
@@ -521,7 +506,7 @@ export default class UserProfile extends React.Component {
 											/>
 									</View>
 									<View style={{alignItems: 'flex-start', justifyContent: 'center', fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7 }}>
-										<Text> Solicitações de telefone recebidas </Text>
+										<Text> Solicitações recebidas </Text>
 									</View>
 								</View>
 							</TouchableOpacity>
@@ -560,7 +545,6 @@ export default class UserProfile extends React.Component {
 		            style={{ height: 50, width: theme.width * 0.5 }}
 	            >
 		            <View style={styles.centeredView}>
-
 			            <View style={styles.modalContainer}>
 							<View style = { styles.modalHeader }>
 								<TouchableOpacity onPress={() => {this.disableModal()}}>
@@ -588,7 +572,7 @@ export default class UserProfile extends React.Component {
 									</View>
 								</View>
 								{
-									this.state.phoneRequestMade? 
+									this.state.phoneRequestMade?
 									<View style = {{ width: theme.width * 0.8, alignSelf: 'center' }}>
 										<Text style = {{ fontSize: 17, color: theme.primary, alignSelf: 'center', fontWeight: 'bold', opacity: 0.4 }}>{'Solicitação enviada'}</Text>
 									</View>

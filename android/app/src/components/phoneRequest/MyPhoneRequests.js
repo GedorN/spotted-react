@@ -2,22 +2,15 @@ import React from 'react';
 import {
 	View,
 	StyleSheet,
-	TouchableOpacity,
-	Image,
-	Text,
-	FlatList,
-	RefreshControl
+	Text, TouchableOpacity, Image, RefreshControl, FlatList
 } from 'react-native';
-
-import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
-import ReceivedRequest from "./ReceivedRequest";
 import theme from "../../../../../components/General/Theme";
-import moment from "moment";
+import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
+import MyRequest from "./MyRequest";
 
-
-export default class extends React.Component {
-	constructor() {
-		super();
+export default class MyPhoneRequests extends React.Component {
+	constructor(props) {
+		super(props);
 		this.state = {
 			requests: [],
 			isRefreshing: false,
@@ -25,7 +18,7 @@ export default class extends React.Component {
 	}
 
 	componentDidMount(): void {
-		heimdallr.getPhoneRequestsReceived().then(
+		heimdallr.getPhoneRequestsSended().then(
 			(resolve) => {
 				this.setState({ requests: resolve });
 			}
@@ -33,7 +26,7 @@ export default class extends React.Component {
 	}
 
 	onRefresh = () => {
-		heimdallr.getPhoneRequestsReceived().then(
+		heimdallr.getPhoneRequestsSended().then(
 			(resolve) => {
 				this.setState({ requests: null });
 				this.setState({ requests: resolve, isRefreshing: false });
@@ -57,9 +50,9 @@ export default class extends React.Component {
 				<View style={styles.body}>
 					<FlatList
 						data={this.state.requests}
-						keyExtractor={item => item._ref.id}
+						keyExtractor={item => item.request_id}
 						renderItem={ ({item}) =>
-							<ReceivedRequest senderImage={item.sender_image} senderName={item.sender_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} senderId={item.sender_id} navigation={this.props.navigation}/>
+							<MyRequest receiverPhone={item.receiver_phone ? item.receiver_phone : null} receiverImage={item.receiver_image} receiverName={item.receiver_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} receiverId={item.receiver_id} navigation={this.props.navigation}/>
 						}
 						refreshControl={
 							<RefreshControl
@@ -82,4 +75,4 @@ const styles = StyleSheet.create({
 	body: {
 		marginTop: 16
 	}
-});
+})

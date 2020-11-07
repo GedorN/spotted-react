@@ -1532,6 +1532,27 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.getPhoneRequestsSended = function () {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('phone_request').where('sender_id', '==', this.user_id).get().then(
+				(result) => {
+					if (result && result.docs && result.docs.length > 0) {
+						let docs = result.docs;
+						docs.sort((a, b) => {
+							return (b.data().date - a.data().date)
+						});
+						resolve(docs.map(i => i.data()));
+					} else {
+						resolve([]);
+					}
+				},
+				(err) => {
+					reject(err);
+				}
+			)
+		})
+	}
+
 
 }
 

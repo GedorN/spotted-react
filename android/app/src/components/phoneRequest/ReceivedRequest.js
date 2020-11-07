@@ -10,7 +10,6 @@ import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import theme from "../../../../../components/General/Theme";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import FatBottomedButton from "../buttons/FatBottomedButton";
-let REQUEST_STATE = null;
 
 export default class ReceivedRequest extends React.Component {
 	constructor(props) {
@@ -21,13 +20,14 @@ export default class ReceivedRequest extends React.Component {
 			refusing: false,
 		}
 	}
+	REQUEST_STATE = null;
 
 	componentDidMount(): void {
 		if (this.props.reading_status) {
 			if (this.props.allowed) {
-				REQUEST_STATE = 'confirmButtonFilled';
+				this.REQUEST_STATE = 'confirmButtonFilled';
 			} else {
-				REQUEST_STATE = 'cancelButtonFilled';
+				this.REQUEST_STATE = 'cancelButtonFilled';
 			}
 			this.setState({});
 		}
@@ -45,18 +45,26 @@ export default class ReceivedRequest extends React.Component {
 		this.setState({ accepting: false, refusing: true, showModal: true });
 	}
 
+	goToUserProfile = () => {
+		this.props.navigation.push('UserProfile', {
+			userId: this.props.senderId,
+		});
+	}
+
 
 	render() {
 		return (
 			<View style={styles.container}>
 				<View style={{flexDirection: 'row', flex: 1}}>
-					<UserImgProfile circular height={45} width={45} uri={this.props.senderImage}/>
+					<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+						<UserImgProfile circular height={45} width={45} uri={this.props.senderImage}/>
+					</TouchableOpacity>
 					<View style={{flexDirection: 'column', marginLeft: 16, flex: 1}}>
-						<Text>{this.props.senderName}</Text>
+						<Text style={{ fontWeight: 'bold' }}>{this.props.senderName}</Text>
 						<View style={{flexDirection: 'row', flex: 1, marginTop: 8}}>
-							<TouchableOpacity onPress={this.refuseRequest.bind(this)} disabled={REQUEST_STATE === 'confirmButtonFilled'} style={REQUEST_STATE === 'confirmButtonFilled' ? {opacity: 0.2} : {opacity: 1} } >
+							<TouchableOpacity onPress={this.refuseRequest.bind(this)} disabled={this.REQUEST_STATE === 'confirmButtonFilled'} style={this.REQUEST_STATE === 'confirmButtonFilled' ? {opacity: 0.2} : {opacity: 1} } >
 								{
-									REQUEST_STATE && REQUEST_STATE === 'cancelButtonFilled'?
+									this.REQUEST_STATE && this.REQUEST_STATE === 'cancelButtonFilled'?
 										<View style={styles.cancelButtonFilled}>
 											<Text style={{ color: '#FFFFFF' }}>RECUSADO</Text>
 										</View> :
@@ -66,9 +74,9 @@ export default class ReceivedRequest extends React.Component {
 								}
 
 							</TouchableOpacity>
-							<TouchableOpacity onPress={this.acceptRequest.bind(this)} disabled={REQUEST_STATE !== null}>
+							<TouchableOpacity onPress={this.acceptRequest.bind(this)} disabled={this.REQUEST_STATE !== null}>
 								{
-									REQUEST_STATE && REQUEST_STATE === 'confirmButtonFilled' ?
+									this.REQUEST_STATE && this.REQUEST_STATE === 'confirmButtonFilled' ?
 										<View style={styles.confirmButtonFilled}>
 											<Text style={{ color: '#FFFFFF' }}>ACEITO</Text>
 										</View>:

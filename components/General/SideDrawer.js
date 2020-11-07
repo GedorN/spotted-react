@@ -210,7 +210,7 @@ export default class SideDrawer extends React.Component {
 						    </TouchableOpacity>
 						    <TouchableOpacity
 							    onPressIn={() => heimdallr.sendEvent('send_phone_request_click')}
-							    onPress={() => {this.props.navigation.push('ReceivedRequests')}}>
+							    onPress={() => {this.props.navigation.push('MyPhoneRequests')}}>
 							    <View style={styles.item}>
 								    <View style = {{ width: 30, height: 30, marginRight: 13 }}>
 									    <Image source={require('../../assets/images/sender_phone.png')}

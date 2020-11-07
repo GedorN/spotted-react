@@ -17,7 +17,7 @@ import BoardItems from "./android/app/src/components/BoardItems";
 import BoardItemDetails from "./android/app/src/components/BoardItemDetails";
 import PartnerPlans from "./android/app/src/components/Inputs/PartnerPlans";
 import ReceivedPhoneRequests from "./android/app/src/components/phoneRequest/ReceivedPhoneRequests";
-
+import MyPhoneRequests from "./android/app/src/components/phoneRequest/MyPhoneRequests";
 
 const config = {
 	animation: 'timing',
@@ -48,7 +48,8 @@ const RootStack = createStackNavigator(
 		BoardItems: { screen: BoardItems },
 		BoardItemDetails: { screen: BoardItemDetails},
 		Plans: {screen: PartnerPlans},
-		ReceivedRequests: { screen: ReceivedPhoneRequests }
+		ReceivedRequests: { screen: ReceivedPhoneRequests },
+		MyPhoneRequests: { screen: MyPhoneRequests }
 
 
 	},
