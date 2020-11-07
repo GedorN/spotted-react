@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		padding: 6,
+		paddingVertical: 16,
 		borderBottomWidth: 0.3,
 	},
 	cancelButton: {
