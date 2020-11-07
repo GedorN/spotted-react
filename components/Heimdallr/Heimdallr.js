@@ -1034,10 +1034,11 @@ function HeimdallrLib() {
 	this.savePhoneRequest = function(params) {
 		let saved = false;
 		return new Promise((resolve, reject) => {
-		firebase.firestore().collection('phone_request').add(params)
-			.then((result) => {
+		firebase.firestore().collection('phone_request').doc(params.request_id.toString()).set({
+			...params
+			}).then((result) => {
 				console.log("Document written with ID: ", result.id);
-				saved = true
+				saved = true;
 				resolve();
 			},
 			(error) => {
@@ -1048,31 +1049,25 @@ function HeimdallrLib() {
 		})
 	}
 
-	this.getPhoneRequestsReceived = function (receiverId) {
-		let docs = null;
+	this.checkRequestPhone = function (receiverId) {
 		return new Promise((resolve, reject) => {
 			firebase.firestore().collection('phone_request').where('receiver_id', '==', receiverId).get().then(
 				(result) => {
-					let previous = null;
 					const phoneRequests = result.docs;
+					let previous = phoneRequests.filter((item) => {return item._data.sender_id === this.user_id});
 
-					previous = phoneRequests.filter((item) => {return item._data.sender_id === this.user_id});
-					
 					if(previous.length > 0) {
-						docs = previous;
+						resolve();
+					} else {
+						reject();
 					}
-					
-					resolve();
-					
+
 				},
 				(error) => {
 					reject(error);
 				}
 			)
-
-		}).then(function (resolve) {
-			return docs;
-		})
+		});
 	}
 
   this.saveCollection = function (collection, params) {
@@ -1515,6 +1510,29 @@ function HeimdallrLib() {
 			)
 		});
 	}
+
+	this.getPhoneRequestsReceived = function () {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('phone_request').where('receiver_id', '==', this.user_id).get().then(
+				(result) => {
+					if (result && result.docs && result.docs.length > 0) {
+						let docs = result.docs;
+						docs.sort((a, b) => {
+							return (b.data().date - a.data().date)
+						});
+						resolve(docs.map(i => i.data()));
+					} else {
+						resolve([]);
+					}
+				},
+				(err) => {
+					reject(err);
+				}
+			)
+		})
+	}
+
+
 }
 
 const heimdallr = new HeimdallrLib();

@@ -12,11 +12,11 @@ import Store from "./android/app/src/components/Store";
 import Settings from "./android/app/src/components/Settings";
 import Tickets from "./android/app/src/components/Tickets";
 import AboutUs from "./android/app/src/components/AboutUs";
-import {CardStackStyleInterpolator} from 'react-navigation-stack';
 import Board from "./android/app/src/components/Board";
 import BoardItems from "./android/app/src/components/BoardItems";
 import BoardItemDetails from "./android/app/src/components/BoardItemDetails";
 import PartnerPlans from "./android/app/src/components/Inputs/PartnerPlans";
+import ReceivedPhoneRequests from "./android/app/src/components/phoneRequest/ReceivedPhoneRequests";
 
 
 const config = {
@@ -47,7 +47,8 @@ const RootStack = createStackNavigator(
 		Board: { screen: Board},
 		BoardItems: { screen: BoardItems },
 		BoardItemDetails: { screen: BoardItemDetails},
-		Plans: {screen: PartnerPlans}
+		Plans: {screen: PartnerPlans},
+		ReceivedRequests: { screen: ReceivedPhoneRequests }
 
 
 	},
