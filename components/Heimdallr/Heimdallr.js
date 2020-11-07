@@ -1404,6 +1404,9 @@ function HeimdallrLib() {
 						pid: remoteMessage.notification._data.pid,
 						userId: this.user_id
 					})
+				} else if (remoteMessage.notification._data.screen) {
+					let params = remoteMessage.notification._data.params ? JSON.parse(remoteMessage.notification._data.params) : {};
+					navigator.push(remoteMessage.notification._data.screen, params);
 				} else if (remoteMessage.notification._data.boardId) {
 					navigator.push('BoardItemDetails', {
 						pid: remoteMessage.notification._data.boardId,
