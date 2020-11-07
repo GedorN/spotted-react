@@ -57,7 +57,7 @@ export default class extends React.Component {
 				<View style={styles.body}>
 					<FlatList
 						data={this.state.requests}
-						keyExtractor={item => item._ref.id}
+						keyExtractor={item => item.requestId}
 						renderItem={ ({item}) =>
 							<ReceivedRequest senderImage={item.sender_image} senderName={item.sender_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} senderId={item.sender_id} navigation={this.props.navigation}/>
 						}
