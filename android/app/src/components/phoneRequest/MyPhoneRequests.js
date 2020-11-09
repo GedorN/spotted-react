@@ -51,6 +51,11 @@ export default class MyPhoneRequests extends React.Component {
 					<FlatList
 						data={this.state.requests}
 						keyExtractor={item => item.request_id}
+						ListHeaderComponent ={() =>
+							<View>
+								<Text style={styles.pageTitle}>Solicitações realizadas</Text>
+							</View>
+						}
 						renderItem={ ({item}) =>
 							<MyRequest receiverPhone={item.receiver_phone ? item.receiver_phone : null} receiverImage={item.receiver_image} receiverName={item.receiver_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} receiverId={item.receiver_id} navigation={this.props.navigation}/>
 						}
@@ -73,6 +78,12 @@ const styles = StyleSheet.create({
 		flex: 1
 	},
 	body: {
+		height: theme.height - 110,
 		marginTop: 16
+	},
+	pageTitle: {
+		fontWeight: 'bold',
+		fontSize: 18,
+		alignSelf: 'center'
 	}
 })

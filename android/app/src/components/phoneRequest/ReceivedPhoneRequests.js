@@ -46,11 +46,14 @@ export default class extends React.Component {
 			<View style={styles.container}>
 				<View style = {{alignSelf:'flex-start'}}>
 					<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
-						<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 15, width:theme.width * 0.2,height:theme.height * 0.04}}>
+						<View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5,  paddingLeft: 12}}>
 							<Image
-								style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
-								source={require('../../../../../assets/images/chevron-circle-left-solid-white.png')}
+								style={{width: 12, height: 12, marginTop:4}}
+								source={require('../../../../../assets/images/arrow-left.png')}
 							/>
+							<Text style={{marginLeft: 5}}>
+								voltar
+							</Text>
 						</View>
 					</TouchableOpacity>
 				</View>
@@ -58,7 +61,12 @@ export default class extends React.Component {
 					<FlatList
 						data={this.state.requests}
 						keyExtractor={item => item.requestId}
-						renderItem={ ({item}) =>
+						ListHeaderComponent ={() =>
+							<View>
+								<Text style={styles.pageTitle}>Solicitações recebidas</Text>
+							</View>
+						}
+							renderItem={ ({item}) =>
 							<ReceivedRequest senderImage={item.sender_image} senderName={item.sender_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} senderId={item.sender_id} navigation={this.props.navigation}/>
 						}
 						refreshControl={
@@ -77,9 +85,15 @@ export default class extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1
+		flex: 1,
 	},
 	body: {
+		height: theme.height - 110,
 		marginTop: 16
+	},
+	pageTitle: {
+		fontWeight: 'bold',
+		fontSize: 18,
+		alignSelf: 'center'
 	}
 });
