@@ -161,18 +161,9 @@ export default class UserProfile extends React.Component {
 			requestPhone.receiver_email = this.state.userEmail;
 			requestPhone.receiver_image = this.state.userImageUrl[0].url;
 			requestPhone.receiver_device_token = this.state.deviceToken;
-			requestPhone.reading_status = false;
-			requestPhone.allowed = false;
-			requestPhone.date = await heimdallr.getServerTime();
-			requestPhone.request_id = requestPhone.date;
 
-			heimdallr.savePhoneRequest(requestPhone).then(
-				(result) => {
-					if(result) {
-						this.setState({showProgress: false, previousPhoneRequest: true});
-					}
-				}
-			);
+			heimdallr.savePhoneRequest(requestPhone);
+			this.setState({showProgress: false, previousPhoneRequest: true});
 		}
 
 	}

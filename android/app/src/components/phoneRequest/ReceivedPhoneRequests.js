@@ -13,6 +13,7 @@ import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import ReceivedRequest from "./ReceivedRequest";
 import theme from "../../../../../components/General/Theme";
 import moment from "moment";
+import {ProgressBar} from "react-native-paper";
 
 
 export default class extends React.Component {
@@ -21,13 +22,14 @@ export default class extends React.Component {
 		this.state = {
 			requests: [],
 			isRefreshing: false,
+			loaded: false,
 		}
 	}
 
 	componentDidMount(): void {
 		heimdallr.getPhoneRequestsReceived().then(
 			(resolve) => {
-				this.setState({ requests: resolve });
+				this.setState({ requests: resolve, loaded: true });
 			}
 		)
 	}
@@ -44,6 +46,7 @@ export default class extends React.Component {
 	render() {
 		return (
 			<View style={styles.container}>
+				<ProgressBar size="large" visible={!this.state.loaded} indeterminate color={theme.primary}/>
 				<View style = {{alignSelf:'flex-start'}}>
 					<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
 						<View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5,  paddingLeft: 12}}>
@@ -57,27 +60,30 @@ export default class extends React.Component {
 						</View>
 					</TouchableOpacity>
 				</View>
-				<View style={styles.body}>
-					<FlatList
-						data={this.state.requests}
-						keyExtractor={item => item.requestId}
-						ListHeaderComponent ={() =>
-							<View>
-								<Text style={styles.pageTitle}>Solicitações recebidas</Text>
-							</View>
-						}
-							renderItem={ ({item}) =>
-							<ReceivedRequest senderImage={item.sender_image} senderName={item.sender_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} senderId={item.sender_id} navigation={this.props.navigation}/>
-						}
-						refreshControl={
-							<RefreshControl
-								refreshing={this.state.isRefreshing}
-								onRefresh={this.onRefresh.bind(this)}
-								colors={[theme.primary, '#000000']}
-							/>
-						}
-					/>
-				</View>
+				{
+					this.state.loaded &&
+					<View style={styles.body}>
+						<FlatList
+							data={this.state.requests}
+							keyExtractor={item => item.requestId}
+							ListHeaderComponent ={() =>
+								<View>
+									<Text style={styles.pageTitle}> { this.state.requests && this.state.requests.length > 0 ? "Solicitações recebidas" : "Você ainda não recebeu nenhuma solicitação"}</Text>
+								</View>
+							}
+								renderItem={ ({item}) =>
+								<ReceivedRequest senderImage={item.sender_image} senderName={item.sender_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} senderId={item.sender_id} navigation={this.props.navigation}/>
+							}
+							refreshControl={
+								<RefreshControl
+									refreshing={this.state.isRefreshing}
+									onRefresh={this.onRefresh.bind(this)}
+									colors={[theme.primary, '#000000']}
+								/>
+							}
+						/>
+					</View>
+				}
 			</View>
 		)
 	}
@@ -92,6 +98,7 @@ const styles = StyleSheet.create({
 		marginTop: 16
 	},
 	pageTitle: {
+		padding: 4,
 		fontWeight: 'bold',
 		fontSize: 18,
 		alignSelf: 'center'

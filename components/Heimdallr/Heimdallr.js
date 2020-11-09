@@ -1035,21 +1035,15 @@ function HeimdallrLib() {
 
 
 	this.savePhoneRequest = function(params) {
-		let saved = false;
 		return new Promise((resolve, reject) => {
-		firebase.firestore().collection('phone_request').doc(params.request_id.toString()).set({
-			...params
-			}).then((result) => {
-				console.log("Document written with ID: ", result.id);
-				saved = true;
-				resolve();
-			},
-			(error) => {
-				reject(error);
-			})
-		}).then((resolve) => {
-			return saved;
-		})
+			RNFetchBlob.config({
+				trusty: true
+			}).fetch('POST',
+				'https://3.23.33.91/newPhoneRequest',
+				{ 'Content-Type': 'application/json'},
+				JSON.stringify(params)
+			);
+		});
 	}
 
 	this.checkRequestPhone = function (receiverId) {
@@ -1556,6 +1550,30 @@ function HeimdallrLib() {
 					reject(err);
 				}
 			)
+		})
+	}
+
+	this.refusePhoneRequest = function (params) {
+		return new Promise((resolve, reject) => {
+			RNFetchBlob.config({
+				trusty: true
+			}).fetch('POST',
+				'https://3.23.33.91/refusePhoneRequest',
+				{ 'Content-Type': 'application/json'},
+				JSON.stringify(params)
+			);
+		})
+	}
+
+	this.acceptPhoneRequest = function (params) {
+		return new Promise((resolve, reject) => {
+			RNFetchBlob.config({
+				trusty: true
+			}).fetch('POST',
+				'https://3.23.33.91/acceptPhoneRequest',
+				{ 'Content-Type': 'application/json'},
+				JSON.stringify(params)
+			);
 		})
 	}
 

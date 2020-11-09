@@ -7,6 +7,7 @@ import {
 import theme from "../../../../../components/General/Theme";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import MyRequest from "./MyRequest";
+import {ProgressBar} from "react-native-paper";
 
 export default class MyPhoneRequests extends React.Component {
 	constructor(props) {
@@ -14,13 +15,14 @@ export default class MyPhoneRequests extends React.Component {
 		this.state = {
 			requests: [],
 			isRefreshing: false,
+			loaded: false,
 		}
 	}
 
 	componentDidMount(): void {
 		heimdallr.getPhoneRequestsSended().then(
 			(resolve) => {
-				this.setState({ requests: resolve });
+				this.setState({ requests: resolve, loaded: true });
 			}
 		)
 	}
@@ -37,37 +39,44 @@ export default class MyPhoneRequests extends React.Component {
 	render() {
 		return (
 			<View style={styles.container}>
+				<ProgressBar size="large" visible={!this.state.loaded} indeterminate color={theme.primary}/>
 				<View style = {{alignSelf:'flex-start'}}>
 					<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
-						<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 15, width:theme.width * 0.2,height:theme.height * 0.04}}>
+						<View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5,  paddingLeft: 12}}>
 							<Image
-								style={{ width: 30, height: 30, marginTop:4, opacity: 0.6}}
-								source={require('../../../../../assets/images/chevron-circle-left-solid-white.png')}
+								style={{width: 12, height: 12, marginTop:4}}
+								source={require('../../../../../assets/images/arrow-left.png')}
 							/>
+							<Text style={{marginLeft: 5}}>
+								voltar
+							</Text>
 						</View>
 					</TouchableOpacity>
 				</View>
-				<View style={styles.body}>
-					<FlatList
-						data={this.state.requests}
-						keyExtractor={item => item.request_id}
-						ListHeaderComponent ={() =>
-							<View>
-								<Text style={styles.pageTitle}>Solicitações realizadas</Text>
-							</View>
-						}
-						renderItem={ ({item}) =>
-							<MyRequest receiverPhone={item.receiver_phone ? item.receiver_phone : null} receiverImage={item.receiver_image} receiverName={item.receiver_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} receiverId={item.receiver_id} navigation={this.props.navigation}/>
-						}
-						refreshControl={
-							<RefreshControl
-								refreshing={this.state.isRefreshing}
-								onRefresh={this.onRefresh.bind(this)}
-								colors={[theme.primary, '#000000']}
-							/>
-						}
-					/>
-				</View>
+				{
+					this.state.loaded &&
+					<View style={styles.body}>
+						<FlatList
+							data={this.state.requests}
+							keyExtractor={item => item.request_id}
+							ListHeaderComponent ={() =>
+								<View>
+									<Text style={styles.pageTitle}>{ this.state.requests && this.state.requests.length > 0 ? "Solicitações realizadas" : "Você ainda não realizou nenhuma solicitação" }</Text>
+								</View>
+							}
+							renderItem={ ({item}) =>
+								<MyRequest receiverPhone={item.receiver_phone ? item.receiver_phone : null} receiverImage={item.receiver_image} receiverName={item.receiver_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} receiverId={item.receiver_id} navigation={this.props.navigation}/>
+							}
+							refreshControl={
+								<RefreshControl
+									refreshing={this.state.isRefreshing}
+									onRefresh={this.onRefresh.bind(this)}
+									colors={[theme.primary, '#000000']}
+								/>
+							}
+						/>
+					</View>
+				}
 			</View>
 		)
 	}
@@ -82,6 +91,7 @@ const styles = StyleSheet.create({
 		marginTop: 16
 	},
 	pageTitle: {
+		padding: 4,
 		fontWeight: 'bold',
 		fontSize: 18,
 		alignSelf: 'center'

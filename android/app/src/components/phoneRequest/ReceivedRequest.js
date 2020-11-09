@@ -38,11 +38,31 @@ export default class ReceivedRequest extends React.Component {
 	}
 
 	acceptRequest = () => {
-		this.setState({ accepting: true, refusing: false, showModal: true });
+		const params = {};
+		params.receiver_id = heimdallr.user_id;
+		params.request_id = this.props.requestId;
+		params.sender_id = this.props.senderId;
+		heimdallr.acceptPhoneRequest(params);
+		this.REQUEST_STATE = "confirmButtonFilled";
+		this.setState({ accepting: false, refusing: false, showModal: false });
 	}
 
 	refuseRequest = () => {
-		this.setState({ accepting: false, refusing: true, showModal: true });
+		const params = {};
+		params.request_id = this.props.requestId;
+		params.receiver_id = heimdallr.user_id;
+		heimdallr.refusePhoneRequest(params);
+		this.REQUEST_STATE = 'cancelButtonFilled';
+		this.setState({ accepting: false, refusing: false, showModal: false });
+
+	}
+
+	openModal = (status) => {
+		if (status === 'accepting') {
+			this.setState({ accepting: true, refusing: false, showModal: true });
+		} else {
+			this.setState({ accepting: false, refusing: true, showModal: true });
+		}
 	}
 
 	goToUserProfile = () => {
@@ -62,7 +82,7 @@ export default class ReceivedRequest extends React.Component {
 					<View style={{flexDirection: 'column', marginLeft: 16, flex: 1}}>
 						<Text style={{ fontWeight: 'bold' }}>{this.props.senderName}</Text>
 						<View style={{flexDirection: 'row', flex: 1, marginTop: 8}}>
-							<TouchableOpacity onPress={this.refuseRequest.bind(this)} disabled={this.REQUEST_STATE === 'confirmButtonFilled'} style={this.REQUEST_STATE === 'confirmButtonFilled' ? {opacity: 0.2} : {opacity: 1} } >
+							<TouchableOpacity onPress={this.openModal.bind(this)} disabled={this.REQUEST_STATE === 'confirmButtonFilled'} style={this.REQUEST_STATE === 'confirmButtonFilled' ? {opacity: 0.2} : {opacity: 1} } >
 								{
 									this.REQUEST_STATE && this.REQUEST_STATE === 'cancelButtonFilled'?
 										<View style={styles.cancelButtonFilled}>
@@ -74,7 +94,7 @@ export default class ReceivedRequest extends React.Component {
 								}
 
 							</TouchableOpacity>
-							<TouchableOpacity onPress={this.acceptRequest.bind(this)} disabled={this.REQUEST_STATE !== null}>
+							<TouchableOpacity onPress={this.openModal.bind(this, 'accepting')} disabled={this.REQUEST_STATE !== null}>
 								{
 									this.REQUEST_STATE && this.REQUEST_STATE === 'confirmButtonFilled' ?
 										<View style={styles.confirmButtonFilled}>
