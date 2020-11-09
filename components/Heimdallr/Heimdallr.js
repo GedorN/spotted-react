@@ -21,6 +21,7 @@ function HeimdallrLib() {
   this.userPlans = null;
   this.messages = null;
   this.deviceToken = null;
+  this.accepting_phone_requests= true;
 
   this.refreshKey = null;
 
@@ -707,7 +708,8 @@ function HeimdallrLib() {
 		    		image = end > 0 ? image.substring(0, end) : image;
 		    		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 					    name: user.name,
-					    user_image: image
+					    user_image: image,
+					    accepting_phone_requests: user.acceptingPhoneRequests,
 				    }, {merge: true}).then((res) => {
 					    this.logCall('user', user, res);
 					    resolve();
@@ -775,6 +777,7 @@ function HeimdallrLib() {
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
+			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
