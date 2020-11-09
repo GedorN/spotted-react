@@ -53,6 +53,8 @@ export default class UserProfile extends React.Component {
 			showProgress: false,
 			phoneRequestMade: false,
 			showModal: false,
+			showUserDontAcceptPhoneRequestAlert: false,
+			acceptingPhoneRequests: true,
 			spin: spinValue.interpolate({
 				inputRange: [0, 1],
 				outputRange: ['0deg', '-180deg']
@@ -72,7 +74,7 @@ export default class UserProfile extends React.Component {
 			heimdallr.getUserInfo(user_id? user_id:heimdallr.user_id).then(
 				(resolve) => {
 					if(resolve != null){
-						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userEmail: resolve.email, deviceToken: resolve.deviceToken, userImageUrl: [{url: resolve.user_image}]});
+						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userEmail: resolve.email, deviceToken: resolve.deviceToken, userImageUrl: [{url: resolve.user_image}], acceptingPhoneRequests: resolve.accepting_phone_requests});
 						heimdallr.getUserColletion(10, this.state.userId).then(
 						(resolve) => {
 							if(!resolve || resolve.length === 0){
@@ -517,23 +519,50 @@ export default class UserProfile extends React.Component {
 						<View style={{ padding: 10, paddingBottom: 0, flexDirection: `column`, flex: 1, alignContent :'space-between', justifyContent: 'space-between'  }}>
 							<TouchableOpacity
 								onPressIn={this.newPhoneRequest.bind(this)}
+								disabled={!this.state.acceptingPhoneRequests}
 							>
 								<View style = {{flexDirection: 'row'}}>
-									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, alignSelf: 'flex-start', justifyContent: 'center'}}>
+									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, opacity:  this.state.acceptingPhoneRequests ? 1 : 0.3, alignSelf: 'flex-start', justifyContent: 'center'}}>
 										<Image
 											style = {{width: 25, height: 35, alignSelf: 'center'}}
 											source = {require('../../../../assets/images/phone_heart.png')}
 										/>
 									</View>
-									<View style={{alignItems: 'flex-start', justifyContent: 'center', fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7}}>
+									<View style={{alignItems: 'flex-start', justifyContent: 'center', opacity:  this.state.acceptingPhoneRequests ? 1 : 0.3, fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7}}>
 										<Text> Pedir número de telefone </Text>
 									</View>
+									{
+										!this.state.acceptingPhoneRequests &&
+											<TouchableOpacity
+												onPress={() => { this.RBSheet.close(); this.setState({ showUserDontAcceptPhoneRequestAlert: true }) }}
+											>
+												<View>
+													<Image
+														style = {{width: 25, height: 25, alignSelf: 'center', tintColor: '#0000ff'}}
+														source={ require('../../../../assets/images/info-circle-solid.png')}
+													/>
+												</View>
+											</TouchableOpacity>
+									}
 								</View>
 							</TouchableOpacity>
 						</View>
 					}
 				</RBSheet>
-
+				<AwesomeAlert
+					show={this.state.showUserDontAcceptPhoneRequestAlert}
+					showProgress={false}
+					title= {"Requisição bloqueada"}
+					message= {"Esse usuário optou por não receber requisições de telefone"}
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showConfirmButton={true}
+					confirmText= {"OK"}
+					confirmButtonColor={'green'}
+					onConfirmPressed={() => {
+						this.setState({ showUserDontAcceptPhoneRequestAlert: false })
+					}}
+				/>
 				<Modal
 		            hardwareAccelerated={true}
 		            animationType='fade'
