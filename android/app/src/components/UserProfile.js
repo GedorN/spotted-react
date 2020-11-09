@@ -387,7 +387,7 @@ export default class UserProfile extends React.Component {
 										</TouchableOpacity>
 									</View>
 									<View>
-										<Text style={{marginTop: 5}}>{this.state.userName}</Text>
+										<Text style={{marginTop: 5, marginBottom: 4}}>{this.state.userName}</Text>
 									</View>
 
 								</View>
@@ -475,17 +475,17 @@ export default class UserProfile extends React.Component {
 						this.RBSheet = ref;
 					}}
 					onClose={this.closeUserOptions.bind(this)}
-					height={this.state.userId === heimdallr.user_id ? 170: 80}
+					height={this.state.userId === heimdallr.user_id ? 130: 80}
 					animationType={'slide'}
 					duration={250}
 				>
 					{
 						this.state.userId === heimdallr.user_id &&
-						<View style={{ padding: 10, paddingBottom: 0, flexDirection: `column`, flex: 1, alignContent :'space-between', justifyContent: 'space-between'  }}>
+						<View style={{ padding: 10, paddingBottom: 0, flexDirection: `column`, flex: 1, alignContent :'space-between' }}>
 							<TouchableOpacity
 								onPressIn={this.goToMyPhoneSolicitations.bind(this)}
 							>
-								<View style = {{flexDirection: 'row'}}>
+								<View style = {{flexDirection: 'row', margin: 0 }}>
 									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, alignSelf: 'flex-start', justifyContent: 'center'}}>
 											<Image
 												style = {{width: 25, height: 20, alignSelf: 'center'}}
@@ -500,7 +500,7 @@ export default class UserProfile extends React.Component {
 							<TouchableOpacity
 								onPressIn={this.goToReceivedPhoneSolicitations.bind(this)}
 							>
-								<View style = {{flexDirection: 'row'}}>
+								<View style = {{flexDirection: 'row', margin: 0 }}>
 									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, alignSelf: 'flex-start', justifyContent: 'center'}}>
 											<Image
 												style = {{width: 25, height: 20, alignSelf: 'center'}}
