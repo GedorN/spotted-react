@@ -472,7 +472,7 @@ export default class UserProfile extends React.Component {
 				>
 					{
 						this.state.userId === heimdallr.user_id &&
-						<View style={{ padding: 10, paddingBottom: 0, flexDirection: `column`, flex: 1, alignContent :'space-between' }}>
+						<View style={{ flexDirection: `column`, flex: 1, alignContent :'space-between' }}>
 							<TouchableOpacity
 								onPressIn={this.goToMyPhoneSolicitations.bind(this)}
 							>
@@ -598,7 +598,7 @@ export default class UserProfile extends React.Component {
 									</View>
 									:
 									<View style = {{ width: theme.width * 0.8, alignSelf: 'center' }}>
-										<Text style = {{ fontSize: 15, color: theme.primary, alignSelf: 'center' }}>{'Deseja pedir o telefone de ' + this.state.userName + ' ?'}</Text>
+										<Text style = {{ fontSize: 15, color: theme.primary, alignSelf: 'center', textAlign: 'center' }}>{'Deseja pedir o telefone de ' + this.state.userName + ' ?'}</Text>
 									</View>
 								}
 								<View style={{marginTop:5, width: this.state.phoneRequestMade ? theme.width * 0.5 : theme.width * 0.7, alignSelf:'center'}}>

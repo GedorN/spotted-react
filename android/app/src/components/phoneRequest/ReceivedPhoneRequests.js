@@ -101,6 +101,10 @@ const styles = StyleSheet.create({
 		padding: 4,
 		fontWeight: 'bold',
 		fontSize: 18,
-		alignSelf: 'center'
+		alignSelf: 'center',
+		textAlign: 'center',
+		lineHeight: 25,
+		opacity: 0.4
+
 	}
 });

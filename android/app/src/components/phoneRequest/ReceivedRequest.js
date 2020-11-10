@@ -172,7 +172,7 @@ export default class ReceivedRequest extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 6,
+		padding: 17,
 		paddingVertical: 16,
 		borderBottomWidth: 0.3,
 	},
