@@ -510,20 +510,20 @@ export default class UserProfile extends React.Component {
 						<View style={{ padding: 10, paddingBottom: 0, flexDirection: `column`, flex: 1, alignContent :'space-between', justifyContent: 'space-between'  }}>
 							<TouchableOpacity
 								onPressIn={this.newPhoneRequest.bind(this)}
-								disabled={!this.state.acceptingPhoneRequests}
+								disabled={this.state.acceptingPhoneRequests === false}
 							>
 								<View style = {{flexDirection: 'row'}}>
-									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, opacity:  this.state.acceptingPhoneRequests ? 1 : 0.3, alignSelf: 'flex-start', justifyContent: 'center'}}>
+									<View style = {{width:theme.width * 0.15, height: theme.height * 0.08, opacity:  this.state.acceptingPhoneRequests !== false ? 1 : 0.3, alignSelf: 'flex-start', justifyContent: 'center'}}>
 										<Image
 											style = {{width: 25, height: 35, alignSelf: 'center'}}
 											source = {require('../../../../assets/images/phone_heart.png')}
 										/>
 									</View>
-									<View style={{alignItems: 'flex-start', justifyContent: 'center', opacity:  this.state.acceptingPhoneRequests ? 1 : 0.3, fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7}}>
+									<View style={{alignItems: 'flex-start', justifyContent: 'center', opacity:  this.state.acceptingPhoneRequests !== false ? 1 : 0.3, fontSize: 18, height: theme.height * 0.08, width :theme.width * 0.7}}>
 										<Text> Pedir número de telefone </Text>
 									</View>
 									{
-										!this.state.acceptingPhoneRequests &&
+										this.state.acceptingPhoneRequests === false &&
 											<TouchableOpacity
 												onPress={() => { this.RBSheet.close(); this.setState({ showUserDontAcceptPhoneRequestAlert: true }) }}
 											>
