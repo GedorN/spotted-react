@@ -94,7 +94,7 @@ export default class ReceivedRequest extends React.Component {
 								}
 
 							</TouchableOpacity>
-							<TouchableOpacity onPress={this.openModal.bind(this, 'accepting')} disabled={this.REQUEST_STATE !== null}>
+							<TouchableOpacity onPress={this.openModal.bind(this, 'accepting')} >
 								{
 									this.REQUEST_STATE && this.REQUEST_STATE === 'confirmButtonFilled' ?
 										<View style={styles.confirmButtonFilled}>
@@ -142,19 +142,19 @@ export default class ReceivedRequest extends React.Component {
 											source = {require('../../../../../assets/images/heart-solid.png')}
 										/>
 									</View>
-										<UserImgProfile circular height={70} width={70}  uri={ heimdallr.user_image }/>
 									<View>
+										<UserImgProfile circular height={70} width={70}  uri={ heimdallr.user_image }/>
 									</View>
 								</View>
 								{
 									this.state.phoneRequestMade?
-										<View style = {{ width: theme.width * 0.8, alignSelf: 'center' }}>
-											<Text style = {{ fontSize: 17, color: theme.primary, alignSelf: 'center', fontWeight: 'bold', opacity: 0.4 }}>{'Solicitação enviada'}</Text>
-										</View>
-										:
-										<View style = {{ width: theme.width * 0.8, alignSelf: 'center' }}>
-											<Text style = {{ fontSize: 15, color: theme.primary, alignSelf: 'center' }}>{`${this.state.accepting ? 'Aceitar' : 'Recusar'} a solicitação de ` + this.props.senderName + `?`}</Text>
-										</View>
+									<View style = {{ width: theme.width * 0.8, alignSelf: 'center' }}>
+										<Text style = {{ fontSize: 17, color: theme.primary, alignSelf: 'center', fontWeight: 'bold', opacity: 0.4 }}>{'Solicitação enviada'}</Text>
+									</View>
+									:
+									<View style = {{ alignSelf: 'center', alignItems: 'center', justifyContent: 'center' }}>
+										<Text style = {{ fontSize: 15, color: theme.primary, alignSelf: 'center', justifySelf: 'center', textAlign: 'center' }}>{`${this.state.accepting ? 'Aceitar' : 'Recusar'} a solicitação de ` + this.props.senderName + `?`}</Text>
+									</View>
 								}
 								<View style={{marginTop:5, width: theme.width * 0.7, alignSelf:'center'}}>
 									<FatBottomedButton borderColor={this.state.accepting ? '#0C880C' : '#D40000'} backgroundColor = {this.state.accepting ? '#0C880C' : '#D40000'} color={theme.secondary} text={this.state.accepting? ' Aceitar ' : 'Recusar'} onTap={this.state.accepting ? this.acceptRequest.bind(this) : this.refuseRequest.bind(this)}/>
