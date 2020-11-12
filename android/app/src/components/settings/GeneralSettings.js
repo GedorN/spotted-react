@@ -7,7 +7,8 @@ import {
 	Image,
 	PermissionsAndroid,
 	Modal,
-	TextInput
+	TextInput,
+	Switch
 } from 'react-native'
 
 import {
@@ -44,6 +45,7 @@ export default class GeneralSettings extends  React.Component {
 			user: null,
 			password: null,
 			showLoadingModal: false,
+			acceptPhoneRequest: heimdallr.accepting_phone_requests,
 		};
 	}
 
@@ -156,6 +158,7 @@ export default class GeneralSettings extends  React.Component {
 					const params = {};
 					params.name = this.state.userName;
 					params.uid = heimdallr.user_id;
+					params.acceptingPhoneRequests = this.state.acceptPhoneRequest;
 					heimdallr.userEditImage(this.state.userImage).then((res) => {
 						heimdallr.updateUserData(params);
 						if(res) {
@@ -186,6 +189,7 @@ export default class GeneralSettings extends  React.Component {
 			const params = {};
 			params.name = this.state.userName;
 			params.uid = heimdallr.user_id;
+			params.acceptingPhoneRequests = this.state.acceptPhoneRequest;
 			heimdallr.updateProfile(params).then((resolve) => {
 				heimdallr.updateUserData(params);
 				if(resolve) {
@@ -212,6 +216,10 @@ export default class GeneralSettings extends  React.Component {
 			})
 		}
 
+	}
+
+	toggleSwitch = () => {
+		this.setState({ acceptPhoneRequest: !this.state.acceptPhoneRequest });
 	}
 
 	logOut = () => {
@@ -270,6 +278,14 @@ export default class GeneralSettings extends  React.Component {
 						/>
 					<View  style = {{ width: theme.width * 0.87, alignSelf: 'center', marginTop:7}}>
 						<Text style = {{ opacity: 0.8, fontSize: 11, color: '#b2b5b1' }}>Você não pode alterar</Text>
+					</View>
+					<View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 16}}>
+						<Text style={{fontWeight: 'bold'}}>Aceitar solicitações de telefone</Text>
+						<Switch
+							thumbColor={this.state.acceptPhoneRequest ? "#0C880C" : "#D40000"}
+							onValueChange={this.toggleSwitch.bind(this)}
+							value={this.state.acceptPhoneRequest}
+						/>
 					</View>
 				</View>
 				<View style={{marginTop: 40}}>

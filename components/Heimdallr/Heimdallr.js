@@ -21,6 +21,7 @@ function HeimdallrLib() {
   this.userPlans = null;
   this.messages = null;
   this.deviceToken = null;
+  this.accepting_phone_requests= true;
 
   this.refreshKey = null;
 
@@ -130,7 +131,6 @@ function HeimdallrLib() {
 			)
 		})
 	}
-
 
 
 	this.getNotificationsNumber = function (context) {
@@ -509,11 +509,9 @@ function HeimdallrLib() {
 					() => {
 						firebase.auth().currentUser.delete().then(
 							(success) => {
-								firebase.firestore().collection('user').where('uid', '==', this.user_id).then(
+								firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 									(res) => {
-										firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
-											deleted: true,
-										}, {merge: true});
+										firebase.firestore().collection('user').doc(res.docs[0]._ref.id).delete();
 									}
 								);
 								this.logCall('deleteUser', { user: user }, success);
@@ -564,11 +562,11 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
 	  firebase.auth().currentUser.delete().then(
 		  (success) => {
-		  	this.logCall('deleteConectedUser', {}, success);
+		  	this.logCall('deleteConectedUser', {user: this.user_name, uid: this.user_id, email: this.email}, success);
 		    resolve(success);
 		  },
 		  (error) => {
-			  this.logCall('deleteConectedUser', {}, error);
+			  this.logCall('deleteConectedUser -error', {user: this.user_name, uid: this.user_id, email: this.email}, error);
 			  reject(error);
 		  }
 	  )
@@ -636,10 +634,10 @@ function HeimdallrLib() {
 		  return `1d`;
 	  } else if (elapsedTime.split(' ')[2] === 'dias') {
 		  return `${elapsedTime.split(' ')[1]}d`;
-	  } else if (elapsedTime.split(' ')[1] === 'mes') {
-		  return `1mo`;
-	  } else if (elapsedTime.split(' ')[1] === 'meses') {
-		  return `${elapsedTime.split(' ')[1]}mo`;
+	  } else if (elapsedTime.split(' ')[2] === 'mês') {
+		  return `1m`;
+	  } else if (elapsedTime.split(' ')[2] === 'meses') {
+		  return `${elapsedTime.split(' ')[1]}m`;
 	  } else if (elapsedTime.split(' ')[1] === 'ano') {
 		  return `1y`;
 	  } else if (elapsedTime.split(' ')[1] === 'anos') {
@@ -710,7 +708,8 @@ function HeimdallrLib() {
 		    		image = end > 0 ? image.substring(0, end) : image;
 		    		firebase.firestore().collection('user').doc(result.docs[0]._ref.path.split('/')[1]).set({
 					    name: user.name,
-					    user_image: image
+					    user_image: image,
+					    accepting_phone_requests: user.acceptingPhoneRequests,
 				    }, {merge: true}).then((res) => {
 					    this.logCall('user', user, res);
 					    resolve();
@@ -778,6 +777,7 @@ function HeimdallrLib() {
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
+			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
@@ -1031,6 +1031,40 @@ function HeimdallrLib() {
 
 	this.sendEvent = function (eventName) {
 	    firebase.analytics().logEvent(eventName);
+	}
+
+
+	this.savePhoneRequest = function(params) {
+		return new Promise((resolve, reject) => {
+			RNFetchBlob.config({
+				trusty: true
+			}).fetch('POST',
+				'https://3.23.33.91/newPhoneRequest',
+				{ 'Content-Type': 'application/json'},
+				JSON.stringify(params)
+			);
+		});
+	}
+
+	this.checkRequestPhone = function (receiverId) {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('phone_request').where('receiver_id', '==', receiverId).get().then(
+				(result) => {
+					const phoneRequests = result.docs;
+					let previous = phoneRequests.filter((item) => {return item._data.sender_id === this.user_id});
+
+					if(previous.length > 0) {
+						resolve();
+					} else {
+						reject();
+					}
+
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+		});
 	}
 
   this.saveCollection = function (collection, params) {
@@ -1367,6 +1401,9 @@ function HeimdallrLib() {
 						pid: remoteMessage.notification._data.pid,
 						userId: this.user_id
 					})
+				} else if (remoteMessage.notification._data.screen) {
+					let params = remoteMessage.notification._data.params ? JSON.parse(remoteMessage.notification._data.params) : {};
+					navigator.push(remoteMessage.notification._data.screen, params);
 				} else if (remoteMessage.notification._data.boardId) {
 					navigator.push('BoardItemDetails', {
 						pid: remoteMessage.notification._data.boardId,
@@ -1473,6 +1510,74 @@ function HeimdallrLib() {
 			)
 		});
 	}
+
+	this.getPhoneRequestsReceived = function () {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('phone_request').where('receiver_id', '==', this.user_id).get().then(
+				(result) => {
+					if (result && result.docs && result.docs.length > 0) {
+						let docs = result.docs;
+						docs.sort((a, b) => {
+							return (b.data().date - a.data().date)
+						});
+						resolve(docs.map(i => i.data()));
+					} else {
+						resolve([]);
+					}
+				},
+				(err) => {
+					reject(err);
+				}
+			)
+		})
+	}
+
+	this.getPhoneRequestsSended = function () {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('phone_request').where('sender_id', '==', this.user_id).get().then(
+				(result) => {
+					if (result && result.docs && result.docs.length > 0) {
+						let docs = result.docs;
+						docs.sort((a, b) => {
+							return (b.data().date - a.data().date)
+						});
+						resolve(docs.map(i => i.data()));
+					} else {
+						resolve([]);
+					}
+				},
+				(err) => {
+					reject(err);
+				}
+			)
+		})
+	}
+
+	this.refusePhoneRequest = function (params) {
+		return new Promise((resolve, reject) => {
+			RNFetchBlob.config({
+				trusty: true
+			}).fetch('POST',
+				'https://3.23.33.91/refusePhoneRequest',
+				{ 'Content-Type': 'application/json'},
+				JSON.stringify(params)
+			);
+		})
+	}
+
+	this.acceptPhoneRequest = function (params) {
+		return new Promise((resolve, reject) => {
+			RNFetchBlob.config({
+				trusty: true
+			}).fetch('POST',
+				'https://3.23.33.91/acceptPhoneRequest',
+				{ 'Content-Type': 'application/json'},
+				JSON.stringify(params)
+			);
+		})
+	}
+
+
 }
 
 const heimdallr = new HeimdallrLib();
