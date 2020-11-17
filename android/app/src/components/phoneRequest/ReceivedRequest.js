@@ -94,7 +94,7 @@ export default class ReceivedRequest extends React.Component {
 								}
 
 							</TouchableOpacity>
-							<TouchableOpacity onPress={this.openModal.bind(this, 'accepting')} >
+							<TouchableOpacity onPress={this.openModal.bind(this, 'accepting')} disabled={this.REQUEST_STATE === 'confirmButtonFilled'}>
 								{
 									this.REQUEST_STATE && this.REQUEST_STATE === 'confirmButtonFilled' ?
 										<View style={styles.confirmButtonFilled}>
