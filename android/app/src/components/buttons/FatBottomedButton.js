@@ -36,6 +36,14 @@ export default class FatBottomedButton extends React.Component {
 		}
 	}
 
+	getBorderColor() {
+		if (this.props.disabled) {
+			return '#8f8f8f';
+		}
+
+		return this.props.borderColor;
+	}
+
 	getBackgroundColor() {
 		if (this.props.disabled) {
 			return '#8f8f8f';
@@ -51,7 +59,7 @@ export default class FatBottomedButton extends React.Component {
 						justifyContent: 'center',
 						alignItems: 'center',
 						backgroundColor: this.props.backgroundColor ? this.getBackgroundColor() : 'white',
-						borderColor: this.props.borderColor ? this.props.borderColor : theme.primary,
+						borderColor: this.props.borderColor ? this.getBorderColor() : theme.primary,
 						borderWidth: this.props.borderWidth ? this.props.borderWidth : 1.2,
 						height: this.props.height ? this.props.height : 42,
 						borderRadius: this.props.borderRadius ? this.props.borderRadius : 13,

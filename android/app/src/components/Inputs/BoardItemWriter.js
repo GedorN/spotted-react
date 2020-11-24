@@ -331,7 +331,7 @@ export default class BoardItemWriter extends React.Component {
 							</TouchableOpacity>
 						</View>
 						<View style={{marginTop:5, width: theme.width * 0.9, alignSelf:'center'}}>
-							<FatBottomedButton disabled={this.blockButton()} backgroundColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
+							<FatBottomedButton disabled={this.blockButton()} backgroundColor = {theme.primary} borderColor = {theme.primary} color={'white'} text={'Postar'} onTap={this.doPost.bind(this)}/>
 						</View>
 					</View>
 				</View>
