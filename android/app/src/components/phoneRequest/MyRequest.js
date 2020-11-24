@@ -71,19 +71,19 @@ export default class MyRequest extends React.Component {
 	render() {
 		return (
 			<View style={styles.container}>
-				<View style={{flexDirection: 'row', flex: 1}}>
-					<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-						<UserImgProfile circular height={45} width={45} uri={this.props.receiverImage}/>
-					</TouchableOpacity>
-					<TouchableOpacity disabled={this.REQUEST_STATE !== 'requestAccepted'} onPress={this.saveContact.bind(this)}>
-						<View style={{flexDirection: 'column', marginLeft: 16, flex: 1}}>
-							<Text style={{ fontWeight: 'bold' }}>{this.props.receiverName}</Text>
-							<View style={{flexDirection: 'row', flex: 1, marginTop: 8}}>
-								{this.getRequestStatus()}
+				<TouchableOpacity disabled={this.REQUEST_STATE !== 'requestAccepted'} onPress={this.saveContact.bind(this)}>
+					<View style={{flexDirection: 'row', flex: 1}}>
+						<TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+							<UserImgProfile circular height={45} width={45} uri={this.props.receiverImage}/>
+						</TouchableOpacity>
+							<View style={{flexDirection: 'column', marginLeft: 16, flex: 1}}>
+								<Text style={{ fontWeight: 'bold' }}>{this.props.receiverName}</Text>
+								<View style={{flexDirection: 'row', flex: 1, marginTop: 8}}>
+									{this.getRequestStatus()}
+								</View>
 							</View>
-						</View>
-					</TouchableOpacity>
-				</View>
+					</View>
+				</TouchableOpacity>
 
 			</View>
 		)
