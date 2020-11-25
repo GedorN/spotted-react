@@ -144,16 +144,17 @@ export default class MainScreen extends React.Component {
 				this.setState({isLogged: true});
 				if (heimdallr.email === 'spotted@utfpr.com') {
 					this.setState({ routes: anonymousRoutes });
+				} else {
+					heimdallr.getNotificationsNumber(this);
+					heimdallr.testLink(this.props.navigation);
+					heimdallr.getDeviceToken();
+					heimdallr.testNotification(this.props.navigation);
+					heimdallr.setLastSeen();
 				}
 			}
+
+
 		})
-
-
-		heimdallr.getNotificationsNumber(this);
-		heimdallr.testLink(this.props.navigation);
-		heimdallr.getDeviceToken();
-		heimdallr.testNotification(this.props.navigation);
-		heimdallr.setLastSeen();
 		// Método para mostar notificações ao usuário
 		// let messages= await AsyncStorage.getItem('user_messages');
 		// 	messages = JSON.parse(messages)

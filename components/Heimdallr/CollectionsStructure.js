@@ -398,6 +398,10 @@ const collections = {
                 desc: 'author',
                 type: 'string'
             },
+	        {
+	        	desc: 'pid',
+		        type: 'string',
+	        },
             {
                 desc: 'category',
                 type: 'string'
@@ -405,13 +409,43 @@ const collections = {
             {
                 desc: 'date',
                 type: 'timestamp'
-            }
+            },
+	        {
+	        	desc: 'description',
+		        type: 'string'
+	        }
         ],
+		board_report: [
+			{
+				desc: 'author',
+				type: 'string'
+			},
+			{
+				desc: 'pid',
+				type: 'string',
+			},
+			{
+				desc: 'category',
+				type: 'string'
+			},
+			{
+				desc: 'date',
+				type: 'timestamp'
+			},
+			{
+				desc: 'description',
+				type: 'string'
+			}
+		],
         commentary_report: [
             {
                 desc: 'pid',
                 type: 'string'
             },
+	        {
+	        	desc: 'cid',
+		        type: 'string'
+	        },
             {
                 desc: 'author',
                 type: 'string'
@@ -423,8 +457,38 @@ const collections = {
             {
                 desc: 'date',
                 type: 'timestamp'
-            }
-        ]
+            },
+	        {
+	        	desc: 'description',
+		        type: 'string'
+	        }
+        ],
+		board_commentary_report: [
+			{
+				desc: 'pid',
+				type: 'string'
+			},
+			{
+				desc: 'cid',
+				type: 'string'
+			},
+			{
+				desc: 'author',
+				type: 'string'
+			},
+			{
+				desc: 'category',
+				type: 'string'
+			},
+			{
+				desc: 'date',
+				type: 'timestamp'
+			},
+			{
+				desc: 'description',
+				type: 'string'
+			}
+		]
 
 };
 

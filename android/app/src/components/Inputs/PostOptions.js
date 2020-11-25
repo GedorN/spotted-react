@@ -7,9 +7,7 @@ import {
 	View,
 } from 'react-native';
 
-import ReportGod from "./ReportGod";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
-import RBSheet from "react-native-raw-bottom-sheet";
 
 
 export default class PostOptions extends React.Component {
@@ -22,6 +20,10 @@ export default class PostOptions extends React.Component {
 
 	closeAlert = () => {
 		this.props.close(true);
+	}
+
+	goToReport = () => {
+		this.props.report();
 	}
 
 
@@ -55,7 +57,17 @@ export default class PostOptions extends React.Component {
 				}
 				{
 					heimdallr.user_id !== this.props.userId &&
-					<ReportGod  close={this.closeAlert.bind(this)}  idEntity = {this.props.pid} typeEntity = {'post'} userId = {this.props.uid}/>
+					<View>
+						<View style = {{ paddingBottom: 20, paddingTop: 10}}>
+							<Text style={styles.deleteTitle}>Ações</Text>
+						</View>
+						<TouchableOpacity onPress={this.goToReport.bind(this)}>
+							<View style = {styles.deleteView}>
+								<Image style= {styles.deleteIcon} source={require('../../../../../assets/images/ban-solid.png')}/>
+								<Text style={{fontSize: 14, fontWeight: 'bold'}}>Denunciar post</Text>
+							</View>
+						</TouchableOpacity>
+					</View>
 				}
 			</View>
 		)

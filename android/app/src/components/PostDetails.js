@@ -653,6 +653,14 @@ export default class PostDetails extends React.Component {
 
 	}
 
+	reportPost = () => {
+		this.RBSheet.close();
+		this.props.navigation.navigate('ReportScreen', {
+			pid: this.state.postId,
+			entity: 'post',
+		});
+	}
+
 	likeIt = () => {
 		if (this.state.liked) {
 			heimdallr.dislikePost(this.state.postId);
@@ -834,13 +842,13 @@ export default class PostDetails extends React.Component {
 					ref={ref => {
 						this.RBSheet = ref;
 					}}
-					height={this.state.reportAlert ? 300 : 150}
+					height={150}
 					animationType={'slide'}
 					duration={250}
 
 				>
 					{/*<ReportGod  close={this.closeAlert.bind(this)} idEntity={this.state.postId} typeEntity = {'post'} userId = {this.state.userId}/>*/}
-					<PostOptions deletePost={this.deletePostConfirm.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.state.userId} />
+					<PostOptions deletePost={this.deletePostConfirm.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.state.userId} report={this.reportPost.bind(this)}/>
 				</RBSheet>
 				<AwesomeAlert
 					show={this.state.showDeleteAlert}
