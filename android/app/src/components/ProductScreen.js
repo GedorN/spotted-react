@@ -717,6 +717,12 @@ export default class ProductScreen extends React.Component {
 											<CarouselModaFoka images={this.state.productImages ? this.state.productImages: []} dotColor={this.state.product ? this.state.product.colors[0] : 'black'}/>
 										</View>
 										<View style = { styles.payContainer }>
+											{
+												this.state.product && this.state.product.stock && this.state.product.stock < 20 &&
+												<Text style = {{ fontWeight: 'bold', fontSize: 18, color: this.state.product.colors[0] }}>
+													{ 'Aproveita que só tem ' + this.state.product.stock + ' em estoque ;)'}
+												</Text>
+											}
 											<Text style = {{ fontWeight: 'bold', fontSize: 20 }}>
 													{ 'Valor: R$ ' + (this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace('.',',') : parseFloat(this.state.PicPayPrice).toFixed(2).toString().replace('.',',')) }
 											</Text>
