@@ -27,6 +27,9 @@ function HeimdallrLib() {
 
   this.newPlanAdded = false;
 
+  this.badgeListner = null;
+  this.userListner = null;
+
   this.logCall = (call, params, result) => {
   	return new Promise(() => {
 	    firebase.firestore().collection('log').add({
@@ -135,7 +138,7 @@ function HeimdallrLib() {
 
 	this.getNotificationsNumber = function (context) {
   	    return new Promise((resolve) => {
-  	    	firebase.firestore().collection('rel_user_notification').where('uid', '==', this.user_id).onSnapshot(
+  	    	this.badgeListner =  firebase.firestore().collection('rel_user_notification').where('uid', '==', this.user_id).onSnapshot(
   	    		(querySnapshot) => {
 	                if (querySnapshot.docs[0]) {
 		                    context.setState( { numberBadge: querySnapshot.docs[0].data().counter });
@@ -682,19 +685,25 @@ function HeimdallrLib() {
 
   this.signOut = function () {
 	  return new Promise((resolve) => {
+	  	console.log("la vou eu");
 		  firebase.auth().signOut().then(
 		      () => {
-		          resolve();
+		      	if (this.badgeListner) {
+		      	    this.badgeListner();
+		        }
+
+		      	if (this.userListner) {
+		      		this.userListner();
+		        }
+		      	this.user_id = null;
+		      	this.user_image = 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
+		      	this.user_name = 'Anônimo';
+		      	this.token = null;
+		      	resolve();
 		      },
 		      () => {
 		      }
 		  );
-	  }).then(function (resolve) {
-		  this.user_id = null;
-		  this.user_image = 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
-		  this.user_name = 'Anônimo';
-		  this.token = null;
-		  return true;
 	  })
   }
 
@@ -770,7 +779,7 @@ function HeimdallrLib() {
   }
 
   this.getUserData = function (userData) {
-	  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
+	  this.userListner =  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
 	  (result) => {
 			  let user =  result && result.docs[0] ? result.docs[0].data() : userData;
 			  this.phone = user.phone;
