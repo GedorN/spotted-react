@@ -1079,7 +1079,7 @@ function HeimdallrLib() {
 		});
 	}
 
-  this.saveCollection = function (collection, params) {
+  this.saveCollection = (collection, params) => {
     let returnValue = null;
     return new Promise((resolve) => {
       let parametersOK = true;
@@ -1121,6 +1121,7 @@ function HeimdallrLib() {
             	this.user_name = params.name;
             	this.email = params.email;
             	this.uid = params.uid;
+            	this.sendWelcomeMail();
             }
             resolve();
           },
@@ -1135,6 +1136,19 @@ function HeimdallrLib() {
     }).then(function (resolve) {
       return returnValue;
     })
+  }
+
+  this.sendWelcomeMail = () => {
+	  RNFetchBlob.config({
+		  trusty: true
+	  }).fetch('POST',
+		  'https://3.23.33.91/new-account',
+		  { 'Content-Type': 'application/json'},
+		  JSON.stringify({
+			  email: this.email,
+			  uid: this.uid,
+		  })
+	  );
   }
 
   this.checkTicketsStatus = function(uid) {
