@@ -462,6 +462,14 @@ export default class PostViewer extends React.Component {
 		this.props.confirmPostRm(this.props.pid);
 	}
 
+	reportPost = () => {
+		this.RBSheet.close();
+		this.props.navigation.navigate('ReportScreen', {
+			pid: this.props.pid,
+			entity: 'post',
+		});
+	}
+
 	likeIt = () => {
   	    if (this.state.liked) {
 	        heimdallr.dislikePost(this.props.pid);
@@ -580,11 +588,11 @@ export default class PostViewer extends React.Component {
 			    ref={ref => {
 				    this.RBSheet = ref;
 			    }}
-			    height={this.state.reportAlert ? 300 : 150}
+			    height={150}
 			    animationType={'slide'}
 			    duration={250}
 		    >
-			    <PostOptions deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.props.uid}/>
+			    <PostOptions deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.props.uid} report={this.reportPost.bind(this)}/>
 		    </RBSheet>
 	    </TouchableOpacity>
     );

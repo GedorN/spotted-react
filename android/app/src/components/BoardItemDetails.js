@@ -233,6 +233,14 @@ export default class BoardItemDetails extends React.Component {
 		this.setState({  showDeleteAlert: true, deleteComment: true, commentId: cid });
     }
 
+	reportPost = () => {
+		this.RBSheet.close();
+		this.props.navigation.navigate('ReportScreen', {
+			pid: this.state.pid,
+			entity: 'board',
+		});
+	}
+
     deletePost = () => {
 
 		this.setState({ showDeleteAlert: false });
@@ -407,12 +415,12 @@ export default class BoardItemDetails extends React.Component {
 					ref={ref => {
 						this.RBSheet = ref;
 					}}
-					height={this.state.reportAlert ? 300 : 150}
+					height={150}
 					animationType={'slide'}
 					duration={250}
 
 				>
-					<PostOptions deletePost={this.deletePostConfirm.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.state.uid} />
+					<PostOptions deletePost={this.deletePostConfirm.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.state.uid} report={this.reportPost.bind(this)} />
 				</RBSheet>
                 <AwesomeAlert
 					show={this.state.showAlert}

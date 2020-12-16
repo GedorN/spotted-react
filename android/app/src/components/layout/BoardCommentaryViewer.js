@@ -33,17 +33,26 @@ export default class BoardCommentaryViewer extends React.Component {
 	}
 
     goToUserProfile = () => {
-        
+
 		this.props.navigation.push('UserProfile', {
 			userId: this.props.commentary.id_user,
 		});
     }
 
+	reportPost = () => {
+		this.RBSheet.close();
+		this.props.navigation.navigate('ReportScreen', {
+			cid: this.props.commentary.cid,
+			pid: this.props.commentary.pid,
+			entity: 'board_commentary_report',
+		});
+	}
+
     deletePost = (cid) => {
 		this.RBSheet.close();
 		this.props.deleteCommentary(cid);
     }
-    
+
     closeAlert = () => {
 		this.RBSheet.close();
 		this.props.commentaryCallback();
@@ -89,12 +98,12 @@ export default class BoardCommentaryViewer extends React.Component {
                     ref={ref => {
                         this.RBSheet = ref;
                     }}
-                    height={this.state.reportAlert ? 300 : 150}
+                    height={150}
                     animationType={'slide'}
                     duration={250}
                 >
-                    <PostOptions  deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} idEntity = {this.props.commentary.cid} typeEntity = {'comentario'} pid = {this.props.commentary.pid} userId = {this.props.commentary.id_user}/>
-                </RBSheet> 
+                    <PostOptions  deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} idEntity = {this.props.commentary.cid} typeEntity = {'comentario'} pid = {this.props.commentary.pid} userId = {this.props.commentary.id_user} report={this.reportPost.bind(this)}/>
+                </RBSheet>
             </View>
         )
     }
@@ -125,31 +134,31 @@ const styles  = StyleSheet.create({
         width: theme.width * 0.75,
         flexWrap:'wrap',
         alignItems:'flex-start',
-        alignSelf:'flex-end', 
+        alignSelf:'flex-end',
         marginRight: theme.width * 0.03
     },
     report: {
-        justifyContent:'center', 
+        justifyContent:'center',
         width:theme.width * 0.1,
         height:theme.height * 0.07
     },
     reportView: {
-        width: 40, 
-        height: 20, 
+        width: 40,
+        height: 20,
         zIndex: 9999,
         alignItems: 'flex-end',
         marginRight:theme.width*0.010,
         alignSelf:'flex-end'
     },
     circleSolid: {
-        width: 4, 
-        height: 4, 
-        marginLeft: 4, 
+        width: 4,
+        height: 4,
+        marginLeft: 4,
         marginRight: 4,
         opacity:0.7
     },
     ellipsis: {
-        width: 20, 
+        width: 20,
         height: 12,
         marginTop:5
     },
@@ -158,9 +167,9 @@ const styles  = StyleSheet.create({
         alignItems: 'center'
     },
     commentaryHeader: {
-        width: theme.width * 0.8, 
-        flexDirection: 'row', 
-        alignItems: 'center', 
+        width: theme.width * 0.8,
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent:'space-between'
     }
 });

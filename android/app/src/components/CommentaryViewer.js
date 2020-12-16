@@ -13,8 +13,6 @@ import {
 import UserImgProfile from "../../../../components/General/UserImgProfile";
 import theme from "../../../../components/General/Theme";
 import RBSheet from "react-native-raw-bottom-sheet";
-import ReportGod  from './Inputs/ReportGod';
-import AwesomeAlert from "react-native-awesome-alerts";
 import PostOptions from "./Inputs/PostOptions";
 import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import Video from 'react-native-video';
@@ -467,6 +465,15 @@ export default class CommentaryViewer extends React.Component {
 		this.setState({ showImages: false });
 	}
 
+	reportPost = () => {
+		this.RBSheet.close();
+		this.props.navigation.navigate('ReportScreen', {
+			pid: this.props.pid,
+			cid: this.props.cid,
+			entity: 'commentary',
+		});
+	}
+
 	likeIt = () => {
 		if (this.state.liked) {
 			heimdallr.dislikeCommentary(this.props.cid);
@@ -564,12 +571,12 @@ export default class CommentaryViewer extends React.Component {
 					ref={ref => {
 						this.RBSheet = ref;
 					}}
-					height={this.state.reportAlert ? 300 : 150}
+					height={150}
 					animationType={'slide'}
 					duration={250}
 				>
 					{/*<ReportGod  close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid} userId = {this.props.user_id}/>*/}
-					<PostOptions  deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid} userId = {this.props.user_id}/>
+					<PostOptions  deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} idEntity = {this.props.cid} typeEntity = {'comentario'} pid = {this.props.pid} userId = {this.props.user_id} report={this.reportPost.bind(this)}/>
 				</RBSheet>
 			</View>
 		);
