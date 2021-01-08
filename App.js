@@ -20,6 +20,8 @@ import ReceivedPhoneRequests from "./android/app/src/components/phoneRequest/Rec
 import MyPhoneRequests from "./android/app/src/components/phoneRequest/MyPhoneRequests";
 import ReportScreen from "./android/app/src/components/ReportScreen";
 import ThanksForReport from "./android/app/src/components/ThanksForReport";
+import PortalUTFPR from "./android/app/src/components/Portal-UTFPR/PortalUTFPR";
+import LoginPortal from "./android/app/src/components/Portal-UTFPR/LoginPortal";
 
 const config = {
 	animation: 'timing',
@@ -53,8 +55,9 @@ const RootStack = createStackNavigator(
 		ReceivedRequests: { screen: ReceivedPhoneRequests },
 		MyPhoneRequests: { screen: MyPhoneRequests },
 		ReportScreen: { screen: ReportScreen },
-		ThanksForReport: { screen: ThanksForReport }
-
+		ThanksForReport: { screen: ThanksForReport },
+		PortalUTFPR: { screen: PortalUTFPR },
+		LoginPortal: { screen: LoginPortal }
 	},
 	{
 

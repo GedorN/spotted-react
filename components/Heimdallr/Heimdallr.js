@@ -20,6 +20,7 @@ function HeimdallrLib() {
   this.email = null;
   this.token = null;
   this.phone = null;
+  this.UTFPRToken = null;
   this.userPlans = null;
   this.messages = null;
   this.deviceToken = null;
@@ -790,6 +791,7 @@ function HeimdallrLib() {
 			  this.userPlans = user.userPlans ? user.userPlans : null;
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
+			  this.UTFPRToken = user.UTFPRToken ? user.UTFPRToken : null;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
@@ -1601,6 +1603,41 @@ function HeimdallrLib() {
 				JSON.stringify(params)
 			);
 		})
+	}
+
+	// =========== UTFPR PORTAL ===================================================
+
+	this.loginPortal = function (params) {
+  	console.log('enviando: ', params);
+  	    return new Promise((resolve, reject) => {
+	        RNFetchBlob.fetch('POST', 'https://webapp.utfpr.edu.br/portalAluno/ws/auth',
+		        { 'Content-Type': 'application/json'},
+		        JSON.stringify(params)
+	        ).then(
+		        (result) => {
+		        	let data = result && result.data ? JSON.parse(result.data) : null;
+		        	if (data && data.token) {
+				        firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+					        async (res) => {
+						        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+							        UTFPRToken: data.token,
+						        }, {merge: true});
+					        },
+					        (error) => {
+						        reject(error);
+					        }
+				        );
+
+		        		this.UTFPRToken = result.data.token;
+			        } else {
+				        reject();
+			        }
+		        },
+		        (error) => {
+		        	console.log('deu ruim: ', error);
+		        }
+	        )
+        })
 	}
 
 
