@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
 		height: theme.height * 0.32,
 		elevation: 6,
 		alignSelf: 'center',
-		marginTop: 50,
 		borderRadius: 20,
 		padding: 5,
 		paddingHorizontal: 30,

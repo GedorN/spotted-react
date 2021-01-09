@@ -22,6 +22,7 @@ import ReportScreen from "./android/app/src/components/ReportScreen";
 import ThanksForReport from "./android/app/src/components/ThanksForReport";
 import PortalUTFPR from "./android/app/src/components/Portal-UTFPR/PortalUTFPR";
 import LoginPortal from "./android/app/src/components/Portal-UTFPR/LoginPortal";
+import StudentHistory from "./android/app/src/components/Portal-UTFPR/StudentHistory";
 
 const config = {
 	animation: 'timing',
@@ -57,7 +58,8 @@ const RootStack = createStackNavigator(
 		ReportScreen: { screen: ReportScreen },
 		ThanksForReport: { screen: ThanksForReport },
 		PortalUTFPR: { screen: PortalUTFPR },
-		LoginPortal: { screen: LoginPortal }
+		LoginPortal: { screen: LoginPortal },
+		StudentHistory: { screen: StudentHistory }
 	},
 	{
 

@@ -2,13 +2,16 @@ import React from 'react';
 import {
 	View,
 	StyleSheet,
-	Text,
-	StatusBar, TouchableOpacity, Image
+	ScrollView,
+	StatusBar,
+	TouchableOpacity,
+	Image
 } from 'react-native';
 
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import UserInfoCard from "./components/UserInfoCard";
 import theme from "../../../../../components/General/Theme";
+import MenuOptionCard from "./components/MenuOptionCard";
 
 
 export default class PortalUTFPR extends React.Component {
@@ -29,13 +32,9 @@ export default class PortalUTFPR extends React.Component {
 		}
 	}
 
-	returnToHome = () => {
-
-	}
-
 	render() {
 		return (
-			<View>
+			<ScrollView>
 				<View style={styles.backColor}></View>
 				<View style = {{alignSelf:'flex-start'}}>
 					<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
@@ -47,8 +46,23 @@ export default class PortalUTFPR extends React.Component {
 						</View>
 					</TouchableOpacity>
 				</View>
-				<UserInfoCard navigation={this.props.navigation}/>
-			</View>
+				<View style={{ marginTop: 25 }}>
+					<UserInfoCard navigation={this.props.navigation}/>
+				</View>
+				<View style={styles.body}>
+					<View style={styles.bodyLine}>
+						<MenuOptionCard icon={require('../../../../../assets/images/PORTAL-UTFPR/history.png')} title='Histórico Acadêmico' route='StudentHistory' navigation={this.props.navigation} />
+						<MenuOptionCard icon={require('../../../../../assets/images/PORTAL-UTFPR/clock.png')} title='Horários Aulas' disabled />
+					</View>
+					<View style={styles.bodyLine}>
+						<MenuOptionCard iconRetrato icon={require('../../../../../assets/images/PORTAL-UTFPR/utensils.png')} title='Cardápio RU' disabled />
+						<MenuOptionCard iconPaisagem icon={require('../../../../../assets/images/PORTAL-UTFPR/star.png')} title='Boletim' disabled />
+					</View>
+					<View style={styles.bodyLine}>
+						<MenuOptionCard iconPaisagem icon={require('../../../../../assets/images/PORTAL-UTFPR/newspaper.png')} title='Notícias' disabled />
+					</View>
+				</View>
+			</ScrollView>
 		)
 	}
 }
@@ -56,8 +70,17 @@ export default class PortalUTFPR extends React.Component {
 const styles = StyleSheet.create({
 	backColor: {
 		width: theme.width,
-		height: theme.height * 0.2,
+		height: theme.height * 0.22,
 		position: 'absolute',
 		backgroundColor: '#F6C500'
+	},
+	body: {
+		padding: 20,
+		paddingHorizontal: 40,
+	},
+	bodyLine: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginTop: 20
 	}
 })
