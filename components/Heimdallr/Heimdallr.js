@@ -13,6 +13,9 @@ import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
 
+
+const HTTPS_UNAUTHORIZED = 401;
+
 function HeimdallrLib() {
   this.user_id = /*'Yt5eZ0SGpy1U9QPTmIbI'*/ null;
   this.user_image ='https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/teste?alt=media&token=69a7d809-ca9f-4b62-870d-3cae93aa98a4';
@@ -21,6 +24,7 @@ function HeimdallrLib() {
   this.token = null;
   this.phone = null;
   this.UTFPRToken = null;
+  this.UTFPRidInCourse = null;
   this.userPlans = null;
   this.messages = null;
   this.deviceToken = null;
@@ -792,6 +796,7 @@ function HeimdallrLib() {
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
 			  this.UTFPRToken = user.UTFPRToken ? user.UTFPRToken : null;
+			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
 		  }
@@ -1628,13 +1633,72 @@ function HeimdallrLib() {
 					        }
 				        );
 
-		        		this.UTFPRToken = result.data.token;
+		        		this.UTFPRToken = data.token;
+		        		resolve();
 			        } else {
 				        reject();
 			        }
 		        },
 		        (error) => {
 		        	console.log('deu ruim: ', error);
+		        }
+	        )
+        })
+	}
+
+
+	this.getPortalPhoto = function () {
+		return new Promise((resolve, reject) => {
+			console.log('Se liga no token: ', heimdallr.UTFPRToken);
+
+			RNFetchBlob.fetch('GET', 'https://webapp.utfpr.edu.br/portalAluno/ws/fotoCracha', {
+				Authorization: 'Bearer ' + heimdallr.UTFPRToken,
+				Accept: '*/*'
+			}).then(
+				(result) => {
+					if (result.respInfo.status === HTTPS_UNAUTHORIZED) {
+						reject();
+					} else {
+						resolve(result.data);
+					}
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+		});
+	}
+
+	this.getStudentInfo = function () {
+  	    return new Promise((resolve, reject) => {
+  	    	RNFetchBlob.fetch('GET', 'https://webapp.utfpr.edu.br/portalAluno/ws/dados', {
+		        Authorization: 'Bearer ' + heimdallr.UTFPRToken,
+		        Accept: '*/*'
+	        }).then(
+		        (result) => {
+			        if (result.respInfo.status === HTTPS_UNAUTHORIZED) {
+				        reject();
+			        } else {
+			        	const data = result && result.data ? JSON.parse(result.data) : null;
+			        	data.cursos[0].pessNomeVc = data.pessNomeVc;
+			        	data.cursos[0].ra = data.login.substring(1);
+			        	if (!this.UTFPRidInCourse) {
+					        firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+						        async (res) => {
+							        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+								        UTFPRidInCourse: data.cursos[0].alCuIdVc,
+							        }, {merge: true});
+						        },
+						        (error) => {
+							        reject(error);
+						        }
+					        );
+				        }
+				        resolve(data.cursos[0]);
+			        }
+		        },
+		        (error) => {
+		        	reject(error);
 		        }
 	        )
         })
