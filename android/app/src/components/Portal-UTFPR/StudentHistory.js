@@ -20,8 +20,8 @@ export default class StudentHistory extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			historyData: null,
-			items: [],
+			allHistoryData: null,
+			historyData: [],
 			search: null,
 
 		}
@@ -30,7 +30,7 @@ export default class StudentHistory extends React.Component {
 	componentDidMount = () => {
 		heimdallr.getStudentHistory().then(
 			(resolve) => {
-				this.setState({ historyData: resolve, items: resolve });
+				this.setState({ historyData: resolve, allHistoryData: resolve });
 				console.log("HISTORY",resolve[0].discNomeVc);
 			},
 			(reject) => {
@@ -42,38 +42,43 @@ export default class StudentHistory extends React.Component {
 		)
 	}
 
-	
+
 
 	changeText = (text) => {
-		let tempItems = this.state.historyData.filter((i) => i.discNomeVc.toLowerCase().includes(text.toLowerCase())); 
-
+		let tempItems = this.state.allHistoryData.filter((i) => i.discNomeVc.toLowerCase().includes(text.toLowerCase()));
 		this.setState({ historyData: tempItems,  search: text });
 	}
 
+	getHeader () {
+		return (
+			<View style = {{ width: theme.width * 0.85, flexDirection: 'row', marginTop: 15, marginBottom: 10, alignSelf: 'center' }}>
+				<View style = {{ width: theme.width * 0.8 }} >
+					<RUMineTextInput
+						onChangeText={ text => this.changeText(text) }
+						placeholder='Pesquisar'
+						textContentType='name'
+						flex={1}
+					/>
+				</View>
+				<Image
+					source={require('../../../../../assets/images/search-solid.png')}
+					style={{height: 20, width: 20, opacity:0.5, marginLeft:5, marginTop: 10}}
+				/>
+			</View>
+		)
+	}
+
+
+
 	render() {
+
 		return (
 			<View>
 				<View style = {{backgroundColor: '#F6C500', paddingTop: 20, paddingBottom: 20}}>
 					<Text style = {{ fontSize: 20, alignSelf: 'center', fontWeight: 'bold' }}>Histórico Acadêmico</Text>
 				</View>
-{
 				<FlatList
-					ListHeaderComponent = {() =>
-						<View style = {{ width: theme.width * 0.85, flexDirection: 'row', marginTop: 15, marginBottom: 10, alignSelf: 'center' }}>
-							<View style = {{ width: theme.width * 0.8 }} >
-								<RUMineTextInput
-								onChangeText={ text => this.changeText(text) }
-								placeholder='Pesquisar'
-								textContentType='name'
-								flex={1}
-								/>
-							</View>
-							<Image
-								source={require('../../../../../assets/images/search-solid.png')}
-								style={{height: 20, width: 20, opacity:0.5, marginLeft:5, marginTop: 10}}
-							/>
-						</View>
-					}
+					ListHeaderComponent = { this.getHeader() }
 					showsVerticalScrollIndicator={false}
 					showsVerticalScrollIndicator={false}
 					onScrollEndDrag={() => this.setState({ scrolling: false	 })}
@@ -83,7 +88,7 @@ export default class StudentHistory extends React.Component {
 					renderItem={ ({ item }) =>
 						<SubjectCard subject = { item }/>
 					}
-				/> }
+				/>
 			</View>
 		)
 	}
