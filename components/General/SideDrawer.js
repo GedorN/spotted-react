@@ -96,8 +96,8 @@ export default class SideDrawer extends React.Component {
 				                showsVerticalScrollIndicator = {false}>
 					    <View >
 						    <TouchableOpacity
-							    onPressIn={() => heimdallr.sendEvent('board_menu_click')}
-							    onPress={() => {this.props.navigation.push('Board', {navigation: this.props.navigation})}}>
+							    onPressIn={() => heimdallr.sendEvent('portal_utfpr_click')}
+							    onPress={() => {this.props.navigation.push('PortalUTFPR')}}>
 							    <View style={styles.item}>
 								    <View style = {{ width: 45, height: 45, marginRight: 13 }}>
 									    <Image source={require('../../assets/images/UTFPR.png')}
@@ -109,7 +109,24 @@ export default class SideDrawer extends React.Component {
 									           }}
 									    />
 								    </View>
-								    <Text>Mural UTFPR</Text>
+								    <Text>Portal UTFPR</Text>
+							    </View>
+						    </TouchableOpacity>
+						    <TouchableOpacity
+							    onPressIn={() => heimdallr.sendEvent('board_menu_click')}
+							    onPress={() => {this.props.navigation.push('Board', {navigation: this.props.navigation})}}>
+							    <View style={styles.item}>
+								    <View style = {{ width: 45, height: 45, marginRight: 13 }}>
+									    <Image source={require('../../assets/images/chalkboard-teacher-solid.png')}
+									           style={{
+										           resizeMode: 'contain',
+										           flex:1,
+										           width: null,
+										           height: null,
+									           }}
+									    />
+								    </View>
+								    <Text>Mural</Text>
 							    </View>
 						    </TouchableOpacity>
 						    <TouchableOpacity disabled={heimdallr.email === 'spotted@utfpr.com'}

@@ -75,9 +75,9 @@ export default class UserProfile extends React.Component {
 				(resolve) => {
 					if(resolve != null){
 						this.setState({userId: resolve.uid, userImage: resolve.user_image, userName: resolve.name, userEmail: resolve.email, deviceToken: resolve.deviceToken, userImageUrl: [{url: resolve.user_image}], acceptingPhoneRequests: resolve.accepting_phone_requests});
-						heimdallr.getUserColletion(10, this.state.userId).then(
+						heimdallr.getUserColletion(1000, this.state.userId).then(
 						(resolve) => {
-							if(!resolve || resolve.length === 0){
+							if(!resolve || resolve.length === 0 || resolve.length <= 100){
 								this.setState({ endPulling: true });
 							}
 							resolve.forEach((doc) => {
@@ -104,7 +104,7 @@ export default class UserProfile extends React.Component {
 			this.state.userImageUrl = [{url: heimdallr.user_image}];
 			heimdallr.getUserColletion(100, this.state.userId).then(
 				(resolve) => {
-					if(!resolve || resolve.length === 0){
+					if(!resolve || resolve.length === 0 || resolve.length <= 100){
 						this.setState({ endPulling: true });
 					} else
 					resolve.forEach((doc) => {
