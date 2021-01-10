@@ -1640,7 +1640,7 @@ function HeimdallrLib() {
 			        }
 		        },
 		        (error) => {
-		        	console.log('deu ruim: ', error);
+		        	console.warn('deu ruim: ', error);
 		        }
 	        )
         })
@@ -1702,6 +1702,29 @@ function HeimdallrLib() {
 		        }
 	        )
         })
+	}
+
+	this.getStudentHistory = function () {
+		return new Promise((resolve, reject) => {
+			console.log("UTFPR COURSE ID", this.UTFPRidInCourse);
+
+			RNFetchBlob.fetch('GET', `https://webapp.utfpr.edu.br/portalAluno/ws/${heimdallr.UTFPRidInCourse}/historico`, {
+				Authorization: 'Bearer ' + heimdallr.UTFPRToken,
+				Accept: '*/*'
+			}).then(
+				(result) => {
+					if (result.respInfo.status === HTTPS_UNAUTHORIZED) {
+						reject();
+					} else {
+						const data = result && result.data ? JSON.parse(result.data) : null;
+						resolve(data);
+					}
+				},
+				(error) => {
+					reject(error);
+				}
+			)
+		});
 	}
 
 
