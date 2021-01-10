@@ -32,7 +32,6 @@ export default class UserInfoCard extends React.Component {
 							height: 70,
 							borderRadius: 100,
 							borderWidth: 1,
-							borderColor: '#F6C500',
 							alignSelf: 'center',
 						}}
 					/>
@@ -41,26 +40,26 @@ export default class UserInfoCard extends React.Component {
 					this.props.courseData &&
 					<View>
 						<View>
-							<Text style={styles.courseName}>{this.props.courseData.pessNomeVc}</Text>
+							<Text style={styles.studentName}>{this.props.courseData.pessNomeVc}</Text>
 						</View>
 						<View style={{ marginTop: 15 }}>
-							<Text>{this.props.courseData.cursAbrevVc}</Text>
+							<Text style = { styles.courseName }>{this.props.courseData.cursNomeVc}</Text>
 						</View>
-						<View style={{ marginTop: 15 }}>
+						<View style={ styles.cardView }>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 								<View style={{ flexDirection: 'row' }}>
-									<Text>CR: </Text>
-									<Text>{this.props.courseData.alCuCoefNr}</Text>
+									<Text style = { styles.cardText }>CR: </Text>
+									<Text style = { styles.cardText }>{this.props.courseData.alCuCoefNr}</Text>
 								</View>
 								<View style={{ flexDirection: 'row' }}>
-									<Text>{this.props.courseData.alCuPeriodoNr}</Text>
-									<Text>° período</Text>
+									<Text style = { styles.cardText }>{this.props.courseData.alCuPeriodoNr}</Text>
+									<Text style = { styles.cardText }>° PERÍODO</Text>
 								</View>
 							</View>
-						</View>
-						<View style={{ flexDirection: 'row', marginTop: 4 }}>
-							<Text>RA: </Text>
-							<Text>{this.props.courseData.ra}</Text>
+							<View style={{ flexDirection: 'row', marginTop: 15 }}>
+								<Text style = { styles.cardText }>RA: </Text>
+								<Text style = { styles.cardText }>{this.props.courseData.ra}</Text>
+							</View>
 						</View>
 					</View>
 				}
@@ -81,9 +80,24 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 30,
 		backgroundColor: 'white'
 	},
-	courseName: {
+	studentName: {
 		alignSelf: 'center',
 		marginTop: 2,
-		fontWeight: 'bold'
+		fontWeight: 'bold',
+		fontSize: 15,
+		textAlign: 'center'
+	},
+	courseName: {
+		fontWeight: 'bold', 
+		textAlign: 'center', 
+		fontSize: 14
+	},
+	cardText: {
+		fontSize: 13
+	},
+	cardView: {
+		marginTop: 15, 
+		width: theme.width * 0.7, 
+		alignSelf: 'center'
 	}
 });

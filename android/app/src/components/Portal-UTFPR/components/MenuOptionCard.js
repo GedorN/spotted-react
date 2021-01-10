@@ -38,6 +38,9 @@ export default class MenuOptionCard extends React.Component {
 				<Text
 					style={{
 						alignSelf: 'center',
+						textAlign:'center',
+						fontSize: 12,
+						lineHeight: 17,
 						opacity: this.props.disabled ?  0.2 : 1,
 					}}>
 					{this.props.title}
