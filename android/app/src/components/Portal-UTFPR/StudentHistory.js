@@ -83,10 +83,10 @@ export default class StudentHistory extends React.Component {
 					ListHeaderComponent = { this.getHeader() }
 					showsVerticalScrollIndicator={false}
 					showsVerticalScrollIndicator={false}
-					keyExtractor={ item => item.turmIdVc }
+					keyExtractor={ (item, index) => index }
 					data={ this.state.historyData }
 					renderItem={ ({ item }) =>
-						<SubjectCard subject = { item }/>
+						<SubjectCard subject = { item } />
 					}
 				/>
 			</View>
