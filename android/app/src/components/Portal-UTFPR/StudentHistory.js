@@ -4,11 +4,9 @@ import {
 	Text,
 	View,
 	StyleSheet,
-	FlatList,
-	Animated,
 	TouchableOpacity,
+	FlatList,
 	Image,
-	Easing,
 } from 'react-native';
 
 import theme from "../../../../../components/General/Theme";
@@ -31,13 +29,9 @@ export default class StudentHistory extends React.Component {
 		heimdallr.getStudentHistory().then(
 			(resolve) => {
 				this.setState({ historyData: resolve, allHistoryData: resolve });
-				console.log("HISTORY",resolve[0].discNomeVc);
 			},
 			(reject) => {
 				console.log('erro get history');
-				// this.props.navigation.pop();
-				// this.props.navigation.navigate('LoginPortal');
-				// console.log("caiu no reject");
 			}
 		)
 	}
@@ -51,7 +45,7 @@ export default class StudentHistory extends React.Component {
 
 	getHeader () {
 		return (
-			<View style = {{ width: theme.width * 0.85, flexDirection: 'row', marginTop: 15, marginBottom: 10, alignSelf: 'center' }}>
+			<View style = { styles.searchInput }>
 				<View style = {{ width: theme.width * 0.8 }} >
 					<RUMineTextInput
 						onChangeText={ text => this.changeText(text) }
@@ -62,7 +56,7 @@ export default class StudentHistory extends React.Component {
 				</View>
 				<Image
 					source={require('../../../../../assets/images/search-solid.png')}
-					style={{height: 20, width: 20, opacity:0.5, marginLeft:5, marginTop: 10}}
+					style={ styles.searchImage }
 				/>
 			</View>
 		)
@@ -74,8 +68,16 @@ export default class StudentHistory extends React.Component {
 
 		return (
 			<View>
-				<View style = {{backgroundColor: '#F6C500', paddingTop: 20, paddingBottom: 20}}>
-					<Text style = {{ fontSize: 20, alignSelf: 'center', fontWeight: 'bold' }}>Histórico Acadêmico</Text>
+				<View style = { styles.header }>
+					<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+						<View style={{ flexDirection: 'row', width: theme.width * 0.2, height:theme.height * 0.04 }}>
+							<Image
+								style={ styles.arrowImage }
+								source={require('../../../../../assets/images/chevron-circle-left-solid-white.png')}
+							/>
+						</View>
+					</TouchableOpacity>
+					<Text style = { styles.headerText }>Histórico Acadêmico</Text>
 				</View>
 				<FlatList
 					ListHeaderComponent = { this.getHeader() }
@@ -83,8 +85,8 @@ export default class StudentHistory extends React.Component {
 					showsVerticalScrollIndicator={false}
 					onScrollEndDrag={() => this.setState({ scrolling: false	 })}
 					onScrollBeginDrag={() => this.setState({ scrolling: true })}
-					keyExtractor={item => item.turmIdVc}
-					data={this.state.historyData}
+					keyExtractor={ item => item.turmIdVc }
+					data={ this.state.historyData }
 					renderItem={ ({ item }) =>
 						<SubjectCard subject = { item }/>
 					}
@@ -96,7 +98,37 @@ export default class StudentHistory extends React.Component {
 }
 
 const styles = StyleSheet.create({
-	container: {
-
+	header: {
+		backgroundColor: '#F6C500', 
+		paddingTop: 10, 
+		paddingBottom: 20
+	},
+	headerText: {
+		fontSize: 20, 
+		alignSelf: 'center', 
+		fontWeight: 'bold'
+	},
+	searchImage: {
+		height: 20, 
+		width: 20, 
+		opacity:0.5, 
+		marginLeft:5, 
+		marginTop: 10
+	},
+	searchInput: {
+		width: theme.width * 0.85, 
+		flexDirection: 'row', 
+		marginTop: 15, 
+		marginBottom: 10, 
+		alignSelf: 'center' 
+	},
+	arrowImage: {
+		width: 30, 
+		height: 30, 
+		opacity: 0.6, 
+		position: 'absolute', 
+		marginLeft: 8, 
+		marginTop: 8
+		
 	}
 });
