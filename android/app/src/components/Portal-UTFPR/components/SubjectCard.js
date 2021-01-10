@@ -77,7 +77,7 @@ export default class SubjectCard extends React.Component {
                 <Animated.View style = {{ flexDirection: 'row', height: this.state.cardHeight }}>
                     {
                         this.state.showingHistory &&
-                        <View style={{ marginTop: 10, paddingLeft: 40 }}>
+                        <View style={{ marginTop: 15, paddingLeft: 40 }}>
                             <View style = {{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Image
                                     style={{ width: 12, height: 11, opacity: 0.5 }}
@@ -85,28 +85,28 @@ export default class SubjectCard extends React.Component {
                                 />
 	                            <Text style = { styles.subjectData }>{ 'Média final: ' + this.props.subject.histnotanr }</Text>
                             </View>
-	                        <View style = {{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+	                        <View style = { styles.subjectItem }>
 		                        <Image
 	                                    style={{ width: 10, height: 10, opacity: 0.5 }}
 	                                    source={ require('../../../../../../assets/images/PORTAL-UTFPR/chart.png') }
 		                        />
 		                        <Text style = { styles.subjectData }>{ 'Frequência: ' + this.props.subject.histfreqnr + '%'}</Text>
 	                        </View>
-	                        <View style = {{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+	                        <View style = { styles.subjectItem }>
 		                        <Image
 			                        style={{ width: 10, height: 12, opacity: 0.5 }}
 			                        source={ require('../../../../../../assets/images/PORTAL-UTFPR/calendar.png') }
 		                        />
 		                        <Text style = { styles.subjectData }>{ 'Ano: ' + this.props.subject.histanonr + ' - ' + this.props.subject.histperanonr }</Text>
 	                        </View>
-	                        <View style = {{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+	                        <View style = { styles.subjectItem }>
 		                        <Image
 			                        style={{ width: 10, height: 10, opacity: 0.5 }}
 			                        source={ require('../../../../../../assets/images/PORTAL-UTFPR/graduation-cap.png') }
 		                        />
 		                        <Text style = { styles.subjectData }>{ 'Código da disciplina: ' + this.props.subject.discCodVelhoVc + ' / ' + this.props.subject.turmCodVc }</Text>
 	                        </View>
-	                        <View style = {{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+	                        <View style = { styles.subjectItem }>
 		                        <Image
 			                        style={{ width: 13, height: 10, opacity: 0.5 }}
 			                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/icons%2Fusers-solid.png?alt=media&token=f0a5c738-772f-47e2-9451-cebb3e7184f1' }}
@@ -143,5 +143,11 @@ const styles = StyleSheet.create({
     subjectData: {
         fontSize: 12,
 	    marginLeft: 4,
-    }
+	},
+	subjectItem: {
+		flexDirection: 'row', 
+		alignItems: 'center', 
+		marginTop: 15
+		
+	}
 })
