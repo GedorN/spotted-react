@@ -137,31 +137,31 @@ export default class Login extends React.Component {
 			                <FatBottomedButton color={theme.primary} text={'Registrar-se'}  height={50} onTap={() => this.props.navigation.navigate('SignUp', {navigation: this.props.navigation})}/>
 		                </View>
 	                </View>
-		            <View style={{position: 'absolute', top: theme.height * 0.85, width: theme.width, paddingLeft: 10, alignItems: 'flex-start'}}>
-		                <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>
-				            <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>
-		                </TouchableOpacity>
-		            </View>
-	            <AwesomeAlert
-		            show={this.state.showAlert}
-		            showProgress={false}
-		            style={{position: 'absolute'}}
-		            title="Modo anônimo"
-		            message="Usuários anônimos não podem realizar postagens e nem comentários"
-		            closeOnTouchOutside={true}
-		            closeOnHardwareBackPress={false}
-		            showCancelButton={true}
-		            showConfirmButton={true}
-		            cancelText="Cancelar"
-		            confirmText="Continuar"
-		            confirmButtonColor={theme.primary}
-		            onCancelPressed={() => {
-			            this.hideAlert();
-		            }}
-		            onConfirmPressed={() => {
-			            this.anonymousLogin();
-		            }}
-	            />
+		            {/*<View style={{position: 'absolute', top: theme.height * 0.85, width: theme.width, paddingLeft: 10, alignItems: 'flex-start'}}>*/}
+		            {/*    <TouchableOpacity onPress={() => { this.setState({ showAlert: true }) }}>*/}
+				    {/*        <Text style={{color: theme.primary, textDecorationLine: 'underline', marginLeft: 10}}>Entrar como anônimo</Text>*/}
+		            {/*    </TouchableOpacity>*/}
+		            {/*</View>*/}
+	            {/*<AwesomeAlert*/}
+		        {/*    show={this.state.showAlert}*/}
+		        {/*    showProgress={false}*/}
+		        {/*    style={{position: 'absolute'}}*/}
+		        {/*    title="Modo anônimo"*/}
+		        {/*    message="Usuários anônimos não podem realizar postagens e nem comentários"*/}
+		        {/*    closeOnTouchOutside={true}*/}
+		        {/*    closeOnHardwareBackPress={false}*/}
+		        {/*    showCancelButton={true}*/}
+		        {/*    showConfirmButton={true}*/}
+		        {/*    cancelText="Cancelar"*/}
+		        {/*    confirmText="Continuar"*/}
+		        {/*    confirmButtonColor={theme.primary}*/}
+		        {/*    onCancelPressed={() => {*/}
+			    {/*        this.hideAlert();*/}
+		        {/*    }}*/}
+		        {/*    onConfirmPressed={() => {*/}
+			    {/*        this.anonymousLogin();*/}
+		        {/*    }}*/}
+	            {/*/>*/}
 	            <Modal
 		            statusBarTranslucent={true}
 		            hardwareAccelerated={true}
