@@ -12,45 +12,45 @@ import {
 
 import theme from "../../../../../../components/General/Theme";
 
-const spinValue = new Animated.Value(0);
-
 export default class SubjectCard extends React.Component {
 	constructor(props) {
 		super(props);
+		this.spinValue = new Animated.Value(0);
 		this.state = {
             showHistory: false,
-            spin: spinValue.interpolate({
-				inputRange: [0, 1],
-				outputRange: ['0deg', '-180deg']
-			})
+            spin: this.spinValue.interpolate({
+	            inputRange: [0, 1],
+	            outputRange: ['0deg', '-180deg']
+            }),
 
 		}
     }
-    
-    componentDidMount() {
 
-
+    componentDidMount = () => {
     }
-    
-    showHistory = (item) => {
-		this.setState({showHistory: !this.state.showHistory });
 
+    showHistory = (item) => {
 		Animated.timing(
-			spinValue,
+			this.spinValue,
 			{
-				toValue: this.state.showHistory? 1 : 0,
+				toValue: !this.state.showHistory ? 1 : 0,
 				duration: 200,
 				easing: Easing.linear, // Easing is an additional import from react-native
 				useNativeDriver: true  // To make use of native driver for performance
 			}
 		).start();
+		this.setState({showHistory: !this.state.showHistory });
+
 	}
 
 	render() {
         return (
             <View>
+	            {
+
+	            }
                 <View style = {{ paddingTop: 20, paddingBottom: 20, borderColor: '#DCDCDC', borderWidth: 0.5 }} >
-                    <TouchableOpacity onPress={this.showHistory.bind(this)} >
+                    <TouchableOpacity onPress={this.showHistory.bind(this)} activeOpacity={0.75}>
                         <View style = {{flexDirection: 'row', justifyContent: 'space-around'}}>
                             <View style = {{ width: theme.width * 0.8 /* ,borderWidth: 1, borderColor: '#DCDCDC' */ }}>
                                 <Text style = {{ fontWeight: 'bold', paddingLeft: 20 , marginBottom: 10 }}>{this.props.subject.discNomeVc}</Text>
@@ -67,22 +67,22 @@ export default class SubjectCard extends React.Component {
                             this.state.showHistory &&
                             <View style = {{ flexDirection: 'row', alignSelf :'center'}}>
                             <View style = {{width: theme.width * 0.05, opacity: 0.5}}>
-                                <Image 
-                                    style={{ width: 12, height: 11, marginTop: 15}} 
+                                <Image
+                                    style={{ width: 12, height: 11, marginTop: 15}}
                                     source={require('../../../../../../assets/images/PORTAL-UTFPR/star.png')} />
-                                <Image 
-                                    style={{ width: 10, height: 10, marginTop: 18}} 
+                                <Image
+                                    style={{ width: 10, height: 10, marginTop: 18}}
                                     source={require('../../../../../../assets/images/PORTAL-UTFPR/chart.png')} />
-                                <Image 
-                                    style={{ width: 10, height: 12, marginTop: 17}} 
+                                <Image
+                                    style={{ width: 10, height: 12, marginTop: 17}}
                                     source={require('../../../../../../assets/images/PORTAL-UTFPR/calendar.png')} />
-                                <Image 
-                                    style={{ width: 10, height: 10, marginTop: 18}} 
+                                <Image
+                                    style={{ width: 10, height: 10, marginTop: 18}}
                                     source={require('../../../../../../assets/images/PORTAL-UTFPR/graduation-cap.png')} />
-                                <Image 
-                                    style={{ width: 13, height: 10, marginTop: 17}} 
+                                <Image
+                                    style={{ width: 13, height: 10, marginTop: 17}}
                                     source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/icons%2Fusers-solid.png?alt=media&token=f0a5c738-772f-47e2-9451-cebb3e7184f1'}} />
-                                
+
                             </View>
                             <View style = {{ /* borderColor: '#000000', borderWidth: 1, */ width: theme.width * 0.7, alignSelf: 'center'}}>
                                 <Text style = {{fontSize: 12, marginTop: 10}}>{'Média final: ' + this.props.subject.histnotanr}</Text>
@@ -93,7 +93,7 @@ export default class SubjectCard extends React.Component {
                             </View>
                         </View>
                         }
-                        
+
                     </TouchableOpacity>
                 </View>
         </View>
