@@ -90,7 +90,7 @@ export default class SubjectCard extends React.Component {
 	                                    style={{ width: 10, height: 10, opacity: 0.5 }}
 	                                    source={ require('../../../../../../assets/images/PORTAL-UTFPR/chart.png') }
 		                        />
-		                        <Text style = { styles.subjectData }>{ 'Frequência: ' + this.props.subject.histfreqnr }</Text>
+		                        <Text style = { styles.subjectData }>{ 'Frequência: ' + this.props.subject.histfreqnr + '%'}</Text>
 	                        </View>
 	                        <View style = {{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
 		                        <Image
