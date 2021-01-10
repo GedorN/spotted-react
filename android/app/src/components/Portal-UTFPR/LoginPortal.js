@@ -64,7 +64,7 @@ export default class LoginPortal extends React.Component {
 					<Image style={styles.UTFPRLogo}  source={{uri: `http://portal.utfpr.edu.br/icones/cabecalho/logo-utfpr/@@images/image.png`}} />
 				</View>
 				<View style={{marginTop: 30}}>
-					<Text>Precisamos que você faça o login para sincronizaarmos as suas informações</Text>
+					<Text>Faça login para sincronizar as suas informações</Text>
 					{
 						this.state.errorMessage &&
 						<Text style={{color: 'red', marginTop: 5}} >*Login ou senha incorretos</Text>
@@ -87,10 +87,6 @@ export default class LoginPortal extends React.Component {
 						textContentType='password'
 						onChangeText={text => this.setState({password: text})}
 					/>
-					<View style={{flexDirection: 'row', opacity: 0.5}}>
-						<Text style={{color: '#F6C500', fontSize: 11}}>*</Text>
-						<Text style={{ fontSize: 11 }}> Não guardamos as suas informmações de login</Text>
-					</View>
 					<View style={{marginTop: 40}}>
 						<FatBottomedButton color={'black'} borderColor={'#F6C500'} backgroundColor={'#F6C500'} text={'Entrar'}  height={50} onTap={this.doLogin.bind(this)} />
 					</View>

@@ -12,35 +12,13 @@ import theme from "../../../../../../components/General/Theme";
 export default class UserInfoCard extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
+		this.props = {
 			userImage: '',
 			courseData: null
 		}
 	}
 
 	componentDidMount = () => {
-		console.log("Vou chamar as foto");
-		heimdallr.getPortalPhoto().then(
-			(resolve) => {
-				this.setState({ userImage: `data:image/png;base64,${resolve}` });
-			},
-			(reject) => {
-				console.log("caiu no reject");
-				this.props.navigation.replace('LoginPortal');
-			}
-		);
-
-		heimdallr.getStudentInfo().then(
-			(resolve) => {
-				this.setState({ courseData: resolve });
-			},
-			(reject) => {
-				this.props.navigation.replace('LoginPortal');
-				// this.props.navigation.pop();
-				// this.props.navigation.navigate('LoginPortal');
-				// console.log("caiu no reject");
-			}
-		)
 	}
 
 	render() {
@@ -48,7 +26,7 @@ export default class UserInfoCard extends React.Component {
 			<View style={styles.container}>
 				<View style={{ marginTop: 15 }}>
 					<Image
-						source={{ uri: this.state.userImage }}
+						source={{ uri: this.props.userImage }}
 						style={{
 							width: 70,
 							height: 70,
@@ -60,29 +38,29 @@ export default class UserInfoCard extends React.Component {
 					/>
 				</View>
 				{
-					this.state.courseData &&
+					this.props.courseData &&
 					<View>
 						<View>
-							<Text style={styles.courseName}>{this.state.courseData.pessNomeVc}</Text>
+							<Text style={styles.courseName}>{this.props.courseData.pessNomeVc}</Text>
 						</View>
 						<View style={{ marginTop: 15 }}>
-							<Text>{this.state.courseData.cursAbrevVc}</Text>
+							<Text>{this.props.courseData.cursAbrevVc}</Text>
 						</View>
 						<View style={{ marginTop: 15 }}>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 								<View style={{ flexDirection: 'row' }}>
 									<Text>CR: </Text>
-									<Text>{this.state.courseData.alCuCoefNr}</Text>
+									<Text>{this.props.courseData.alCuCoefNr}</Text>
 								</View>
 								<View style={{ flexDirection: 'row' }}>
-									<Text>{this.state.courseData.alCuPeriodoNr}</Text>
+									<Text>{this.props.courseData.alCuPeriodoNr}</Text>
 									<Text>° período</Text>
 								</View>
 							</View>
 						</View>
 						<View style={{ flexDirection: 'row', marginTop: 4 }}>
 							<Text>RA: </Text>
-							<Text>{this.state.courseData.ra}</Text>
+							<Text>{this.props.courseData.ra}</Text>
 						</View>
 					</View>
 				}

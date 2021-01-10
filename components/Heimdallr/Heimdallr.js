@@ -25,6 +25,7 @@ function HeimdallrLib() {
   this.phone = null;
   this.UTFPRToken = null;
   this.UTFPRidInCourse = null;
+  this.UTFPRPortalLogin = null;
   this.userPlans = null;
   this.messages = null;
   this.deviceToken = null;
@@ -796,6 +797,7 @@ function HeimdallrLib() {
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
 			  this.UTFPRToken = user.UTFPRToken ? user.UTFPRToken : null;
+			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  	console.log(this.phone);
@@ -1613,7 +1615,6 @@ function HeimdallrLib() {
 	// =========== UTFPR PORTAL ===================================================
 
 	this.loginPortal = function (params) {
-  	console.log('enviando: ', params);
   	    return new Promise((resolve, reject) => {
 	        RNFetchBlob.fetch('POST', 'https://webapp.utfpr.edu.br/portalAluno/ws/auth',
 		        { 'Content-Type': 'application/json'},
@@ -1624,9 +1625,17 @@ function HeimdallrLib() {
 		        	if (data && data.token) {
 				        firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 					        async (res) => {
+					        	// salva dados do primeiro login
 						        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
 							        UTFPRToken: data.token,
-						        }, {merge: true});
+							        UTFPRPortalLogin: params.username,
+							        UTFPRPortalPassword: params.password,
+						        }, {merge: true}).then(
+							        () => {
+							        	// Função para criptografar senha do usuário
+								        firebase.functions().httpsCallable('encryptUTFPRPortalPassword')({ user_id: this.user_id });
+							        }
+						        );
 					        },
 					        (error) => {
 						        reject(error);
@@ -1634,13 +1643,14 @@ function HeimdallrLib() {
 				        );
 
 		        		this.UTFPRToken = data.token;
+		        		this.UTFPRPortalLogin = params.username;
 		        		resolve();
 			        } else {
 				        reject();
 			        }
 		        },
 		        (error) => {
-		        	console.warn('deu ruim: ', error);
+		        	console.warn('[ERROR] loginPortal: ', error);
 		        }
 	        )
         })
@@ -1725,6 +1735,45 @@ function HeimdallrLib() {
 				}
 			)
 		});
+	}
+
+	this.renewStudentAuthentication = function () {
+		return new Promise((resolve, reject) => {
+			firebase.functions().httpsCallable('decryptUTFPRPortalPassword')({ user_id: this.user_id }).then(
+				(res) => {
+					const params = { username: this.UTFPRPortalLogin, password: res.data.decriptdPassword };
+					RNFetchBlob.fetch('POST', 'https://webapp.utfpr.edu.br/portalAluno/ws/auth',
+						{ 'Content-Type': 'application/json'},
+						JSON.stringify(params)
+					).then(
+						(result) => {
+							let data = result && result.data ? JSON.parse(result.data) : null;
+							if (data && data.token) {
+								firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+									async (res) => {
+										// salva dados do primeiro login
+										firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+											UTFPRToken: data.token,
+										}, {merge: true});
+									},
+									(error) => {
+										reject(error);
+									}
+								);
+
+								this.UTFPRToken = data.token;
+								resolve();
+							} else {
+								reject();
+							}
+						},
+						(error) => {
+							console.warn('[ERROR] -  renewStudentAuthentication: ', error);
+						}
+					)
+				}
+			);
+		})
 	}
 
 
