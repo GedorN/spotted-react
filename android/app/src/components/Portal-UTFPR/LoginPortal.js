@@ -3,7 +3,7 @@ import {
 	View,
 	StyleSheet,
 	Text,
-	Image, TouchableOpacity
+	Image, TouchableOpacity, StatusBar
 } from 'react-native';
 import RUMineTextInput from "../Inputs/RUMineTextInput";
 import EyeOfThePassword from "../Inputs/EyeOfThePassword";
@@ -20,6 +20,11 @@ export default class LoginPortal extends React.Component {
 			securePassword: true,
 			errorMessage: false,
 		}
+	}
+
+	componentDidMount(): void {
+		StatusBar.setBackgroundColor('#FFFFFF');
+		StatusBar.setBarStyle('dark-content');
 	}
 
 	toggleSecureEntry = () => {
