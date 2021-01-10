@@ -10,6 +10,8 @@ import EyeOfThePassword from "../Inputs/EyeOfThePassword";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import theme from "../../../../../components/General/Theme";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
+import {ProgressBar} from "react-native-paper";
+
 
 export default class LoginPortal extends React.Component {
 	constructor(props) {
@@ -19,6 +21,7 @@ export default class LoginPortal extends React.Component {
 			password: null,
 			securePassword: true,
 			errorMessage: false,
+			loading: false,
 		}
 	}
 
@@ -35,14 +38,14 @@ export default class LoginPortal extends React.Component {
 		if (!this.state.ra || !this.state.password) {
 			return;
 		}
+		this.setState({ loading: true });
 		heimdallr.loginPortal({ username: this.state.ra, password: this.state.password }).then(
 			() => {
-				console.log("Login Feito");
-				console.log("Token: ", heimdallr.UTFPRToken);
+				this.setState({ loading: false });
 				this.props.navigation.replace('PortalUTFPR');
 			},
 			() => {
-				this.setState({ errorMessage: true });
+				this.setState({ errorMessage: true, loading: false });
 			}
 		);
 	}
@@ -50,6 +53,9 @@ export default class LoginPortal extends React.Component {
 	render() {
 		return (
 			<View style={styles.container}>
+				<View style={{width: theme.width, position: 'absolute', top: 0}}>
+					<ProgressBar size="large" visible={this.state.loading} indeterminate color={'#F6C500'} />
+				</View>
 				<View style = {{alignSelf:'flex-start', position: 'absolute'}}>
 					<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
 						<View style={{flexDirection: 'row', marginTop: 2,  paddingLeft: 15, width:theme.width * 0.2,height:theme.height * 0.04}}>
