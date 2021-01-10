@@ -30,7 +30,7 @@ export default class StudentHistory extends React.Component {
 			(resolve) => {
 				this.setState({ historyData: resolve, allHistoryData: resolve });
 			},
-			(reject) => {
+			() => {
 				console.log('erro get history');
 			}
 		)
@@ -39,7 +39,7 @@ export default class StudentHistory extends React.Component {
 
 
 	changeText = (text) => {
-		let tempItems = this.state.allHistoryData.filter((i) => i.discNomeVc.toLowerCase().includes(text.toLowerCase()));
+		let tempItems = this.state.allHistoryData.filter((i) => i.discNomeVc.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")));
 		this.setState({ historyData: tempItems,  search: text });
 	}
 
@@ -83,8 +83,6 @@ export default class StudentHistory extends React.Component {
 					ListHeaderComponent = { this.getHeader() }
 					showsVerticalScrollIndicator={false}
 					showsVerticalScrollIndicator={false}
-					onScrollEndDrag={() => this.setState({ scrolling: false	 })}
-					onScrollBeginDrag={() => this.setState({ scrolling: true })}
 					keyExtractor={ item => item.turmIdVc }
 					data={ this.state.historyData }
 					renderItem={ ({ item }) =>
@@ -99,36 +97,35 @@ export default class StudentHistory extends React.Component {
 
 const styles = StyleSheet.create({
 	header: {
-		backgroundColor: '#F6C500', 
-		paddingTop: 10, 
+		backgroundColor: '#F6C500',
+		paddingTop: 10,
 		paddingBottom: 20
 	},
 	headerText: {
-		fontSize: 20, 
-		alignSelf: 'center', 
+		fontSize: 20,
+		alignSelf: 'center',
 		fontWeight: 'bold'
 	},
 	searchImage: {
-		height: 20, 
-		width: 20, 
-		opacity:0.5, 
-		marginLeft:5, 
+		height: 20,
+		width: 20,
+		opacity:0.5,
+		marginLeft:5,
 		marginTop: 10
 	},
 	searchInput: {
-		width: theme.width * 0.85, 
-		flexDirection: 'row', 
-		marginTop: 15, 
-		marginBottom: 10, 
-		alignSelf: 'center' 
+		width: theme.width * 0.85,
+		flexDirection: 'row',
+		marginTop: 15,
+		marginBottom: 10,
+		alignSelf: 'center'
 	},
 	arrowImage: {
-		width: 30, 
-		height: 30, 
-		opacity: 0.6, 
-		position: 'absolute', 
-		marginLeft: 8, 
+		width: 30,
+		height: 30,
+		opacity: 0.6,
+		position: 'absolute',
+		marginLeft: 8,
 		marginTop: 8
-		
 	}
 });
