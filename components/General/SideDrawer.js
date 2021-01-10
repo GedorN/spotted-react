@@ -119,6 +119,7 @@ export default class SideDrawer extends React.Component {
 								    <View style = {{ width: 45, height: 45, marginRight: 13 }}>
 									    <Image source={require('../../assets/images/chalkboard-teacher-solid.png')}
 									           style={{
+												   tintColor: heimdallr.email === 'spotted@utfpr.com' ? 'gray' : theme.primary,
 										           resizeMode: 'contain',
 										           flex:1,
 										           width: null,
