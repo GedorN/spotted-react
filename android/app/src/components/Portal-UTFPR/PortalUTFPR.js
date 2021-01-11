@@ -29,6 +29,7 @@ export default class PortalUTFPR extends React.Component {
 	async componentDidMount(): void {
 		StatusBar.setBackgroundColor('#F6C500');
 		StatusBar.setBarStyle('dark-content');
+		heimdallr.sendEvent("portal_UTFPR_access");
 
 
 		if (!heimdallr.UTFPRToken && !heimdallr.UTFPRPortalLogin) {

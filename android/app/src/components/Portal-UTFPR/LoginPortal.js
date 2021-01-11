@@ -42,6 +42,7 @@ export default class LoginPortal extends React.Component {
 		heimdallr.loginPortal({ username: this.state.ra, password: this.state.password }).then(
 			() => {
 				this.setState({ loading: false });
+				heimdallr.sendEvent('portal_UTFPR_login_done');
 				this.props.navigation.replace('PortalUTFPR');
 			},
 			() => {
