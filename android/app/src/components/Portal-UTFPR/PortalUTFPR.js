@@ -8,12 +8,13 @@ import {
 	Image
 } from 'react-native';
 
-import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import UserInfoCard from "./components/UserInfoCard";
 import theme from "../../../../../components/General/Theme";
 import MenuOptionCard from "./components/MenuOptionCard";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
+import FlashMessage from "react-native-flash-message";
+
 
 export default class PortalUTFPR extends React.Component {
 	constructor(props) {
@@ -46,22 +47,27 @@ export default class PortalUTFPR extends React.Component {
 				(resolve) => {
 					this.setState({ courseData: resolve, authenticationVerified: true });
 				},
-				() => {
-					if (!heimdallr.UTFPRPortalLogin) {
-						this.props.navigation.replace('LoginPortal');
+				(error) => {
+					if (error.message) {
+						this.props.navigation.replace('LoginPortal', {error: error.message});
 					} else {
-						this.setState({ activity: true });
-						heimdallr.renewStudentAuthentication().then(
-							() => {
-								this.getStudentInfo();
-							},
-							() => {
-								this.setState({ authenticationVerified: true});
-								this.props.navigation.replace('LoginPortal');
+						if (!heimdallr.UTFPRPortalLogin) {
+							this.props.navigation.replace('LoginPortal');
+						} else {
+							this.setState({ activity: true });
+							heimdallr.renewStudentAuthentication().then(
+								() => {
+									this.getStudentInfo();
+								},
+								() => {
+									this.setState({ authenticationVerified: true});
+									this.props.navigation.replace('LoginPortal');
 
-							}
-						)
-					};
+								}
+							)
+						};
+					}
+
 				}
 			)
 		})
@@ -151,6 +157,7 @@ export default class PortalUTFPR extends React.Component {
 						</SkeletonPlaceholder>
 					</SkeletonPlaceholder>
 				}
+				<FlashMessage ref={'message'} style={{ zIndex: 99 }} />
 			</ScrollView>
 		)
 	}

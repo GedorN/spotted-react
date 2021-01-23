@@ -28,6 +28,10 @@ export default class LoginPortal extends React.Component {
 	componentDidMount(): void {
 		StatusBar.setBackgroundColor('#FFFFFF');
 		StatusBar.setBarStyle('dark-content');
+		let hasError = this.props.navigation.getParam('error');
+		this.state.errorMessage = hasError;
+		this.setState({});
+
 	}
 
 	toggleSecureEntry = () => {
@@ -46,7 +50,7 @@ export default class LoginPortal extends React.Component {
 				this.props.navigation.replace('PortalUTFPR');
 			},
 			() => {
-				this.setState({ errorMessage: true, loading: false });
+				this.setState({ errorMessage: "*Login ou senha incorretos. Tente novamente", loading: false });
 			}
 		);
 	}
@@ -74,7 +78,7 @@ export default class LoginPortal extends React.Component {
 					<Text>Faça login para sincronizar as suas informações</Text>
 					{
 						this.state.errorMessage &&
-						<Text style={{color: 'red', marginTop: 5}} >*Login ou senha incorretos</Text>
+						<Text style={{color: 'red', marginTop: 5}} >{this.state.errorMessage}</Text>
 					}
 				</View>
 				<View style={styles.form}>
