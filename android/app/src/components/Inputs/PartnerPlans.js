@@ -21,6 +21,8 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
 import RNFetchBlob from 'rn-fetch-blob';
+import { X_PIC_PAY_TOKEN } from '@env';
+
 let verify = null;
 
 export default class PartnerPlans extends React.Component {
@@ -89,7 +91,7 @@ export default class PartnerPlans extends React.Component {
 					axios({
 						method: 'post',
 						url: 'https://appws.picpay.com/ecommerce/public/payments',
-						headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
+						headers: {'x-picpay-token': X_PIC_PAY_TOKEN},
 						data: {
 							"referenceId": params.referenceId,
 							"callbackUrl": "http://3.23.33.91/plan-status",

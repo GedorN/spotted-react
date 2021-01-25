@@ -1690,21 +1690,29 @@ function HeimdallrLib() {
 				        reject();
 			        } else {
 			        	const data = result && result.data ? JSON.parse(result.data) : null;
-			        	data.cursos[0].pessNomeVc = data.pessNomeVc;
-			        	data.cursos[0].ra = data.login.substring(1);
-			        	if (!this.UTFPRidInCourse) {
-					        firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
-						        async (res) => {
-							        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
-								        UTFPRidInCourse: data.cursos[0].alCuIdVc,
-							        }, {merge: true});
-						        },
-						        (error) => {
-							        reject(error);
-						        }
-					        );
+			        	let cursos = data.cursos.filter((curso) => curso.nivEnsDescrVc === 'Ensino Superior');
+			        	if (cursos.length > 0) {
+				            let curso  = cursos.reduce((a, b) => a.alCuAnoingNr >  b.alCuAnoingNr ? a: b);
+					        curso.pessNomeVc = data.pessNomeVc;
+					        curso.ra = data.login.substring(1);
+					        if (!this.UTFPRidInCourse) {
+						        firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+							        async (res) => {
+								        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+									        UTFPRidInCourse: curso.alCuIdVc,
+								        }, {merge: true});
+							        },
+							        (error) => {
+								        reject(error);
+							        }
+						        );
+					        }
+					        resolve(curso);
+				        } else {
+					        reject({error: -1, message: "*Infelizmente não achamos você matriculado em nenhum curso superior na UTFPR"});
 				        }
-				        resolve(data.cursos[0]);
+
+
 			        }
 		        },
 		        (error) => {

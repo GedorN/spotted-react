@@ -29,6 +29,7 @@ import CarouselModaFoka from "./layout/CarouselModaFoka";
 import RNFetchBlob from 'rn-fetch-blob';
 import moment from "moment";
 import {NavigationActions, StackActions} from "react-navigation";
+import { X_PIC_PAY_TOKEN } from '@env';
 
 export default class ProductScreen extends React.Component {
 	constructor(props) {
@@ -336,7 +337,7 @@ export default class ProductScreen extends React.Component {
 				axios({
 					method: 'post',
 					url: 'https://appws.picpay.com/ecommerce/public/payments',
-					headers: {'x-picpay-token': '3782eb80-9b55-4611-a81a-111555fc39ec'},
+					headers: {'x-picpay-token': X_PIC_PAY_TOKEN},
 					data: {
 						"referenceId": params.referenceId,
 						"callbackUrl": "http://3.23.33.91/purchase-status",
