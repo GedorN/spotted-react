@@ -48,13 +48,12 @@ export default class PortalUTFPR extends React.Component {
 					this.setState({ courseData: resolve, authenticationVerified: true });
 				},
 				(error) => {
-					if (error.message) {
+					if (error && error.message) {
 						this.props.navigation.replace('LoginPortal', {error: error.message});
 					} else {
 						if (!heimdallr.UTFPRPortalLogin) {
 							this.props.navigation.replace('LoginPortal');
 						} else {
-							this.setState({ activity: true });
 							heimdallr.renewStudentAuthentication().then(
 								() => {
 									this.getStudentInfo();
@@ -84,7 +83,6 @@ export default class PortalUTFPR extends React.Component {
 					if (!heimdallr.UTFPRPortalLogin) {
 						this.props.navigation.replace('LoginPortal');
 					} else {
-						this.setState({ activity: true });
 						heimdallr.renewStudentAuthentication().then(
 							() => {
 								this.getStudentPhoto();
