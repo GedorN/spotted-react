@@ -682,6 +682,108 @@ export default class ProductScreen extends React.Component {
 		this.props.navigation.push('Plans', {store: this.state.product.sid, current_plan: this.state.currentPlan});
 	}
 
+	getHeader() {
+		return (
+			<View>
+				<TouchableOpacity onPress={() => { this.props.navigation.goBack() } }>
+					<View style={{ flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10 }}>
+						<Image
+							style={{ width: 30, height: 30, marginTop:4, opacity: 0.6 }}
+							source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+						/>
+					</View>
+				</TouchableOpacity>
+				<View style = { styles.logoContainer }>
+					<Image
+						style = {{ resizeMode: 'contain', flex: 1, width: null, height: null }}
+						source={{ uri:this.state.product ? this.state.product.logo : null }}>
+					</Image>
+				</View>
+				<View style = {{ marginTop: theme.height*0.03, marginBottom: theme.height*0.04, width: theme.width*0.9, alignSelf: 'center' }}>
+					<Text style = { styles.productName } >
+						{this.state.product? this.state.product.name : null}
+					</Text>
+				</View>
+				<View style = {{ alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.45 }}>
+					<CarouselModaFoka images={this.state.productImages ? this.state.productImages: []} dotColor={this.state.product ? this.state.product.colors[0] : 'black'}/>
+				</View>
+				<View style = { styles.payContainer }>
+					{
+						this.state.product && this.state.product.stock && this.state.product.stock < 20 &&
+						<Text style = {{ fontWeight: 'bold', fontSize: 18, color: this.state.product.colors[0] }}>
+							{ 'Aproveita que só tem ' + this.state.product.stock + ' em estoque ;)'}
+						</Text>
+					}
+					<Text style = {{ fontWeight: 'bold', fontSize: 20 }}>
+						{ 'Valor: R$ ' + (this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace('.',',') : parseFloat(this.state.PicPayPrice).toFixed(2).toString().replace('.',',')) }
+					</Text>
+					<View style = {{ flexDirection: 'row', marginTop: 5 }}>
+						<Text style = {{ fontWeight: 'bold', fontSize: 17 }}>{ 'Pago pelo ' }</Text>
+						<Image
+							style = {{ width: 61, height: 20, marginLeft: 3, marginTop: 5 }}
+							source = {{ uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc' }}>
+						</Image>
+					</View>
+				</View>
+				<View style = { styles.cuponView }>
+					<TextInput
+						placeholder = { this.state.placeholderCoupon }
+						style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
+						onChangeText = { this.receivePromotionalCode.bind(this) }
+						width = { theme.width*0.68 }
+					/>
+					<TouchableOpacity
+						disabled={ this.state.settingPromotionalCode }
+						style = {{ zIndex: 1 }}
+						onPress = { this.setPromotionalCode.bind(this) }
+					>
+						<View style = {{ ...styles.cuponInput, backgroundColor:this.state.product ? this.state.product.colors[0] : null }}>
+							{
+								this.state.settingPromotionalCode ?
+									<ActivityIndicator size = "small" color = {(this.state.product ? this.state.product.colors[1] : null)} /> :
+									<Text style = {{ color:(this.state.product ? this.state.product.colors[1] : null), fontWeight: 'bold' }}>{ 'OK' }</Text>
+							}
+						</View>
+					</TouchableOpacity>
+				</View>
+				{
+					this.state.warning != null &&
+					<View style = {{ width: theme.width * 0.78, alignSelf: 'center', marginBottom: 20 }}>
+						<Text style = {{ fontWeight: 'bold' }}> { this.state.warning } </Text>
+					</View>
+				}
+				<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
+					<TouchableOpacity
+						style ={{ padding:10, width: theme.width * 0.9 }}
+						onPress = {this.goToPlans.bind(this)}
+						onPressIn={() => heimdallr.sendEvent('partners_list_click')}
+					>
+						<View style={styles.partnerButtonView}>
+							<Image
+								style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] ? heimdallr.getTxtColor(this.state.product.colors[0]) : 'white'}}
+								source = {require('../../../../assets/images/star-solid.png')}
+							/>
+							<Text style={{ ...styles.buttonPartnerText, color:  this.state.product && this.state.product.colors[0] ? heimdallr.getTxtColor(this.state.product.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
+						</View>
+					</TouchableOpacity>
+				</View>
+				{
+					this.state.product && this.state.product.description != "" && this.state.product.description != null &&
+					<View style = { styles.descriptionContainer }>
+						<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
+						<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
+					</View>
+				}
+				{
+					this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
+					<View style = {{ marginTop: theme.height * 0.04, padding:20, backgroundColor: this.state.product ? this.state.product.colors[0] : null, elevation: 8, }}>
+						<Text style = {{ alignSelf:'center', fontSize: 24, fontWeight: 'bold', color: (this.state.product ? this.state.product.colors[1] : null) }}>{'Opções de Personalização'}</Text>
+					</View>
+				}
+			</View>
+		)
+	}
+
 	render() {
 		return (
 			<KeyboardAvoidingView style={{flex: 1}}>
@@ -693,106 +795,7 @@ export default class ProductScreen extends React.Component {
 			                <FlatList
 								showsVerticalScrollIndicator={false}
 								keyboardShouldPersistTaps={'handled'}
-								ListHeaderComponent = {() =>
-									<View>
-										<TouchableOpacity onPress={() => { this.props.navigation.goBack() } }>
-											<View style={{ flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10 }}>
-												<Image
-													style={{ width: 30, height: 30, marginTop:4, opacity: 0.6 }}
-													source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
-												/>
-											</View>
-										</TouchableOpacity>
-										<View style = { styles.logoContainer }>
-											<Image
-												style = {{ resizeMode: 'contain', flex: 1, width: null, height: null }}
-												source={{ uri:this.state.product ? this.state.product.logo : null }}>
-											</Image>
-										</View>
-										<View style = {{ marginTop: theme.height*0.03, marginBottom: theme.height*0.04, width: theme.width*0.9, alignSelf: 'center' }}>
-											<Text style = { styles.productName } >
-												{this.state.product? this.state.product.name : null}
-											</Text>
-										</View>
-										<View style = {{ alignContent:'center',alignItems:'center',width:theme.width,height:theme.height * 0.45 }}>
-											<CarouselModaFoka images={this.state.productImages ? this.state.productImages: []} dotColor={this.state.product ? this.state.product.colors[0] : 'black'}/>
-										</View>
-										<View style = { styles.payContainer }>
-											{
-												this.state.product && this.state.product.stock && this.state.product.stock < 20 &&
-												<Text style = {{ fontWeight: 'bold', fontSize: 18, color: this.state.product.colors[0] }}>
-													{ 'Aproveita que só tem ' + this.state.product.stock + ' em estoque ;)'}
-												</Text>
-											}
-											<Text style = {{ fontWeight: 'bold', fontSize: 20 }}>
-													{ 'Valor: R$ ' + (this.state.discountApplied ? parseFloat(this.state.discountPicPayPrice).toFixed(2).toString().replace('.',',') : parseFloat(this.state.PicPayPrice).toFixed(2).toString().replace('.',',')) }
-											</Text>
-											<View style = {{ flexDirection: 'row', marginTop: 5 }}>
-												<Text style = {{ fontWeight: 'bold', fontSize: 17 }}>{ 'Pago pelo ' }</Text>
-												<Image
-													style = {{ width: 61, height: 20, marginLeft: 3, marginTop: 5 }}
-													source = {{ uri:'https://firebasestorage.googleapis.com/v0/b/spotted-2d3e5.appspot.com/o/cac%2Fpicpay-logo.png?alt=media&token=dbcdc019-adda-4b85-8573-668a886e72fc' }}>
-												</Image>
-											</View>
-										</View>
-										<View style = { styles.cuponView }>
-											<TextInput
-													placeholder = { this.state.placeholderCoupon }
-													style={{ borderBottomWidth: 0.8, borderBottomColor: '#8f8f8f', height: 40 }}
-													onChangeText = { this.receivePromotionalCode.bind(this) }
-													width = { theme.width*0.68 }
-												/>
-												<TouchableOpacity
-													disabled={ this.state.settingPromotionalCode }
-													style = {{ zIndex: 1 }}
-													onPress = { this.setPromotionalCode.bind(this) }
-												>
-													<View style = {{ ...styles.cuponInput, backgroundColor:this.state.product ? this.state.product.colors[0] : null }}>
-														{
-															this.state.settingPromotionalCode ?
-															<ActivityIndicator size = "small" color = {(this.state.product ? this.state.product.colors[1] : null)} /> :
-															<Text style = {{ color:(this.state.product ? this.state.product.colors[1] : null), fontWeight: 'bold' }}>{ 'OK' }</Text>
-														}
-													</View>
-												</TouchableOpacity>
-										</View>
-										{
-											this.state.warning != null &&
-											<View style = {{ width: theme.width * 0.78, alignSelf: 'center', marginBottom: 20 }}>
-												<Text style = {{ fontWeight: 'bold' }}> { this.state.warning } </Text>
-											</View>
-										}
-										<View style={{ ...styles.partnerButton, backgroundColor: this.state.product? this.state.product.colors[0] : null }}>
-											<TouchableOpacity
-												style ={{ padding:10, width: theme.width * 0.9 }}
-												onPress = {this.goToPlans.bind(this)}
-												onPressIn={() => heimdallr.sendEvent('partners_list_click')}
-											>
-												<View style={styles.partnerButtonView}>
-													<Image
-														style = {{ ...styles.partnerButtonIcon, tintColor: this.state.product && this.state.product.colors[0] ? heimdallr.getTxtColor(this.state.product.colors[0]) : 'white'}}
-														source = {require('../../../../assets/images/star-solid.png')}
-													/>
-													<Text style={{ ...styles.buttonPartnerText, color:  this.state.product && this.state.product.colors[0] ? heimdallr.getTxtColor(this.state.product.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
-												</View>
-											</TouchableOpacity>
-										</View>
-										{
-											this.state.product && this.state.product.description != "" && this.state.product.description != null &&
-											<View style = { styles.descriptionContainer }>
-												<Text style = { styles.descriptionWord }>{'Descrição:'}</Text>
-												<Text style = { styles.description }> { this.state.product ? this.state.product.description : null } </Text>
-											</View>
-										}
-										{
-											this.state.product && this.state.product.customization && this.state.product.customization.length > 0 &&
-											<View style = {{ marginTop: theme.height * 0.04, padding:20, backgroundColor: this.state.product ? this.state.product.colors[0] : null, elevation: 8, }}>
-												<Text style = {{ alignSelf:'center', fontSize: 24, fontWeight: 'bold', color: (this.state.product ? this.state.product.colors[1] : null) }}>{'Opções de Personalização'}</Text>
-											</View>
-										}
-									</View>
-
-								}
+								ListHeaderComponent = {this.getHeader()}
 			                    data = {this.state.product ? this.state.product.customization : null}
 								refreshControl={
 									<RefreshControl

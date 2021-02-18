@@ -1659,8 +1659,6 @@ function HeimdallrLib() {
 
 	this.getPortalPhoto = function () {
 		return new Promise((resolve, reject) => {
-			console.log('Se liga no token: ', heimdallr.UTFPRToken);
-
 			RNFetchBlob.fetch('GET', 'https://webapp.utfpr.edu.br/portalAluno/ws/fotoCracha', {
 				Authorization: 'Bearer ' + heimdallr.UTFPRToken,
 				Accept: '*/*'

@@ -519,16 +519,16 @@ export default class PostViewer extends React.Component {
 												{this.props.user}
 										</Text>
 								</TouchableOpacity>
-								{
-									this.props.elapsed_time &&
-									<Image
-										style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}
-										source={require('../../assets/images/circle-solid.png') }
-									/>
-								}
-									<Text style= {{marginTop:35}}>
-										{ this.props.elapsed_time }
-									</Text>
+								{/*{*/}
+								{/*	this.props.elapsed_time &&*/}
+								{/*	<Image*/}
+								{/*		style={{width: 4, height: 4, marginLeft: 4, marginRight: 4, marginTop:35, opacity:0.7}}*/}
+								{/*		source={require('../../assets/images/circle-solid.png') }*/}
+								{/*	/>*/}
+								{/*}*/}
+								{/*	<Text style= {{marginTop:35}}>*/}
+								{/*		{ this.props.elapsed_time }*/}
+								{/*	</Text>*/}
 							</View>
 						</View>
 						<TouchableOpacity
