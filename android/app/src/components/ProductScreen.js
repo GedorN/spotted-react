@@ -795,7 +795,7 @@ export default class ProductScreen extends React.Component {
 			                <FlatList
 								showsVerticalScrollIndicator={false}
 								keyboardShouldPersistTaps={'handled'}
-								ListHeaderComponent = {this.getHeader()}
+								ListHeaderComponent = {this.getHeader.bind(this)}
 			                    data = {this.state.product ? this.state.product.customization : null}
 								refreshControl={
 									<RefreshControl
