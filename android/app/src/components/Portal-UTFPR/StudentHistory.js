@@ -83,6 +83,7 @@ export default class StudentHistory extends React.Component {
 					ListHeaderComponent = { this.getHeader() }
 					showsVerticalScrollIndicator={false}
 					showsVerticalScrollIndicator={false}
+					keyboardShouldPersistTaps={'always'}
 					keyExtractor={ (item, index) => index }
 					data={ this.state.historyData }
 					renderItem={ ({ item }) =>

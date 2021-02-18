@@ -195,6 +195,75 @@ export default class Store extends React.Component {
 		this.props.navigation.push('Plans', {store: store, current_plan: this.state.currentPlan});
 	}
 
+	getHeader  () {
+		return (
+			<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
+				<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10, position: 'absolute', zIndex: 999}}>
+					<TouchableOpacity onPress={() => {this.clearStatusBar(); this.props.navigation.goBack()}}>
+						<Image
+							style={{width: 30, height: 30, marginTop:4, opacity: 0.6}}
+							source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
+						/>
+					</TouchableOpacity>
+				</View>
+				{
+					this.state.banner ?
+						<SevenBannerArmy url={this.state.banner}/> :
+						<View style={{ height: 50 }}></View>
+				}
+				{
+					this.state.validPlan &&
+					<View style={styles.messageView}>
+						<Text style={{fontSize:12, color:'#8f8f8f', alignSelf:'center'}}>{'Seu plano ' + this.state.plan + ' é válido até ' + this.state.dueDatePlan}</Text>
+					</View>
+				}
+				{
+					<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
+						<TouchableOpacity
+							style ={{ padding: 10, width: theme.width * 0.9 }}
+							onPress = {this.goToPlans.bind(this)}
+							onPressIn={() => heimdallr.sendEvent('partners_list_click')}
+						>
+							<View style={styles.partnerButtonView}>
+								<Image
+									style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}
+									source = {require('../../../../assets/images/star-solid.png')}
+								/>
+								<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
+							</View>
+						</TouchableOpacity>
+					</View>
+				}
+				<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
+					{
+						this.state.categories.map(i =>
+							<View style={{margin: 5}} key={i.name}>
+								<ImNotTheOnlyChip
+									selected={this.state.filteredCategories}
+									text={i.name}
+									id={i.key}
+									colors={this.state.colors ? this.state.colors : null}
+									cbFunction={this.chipPressed.bind(this)}
+								/>
+							</View>
+						)
+					}
+				</View>
+				<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
+					<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.05}}>{'Produtos '}</Text>
+					<View style = {{width:theme.width * 0.4, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: 5}}>
+						<View style = {{width:theme.width * 0.35, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: -20}}>
+							<Image
+								source = {{ uri: this.state.logo }}
+								style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
+							</Image>
+						</View>
+					</View>
+				</View>
+			</View>
+		)
+	}
+
 
 	render() {
 		return (
@@ -210,72 +279,7 @@ export default class Store extends React.Component {
 							onScrollBeginDrag={() => {scrolling = false}}
 							keyExtractor={item => item.name}
 							data={this.state.filteredProducts}
-							ListHeaderComponent = {() =>
-								<View style = {{width:theme.width*0.98,alignSelf:'center'}}>
-									<View style={{flexDirection: 'row', marginTop: 7, marginBottom: 5,  paddingLeft: 10, position: 'absolute', zIndex: 999}}>
-										<TouchableOpacity onPress={() => {this.clearStatusBar(); this.props.navigation.goBack()}}>
-											<Image
-												style={{width: 30, height: 30, marginTop:4, opacity: 0.6}}
-												source={require('../../../../assets/images/chevron-circle-left-solid-white.png')}
-											/>
-										</TouchableOpacity>
-									</View>
-									{
-										this.state.banner ?
-										<SevenBannerArmy url={this.state.banner}/> :
-										<View style={{ height: 50 }}></View>
-									}
-									{
-										this.state.validPlan &&
-										<View style={styles.messageView}>
-											<Text style={{fontSize:12, color:'#8f8f8f', alignSelf:'center'}}>{'Seu plano ' + this.state.plan + ' é válido até ' + this.state.dueDatePlan}</Text>
-										</View>
-									}
-									{
-										<View style={{ ...styles.partnerButton, backgroundColor: this.state.colors[0]}}>
-											<TouchableOpacity
-												style ={{ padding: 10, width: theme.width * 0.9 }}
-												onPress = {this.goToPlans.bind(this)}
-												onPressIn={() => heimdallr.sendEvent('partners_list_click')}
-											>
-												<View style={styles.partnerButtonView}>
-													<Image
-														style = {{ ...styles.partnerButtonIcon, tintColor: this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}
-														source = {require('../../../../assets/images/star-solid.png')}
-													/>
-													<Text style={{ ...styles.buttonPartnerText, color:  this.state.colors[0] ? heimdallr.getTxtColor(this.state.colors[0]) : 'white'}}>TORNE-SE SÓCIO</Text>
-												</View>
-											</TouchableOpacity>
-										</View>
-									}
-									<View style={{flexDirection: 'row', width: theme.width * 0.95, flexWrap: 'wrap',marginTop:10, paddingLeft:theme.width*0.04}}>
-										{
-											this.state.categories.map(i =>
-												<View style={{margin: 5}} key={i.name}>
-													<ImNotTheOnlyChip
-														selected={this.state.filteredCategories}
-														text={i.name}
-														id={i.key}
-														colors={this.state.colors ? this.state.colors : null}
-														cbFunction={this.chipPressed.bind(this)}
-													/>
-												</View>
-											)
-										}
-									</View>
-									<View style = {{paddingLeft:theme.width*0.06,marginTop:30,flexDirection:'row'}}>
-										<Text style = {{fontSize:23,fontWeight:'bold',paddingTop:theme.width*0.05}}>{'Produtos '}</Text>
-										<View style = {{width:theme.width * 0.4, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: 5}}>
-											<View style = {{width:theme.width * 0.35, height : theme.height * 0.1, marginBottom:theme.height * 0.03, marginLeft: -20}}>
-												<Image
-													source = {{ uri: this.state.logo }}
-													style = {{resizeMode: 'contain', flex:1, width:null, height:null}}>
-												</Image>
-											</View>
-										</View>
-									</View>
-								</View>
-							}
+							ListHeaderComponent = {this.getHeader()}
 							refreshControl={
 								<RefreshControl
 									refreshing={this.state.isRefreshing}
