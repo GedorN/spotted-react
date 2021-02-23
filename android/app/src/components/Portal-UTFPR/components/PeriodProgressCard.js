@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import theme from "../../../../../../components/General/Theme";
-
+import SubjectStatus from "./SubjectStatus";
 
 export default class PeriodProgressCard extends React.Component{
 	constructor(props) {
@@ -21,12 +21,18 @@ export default class PeriodProgressCard extends React.Component{
 				outputRange: ['0deg', '-180deg']
 			}),
 			showContent: false,
+			subjectNumber: 0,
+			subjects: [],
 			cardHeight: new Animated.Value(0),
 			cardMargin: new Animated.Value(8),
 		}
 	}
 	componentDidMount(): void {
 		console.log("E o que eu tenho? ", this.props.periodData);
+		this.state.subjectNumber = this.props.periodData.length;
+		this.state.subjects = this.props.periodData;
+		console.log("Tamanhão: ", this.state.subjectNumber);
+
 	}
 
 	showContent = () => {
@@ -42,12 +48,12 @@ export default class PeriodProgressCard extends React.Component{
 
 		if (!this.state.showContent) {
 			Animated.timing(this.state.cardMargin, {
-				toValue: theme.height * 0.30 ,
+				toValue: (80 * this.state.subjectNumber + 80) - 60 ,
 				duration: 200,
 				useNativeDriver: false
 			}).start();
 			Animated.timing(this.state.cardHeight, {
-				toValue: theme.height * 0.4 ,
+				toValue: (80 * this.state.subjectNumber + 80) ,
 				duration: 200,
 				useNativeDriver: false
 			}).start(
@@ -107,12 +113,15 @@ export default class PeriodProgressCard extends React.Component{
 						</TouchableOpacity>
 					</Animated.View>
 					<Animated.View style = {{ ...styles.periodInfoCard, height: this.state.cardHeight }}>
-						{
-							this.state.showContent &&
-								<View style={{marginTop: theme.height * 0.135}}>
-									<Text>ola</Text>
-								</View>
-						}
+						<View style={{marginTop: theme.height * 0.135, padding: 10, flexDirection: 'column', flex: 1,  justifyContent: 'space-between'}}>
+							{
+								this.state.showContent && this.state.subjects.map(i =>
+									<View style={{ }} key={i.subjectCode}>
+										<SubjectStatus obj={i} title={i.subjectname} status={i.subjectStatus} preRequisite={i.subjectPreRequisite}/>
+									</View>
+								)
+							}
+						</View>
 					</Animated.View>
 
 				</View>
