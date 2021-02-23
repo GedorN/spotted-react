@@ -122,15 +122,15 @@ export default class PortalUTFPR extends React.Component {
 						<View style={styles.body}>
 							<View style={styles.bodyLine}>
 								<MenuOptionCard icon={require('../../../../../assets/images/PORTAL-UTFPR/history.png')} title='Histórico Acadêmico' route='StudentHistory' navigation={this.props.navigation} />
-								<MenuOptionCard icon={require('../../../../../assets/images/PORTAL-UTFPR/clock.png')} title='Curso' route='CourseInfo' navigation={this.props.navigation}/>
+								<MenuOptionCard width={65} iconPaisagem icon={require('../../../../../assets/images/PORTAL-UTFPR/graduation-cap.png')} title='Curso' route='CourseInfo' navigation={this.props.navigation}/>
 							</View>
 							<View style={styles.bodyLine}>
 								<MenuOptionCard icon={require('../../../../../assets/images/PORTAL-UTFPR/clock.png')} title='Horários Aulas' disabled />
-								<MenuOptionCard iconRetrato icon={require('../../../../../assets/images/PORTAL-UTFPR/utensils.png')} title='Cardápio RU' disabled />
+								<MenuOptionCard width={50} height={55} iconRetrato icon={require('../../../../../assets/images/PORTAL-UTFPR/utensils.png')} title='Cardápio RU' disabled />
 							</View>
 							<View style={styles.bodyLine}>
 								<MenuOptionCard iconPaisagem icon={require('../../../../../assets/images/PORTAL-UTFPR/star.png')} title='Boletim' disabled />
-								<MenuOptionCard iconPaisagem icon={require('../../../../../assets/images/PORTAL-UTFPR/newspaper.png')} title='Notícias' disabled />
+								<MenuOptionCard width={65} height={55} icon={require('../../../../../assets/images/PORTAL-UTFPR/newspaper.png')} title='Notícias' disabled />
 							</View>
 						</View>
 					</View>

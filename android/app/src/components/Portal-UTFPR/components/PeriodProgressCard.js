@@ -22,7 +22,7 @@ export default class PeriodProgressCard extends React.Component{
 			}),
 			showContent: false,
 			cardHeight: new Animated.Value(0),
-			cardMargin: new Animated.Value(0),
+			cardMargin: new Animated.Value(8),
 		}
 	}
 	componentDidMount(): void {
@@ -96,7 +96,7 @@ export default class PeriodProgressCard extends React.Component{
 									}
 								</AnimatedCircularProgress>
 
-								<Text style={{ marginTop: theme.height * 0.04, marginLeft: 0, fontWeight: 'bold'}}>{ this.props.title }</Text>
+								<Text style={{ marginTop: theme.height * 0.04, marginRight: 10, fontWeight: 'bold', fontSize: 16}}>{ this.props.title }</Text>
 								<View style={styles.arrowImage}>
 									<Animated.Image
 										style={{ width: 20, height: 30, transform: [{ rotate: this.state.spin }] }}

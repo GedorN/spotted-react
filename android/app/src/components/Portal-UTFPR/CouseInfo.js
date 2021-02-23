@@ -78,7 +78,8 @@ export default class CourseInfo extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		height: theme.height * 0.9
+		height: theme.height * 0.9,
+		flex: 1
 	},
 	header: {
 		backgroundColor: '#F6C500',

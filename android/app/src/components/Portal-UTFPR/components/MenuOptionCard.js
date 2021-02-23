@@ -30,8 +30,8 @@ export default class MenuOptionCard extends React.Component {
 				<Image
 					source={this.props.icon}
 					style={{
-						width: this.props.iconPaisagem ? 55 : 50,
-						height: this.props.iconRetrato ? 60 : 50,
+						width: this.props.width ? this.props.width : 50,
+						height: this.props.height ? this.props.height : 50,
 						opacity: this.props.disabled ?  0.2 : 1,
 					}}
 				/>
