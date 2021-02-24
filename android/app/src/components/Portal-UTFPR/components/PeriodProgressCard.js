@@ -28,7 +28,6 @@ export default class PeriodProgressCard extends React.Component{
 		}
 	}
 	componentDidMount(): void {
-		console.log("E o que eu tenho? ", this.props.periodData);
 		this.state.subjectNumber = this.props.periodData.length;
 		this.state.subjects = this.props.periodData;
 		this.setState({});
@@ -48,12 +47,12 @@ export default class PeriodProgressCard extends React.Component{
 
 		if (!this.state.showContent) {
 			Animated.timing(this.state.cardMargin, {
-				toValue: (80 * this.state.subjectNumber + 80) - 60 ,
+				toValue: (80 * this.state.subjectNumber + 150) - 60 ,
 				duration: 200,
 				useNativeDriver: false
 			}).start();
 			Animated.timing(this.state.cardHeight, {
-				toValue: (80 * this.state.subjectNumber + 80) ,
+				toValue: (80 * this.state.subjectNumber + 150) ,
 				duration: 200,
 				useNativeDriver: false
 			}).start(
@@ -113,10 +112,10 @@ export default class PeriodProgressCard extends React.Component{
 						</TouchableOpacity>
 					</Animated.View>
 					<Animated.View style = {{ ...styles.periodInfoCard, height: this.state.cardHeight }}>
-						<View style={{marginTop: theme.height * 0.135, padding: 10, flexDirection: 'column', flex: 1,  justifyContent: 'space-between'}}>
+						<View style={{marginTop: theme.height * 0.135, padding: 10, flexDirection: 'column', flex: 1, justifyContent: 'space-between', backgroundColor: 'white'}}>
 							{
 								this.state.showContent && this.state.subjects.map(i =>
-									<View style={{ }} key={i.subjectCode}>
+									<View key={i.subjectCode}>
 										<SubjectStatus obj={i} title={i.subjectname} status={i.subjectStatus} preRequisite={i.subjectPreRequisite}/>
 									</View>
 								)
@@ -159,7 +158,8 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		position: 'absolute',
 		marginTop: 20,
-		zIndex: -1
+		zIndex: -1,
+		backgroundColor: 'white',
 	}
 
 })
