@@ -54,7 +54,7 @@ export default class SubjectStatus extends React.Component {
 			<TouchableOpacity style={styles.container} disabled={this.props.status === 1} onPress={() => this.setState({ showPreRequisites: true })}>
 				<Image style={{...styles.icon, tintColor: this.props.status === 1 ? '#027227' : 'black'}}  source={ this.props.status === 1 ? require('../../../../../../assets/images/check.png') : require('../../../../../../assets/images/info-circle-solid.png')}/>
 				<View>
-					<Text style={styles.subjectName}>{ this.props.title }</Text>
+					<Text style={{ ...styles.subjectName, opacity: this.props.status === 1? 0.5 : 1 }}>{ this.props.title }</Text>
 					{
 						this.props.status !== 1 && this.returnPreRequisiteIndicator()
 					}
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#F6C500',
 		padding: 15,
 		paddingHorizontal: 45,
+		paddingLeft: 30,
 		borderTopRightRadius: 20,
 		borderTopLeftRadius: 20,
 		alignItems: 'center',
