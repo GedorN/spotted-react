@@ -31,7 +31,7 @@ export default class PeriodProgressCard extends React.Component{
 		console.log("E o que eu tenho? ", this.props.periodData);
 		this.state.subjectNumber = this.props.periodData.length;
 		this.state.subjects = this.props.periodData;
-		console.log("Tamanhão: ", this.state.subjectNumber);
+		this.setState({});
 
 	}
 

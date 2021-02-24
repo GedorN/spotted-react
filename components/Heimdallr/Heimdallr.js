@@ -1775,11 +1775,15 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.processCourseData =  function () {
+  	console.log("Olha o precissamento");
+		firebase.functions().httpsCallable('proccessCourseProgress')({ user_id: this.user_id });
+	}
+
 	this.getUserCourseData = function () {
 		return new Promise((resolve, reject) => {
 			firebase.firestore().collection('userCourseData').doc(this.user_id).get().then(
 				(result) => {
-					console.log("Ainda veio aqui: ", result.data());
 					if (result.data()) {
 						resolve(result.data());
 
@@ -1788,7 +1792,6 @@ function HeimdallrLib() {
 					}
 				},
 				(erro) => {
-					console.log("Deu ruim como tinha que dar");
 				}
 			)
 		})

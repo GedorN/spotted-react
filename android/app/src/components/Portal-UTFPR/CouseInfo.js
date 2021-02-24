@@ -11,6 +11,7 @@ import {
 import theme from "../../../../../components/General/Theme";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import PeriodProgressCard from "./components/PeriodProgressCard";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
 
 
 export default class CourseInfo extends React.Component {
@@ -19,14 +20,14 @@ export default class CourseInfo extends React.Component {
 		this.state = {
 			periodsProgress: [],
 			courseData: [],
+			loaded: false,
 		}
 	}
 
 	componentDidMount(): void {
 		heimdallr.getUserCourseData().then(
 			(resolve) => {
-				this.setState({ periodsProgress: resolve.courseProgress, courseData: JSON.parse(resolve.processedData) })
-				console.log("Resolve retonado: ", resolve.courseProgress);
+				this.setState({ periodsProgress: resolve.courseProgress, courseData: JSON.parse(resolve.processedData), loaded: true })
 			},
 			(reject) => {
 				this.fetchData();
@@ -38,8 +39,7 @@ export default class CourseInfo extends React.Component {
 		console.log("Pesquisando nvoamente");
 		heimdallr.getUserCourseData().then(
 			(resolve) => {
-				this.setState({ periodsProgress: resolve.courseProgress, courseData: resolve.processedData })
-				console.log("Resolve retonado: ", resolve.courseProgress);
+				this.setState({ periodsProgress: resolve.courseProgress, courseData:  JSON.parse(resolve.processedData), loaded: true })
 			},
 			(reject) => {
 				this.fetchData();
@@ -61,15 +61,40 @@ export default class CourseInfo extends React.Component {
 					</TouchableOpacity>
 					<Text style = { styles.headerText }>Progresso do curso</Text>
 				</View>
-				<FlatList
-					showsVerticalScrollIndicator={false}
-					keyboardShouldPersistTaps={'always'}
-					keyExtractor={ (item, index) => index }
-					data={ this.state.periodsProgress }
-					renderItem={ ({ item, index }) =>
-						<PeriodProgressCard title = { (index + 1) + "° Período" }  progress={item} periodData={this.state.courseData[index]}/>
-					}
-				/>
+				{
+					this.state.loaded ?
+					<FlatList
+						showsVerticalScrollIndicator={false}
+						keyboardShouldPersistTaps={'always'}
+						keyExtractor={ (item, index) => index }
+						data={ this.state.periodsProgress }
+						renderItem={ ({ item, index }) =>
+							<PeriodProgressCard title = { (index + 1) + "° Período" }  progress={item} periodData={this.state.courseData[index]}/>
+						}
+					/>
+						:
+						<View>
+							<View style={{ padding: 20 }}>
+								<Text>Processando dados. Isso pode levar alguns segundos na primeira vez...</Text>
+							</View>
+							<SkeletonPlaceholder>
+							<SkeletonPlaceholder.Item width={ theme.width * 0.95 } height={ theme.height * 0.135 } alignSelf="center" borderRadius={20}  marginTop={20}>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item width={ theme.width * 0.95 } height={ theme.height * 0.135 } alignSelf="center" borderRadius={20}  marginTop={20}>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item width={ theme.width * 0.95 } height={ theme.height * 0.135 } alignSelf="center" borderRadius={20}  marginTop={20}>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item width={ theme.width * 0.95 } height={ theme.height * 0.135 } alignSelf="center" borderRadius={20}  marginTop={20}>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item width={ theme.width * 0.95 } height={ theme.height * 0.135 } alignSelf="center" borderRadius={20}  marginTop={20}>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item width={ theme.width * 0.95 } height={ theme.height * 0.135 } alignSelf="center" borderRadius={20}  marginTop={20}>
+							</SkeletonPlaceholder.Item>
+							<SkeletonPlaceholder.Item width={ theme.width * 0.95 } height={ theme.height * 0.135 } alignSelf="center" borderRadius={20}  marginTop={20}>
+							</SkeletonPlaceholder.Item>
+							</SkeletonPlaceholder>
+						</View>
+				}
 			</View>
 		)
 	}

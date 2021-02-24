@@ -38,6 +38,7 @@ export default class PortalUTFPR extends React.Component {
 		} else {
 			this.getStudentPhoto();
 			this.getStudentInfo();
+
 		}
 	}
 
@@ -45,6 +46,14 @@ export default class PortalUTFPR extends React.Component {
 		return new Promise(() => {
 			heimdallr.getStudentInfo().then(
 				(resolve) => {
+					heimdallr.getUserCourseData().then(
+						() => {
+
+						},
+						() => {
+							heimdallr.processCourseData();
+						}
+					);
 					this.setState({ courseData: resolve, authenticationVerified: true });
 				},
 				(error) => {
