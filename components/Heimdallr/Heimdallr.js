@@ -47,17 +47,7 @@ function HeimdallrLib() {
   }
 
   this.tt = () => {
-	  RNFetchBlob.config({
-		  trusty: true
-	  }).fetch('POST', 'https://3.23.33.91/teste',  { 'Content-Type': 'application/json'},
-		  JSON.stringify({ hey: 'blabla' })).then(
-		  (res) => {
-		  	console.warn('reposta loka: ', res);
-		  },
-		  (err) => {
-		  	console.warn('cagou tudo: ', err);
-		  }
-	  )
+	  firebase.functions().httpsCallable('proccessCourseProgress')({ user_id: this.user_id });
   }
 
   // Deixar aqui essa função como exemplo e teste de como chamar a firebase.functions()
@@ -1430,6 +1420,7 @@ function HeimdallrLib() {
 	this.testNotification = (navigator) => {
 		firebase.notifications().getInitialNotification().then(
 			(remoteMessage ) => {
+				console.log("Verificando notificação: ", remoteMessage.notification._data);
 				// console.warn('pense na notify:', (remoteMessage.notification.data()));
 				if (remoteMessage.notification._data.pid) {
 					navigator.push('PostDetails', {
@@ -1437,7 +1428,9 @@ function HeimdallrLib() {
 						userId: this.user_id
 					})
 				} else if (remoteMessage.notification._data.screen) {
+					console.log("Entrou aqui cabeção", remoteMessage.notification._data.screen);
 					let params = remoteMessage.notification._data.params ? JSON.parse(remoteMessage.notification._data.params) : {};
+					console.log("Vai dar push nisso: ", remoteMessage.notification._data.screen, params)
 					navigator.push(remoteMessage.notification._data.screen, params);
 				} else if (remoteMessage.notification._data.boardId) {
 					navigator.push('BoardItemDetails', {
@@ -1779,6 +1772,28 @@ function HeimdallrLib() {
 					)
 				}
 			);
+		})
+	}
+
+	this.processCourseData =  function () {
+  	console.log("Olha o precissamento");
+		firebase.functions().httpsCallable('proccessCourseProgress')({ user_id: this.user_id });
+	}
+
+	this.getUserCourseData = function () {
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('userCourseData').doc(this.user_id).get().then(
+				(result) => {
+					if (result.data()) {
+						resolve(result.data());
+
+					} else {
+						reject();
+					}
+				},
+				(erro) => {
+				}
+			)
 		})
 	}
 
