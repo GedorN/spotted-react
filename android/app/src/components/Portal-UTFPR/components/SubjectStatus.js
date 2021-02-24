@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
 		width: theme.width * 0.8,
 		backgroundColor: '#F6C500',
 		padding: 15,
-		paddingHorizontal: 30,
+		paddingHorizontal: 45,
 		borderTopRightRadius: 20,
 		borderTopLeftRadius: 20,
 		alignItems: 'center',
