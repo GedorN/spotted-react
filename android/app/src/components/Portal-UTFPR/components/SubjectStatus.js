@@ -70,7 +70,7 @@ export default class SubjectStatus extends React.Component {
 					<TouchableOpacity activeOpacity={1} onPress={() => this.setState({ showPreRequisites: false }) }  style={styles.centeredView}>
 						<TouchableOpacity  activeOpacity={1} style={styles.modalView}>
 							<View style={styles.modalHeader}>
-								<Text style={{ fontWeight: 'bold' }} >{this.props.title}</Text>
+								<Text style={{ fontWeight: 'bold', textAlign: 'center' }} >{this.props.title}</Text>
 								<TouchableOpacity onPress={() => this.setState({ showPreRequisites: false })} style={{ position: 'absolute', right: 18, top: 18}}>
 									<Image
 										source={require('../../../../../../assets/images/times-solid.png')}
