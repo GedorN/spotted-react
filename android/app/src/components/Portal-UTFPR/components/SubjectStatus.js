@@ -81,12 +81,17 @@ export default class SubjectStatus extends React.Component {
 							<View style={styles.modalBody}>
 								<Text style={{ color: '#AFAFAF', fontWeight: 'bold' }}>Pré Requisitos</Text>
 								{
-									this.state.preRequisites && this.state.preRequisites.map(i =>
-										<View style={{ marginLeft: 8, marginTop: 12, flexDirection: 'row', alignItems: 'center' }} key={i.discCodvelhoVc}>
+									this.state.preRequisites && this.state.preRequisites.length > 0 ?
+										this.state.preRequisites.map(i =>
+										<View style={{ marginLeft: 8, marginTop: 12, flexDirection: 'row', alignItems: 'center', padding: 8 }} key={i.discCodvelhoVc}>
 											<Image style={{...styles.icon, tintColor: i.subjectStatus === 1 ? '#027227' : '#970303'}}  source={ i.subjectStatus === 1 ? require('../../../../../../assets/images/check.png') : require('../../../../../../assets/images/times-solid.png')}/>
 											<Text style={{ marginLeft: 10 }} >{i.discNomeVc}</Text>
 										</View>
 									)
+										:
+									<View style={{ marginLeft: 8, marginTop: 12, flexDirection: 'row', alignItems: 'center' }}>
+										<Text>Essa matéria não possui pré requisitos</Text>
+									</View>
 								}
 							</View>
 						</TouchableOpacity>
@@ -138,6 +143,7 @@ const styles = StyleSheet.create({
 		width: theme.width * 0.8,
 		backgroundColor: '#F6C500',
 		padding: 15,
+		paddingHorizontal: 30,
 		borderTopRightRadius: 20,
 		borderTopLeftRadius: 20,
 		alignItems: 'center',

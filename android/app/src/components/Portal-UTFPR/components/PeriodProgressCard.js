@@ -47,12 +47,12 @@ export default class PeriodProgressCard extends React.Component{
 
 		if (!this.state.showContent) {
 			Animated.timing(this.state.cardMargin, {
-				toValue: (80 * this.state.subjectNumber + 150) - 60 ,
+				toValue: (80 * this.state.subjectNumber + 110) - 60 ,
 				duration: 200,
 				useNativeDriver: false
 			}).start();
 			Animated.timing(this.state.cardHeight, {
-				toValue: (80 * this.state.subjectNumber + 150) ,
+				toValue: (80 * this.state.subjectNumber + 110) ,
 				duration: 200,
 				useNativeDriver: false
 			}).start(
@@ -112,7 +112,7 @@ export default class PeriodProgressCard extends React.Component{
 						</TouchableOpacity>
 					</Animated.View>
 					<Animated.View style = {{ ...styles.periodInfoCard, height: this.state.cardHeight }}>
-						<View style={{marginTop: theme.height * 0.135, padding: 10, flexDirection: 'column', flex: 1, justifyContent: 'space-between', backgroundColor: 'white'}}>
+						<View style={{marginTop: theme.height * 0.135, padding: 10, flexDirection: 'column', flex: 1, justifyContent: 'space-between', backgroundColor: 'white', borderRadius: 20}}>
 							{
 								this.state.showContent && this.state.subjects.map(i =>
 									<View key={i.subjectCode}>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		marginTop: 20,
 		zIndex: -1,
-		backgroundColor: 'white',
+		backgroundColor: 'white'
 	}
 
 })
