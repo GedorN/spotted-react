@@ -55,7 +55,7 @@ export default class PortalUTFPR extends React.Component {
                             date_with_tolerance.setMinutes(date_with_tolerance.getMinutes() - 15)
                             let today = time.getDay() + 1
                             let todayClass = resolve.filter((aula) => (aula.horarios.filter((horario) => horario.horaDescrVc[0] == today).length > 0))
-                            let todaySchedule = schedule.filter((h) => parseInt(h.begin.substring(0,2)) > parseInt(date_with_tolerance.getHours()) || (parseInt(h.begin.substring(0,2)) === parseInt(d.getHours()) && parseInt(h.begin.substring(3, 6)) >= parseInt(date_with_tolerance.getMinutes())))
+                            let todaySchedule = schedule.filter((h) => parseInt(h.begin.substring(0,2)) > parseInt(date_with_tolerance.getHours()) || (parseInt(h.begin.substring(0,2)) === parseInt(date_with_tolerance.getHours()) && parseInt(h.begin.substring(3, 6)) >= parseInt(date_with_tolerance.getMinutes())))
                             let schedules = Object.keys(todaySchedule)
                             let nextClass = []
                             for (let i = 0; i < schedules.length; i++) {
