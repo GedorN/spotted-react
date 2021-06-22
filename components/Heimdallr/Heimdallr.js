@@ -1797,6 +1797,28 @@ function HeimdallrLib() {
 		})
 	}
 
+	this.getClassSchedule = function () {
+    return new Promise((resolve, reject) => {
+      RNFetchBlob.fetch('GET', `https://webapp.utfpr.edu.br/portalAluno/ws/${this.UTFPRidInCourse}/horario`, {
+        Authorization: 'Bearer ' + heimdallr.UTFPRToken,
+        Accept: '*/*'
+      }).then(
+        (result) => {
+          if (result.respInfo.status === HTTPS_UNAUTHORIZED) {
+            reject();
+          } else {
+            const data = result && result.data ? JSON.parse(result.data) : null;
+            console.log("veja ai: ", data)
+            resolve(data);
+          }
+        },
+        (error) => {
+          reject(error);
+        }
+      )
+    })
+  }
+
 
 }
 

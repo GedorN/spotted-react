@@ -14,7 +14,8 @@ import theme from "../../../../../components/General/Theme";
 import MenuOptionCard from "./components/MenuOptionCard";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
 import FlashMessage from "react-native-flash-message";
-
+import NextClassCard from "./components/NextClassCard";
+import schedule from "../../../../../components/Heimdallr/UTFPRSchedule"
 
 export default class PortalUTFPR extends React.Component {
 	constructor(props) {
@@ -23,6 +24,7 @@ export default class PortalUTFPR extends React.Component {
 			authenticationVerified: false,
 			userImage: '',
 			courseData: null,
+            nextClass: null,
 		}
 	}
 
@@ -46,6 +48,31 @@ export default class PortalUTFPR extends React.Component {
 		return new Promise(() => {
 			heimdallr.getStudentInfo().then(
 				(resolve) => {
+                    heimdallr.getClassSchedule().then(
+                        async (resolve) => {
+                            let time = new Date(await heimdallr.getServerTime());
+                            let date_with_tolerance = time
+                            date_with_tolerance.setMinutes(date_with_tolerance.getMinutes() - 15)
+                            let today = time.getDay() + 1
+                            let todayClass = resolve.filter((aula) => (aula.horarios.filter((horario) => horario.horaDescrVc[0] == today).length > 0))
+                            let todaySchedule = schedule.filter((h) => parseInt(h.begin.substring(0,2)) > parseInt(date_with_tolerance.getHours()) || (parseInt(h.begin.substring(0,2)) === parseInt(d.getHours()) && parseInt(h.begin.substring(3, 6)) >= parseInt(date_with_tolerance.getMinutes())))
+                            let schedules = Object.keys(todaySchedule)
+                            let nextClass = []
+                            for (let i = 0; i < schedules.length; i++) {
+                                nextClass = todayClass.filter((clss) => (clss.horarios.filter((h) => h.horaDescrVc === `${today}${todaySchedule[i].name}` )).length > 0)
+                                if (nextClass.length > 0) {
+                                    nextClass = nextClass[0]
+                                    nextClass.schedule = `${today}${todaySchedule[i].name}`
+                                    nextClass.begin = schedule.filter((s) =>  nextClass.schedule.includes(s.name) )[0].begin
+                                    break;
+                                }
+                            }
+                            this.setState({ nextClass: nextClass })
+                        },
+                        () => {
+
+                        }
+                    )
 					heimdallr.getUserCourseData().then(
 						() => {
 
@@ -54,6 +81,8 @@ export default class PortalUTFPR extends React.Component {
 							heimdallr.processCourseData();
 						}
 					);
+
+
 					this.setState({ courseData: resolve, authenticationVerified: true });
 				},
 				(error) => {
@@ -129,6 +158,10 @@ export default class PortalUTFPR extends React.Component {
 							<UserInfoCard navigation={this.props.navigation} userImage={ this.state.userImage } courseData={ this.state.courseData } />
 						</View>
 						<View style={styles.body}>
+                            {
+                                this.state.nextClass &&
+                                <NextClassCard aula={this.state.nextClass}/>
+                            }
 							<View style={styles.bodyLine}>
 								<MenuOptionCard icon={require('../../../../../assets/images/PORTAL-UTFPR/history.png')} title='Histórico Acadêmico' route='StudentHistory' navigation={this.props.navigation} />
 								<MenuOptionCard width={65} iconPaisagem icon={require('../../../../../assets/images/PORTAL-UTFPR/graduation-cap.png')} title='Curso' route='CourseInfo' navigation={this.props.navigation}/>
