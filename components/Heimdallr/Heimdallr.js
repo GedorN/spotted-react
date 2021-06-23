@@ -1808,7 +1808,6 @@ function HeimdallrLib() {
             reject();
           } else {
             const data = result && result.data ? JSON.parse(result.data) : null;
-            console.log("veja ai: ", data)
             resolve(data);
           }
         },
