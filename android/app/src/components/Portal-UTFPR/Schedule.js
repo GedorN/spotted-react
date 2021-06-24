@@ -2,20 +2,31 @@ import React from 'react';
 import {
     View,
     StyleSheet,
-    Text, TouchableOpacity, Image
+    Text,
+    TouchableOpacity,
+    Image,
+    ScrollView
 } from "react-native";
 
 import theme from "../../../../../components/General/Theme";
 import TextChip from "./components/TextChip";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import schedule from "../../../../../components/Heimdallr/UTFPRSchedule";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import ClassCad from "./components/ClassCard";
 
+var sun = require('../../../../../assets/images/PORTAL-UTFPR/sun-solid.png')
+var cloud_sun = require('../../../../../assets/images/PORTAL-UTFPR/cloud-sun-solid.png')
+var moon = require('../../../../../assets/images/PORTAL-UTFPR/moon-solid.png')
 
 export default class Schedule extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             weekDay: 2,
+            allClasses: [],
+            classes: [],
+            loaded: false,
         }
     }
 
@@ -23,12 +34,10 @@ export default class Schedule extends React.Component {
         heimdallr.getClassSchedule().then(
             async (resolve) => {
                 let time = new Date(await heimdallr.getServerTime());
+                this.state.allClasses = resolve
                 let today = time.getDay() + 1
-                // Pega todas as aulas no dia
-                let todayClass = resolve.filter((aula) => (aula.horarios.filter((horario) => horario.horaDescrVc[0] == today).length > 0))
+                this.changeClasses(today)
 
-                this.setState({ weekDay: today })
-                console.log("aulas hoje ", JSON.stringify(todayClass))
             },
             () => {
 
@@ -36,9 +45,53 @@ export default class Schedule extends React.Component {
         )
     }
 
+    changeClasses(weekDay) {
+        // Pega todas as aulas no dia
+        let schedules_cod = schedule.map((i) => i.name)
+console.log(schedules_cod)
+        let aux = this.state.allClasses.map((i) => {
+            return {...i}
+        });
+        // for (let i = 0 ; i < this.state.allClasses.length; i++) {
+        //     aux.push({...this.state.allClasses[i]})
+        // }
+        let todayClass = aux.filter((aula) => {
+            aula.inicio = -1
+            aula.fim = -1
+            aula.horarios = aula.horarios.filter((horario) => {
+                if (horario.horaDescrVc[0] == weekDay) {
+                    if (aula.inicio < 0 ||  schedules_cod.indexOf(horario.horaDescrVc.substring(1, 3)) < aula.inicio) {
+                        aula.inicio = schedules_cod.indexOf(horario.horaDescrVc.substring(1, 3))
+                    }
+                    if (aula.fim < 0 || schedules_cod.indexOf(horario.horaDescrVc.substring(1, 3)) > aula.fim) {
+                        aula.fim = schedules_cod.indexOf(horario.horaDescrVc.substring(1, 3))
+                    }
+
+                    return 1
+                } else {
+                    return 0
+                }
+            });
+
+            if (aula.inicio >= 0 && aula.inicio < 5) {
+                aula.icon = { icone: sun, altura: 30, largura: 30, cor: '#F6C500' }
+            } else if (aula.inicio >= 5 && aula.inicio < 11) {
+                aula.icon = { icone: cloud_sun, altura: 20, largura: 30, cor: '#DC8B00' }
+            } else if (aula.inicio >= 11 ) {
+                aula.icon = { icone: moon, altura: 30, largura: 30, cor: '#7B7878' }
+            }
+
+            return (aula.horarios).length > 0
+        })
+        todayClass.sort((a, b) => schedules_cod.indexOf(a.horarios[0].horaDescrVc.substring(1, 3)) - schedules_cod.indexOf(b.horarios[0].horaDescrVc.substring(1, 3)) );
+        this.setState({ weekDay: weekDay, loaded: true, classes: todayClass })
+        console.log("aulas hoje ", JSON.stringify(todayClass))
+    }
+
     changeWeekDay(day){
+        this.setState({ loaded: false })
         console.log("Dia: ", day)
-        this.setState({ weekDay: day })
+        this.changeClasses(day)
     }
 
 
@@ -58,13 +111,54 @@ export default class Schedule extends React.Component {
                     <Text style = { styles.headerText }>Horário de Aulas</Text>
                 </View>
                 <View>
-                    <View style={{ flexDirection: "row", justifyContent: 'space-evenly', alignItems: 'center', }}>
+
+                    <View style={{ flexDirection: "row", justifyContent: 'space-evenly', alignItems: 'center', padding: 5 }}>
                         <TextChip color={theme.UTFPRPrimary} text={'SEG'} data={2} active={2 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 2)}/>
                         <TextChip color={theme.UTFPRPrimary} text={'TER'} data={3} active={3 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 3)}/>
                         <TextChip color={theme.UTFPRPrimary} text={'QUA'} data={4} active={4 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 4)}/>
                         <TextChip color={theme.UTFPRPrimary} text={'QUI'} data={5} active={5 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 5)}/>
                         <TextChip color={theme.UTFPRPrimary} text={'SEX'} data={6} active={6 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 6)}/>
                         <TextChip color={theme.UTFPRPrimary} text={'SAB'} data={7} active={7 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 7)}/>
+                    </View>
+                    <View style={{ minHeight: theme.height * 0.78, maxHeight: theme.height * 0.78, flex: 1}}>
+                        {
+                            this.state.loaded ?
+                            <ScrollView style={{ flex: 1}}>
+                                <View style={{ marginTop: 25, padding: 5, justifyContent: 'space-evenly', alignItems: 'center', paddingBottom: 50, flex: 1 }}>
+                                    {
+                                        this.state.classes.length > 0 ?
+                                        this.state.classes.map(i =>
+                                            <View style={{ flex: 1, marginTop: 10 }} key={i.discCodVelhorVc}>
+                                                <ClassCad
+                                                    className={i.discNomeVc}
+                                                    professor={i.professores[0].pessNomeVc}
+                                                    sala={i.horarios[0].ambienteNomeVc}
+                                                    inicio={schedule[i.inicio].begin}
+                                                    fim={schedule[i.fim].end}
+                                                    icon={i.icon}
+                                                />
+                                            </View>
+
+                                        ) :
+                                        <View>
+                                            <Text>Sem aulas hoje</Text>
+                                        </View>
+                                    }
+                                </View>
+                            </ScrollView>
+                                :
+                            <SkeletonPlaceholder>
+                                <SkeletonPlaceholder style={{ marginTop: 25, justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20}>
+                                    </SkeletonPlaceholder.Item>
+                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
+                                    </SkeletonPlaceholder.Item>
+                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
+                                    </SkeletonPlaceholder.Item>
+                                </SkeletonPlaceholder>
+                            </SkeletonPlaceholder>
+
+                        }
                     </View>
                 </View>
             </View>

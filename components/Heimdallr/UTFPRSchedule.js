@@ -56,27 +56,27 @@ const schedule = [
   },
   {
     name: "N1",
-    begin: '17:50',
-    end: '18:40'
-  },
-  {
-    name: "N2",
     begin: '18:40',
     end: '19:30'
   },
   {
-    name: "N3",
+    name: "N2",
     begin: '19:30',
     end: '20:20'
   },
   {
-    name: "N4",
+    name: "N3",
     begin: '20:20',
     end: '21:10'
   },
   {
+    name: "N4",
+    begin: '21:20',
+    end: '22:10'
+  },
+  {
     name: "N5",
-    begin: '21:10',
+    begin: '22:10',
     end: '23:00'
   }
 
