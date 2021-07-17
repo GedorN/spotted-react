@@ -4,7 +4,8 @@ import {
 	View,
 	StyleSheet,
 	Text,
-	Image
+	Image,
+    TouchableOpacity
 } from 'react-native';
 import heimdallr from "../../../../../../components/Heimdallr/Heimdallr";
 import theme from "../../../../../../components/General/Theme";
@@ -25,6 +26,18 @@ export default class UserInfoCard extends React.Component {
 		return (
 			<View style={styles.container}>
 				<View style={{ marginTop: 15 }}>
+                    <TouchableOpacity onPress={this.props.goToSettings} style={{ alignSelf: 'flex-end', position: "absolute", padding: 1 }}>
+                        <Image
+                            source={require('../../../../../../assets/images/cog-solid.png')}
+                            style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: 100,
+                                borderWidth: 1,
+
+                            }}
+                        />
+                    </TouchableOpacity>
 					<Image
 						source={{ uri: this.props.userImage }}
 						style={{
@@ -35,6 +48,8 @@ export default class UserInfoCard extends React.Component {
 							alignSelf: 'center',
 						}}
 					/>
+
+
 				</View>
 				{
 					this.props.courseData &&
@@ -88,16 +103,16 @@ const styles = StyleSheet.create({
 		textAlign: 'center'
 	},
 	courseName: {
-		fontWeight: 'bold', 
-		textAlign: 'center', 
+		fontWeight: 'bold',
+		textAlign: 'center',
 		fontSize: 14
 	},
 	cardText: {
 		fontSize: 13
 	},
 	cardView: {
-		marginTop: 15, 
-		width: theme.width * 0.7, 
+		marginTop: 15,
+		width: theme.width * 0.7,
 		alignSelf: 'center'
 	}
 });

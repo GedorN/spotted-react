@@ -35,7 +35,7 @@ export default class PortalUTFPR extends React.Component {
 		heimdallr.sendEvent("portal_UTFPR_access");
 
 
-		if (!heimdallr.UTFPRToken && !heimdallr.UTFPRPortalLogin) {
+		if (!heimdallr.UTFPRToken) {
 			this.props.navigation.replace('LoginPortal');
 		} else {
 			this.getStudentPhoto();
@@ -112,6 +112,15 @@ export default class PortalUTFPR extends React.Component {
 		})
 	}
 
+	goToSettings() {
+        this.props.navigation.navigate('PortalSettings');
+    }
+
+    disconnectUserFromPortal = () => {
+        heimdallr.deleteUTFPRToken()
+        this.props.navigation.replace('LoginPortal');
+    }
+
 
 	getStudentPhoto = () => {
 		return new Promise(() => {
@@ -157,7 +166,7 @@ export default class PortalUTFPR extends React.Component {
 					this.state.authenticationVerified ?
 					<View>
 						<View style={{ marginTop: 25 }}>
-							<UserInfoCard navigation={this.props.navigation} userImage={ this.state.userImage } courseData={ this.state.courseData } />
+							<UserInfoCard navigation={this.props.navigation} userImage={ this.state.userImage } courseData={ this.state.courseData } goToSettings={this.goToSettings.bind(this)} />
 						</View>
 						<View style={styles.body}>
                             {
