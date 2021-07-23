@@ -27,6 +27,7 @@ export default class Schedule extends React.Component {
             allClasses: [],
             classes: [],
             loaded: false,
+            offlineServer: false,
         }
     }
 
@@ -34,9 +35,13 @@ export default class Schedule extends React.Component {
         heimdallr.getClassSchedule().then(
             async (resolve) => {
                 let time = new Date(await heimdallr.getServerTime());
-                this.state.allClasses = resolve
-                let today = time.getDay() + 1
-                this.changeClasses(today)
+                if (resolve.length === 0) {
+                    this.setState({ offlineServer: true })
+                } else {
+                    this.state.allClasses = resolve
+                    let today = time.getDay() + 1
+                    this.changeClasses(today)
+                }
 
             },
             () => {
@@ -48,7 +53,6 @@ export default class Schedule extends React.Component {
     changeClasses(weekDay) {
         // Pega todas as aulas no dia
         let schedules_cod = schedule.map((i) => i.name)
-console.log(schedules_cod)
         let aux = this.state.allClasses.map((i) => {
             return {...i}
         });
@@ -85,12 +89,10 @@ console.log(schedules_cod)
         })
         todayClass.sort((a, b) => schedules_cod.indexOf(a.horarios[0].horaDescrVc.substring(1, 3)) - schedules_cod.indexOf(b.horarios[0].horaDescrVc.substring(1, 3)) );
         this.setState({ weekDay: weekDay, loaded: true, classes: todayClass })
-        console.log("aulas hoje ", JSON.stringify(todayClass))
     }
 
     changeWeekDay(day){
         this.setState({ loaded: false })
-        console.log("Dia: ", day)
         this.changeClasses(day)
     }
 
@@ -99,68 +101,82 @@ console.log(schedules_cod)
     render() {
         return (
             <View style={styles.container}>
-                <View style = { styles.header }>
-                    <TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
-                        <View style={{ flexDirection: 'row', width: theme.width * 0.2, height:theme.height * 0.04 }}>
+                {
+                    this.state.offlineServer ?
+                        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, padding: 10 }}>
                             <Image
-                                style={ styles.arrowImage }
-                                source={require('../../../../../assets/images/chevron-circle-left-solid-white.png')}
+                                style={{width: 250, height: 200}}
+                                source={require('../../../../../assets/images/PORTAL-UTFPR/no-data.png')}
                             />
+                            <Text>Infelizmente não conseguimos contato com o servidor da UTFPR</Text>
                         </View>
-                    </TouchableOpacity>
-                    <Text style = { styles.headerText }>Horário de Aulas</Text>
-                </View>
-                <View>
+                        :
+                        <View>
+                            <View style = { styles.header }>
+                                <TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+                                    <View style={{ flexDirection: 'row', width: theme.width * 0.2, height:theme.height * 0.04 }}>
+                                        <Image
+                                            style={ styles.arrowImage }
+                                            source={require('../../../../../assets/images/chevron-circle-left-solid-white.png')}
+                                        />
+                                    </View>
+                                </TouchableOpacity>
+                                <Text style = { styles.headerText }>Horário de Aulas</Text>
+                            </View>
+                            <View>
 
-                    <View style={{ flexDirection: "row", justifyContent: 'space-evenly', alignItems: 'center', padding: 5 }}>
-                        <TextChip color={theme.UTFPRPrimary} text={'SEG'} data={2} active={2 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 2)}/>
-                        <TextChip color={theme.UTFPRPrimary} text={'TER'} data={3} active={3 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 3)}/>
-                        <TextChip color={theme.UTFPRPrimary} text={'QUA'} data={4} active={4 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 4)}/>
-                        <TextChip color={theme.UTFPRPrimary} text={'QUI'} data={5} active={5 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 5)}/>
-                        <TextChip color={theme.UTFPRPrimary} text={'SEX'} data={6} active={6 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 6)}/>
-                        <TextChip color={theme.UTFPRPrimary} text={'SAB'} data={7} active={7 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 7)}/>
-                    </View>
-                    <View style={{ minHeight: theme.height * 0.78, maxHeight: theme.height * 0.78, flex: 1}}>
-                        {
-                            this.state.loaded ?
-                            <ScrollView style={{ flex: 1}}>
-                                <View style={{ marginTop: 25, padding: 5, justifyContent: 'space-evenly', alignItems: 'center', paddingBottom: 50, flex: 1 }}>
+                                <View style={{ flexDirection: "row", justifyContent: 'space-evenly', alignItems: 'center', padding: 5 }}>
+                                    <TextChip color={theme.UTFPRPrimary} text={'SEG'} data={2} active={2 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 2)}/>
+                                    <TextChip color={theme.UTFPRPrimary} text={'TER'} data={3} active={3 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 3)}/>
+                                    <TextChip color={theme.UTFPRPrimary} text={'QUA'} data={4} active={4 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 4)}/>
+                                    <TextChip color={theme.UTFPRPrimary} text={'QUI'} data={5} active={5 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 5)}/>
+                                    <TextChip color={theme.UTFPRPrimary} text={'SEX'} data={6} active={6 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 6)}/>
+                                    <TextChip color={theme.UTFPRPrimary} text={'SAB'} data={7} active={7 == this.state.weekDay} onClick={this.changeWeekDay.bind(this, 7)}/>
+                                </View>
+                                <View style={{ minHeight: theme.height * 0.78, maxHeight: theme.height * 0.78, flex: 1}}>
                                     {
-                                        this.state.classes.length > 0 ?
-                                        this.state.classes.map(i =>
-                                            <View style={{ flex: 1, marginTop: 10 }} key={i.discCodVelhorVc}>
-                                                <ClassCad
-                                                    className={i.discNomeVc}
-                                                    professor={i.professores[0].pessNomeVc}
-                                                    sala={i.horarios[0].ambienteNomeVc}
-                                                    inicio={schedule[i.inicio].begin}
-                                                    fim={schedule[i.fim].end}
-                                                    icon={i.icon}
-                                                />
-                                            </View>
+                                        this.state.loaded ?
+                                            <ScrollView style={{ flex: 1}}>
+                                                <View style={{ marginTop: 25, padding: 5, justifyContent: 'space-evenly', alignItems: 'center', paddingBottom: 50, flex: 1 }}>
+                                                    {
+                                                        this.state.classes.length > 0 ?
+                                                            this.state.classes.map(i =>
+                                                                <View style={{ flex: 1, marginTop: 10 }} key={i.discCodVelhorVc}>
+                                                                    <ClassCad
+                                                                        className={i.discNomeVc}
+                                                                        professor={i.professores[0].pessNomeVc}
+                                                                        sala={i.horarios[0].ambienteNomeVc}
+                                                                        inicio={schedule[i.inicio].begin}
+                                                                        fim={schedule[i.fim].end}
+                                                                        icon={i.icon}
+                                                                    />
+                                                                </View>
 
-                                        ) :
-                                        <View>
-                                            <Text>Sem aulas hoje</Text>
-                                        </View>
+                                                            ) :
+                                                            <View>
+                                                                <Text>Sem aulas hoje</Text>
+                                                            </View>
+                                                    }
+                                                </View>
+                                            </ScrollView>
+                                            :
+                                            <SkeletonPlaceholder>
+                                                <SkeletonPlaceholder style={{ marginTop: 25, justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20}>
+                                                    </SkeletonPlaceholder.Item>
+                                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
+                                                    </SkeletonPlaceholder.Item>
+                                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
+                                                    </SkeletonPlaceholder.Item>
+                                                </SkeletonPlaceholder>
+                                            </SkeletonPlaceholder>
+
                                     }
                                 </View>
-                            </ScrollView>
-                                :
-                            <SkeletonPlaceholder>
-                                <SkeletonPlaceholder style={{ marginTop: 25, justifyContent: 'space-evenly', alignItems: 'center'}}>
-                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20}>
-                                    </SkeletonPlaceholder.Item>
-                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
-                                    </SkeletonPlaceholder.Item>
-                                    <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
-                                    </SkeletonPlaceholder.Item>
-                                </SkeletonPlaceholder>
-                            </SkeletonPlaceholder>
+                            </View>
+                        </View>
+                }
 
-                        }
-                    </View>
-                </View>
             </View>
         )
     }

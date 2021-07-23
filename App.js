@@ -25,6 +25,7 @@ import LoginPortal from "./android/app/src/components/Portal-UTFPR/LoginPortal";
 import StudentHistory from "./android/app/src/components/Portal-UTFPR/StudentHistory";
 import CourseInfo from "./android/app/src/components/Portal-UTFPR/CouseInfo";
 import Schedule from "./android/app/src/components/Portal-UTFPR/Schedule";
+import PortalSettings from "./android/app/src/components/Portal-UTFPR/PortalSettings";
 
 const config = {
 	animation: 'timing',
@@ -63,7 +64,8 @@ const RootStack = createStackNavigator(
 		LoginPortal: { screen: LoginPortal },
 		StudentHistory: { screen: StudentHistory },
 		CourseInfo: { screen: CourseInfo },
-    Schedule: { screen: Schedule }
+    Schedule: { screen: Schedule },
+    PortalSettings: { screen: PortalSettings }
 	},
 	{
 

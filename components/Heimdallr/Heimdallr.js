@@ -13,7 +13,6 @@ import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
 
-
 const HTTPS_UNAUTHORIZED = 401;
 
 function HeimdallrLib() {
@@ -30,6 +29,7 @@ function HeimdallrLib() {
   this.messages = null;
   this.deviceToken = null;
   this.accepting_phone_requests= true;
+  this.accepting_class_notification = true
 
   this.refreshKey = null;
 
@@ -786,7 +786,8 @@ function HeimdallrLib() {
 			  this.userPlans = user.userPlans ? user.userPlans : null;
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
-			  this.UTFPRToken = user.UTFPRToken ? user.UTFPRToken : null;
+        this.accepting_class_notification = user.accepting_class_notification === false ? user.accepting_class_notification : true;
+        this.UTFPRToken = user.UTFPRToken ? user.UTFPRToken : null;
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
@@ -1816,6 +1817,35 @@ function HeimdallrLib() {
         }
       )
     })
+  }
+
+
+  this.deleteUTFPRToken = function () {
+    firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+      async (res) => {
+        // salva dados do primeiro login
+        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+          UTFPRToken: null,
+        }, {merge: true});
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  }
+
+  this.setClassNotificationAcceptance = function(acceptance) {
+    firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+      async (res) => {
+        // salva dados do primeiro login
+        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+          accepting_class_notification: acceptance,
+        }, {merge: true});
+      },
+      (error) => {
+        reject(error);
+      }
+    );
   }
 
 
