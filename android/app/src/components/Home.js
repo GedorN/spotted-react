@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-	StyleSheet,
-	View,
-	Text,
-	Image,
-	FlatList,
-	ActivityIndicator,
-	RefreshControl, StatusBar,
+    StyleSheet,
+    View,
+    Text,
+    Image,
+    FlatList,
+    ActivityIndicator,
+    RefreshControl, StatusBar, TouchableOpacity,
 } from 'react-native';
 
 
@@ -15,6 +15,8 @@ import heimdallr from '../../../../components/Heimdallr/Heimdallr';
 import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
 import theme from "../../../../components/General/Theme";
+import RUMineTextInput from "./Inputs/RUMineTextInput";
+import schedule from "../../../../components/Heimdallr/UTFPRSchedule";
 
 const PULL_QUANTITY = 100;
 
@@ -25,7 +27,7 @@ export default class Home extends React.Component {
     this.state = {
         posts: null,
         pulledPosts: PULL_QUANTITY,
-        loading: false,
+        loading: true,
 	    pulling: false,
 	    endPulling: false,
 	    isRefreshing: false,
@@ -33,6 +35,7 @@ export default class Home extends React.Component {
 		showAlert: false,
 		deletePost: '',
 		showDeleteAlert: false,
+        nextClass: null,
     };
   }
 
@@ -42,17 +45,20 @@ export default class Home extends React.Component {
   		StatusBar.setBackgroundColor('white');
   		StatusBar.setBarStyle('dark-content');
   	});
-  	let result = heimdallr.getCollection('post', this.state.pulledPosts);
+      this.getStudentInfo();
+      let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
-  		if (resolve.length === 0 ) {
+        if (resolve.length === 0 ) {
   			this.setState({ endPulling: true })
 	    }
-  		resolve.forEach((doc) => {
+
+        resolve.forEach((doc) => {
 		    const time = moment(doc.data().date).fromNow();
 		    doc._data.elapsed_time = heimdallr.getElapsedTime(time);
 	    })
 
-  		this.setState({ posts: resolve });
+  		this.setState({ posts: resolve }, () => {
+        });
   	});
   }
 
@@ -98,6 +104,9 @@ export default class Home extends React.Component {
   onRefresh = () => {
 	  this.setState({ isRefreshing: true });
 	  let result = heimdallr.getCollection('post', PULL_QUANTITY);
+	  if (heimdallr.UTFPRToken) {
+	    this.getStudentInfo();
+      }
 	  result.then( (resolve) => {
 	  	resolve.forEach((doc) => {
 		    const time = moment(doc.data().date).fromNow();
@@ -161,6 +170,118 @@ export default class Home extends React.Component {
 		);
 		this.setState({ showDeleteAlert: false});
 	}
+    getStudentInfo = () => {
+        return new Promise((resolve, reject) => {
+            this.setState({ loading: true })
+
+            heimdallr.getClassSchedule().then(
+                async (resolve) => {
+                    let time = new Date(await heimdallr.getServerTime());
+                    let date_with_tolerance = time
+                    date_with_tolerance.setMinutes(date_with_tolerance.getMinutes() - 15)
+                    let today = time.getDay() + 1
+                    // Pega todas as aulas no dia
+                    let todayClass = resolve.filter((aula) => (aula.horarios.filter((horario) => horario.horaDescrVc[0] == today).length > 0))
+                    // Vê quais horários ainda estão disponíveis
+                    let todaySchedule = schedule.filter((h) => parseInt(h.begin.substring(0,2)) > parseInt(date_with_tolerance.getHours()) || (parseInt(h.begin.substring(0,2)) === parseInt(date_with_tolerance.getHours()) && parseInt(h.begin.substring(3, 6)) >= parseInt(date_with_tolerance.getMinutes())))
+                    let schedules = Object.keys(todaySchedule)
+                    let nextClass = []
+
+                    for (let i = 0; i < schedules.length; i++) {
+                        nextClass = todayClass.filter((clss) => (clss.horarios.filter((h) => h.horaDescrVc === `${today}${todaySchedule[i].name}` )).length > 0)
+                        if (nextClass.length > 0) {
+                            nextClass = nextClass[0]
+                            nextClass.schedule = `${today}${todaySchedule[i].name}`
+                            nextClass.begin = schedule.filter((s) =>  nextClass.schedule.includes(s.name) )[0].begin
+                            this.setState({ nextClass: nextClass, loading: false })
+                            break;
+                        }
+                    }
+                    if (schedules.length === 0) {
+                        this.setState({ nextClass: null, loading: false })
+                    }
+                    resolve();
+                },
+                () => {
+                    heimdallr.renewStudentAuthentication().then(
+                        async () => {
+                            let self = this;
+                            if (!heimdallr.deviceToken) {
+                                setTimeout(function () {
+                                    self.getStudentInfo();
+
+                                }, 500)
+                            } else {
+                                this.setState({ loading: false});
+                            }
+                        },
+                        () => {
+                            this.setState({ loading: false});
+                            resolve();
+
+                        }
+                    )
+                }
+            )
+        })
+
+    }
+
+    getHeader () {
+      if (!this.state.loading) {
+          if (this.state.nextClass) {
+              return (
+                  <View style = { styles.UTFPRPortalContainer }>
+                      <TouchableOpacity onPress={() => this.props.navigation.navigate('PortalUTFPR')}>
+                          <View style={{ flexDirection: 'row' }}>
+                              <View style={{ backgroundColor: 'black', width: '10%', justifyContent: 'center', alignItems: 'center', borderBottomRightRadius: 10, borderTopRightRadius: 10 }}>
+                                  <Image source={require('../../../../assets/images/PORTAL-UTFPR/clock-regular.png')} style={{ width: 30, height: 30, tintColor: 'white' }}/>
+                              </View>
+                              <View style={{ flex: 1, flexDirection: 'column', padding: 10 }}>
+                                  <View style={{ flex: 1, flexDirection: 'row', textAlign: 'center' , justifyContent: 'center' }}>
+                                      <Text style={{ fontWeight: 'bold' }}>Próxima aula:</Text>
+                                  </View>
+                                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                      <View style={{ maxWidth: '80%', flexWrap: 'wrap', wordWrap: 'wrap', flexDirection: 'column', marginLeft: 10}}>
+                                          <Text style={{ flexWrap: 'wrap' }}>{ this.state.nextClass.discNomeVc } - { this.state.nextClass.begin }h</Text>
+                                          <Text>Prof(a): { this.state.nextClass.professores[0].pessNomeVc.split(' ').splice(0, 2).join(' ') } </Text>
+                                          <Text>Sala: { this.state.nextClass.horarios.filter((h) => h.horaDescrVc === this.state.nextClass.schedule)[0].ambienteNomeVc }</Text>
+                                      </View>
+                                  </View>
+                              </View>
+                          </View>
+                      </TouchableOpacity>
+                  </View>
+              )
+          } else if (heimdallr.UTFPRToken) {
+              return ;
+          } else {
+              return (
+                  <View style = { styles.UTFPRPortalContainer }>
+                      <TouchableOpacity onPress={() => this.props.navigation.navigate('PortalUTFPR')}>
+                          <View style={{ flexDirection: 'row' }}>
+                              <View style={{ backgroundColor: 'black', width: '15%', justifyContent: 'center', alignItems: 'center', borderBottomRightRadius: 10, borderTopRightRadius: 10 }}>
+                                  <Image source={require('../../../../assets/images/PORTAL-UTFPR/clock-regular.png')} style={{ width: 30, height: 30, tintColor: 'white' }}/>
+                              </View>
+                              <View style={{ maxWidth: '80%', flex: 1, flexDirection: 'column', padding: 10 }}>
+                                  <View style={{ flex: 1, flexDirection: 'row', textAlign: 'center' , justifyContent: 'center' }}>
+                                      <Text style={{ fontWeight: 'bold' }}>Próxima aula:</Text>
+                                  </View>
+                                  <View style={{ flexDirection: 'row' }}>
+                                      <View style={{flexWrap: 'wrap', wordWrap: 'wrap', flexDirection: 'row', marginLeft: 10}}>
+                                          <Text style={{ flexWrap: 'wrap' }}>Para ver suas próximas aulas entre no portal do aluno </Text>
+                                      </View>
+                                  </View>
+                              </View>
+                          </View>
+                      </TouchableOpacity>
+                  </View>
+              )
+          }
+      } else {
+          return ;
+      }
+    }
 
 
   render() {
@@ -171,6 +292,7 @@ export default class Home extends React.Component {
               ref={flatList => {this.flatList = flatList}}
               onScrollEndDrag={() => this.setState({ scrolling: false })}
               onScrollBeginDrag={() => this.setState({ scrolling: true })}
+              ListHeaderComponent = { this.getHeader() }
               renderItem={ ({item}) =>
 							<PostViewer
 									text={item._data.text}
@@ -249,5 +371,11 @@ export default class Home extends React.Component {
 }
 
 const styles = StyleSheet.create({
-
+    UTFPRPortalContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        borderTopWidth: 0.2,
+        borderColor: 'rgba(246, 197, 0, 0.5)',
+        backgroundColor: 'rgba(246, 197, 0, 1)',
+    }
 });
