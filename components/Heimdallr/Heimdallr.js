@@ -12,6 +12,8 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
+import { APP_KEY } from '@env';
+
 
 const HTTPS_UNAUTHORIZED = 401;
 
@@ -29,7 +31,8 @@ function HeimdallrLib() {
   this.messages = null;
   this.deviceToken = null;
   this.accepting_phone_requests= true;
-  this.accepting_class_notification = true
+  this.accepting_class_notification = true;
+  this.jwt = null;
 
   this.refreshKey = null;
 
@@ -175,7 +178,7 @@ function HeimdallrLib() {
 			trusty: true
 		}).fetch('POST',
 			'https://3.23.33.91/comment-message',
-			{ 'Content-Type': 'application/json'},
+			{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 			JSON.stringify({
 				destUserId: uid,
 				userName: isAnonymous ? 'Um anônimo' : this.user_name,
@@ -791,7 +794,7 @@ function HeimdallrLib() {
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
-		  	console.log(this.phone);
+        this.getJWToken();
 		  }
 	  )
   }
@@ -1052,7 +1055,7 @@ function HeimdallrLib() {
 				trusty: true
 			}).fetch('POST',
 				'https://3.23.33.91/newPhoneRequest',
-				{ 'Content-Type': 'application/json'},
+				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
 		});
@@ -1143,7 +1146,7 @@ function HeimdallrLib() {
 		  trusty: true
 	  }).fetch('POST',
 		  'https://3.23.33.91/new-account',
-		  { 'Content-Type': 'application/json'},
+		  { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 		  JSON.stringify({
 			  email: this.email,
 			  uid: this.uid,
@@ -1302,7 +1305,7 @@ function HeimdallrLib() {
 							    trusty: true
 						    }).fetch('POST',
 							    'https://3.23.33.91/like-message',
-							    { 'Content-Type': 'application/json'},
+							    { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 							    JSON.stringify({
 								    destUserId: doc.uid,
 								    userName: this.user_name,
@@ -1451,7 +1454,7 @@ function HeimdallrLib() {
 			trusty: true
 		}).fetch('POST',
 			'https://3.23.33.91/comment-board-message',
-			{ 'Content-Type': 'application/json'},
+			{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 			JSON.stringify({
 				destUserId: notification.uid,
 				userName: this.user_name,
@@ -1588,7 +1591,7 @@ function HeimdallrLib() {
 				trusty: true
 			}).fetch('POST',
 				'https://3.23.33.91/refusePhoneRequest',
-				{ 'Content-Type': 'application/json'},
+				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
 		})
@@ -1600,7 +1603,7 @@ function HeimdallrLib() {
 				trusty: true
 			}).fetch('POST',
 				'https://3.23.33.91/acceptPhoneRequest',
-				{ 'Content-Type': 'application/json'},
+				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
 		})
@@ -1847,6 +1850,34 @@ function HeimdallrLib() {
       }
     );
   }
+
+  this.getJWToken = function () {
+    return new Promise((resolve, reject) => {
+      RNFetchBlob.config({trusty: true}).fetch(
+        'POST',
+        'https://3.23.33.91/create-user-token',
+        { 'Content-Type': 'application/json'},
+        JSON.stringify({
+          usermail: this.email,
+          appKey: APP_KEY
+        })
+      ).then(
+        (success) => {
+          if (success.respInfo.status === 200) {
+            const data = JSON.parse(success.data)
+            this.jwt = data.token;
+            resolve(success.data);
+          } else {
+            resolve({error: success.respInfo.status});
+          }
+        },
+        (err)=> {
+          reject({error: 500});
+        }
+      )
+    })
+  }
+
 
 
 }
