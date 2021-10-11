@@ -39,13 +39,13 @@ export default class Home extends React.Component {
     };
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
   	heimdallr.refreshKey = new Date();
   	this.props.navigation.addListener('willFocus', () => {
   		StatusBar.setBackgroundColor('white');
   		StatusBar.setBarStyle('dark-content');
   	});
-      this.getStudentInfo();
+  	  this.getStudentInfo();
       let result = heimdallr.getCollection('post', this.state.pulledPosts);
   	result.then( (resolve) => {
         if (resolve.length === 0 ) {
@@ -216,7 +216,15 @@ export default class Home extends React.Component {
                             }
                         },
                         () => {
-                            this.setState({ loading: false});
+                            if (!heimdallr.deviceToken) {
+                                let self = this;
+                                setTimeout(function () {
+                                    self.getStudentInfo();
+
+                                }, 500)
+                            } else {
+                                this.setState({ loading: false});
+                            }
                             resolve();
 
                         }
