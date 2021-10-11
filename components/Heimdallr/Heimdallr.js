@@ -1808,8 +1808,6 @@ function HeimdallrLib() {
 	}
 
 	this.getClassSchedule = function () {
-    console.log("device token:? ", this.deviceToken)
-
     return new Promise((resolve, reject) => {
       if (!this.UTFPRToken) {
         reject();

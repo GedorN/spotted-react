@@ -238,15 +238,15 @@ export default class Home extends React.Component {
                                   <Image source={require('../../../../assets/images/PORTAL-UTFPR/clock-regular.png')} style={{ width: 30, height: 30, tintColor: 'white' }}/>
                               </View>
                               <View style={{ flex: 1, flexDirection: 'column', padding: 10 }}>
-                                  <View style={{ flex: 1, flexDirection: 'row', textAlign: 'center' , justifyContent: 'center' }}>
+                                  <View style={{ flex: 1, maxWidth: '90%', flexDirection: 'row', textAlign: 'center' , justifyContent: 'center' }}>
                                       <Text style={{ fontWeight: 'bold' }}>Próxima aula:</Text>
                                   </View>
-                                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                      <View style={{ maxWidth: '80%', flexWrap: 'wrap', wordWrap: 'wrap', flexDirection: 'column', marginLeft: 10}}>
-                                          <Text style={{ flexWrap: 'wrap' }}>{ this.state.nextClass.discNomeVc } - { this.state.nextClass.begin }h</Text>
-                                          <Text>Prof(a): { this.state.nextClass.professores[0].pessNomeVc.split(' ').splice(0, 2).join(' ') } </Text>
-                                          <Text>Sala: { this.state.nextClass.horarios.filter((h) => h.horaDescrVc === this.state.nextClass.schedule)[0].ambienteNomeVc }</Text>
+                                  <View style={{flex: 1, maxWidth: '90%', flexWrap: 'wrap', wordWrap: 'wrap', flexDirection: 'column', marginLeft: 10 }}>
+                                      <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{flex: 1, flexWrap: 'wrap', wordWrap: 'wrap' }}>{ this.state.nextClass.discNomeVc } - { this.state.nextClass.begin }h</Text>
                                       </View>
+                                      <Text>Prof(a): { this.state.nextClass.professores[0].pessNomeVc.split(' ').splice(0, 2).join(' ') } </Text>
+                                      <Text>Sala: { this.state.nextClass.horarios.filter((h) => h.horaDescrVc === this.state.nextClass.schedule)[0].ambienteNomeVc }</Text>
                                   </View>
                               </View>
                           </View>
