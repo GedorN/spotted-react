@@ -1742,7 +1742,7 @@ function HeimdallrLib() {
 
 	this.renewStudentAuthentication = function () {
 		return new Promise((resolve, reject) => {
-      if (!this.UTFPRToken) {
+      if (!this.deviceToken || ( this.deviceToken && !this.UTFPRToken )) {
         reject();
       } else {
         firebase.functions().httpsCallable('decryptUTFPRPortalPassword')({ user_id: this.user_id }).then(

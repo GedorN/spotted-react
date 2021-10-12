@@ -205,25 +205,18 @@ export default class Home extends React.Component {
                 () => {
                     heimdallr.renewStudentAuthentication().then(
                         async () => {
-                            let self = this;
-                            if (!heimdallr.deviceToken) {
-                                setTimeout(function () {
-                                    self.getStudentInfo();
-
-                                }, 500)
-                            } else {
-                                this.setState({ loading: false});
-                            }
+                            this.getStudentInfo();
                         },
                         () => {
                             if (!heimdallr.deviceToken) {
-                                let self = this;
-                                setTimeout(function () {
-                                    self.getStudentInfo();
+                              let self = this;
+                              setTimeout(function () {
+                                self.getStudentInfo();
 
-                                }, 500)
+                              }, 500)
+
                             } else {
-                                this.setState({ loading: false});
+                              this.setState({ loading: false});
                             }
                             resolve();
 
