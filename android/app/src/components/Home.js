@@ -213,7 +213,7 @@ export default class Home extends React.Component {
                               setTimeout(function () {
                                 self.getStudentInfo();
 
-                              }, 500)
+                              }, 30)
 
                             } else {
                               this.setState({ loading: false});
