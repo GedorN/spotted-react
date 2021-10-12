@@ -359,7 +359,7 @@ export default class ProductScreen extends React.Component {
 							trusty: true
 						}).fetch('POST',
 							'https://3.23.33.91/allocate-product',
-							{ 'Content-Type': 'application/json'},
+							{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${heimdallr.jwt}`},
 							JSON.stringify({
 								...params
 							})

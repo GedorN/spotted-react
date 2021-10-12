@@ -12,6 +12,8 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
+import { APP_KEY } from '@env';
+
 
 const HTTPS_UNAUTHORIZED = 401;
 
@@ -29,7 +31,8 @@ function HeimdallrLib() {
   this.messages = null;
   this.deviceToken = null;
   this.accepting_phone_requests= true;
-  this.accepting_class_notification = true
+  this.accepting_class_notification = true;
+  this.jwt = null;
 
   this.refreshKey = null;
 
@@ -175,7 +178,7 @@ function HeimdallrLib() {
 			trusty: true
 		}).fetch('POST',
 			'https://3.23.33.91/comment-message',
-			{ 'Content-Type': 'application/json'},
+			{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 			JSON.stringify({
 				destUserId: uid,
 				userName: isAnonymous ? 'Um anônimo' : this.user_name,
@@ -762,7 +765,7 @@ function HeimdallrLib() {
                       this.user_id = user._user.uid;
                       this.user_image = user._user.photoURL;
                       this.user_name = user._user.displayName;
-					  this.email = user._user.email;
+					            this.email = user._user.email;
                       this.getUserData(user);
 	                  // AsyncStorage.setItem('uid', user._user.id);
 	                  u = user;
@@ -784,14 +787,14 @@ function HeimdallrLib() {
 			  this.phone = user.phone;
 			  this.user_image = user.user_image;
 			  this.userPlans = user.userPlans ? user.userPlans : null;
+        this.UTFPRToken = user.UTFPRToken ? user.UTFPRToken : null;
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
         this.accepting_class_notification = user.accepting_class_notification === false ? user.accepting_class_notification : true;
-        this.UTFPRToken = user.UTFPRToken ? user.UTFPRToken : null;
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
+        this.getJWToken();
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
-		  	console.log(this.phone);
 		  }
 	  )
   }
@@ -1052,7 +1055,7 @@ function HeimdallrLib() {
 				trusty: true
 			}).fetch('POST',
 				'https://3.23.33.91/newPhoneRequest',
-				{ 'Content-Type': 'application/json'},
+				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
 		});
@@ -1143,7 +1146,7 @@ function HeimdallrLib() {
 		  trusty: true
 	  }).fetch('POST',
 		  'https://3.23.33.91/new-account',
-		  { 'Content-Type': 'application/json'},
+		  { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 		  JSON.stringify({
 			  email: this.email,
 			  uid: this.uid,
@@ -1302,7 +1305,7 @@ function HeimdallrLib() {
 							    trusty: true
 						    }).fetch('POST',
 							    'https://3.23.33.91/like-message',
-							    { 'Content-Type': 'application/json'},
+							    { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 							    JSON.stringify({
 								    destUserId: doc.uid,
 								    userName: this.user_name,
@@ -1451,7 +1454,7 @@ function HeimdallrLib() {
 			trusty: true
 		}).fetch('POST',
 			'https://3.23.33.91/comment-board-message',
-			{ 'Content-Type': 'application/json'},
+			{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 			JSON.stringify({
 				destUserId: notification.uid,
 				userName: this.user_name,
@@ -1588,7 +1591,7 @@ function HeimdallrLib() {
 				trusty: true
 			}).fetch('POST',
 				'https://3.23.33.91/refusePhoneRequest',
-				{ 'Content-Type': 'application/json'},
+				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
 		})
@@ -1600,7 +1603,7 @@ function HeimdallrLib() {
 				trusty: true
 			}).fetch('POST',
 				'https://3.23.33.91/acceptPhoneRequest',
-				{ 'Content-Type': 'application/json'},
+				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
 		})
@@ -1739,40 +1742,44 @@ function HeimdallrLib() {
 
 	this.renewStudentAuthentication = function () {
 		return new Promise((resolve, reject) => {
-			firebase.functions().httpsCallable('decryptUTFPRPortalPassword')({ user_id: this.user_id }).then(
-				(res) => {
-					const params = { username: this.UTFPRPortalLogin, password: res.data.decriptdPassword };
-					RNFetchBlob.fetch('POST', 'https://webapp.utfpr.edu.br/portalAluno/ws/auth',
-						{ 'Content-Type': 'application/json'},
-						JSON.stringify(params)
-					).then(
-						(result) => {
-							let data = result && result.data ? JSON.parse(result.data) : null;
-							if (data && data.token) {
-								firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
-									async (res) => {
-										// salva dados do primeiro login
-										firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
-											UTFPRToken: data.token,
-										}, {merge: true});
-									},
-									(error) => {
-										reject(error);
-									}
-								);
+      if (!this.deviceToken || ( this.deviceToken && !this.UTFPRToken )) {
+        reject();
+      } else {
+        firebase.functions().httpsCallable('decryptUTFPRPortalPassword')({ user_id: this.user_id }).then(
+          (res) => {
+            const params = { username: this.UTFPRPortalLogin, password: res.data.decriptdPassword };
+            RNFetchBlob.fetch('POST', 'https://webapp.utfpr.edu.br/portalAluno/ws/auth',
+              { 'Content-Type': 'application/json'},
+              JSON.stringify(params)
+            ).then(
+              (result) => {
+                let data = result && result.data ? JSON.parse(result.data) : null;
+                if (data && data.token) {
+                  firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+                    async (res) => {
+                      // salva dados do primeiro login
+                      firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+                        UTFPRToken: data.token,
+                      }, {merge: true});
+                    },
+                    (error) => {
+                      reject(error);
+                    }
+                  );
 
-								this.UTFPRToken = data.token;
-								resolve();
-							} else {
-								reject();
-							}
-						},
-						(error) => {
-							console.warn('[ERROR] -  renewStudentAuthentication: ', error);
-						}
-					)
-				}
-			);
+                  this.UTFPRToken = data.token;
+                  resolve();
+                } else {
+                  reject();
+                }
+              },
+              (error) => {
+                console.warn('[ERROR] -  renewStudentAuthentication: ', error);
+              }
+            )
+          }
+        );
+      }
 		})
 	}
 
@@ -1800,27 +1807,32 @@ function HeimdallrLib() {
 
 	this.getClassSchedule = function () {
     return new Promise((resolve, reject) => {
-      RNFetchBlob.fetch('GET', `https://webapp.utfpr.edu.br/portalAluno/ws/${this.UTFPRidInCourse}/horario`, {
-        Authorization: 'Bearer ' + heimdallr.UTFPRToken,
-        Accept: '*/*'
-      }).then(
-        (result) => {
-          if (result.respInfo.status === HTTPS_UNAUTHORIZED) {
-            reject();
-          } else {
-            const data = result && result.data ? JSON.parse(result.data) : null;
-            resolve(data);
+      if (!this.UTFPRToken) {
+        reject();
+      } else {
+        RNFetchBlob.fetch('GET', `https://webapp.utfpr.edu.br/portalAluno/ws/${this.UTFPRidInCourse}/horario`, {
+          Authorization: 'Bearer ' + heimdallr.UTFPRToken,
+          Accept: '*/*'
+        }).then(
+          (result) => {
+            if (result.respInfo.status === HTTPS_UNAUTHORIZED) {
+              reject();
+            } else {
+              const data = result && result.data ? JSON.parse(result.data) : null;
+              resolve(data);
+            }
+          },
+          (error) => {
+            reject(error);
           }
-        },
-        (error) => {
-          reject(error);
-        }
-      )
+        )
+      }
     })
   }
 
 
   this.deleteUTFPRToken = function () {
+    this.UTFPRToken = null;
     firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
       async (res) => {
         // salva dados do primeiro login
@@ -1847,6 +1859,34 @@ function HeimdallrLib() {
       }
     );
   }
+
+  this.getJWToken = function () {
+    return new Promise((resolve, reject) => {
+      RNFetchBlob.config({trusty: true}).fetch(
+        'POST',
+        'https://3.23.33.91/create-user-token',
+        { 'Content-Type': 'application/json'},
+        JSON.stringify({
+          usermail: this.email,
+          appKey: APP_KEY
+        })
+      ).then(
+        (success) => {
+          if (success.respInfo.status === 200) {
+            const data = JSON.parse(success.data)
+            this.jwt = data.token;
+            resolve(success.data);
+          } else {
+            resolve({error: success.respInfo.status});
+          }
+        },
+        (err)=> {
+          reject({error: 500});
+        }
+      )
+    })
+  }
+
 
 
 }
