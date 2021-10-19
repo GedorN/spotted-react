@@ -484,6 +484,47 @@ export default class PostViewer extends React.Component {
 	}
 
 
+  renderPostText (text) {
+    console.log("E ai;/", this.props.taggedUsers)
+    try {
+      if (this.props.taggedUsers) {
+
+        let words = text.split(' ');
+        let p_index= 0;
+
+        let element = <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}} > {words.map((w) => {
+          if (w !== '@%') {
+            return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
+          } else {
+            if (this.props.taggedUsers[p_index]) {
+              return <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0, color: theme.primary, fontWeight: "bold"}}>@{this.props.taggedUsers[p_index++].name} </Text>
+            } else {
+              return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
+            }
+          }
+        })} </Text>
+
+        return (
+            element
+          )
+      }
+      return (
+        <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>
+          {text}
+        </Text>
+      );
+    } catch (e) {
+      console.log(e);
+      return (
+        <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>
+          {text}
+        </Text>
+      )
+    }
+
+  }
+
+
   render () {
     return (
 	    <TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.goToComments.bind(this)}>
@@ -546,7 +587,8 @@ export default class PostViewer extends React.Component {
 					</View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
-			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.props.text}</Text>
+			              {/*<Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.renderPostText(this.props.text)}</Text>*/}
+                    {this.renderPostText(this.props.text)}
 			              <View style = {{ height: this.props.images.length > 0 ? 230 : 0}}>
 			                  {this.getModalImagesLayout()}
 			              </View>
