@@ -1,4 +1,4 @@
-import React from 'react';
+import React  from 'react';
 import {
 	StyleSheet,
 	View,
@@ -8,6 +8,8 @@ import {
 	PermissionsAndroid,
 	StatusBar,
 	Keyboard,
+  ScrollView,
+  Animated
 } from 'react-native';
 import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
@@ -20,25 +22,41 @@ import {Text} from "react-native-paper";
 var RNFS = require('react-native-fs');
 import {RNPhotoEditor} from "react-native-photo-editor";
 import AsyncStorage from "@react-native-community/async-storage";
+import UserImgProfile from "../../../../../components/General/UserImgProfile";
 
 export default class PostWrite extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			postText: [],
+			postText: '',
+      postTextAux: '',
 			postImages: [],
 			anonymousUser: false,
-			anonymousText: "Postar como anônimo ?",
+			anonymousText: "Postar como anônimo?",
 			videoIncluded: false,
 			gifIncluded: false,
 			params: null,
 			activity: false,
+      allUsers: null,
+      filteredUsers: null,
+      searchingForUser: false,
+      formattedText: '',
+      taggedUsers: [],
+      taggedUserNames: [],
+      currentUserSearch: null,
+      cursor: 0,
+      startEditingIndex: null,
+      endEditingIndex: null,
+
+      textInputHeight: new Animated.Value(theme.height * 0.69),
+      userTagInputHeight: new Animated.Value(0)
 		};
 	}
 
 	componentDidMount(): void {
 		StatusBar.setBackgroundColor('white');
 		StatusBar.setBarStyle('dark-content', true);
+    this.state.allUsers = heimdallr.getCollection('user');
 	}
 
 	deletePostImg (pos) {
@@ -49,6 +67,17 @@ export default class PostWrite extends React.Component {
 				newImg.push(images[i]);
 			}
 		}
+    const length = this.state.postImages.length - 1;
+    if (length === 0) {
+      Animated.timing(
+        this.state.textInputHeight,
+        {
+          toValue: (theme.height * 0.69),
+          duration: 200,
+          useNativeDriver: false
+        }
+      ).start();
+    }
 		this.setState({postImages: newImg, videoIncluded: false, gifIncluded: false});
 	}
 
@@ -57,12 +86,37 @@ export default class PostWrite extends React.Component {
 			return ;
 		}
 
-		this.setState({activity: true});
+    for (let i = 0; i < this.state.taggedUserNames.length; i++) {
+      if (this.state.postText.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
+        this.state.postText = this.state.postText.replace('@' + this.state.taggedUserNames[i], '@%');
+      } else {
+        this.state.taggedUserNames.splice(i, 1);
+        i--;
+      }
+    }
+    const params = {};
+
+
+    this.setState({activity: true});
+    if (this.state.taggedUsers.length > 0) {
+      const taggedUsers = []
+      for (let i = 0; i < this.state.taggedUsers.length; i++) {
+        let taggedUser = {}
+        taggedUser.name = this.state.taggedUsers[i].data().name;
+        taggedUser.uid = this.state.taggedUsers[i].data().uid;
+
+        taggedUsers.push(taggedUser);
+      }
+
+      params.taggedUsers = taggedUsers;
+
+    } else {
+      params.taggedUsers = false;
+    }
 
 		/* caso a postagem possua ao menos uma foto */
 		let posImagesLenght = this.state.postImages.length;
 		if (this.state.postImages.length > 0) {
-			const params = {};
 			params.active = 1;
 			params.date = await heimdallr.getServerTime();
 			params.sort_value = params.date;
@@ -127,7 +181,6 @@ export default class PostWrite extends React.Component {
 			})
 		} else {
 			// caso a postagem não contenha imagem
-			const params = {};
 			params.active = 1;
 			params.date = await heimdallr.getServerTime();
 			params.sort_value = params.date;
@@ -152,9 +205,9 @@ export default class PostWrite extends React.Component {
 
 	getAnonymous = () => {
 		const isAnon = !this.state.anonymousUser;
-		this.setState({anonymousUser: isAnon});
+		this.setState({ anonymousUser: isAnon, searchingForUser: false,  taggedUsers: [], taggedUserNames: [], currentUserSearch: null });
 		if(isAnon){
-           this.setState({anonymousText: "Será postado como anônimo"});
+           this.setState({anonymousText: "Será postado como anônimo."});
 		}
 		else{
 			this.setState({anonymousText: "Postar como anônimo ?"})
@@ -169,6 +222,7 @@ export default class PostWrite extends React.Component {
 			heimdallr.sendEvent('post_write');
 			let result = heimdallr.saveCollection('post', this.state.params);
 			result.then((resolve) => {
+        console.log("Sim foi devolvido")
 				this.postTextInput.clear();
 				this.setState({postImages: [], params : null});
 			});
@@ -212,6 +266,16 @@ export default class PostWrite extends React.Component {
 						console.log('User tapped custom button: ', response.customButton);
 					} else {
 						if (response.type === 'video/mp4') {
+              if (this.state.postImages.length === 0) {
+                Animated.timing(
+                  this.state.textInputHeight,
+                  {
+                    toValue: (theme.height * 0.38),
+                    duration: 200,
+                    useNativeDriver: false
+                  }
+                ).start();
+              }
 							this.setState({postImages: [response], videoIncluded: true});
 						} else {
 							const name = Date.now().toString() + '.jpg';
@@ -223,6 +287,16 @@ export default class PostWrite extends React.Component {
 								onDone: () => {
 									let images = this.state.postImages;
 									images.push(response);
+                  if (this.state.postImages.length === 0) {
+                    Animated.timing(
+                      this.state.textInputHeight,
+                      {
+                        toValue: (theme.height * 0.38),
+                        duration: 200,
+                        useNativeDriver: false
+                      }
+                    ).start();
+                  }
 									this.setState({postImages: images});
 								}
 							});
@@ -405,6 +479,363 @@ export default class PostWrite extends React.Component {
 		}
 	}
 
+  closeTagUser () {
+    Animated.timing(
+      this.state.textInputHeight,
+      {
+        toValue: this.state.postImages.length > 0 ? (theme.height * 0.38) : (theme.height * 0.69),
+        duration: 200,
+        useNativeDriver: false
+      }
+    ).start();
+    Animated.timing(
+      this.state.userTagInputHeight,
+      {
+        toValue: (0),
+        duration: 200,
+        useNativeDriver: false
+      }
+    ).start();
+    this.state.searchingForUser = false;
+    this.setState({ searchingForUser: false, currentUserSearch: null, filteredUsers: null})
+  }
+
+  async openTagUser() {
+    this.state.searchingForUser = true;
+    this.state.startEditingIndex = this.state.cursor;
+    this.state.endEditingIndex = this.state.cursor;
+    await this.searchToTagUser(null);
+    Animated.timing(
+      this.state.textInputHeight,
+      {
+        toValue: this.state.postImages.length > 0 ? (theme.height * 0.26) : (theme.height * 0.57),
+        duration: 200,
+        useNativeDriver: false
+      }
+    ).start();
+    Animated.timing(
+      this.state.userTagInputHeight,
+      {
+        toValue: (theme.height * 0.12),
+        duration: 200,
+        useNativeDriver: false
+      }
+    ).start();
+  }
+
+  _onTextChange(text) {
+    // try {
+    //   console.log("Char:  ", event.nativeEvent.key)
+    //
+    // } catch (e) {
+    //   console.log("deu merda")
+    // }
+    try {
+      let postText = this.state.postText;
+      let key = null;
+      let deletedKey = null;
+      for (let i = 0; i < this.state.taggedUserNames.length; i++) {
+        console.log("Pessoa: ", this.state.taggedUserNames[i], )
+        if (text.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
+          console.log("Substituindo");
+          text = text.replace('@' + this.state.taggedUserNames[i], '@%');
+        }
+
+        if (postText.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
+          postText = postText.replace('@' + this.state.taggedUserNames[i], '@%');
+        }
+      }
+
+
+
+      console.log(">>>> ", text, `<>`,  postText)
+      if (text.length > postText.length) {
+        key = text.replace(postText, '');
+      } else {
+        key = "Backspace";
+        deletedKey = postText.replace(text, '');
+      }
+      console.log("KEY: ", key);
+      this.state.postText = text;
+      if (this.state.searchingForUser && key !== '@' && key !== 'Enter' && deletedKey !== '@') {
+        if (key === ' ' && (this.state.cursor - 1) === this.state.startEditingIndex) {
+          this.closeTagUser();
+        }
+        this.state.endEditingIndex = this.state.cursor;
+
+        this.searchToTagUser(text.substring(this.state.startEditingIndex + 1, this.state.endEditingIndex + 1));
+
+
+        } else if (key === '@') {
+         this.openTagUser();
+        } else {
+          this.closeTagUser();
+
+        }
+
+    } catch (e) {
+      console.log("Erro: ", e)
+    }
+
+    // const key = event.nativeEvent.key;
+
+
+    // if (key === 'Backspace') {
+    //   // this.setState({ }, () => {
+    //   //   for (let i = 0; i < this.state.taggedUserNames.length; i++) {
+    //   //     console.log("COMO EU VEHO AQUI? ", this.state.postText)
+    //   //     if (this.state.postText.indexOf(`@${this.state.taggedUserNames[i]}`) === -1) {
+    //   //       // this.state.postText = '';
+    //   //       // this.
+    //   //     }
+    //   //   }
+    //   //   this.renderText();
+    //   //   console.log('BEM TE VI')
+    //   //
+    //   // })
+    // }
+
+    // if (this.state.searchingForUser && key !== '@' && key !== 'Enter') {
+    //   if (key === 'Backspace') {
+    //    if (this.state.currentUserSearch) {
+    //       this.state.currentUserSearch = this.state.currentUserSearch.substring(0,  this.state.currentUserSearch.length - 1)
+    //    }
+    //   } else {
+    //     if (!this.state.currentUserSearch) {
+    //       this.state.currentUserSearch = key
+    //     } else {
+    //       this.state.currentUserSearch += key
+    //     }
+    //   }
+    //   this.searchToTagUser(this.state.currentUserSearch);
+    //
+    // } else if (event.nativeEvent.key === '@') {
+    //   console.log("Entra aqui diabo: ", this.state.cursor - 1)
+    //   Animated.timing(
+    //     this.state.textInputHeight,
+    //     {
+    //       toValue: this.state.postImages.length > 0 ? (theme.height * 0.26) : (theme.height * 0.57),
+    //       duration: 200,
+    //       useNativeDriver: false
+    //     }
+    //   ).start();
+    //   Animated.timing(
+    //     this.state.userTagInputHeight,
+    //     {
+    //       toValue: (theme.height * 0.12),
+    //       duration: 200,
+    //       useNativeDriver: false
+    //     }
+    //   ).start();
+    //
+    //   this.state.searchingForUser = true;
+    //   this.state.startEditingIndex = this.state.cursor - 1;
+    //   this.searchToTagUser(null);
+    // } else {
+    //   Animated.timing(
+    //     this.state.textInputHeight,
+    //     {
+    //       toValue: this.state.postImages.length > 0 ? (theme.height * 0.38) : (theme.height * 0.69),
+    //       duration: 200,
+    //       useNativeDriver: false
+    //     }
+    //   ).start();
+    //   Animated.timing(
+    //     this.state.userTagInputHeight,
+    //     {
+    //       toValue: (0),
+    //       duration: 200,
+    //       useNativeDriver: false
+    //     }
+    //   ).start();
+    //   this.state.searchingForUser = false;
+    //   this.setState({ searchingForUser: false, currentUserSearch: null, filteredUsers: null})
+    //
+    //
+    //
+    //   if (this.state.postText.length !== this.state.cursor) {
+    //     let search = [key]
+    //
+    //     for (let i = this.state.cursor - 1; i >= 0; i--) {
+    //       let txt = this.state.postText.split('')
+    //       if (txt[i] === '@') {
+    //         Animated.timing(
+    //           this.state.textInputHeight,
+    //           {
+    //             toValue: this.state.postImages.length > 0 ? (theme.height * 0.26) : (theme.height * 0.57),
+    //             duration: 200,
+    //             useNativeDriver: false
+    //           }
+    //         ).start();
+    //         Animated.timing(
+    //           this.state.userTagInputHeight,
+    //           {
+    //             toValue: (theme.height * 0.12),
+    //             duration: 200,
+    //             useNativeDriver: false
+    //           }
+    //         ).start();
+    //
+    //         this.state.searchingForUser = true;
+    //         this.state.currentUserSearch = search.join('');
+    //         this.state.startEditingIndex = i;
+    //         this.searchToTagUser(search.join(''));
+    //         break;
+    //       } else if (txt[i] === ' ') {
+    //         break;
+    //       } else {
+    //         search.unshift(txt[i]);
+    //       }
+    //     }
+    //
+    //   }
+    //
+    // }
+    // if (this.state.postText[this.state.cursor - 1] === '@') {
+    //   console.log("quem tá é esse <_")
+    //   this.state.filteredUsers = null;
+    //   Animated.timing(
+    //     this.state.textInputHeight,
+    //     {
+    //       toValue: this.state.postImages.length > 0 ? (theme.height * 0.38) : (theme.height * 0.69),
+    //       duration: 200,
+    //       useNativeDriver: false
+    //     }
+    //   ).start();
+    //   Animated.timing(
+    //     this.state.userTagInputHeight,
+    //     {
+    //       toValue: (0),
+    //       duration: 200,
+    //       useNativeDriver: false
+    //     }
+    //   ).start();
+    //   this.setState({ searchingForUser: false, currentUserSearch: null, filteredUsers: null})
+    //
+    // }
+
+
+
+
+  }
+
+
+  async searchToTagUser (text) {
+    const filteredUsers = await this.state.allUsers;
+    if (!text) {
+      this.setState({ filteredUsers: filteredUsers.slice(0, 5) })
+        this.state.cursor--;
+        this.renderText(this.state.cursor - 1);
+    } else {
+      this.setState({ filteredUsers: filteredUsers.filter((u) => u.data().name.toLowerCase().includes(text.toLowerCase())).slice(0, 5), searchingForUser: true }, () => {
+        this.renderText();
+      })
+    }
+
+
+    // this.setState({})
+  }
+
+  tagUser(user) {
+    console.log(user)
+    this.state.taggedUsers.push(user);
+    this.state.taggedUserNames.push(user.data().name)
+    this.closeTagUser();
+    for (let i = this.state.cursor; i >= 0; i--) {
+      this.state.postText = [this.state.postText.slice(0, i), this.state.postText.slice(i + 1)].join('');
+      if(this.state.postText[i - 1] === '@') {
+        this.setState({ postText: [this.state.postText.slice(0, i - 1), '@% ', this.state.postText.slice(i)].join('')})
+        break;
+      }
+    }
+  }
+
+  renderText () {
+    // console.log("Aqui no render: <", this.state.cursor, this.state.searchingForUser)
+    if (this.state.postText.indexOf('@%') === -1) {
+      for (let i = 0; i < this.state.taggedUserNames.length; i++) {
+        if (this.state.postText.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
+          this.state.postText = this.state.postText.replace('@' + this.state.taggedUserNames[i], '@%');
+        } else {
+          this.state.taggedUserNames.splice(i, 1);
+        }
+      }
+
+    }
+    if (this.state.searchingForUser) {
+      let c_index = 0;
+      const letters = this.state.postText.split('');
+      let element =  <Text>{letters.map((letter, index) => {
+        if (letter === '%' && this.state.postText[index - 1] && this.state.postText[index - 1] === '@') {
+          return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>{this.state.taggedUserNames[c_index++]}</Text>
+        } else if (( letter === '@' && (this.state.postText[index - 1] || index === 0) && this.state.postText[index + 1] === '%' ) ) {
+          return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
+        } else if (index >= this.state.startEditingIndex && index <= this.state.cursor) {
+          return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>{letter}</Text>
+        } else {
+          return letter
+        }
+      })
+      }</Text>
+
+
+
+      return (
+        element
+      )
+    } else {
+      let c_index = 0;
+      const letters = this.state.postText.split('');
+      let element =  <Text>{letters.map((letter, index) => {
+        if (letter === '%' && this.state.postText[index - 1] && this.state.postText[index - 1] === '@') {
+          return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>{this.state.taggedUserNames[c_index++]}</Text>
+        } else if (( letter === '@' && (this.state.postText[index - 1] || index === 0) && this.state.postText[index + 1] === '%' ) ) {
+          return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
+        } else {
+          return letter
+        }
+      })
+      }</Text>
+
+
+      return (
+        element
+      )
+    }
+
+  }
+
+  _handleCursor(event) {
+    event.preventDefault();
+    const cursor = event.nativeEvent.selection;
+    console.log("cursor: ", cursor)
+    if (cursor.end != cursor.start) {
+      Animated.timing(
+        this.state.textInputHeight,
+        {
+          toValue: (theme.height * 0.69),
+          duration: 200,
+          useNativeDriver: false
+        }
+      ).start();
+      Animated.timing(
+        this.state.userTagInputHeight,
+        {
+          toValue: (0),
+          duration: 200,
+          useNativeDriver: false
+        }
+      ).start();
+      this.setState({ searchingForUser: false, currentUserSearch: null, filteredUsers: null})
+    } else {
+      console.log()
+
+      this.state.cursor = cursor.end;
+
+    }
+  }
+
+
 	render() {
 		return (
 			<View style={styles.container}>
@@ -422,19 +853,46 @@ export default class PostWrite extends React.Component {
 							</TouchableOpacity>
 						</View>
 						<View style = {{borderColor: '#f2f2f2', borderBottomWidth: 2, marginTop: theme.height * 0.02 }}>
-							<TextInput
-								style={{width: theme.width * 0.9,
-									alignSelf:'center',
-									height: this.state.postImages.length > 0 ? theme.height * 0.38 : theme.height * 0.69,
-								}}
-								onChangeText={text => this.setState({postText: text})}
-								onImageChange={this._onImageChange}
-								autoCapitalize="sentences"
-								multiline
-								textAlignVertical="top"
-								placeholder="O que você está pensando?"
-								ref={input => (this.postTextInput = input)}
-							/>
+              <Animated.ScrollView style={{ height: this.state.userTagInputHeight}} keyboardShouldPersistTaps={'always'}>
+              {
+                  this.state.filteredUsers &&
+                  this.state.filteredUsers.map((user) =>
+                    <TouchableOpacity onPress={() => {this.tagUser(user)}} >
+                      <View style={styles.userViewContainer}>
+                        <UserImgProfile circular height={25} width={25} uri={user.data().user_image} />
+                        <View style={styles.info}>
+                          <Text>
+                            {user.data().name}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  )
+              }
+              </Animated.ScrollView>
+              {
+                <Animated.View
+                  style={{
+                    width: theme.width * 0.9,
+                    alignSelf:'center',
+                    height: this.state.textInputHeight,
+                  }}
+                >
+                  <TextInput
+                    onChangeText={text => {this._onTextChange(text)}}
+                    autoCapitalize="sentences"
+                    multiline
+                    autoFocus={true}
+                    textAlignVertical="top"
+                    placeholder="O que você está pensando?"
+                    onImageChange={this._onImageChange}
+                    ref={postTextInput => {this.postTextInput = postTextInput}}
+                    onSelectionChange={(cursorEvent) => this._handleCursor(cursorEvent)}
+                  >
+                    {this.renderText()}
+                  </TextInput>
+                </Animated.View>
+              }
 						</View>
 						<View style={{alignSelf:'center'}}>
 							{this.getModalImagesLayout()}
@@ -505,5 +963,21 @@ const styles = StyleSheet.create({
 	anonymousText: {
 		marginTop:14,
 		width:theme.width *0.59,
-	}
+	},
+  userViewContainer: {
+    flexDirection: 'row',
+    padding: 5,
+    borderTopWidth: 0.2,
+    borderColor: 'rgba(59, 56, 50, 0.2)',
+  },
+  info: {
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 20,
+  },
+  textFieldContainer: {
+    borderWidth: 1,
+  }
+
 });
