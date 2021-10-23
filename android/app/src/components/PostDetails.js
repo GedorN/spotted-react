@@ -671,6 +671,56 @@ export default class PostDetails extends React.Component {
 		}
 	}
 
+  redirectToTaggedUser (user) {
+    this.props.navigation.navigate('UserProfile', {
+      userId: user.uid,
+    });
+  }
+
+  renderPostText() {
+    try {
+      const taggedUsers = this.state.post.data().taggedUsers;
+      if (taggedUsers) {
+        let words = this.state.post.data().text.split(' ');
+        let p_index= 0;
+
+        let element = <Text style={styles.postText} > {words.map((w) => {
+          if (w !== '@%') {
+            return  <Text style={styles.postText}>{w} </Text>
+          } else {
+            if (taggedUsers[p_index]) {
+              const user = taggedUsers[p_index]
+
+              return (
+                <Text
+                  style={{ marginTop: theme.height*0.01, fontWeight: 'bold', marginBottom: theme.height*0.02, paddingRight: theme.width*0.01, paddingLeft: theme.width * 0.01, color: theme.primary }}
+                  onPress={() => this.redirectToTaggedUser(user)}
+                >
+                  @{taggedUsers[p_index++].name}
+                </Text>
+              )
+            } else {
+              return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
+            }
+          }
+        })} </Text>
+        return (
+          element
+        )
+      } else {
+        return (
+          <Text style={styles.postText} >{this.state.post ? this.state.post.data().text : null}</Text>
+        )
+      }
+
+    } catch (e) {
+      console.log(e);
+      return (
+        <Text style={styles.postText}>{this.state.post ? this.state.post.data().text : null}</Text>
+      )
+    }
+  }
+
 
 
 	render() {
@@ -754,7 +804,8 @@ export default class PostDetails extends React.Component {
 											<View style={styles.body}>
 												<View style={styles.post}>
 													<View style = {{width:theme.width * 0.77,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'center'}}>
-														<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}>{this.state.post ? this.state.post.data().text : null}</Text>
+                            {/*Aqui o texto do post*/}
+                            { this.renderPostText() }
 													</View>
 													<View style = {{marginLeft:theme.width * 0.01}}>
 														{this.getModalImagesLayout()}
@@ -955,7 +1006,11 @@ const styles = StyleSheet.create({
 		marginTop: theme.height * 0.75,
 		marginLeft: theme.width * 0.80,
 		padding: 5,
-
-
-	}
+	},
+  postText: {
+    marginTop:theme.height*0.01,
+    marginBottom:theme.height*0.02,
+    paddingRight:theme.width*0.01,
+    paddingLeft:theme.width * 0.01
+  }
 });

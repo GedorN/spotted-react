@@ -313,6 +313,7 @@ export default class Home extends React.Component {
 									liked_by={item._data.liked_by}
 									comments={item._data.comments}
 									new_post={item._data.newPost}
+                  taggedUsers={item._data.taggedUsers}
 							/>
               }
               refreshControl={

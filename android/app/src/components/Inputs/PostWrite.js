@@ -67,13 +67,13 @@ export default class PostWrite extends React.Component {
 				newImg.push(images[i]);
 			}
 		}
-    const length = this.state.postImages.length - 1;
+    const length = newImg.length;
     if (length === 0) {
       Animated.timing(
         this.state.textInputHeight,
         {
           toValue: (theme.height * 0.69),
-          duration: 200,
+          duration: 300,
           useNativeDriver: false
         }
       ).start();
@@ -82,125 +82,123 @@ export default class PostWrite extends React.Component {
 	}
 
 	doPost = async () => {
-		if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0 || this.state.activity) {
-			return ;
-		}
 
-    for (let i = 0; i < this.state.taggedUserNames.length; i++) {
-      if (this.state.postText.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
-        this.state.postText = this.state.postText.replace('@' + this.state.taggedUserNames[i], '@%');
+    try {
+
+      if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0 || this.state.activity) {
+        return ;
+      }
+      let text = this.state.postText;
+      const params = {};
+
+      this.setState({activity: true});
+      if (this.state.taggedUsers.length > 0) {
+        const taggedUsers = []
+        for (let i = 0; i < this.state.taggedUsers.length; i++) {
+          let taggedUser = {}
+          taggedUser.name = this.state.taggedUsers[i].data().name;
+          taggedUser.uid = this.state.taggedUsers[i].data().uid;
+
+          taggedUsers.push(taggedUser);
+        }
+
+        params.taggedUsers = taggedUsers;
+
       } else {
-        this.state.taggedUserNames.splice(i, 1);
-        i--;
-      }
-    }
-    const params = {};
-
-
-    this.setState({activity: true});
-    if (this.state.taggedUsers.length > 0) {
-      const taggedUsers = []
-      for (let i = 0; i < this.state.taggedUsers.length; i++) {
-        let taggedUser = {}
-        taggedUser.name = this.state.taggedUsers[i].data().name;
-        taggedUser.uid = this.state.taggedUsers[i].data().uid;
-
-        taggedUsers.push(taggedUser);
+        params.taggedUsers = false;
       }
 
-      params.taggedUsers = taggedUsers;
+      /* caso a postagem possua ao menos uma foto */
+      let posImagesLenght = this.state.postImages.length;
+      if (this.state.postImages.length > 0) {
+        params.active = 1;
+        params.date = await heimdallr.getServerTime();
+        params.sort_value = params.date;
+        params.text = text;
+        params.uid = heimdallr.user_id;
+        params.images = this.state.postImages;
+        params.user_name = heimdallr.user_name;
+        params.anonymous = this.state.anonymousUser;
+        params.user_image = heimdallr.user_image;
+        params.gif = this.state.gifIncluded;
+        params.comments = 0;
+        params.video = this.state.videoIncluded;
+        params.liked_by = [];
+        params.likes = 0;
+        params.images = this.state.postImages.map(i => i.path);
+        params.pid = await heimdallr.getUID();
+        this.state.params = params;
+        AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
+        this.props.call({...params, newPost: true});
 
-    } else {
-      params.taggedUsers = false;
+        let urlArray = [];
+        let self = this;
+        let checkedImages = 0;
+        /* Save images in storage */
+        this.state.postImages.forEach((img) => {
+          if (this.state.gifIncluded) {
+            checkedImages ++;
+            urlArray.push(img.path);
+            self.state.postImages = urlArray;
+            /* Save the post*/
+            self.savePost(checkedImages / posImagesLenght);
+          } else if (img.type !== 'video/mp4') {
+            console.log('before: ', this.state.postImages);
+            let propCo =  900000 / img.fileSize;
+            let quality = propCo > 1 ? 100 : 100 * propCo;
+            let constant = propCo > 1 ? 0.8 : 1;
+            ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
+              (resolve) => {
+                let link = heimdallr.uploadImage(resolve.uri);
+                link.then(function (resolve) {
+                  checkedImages ++;
+                  console.log('URL resolve: ', resolve);
+                  urlArray.push(resolve);
+                  self.state.params.images = urlArray;
+                  /* Save the post*/
+                  self.savePost(checkedImages / posImagesLenght);
+                })
+
+              },
+
+            )
+          } else {
+            let link = heimdallr.uploadImage(img.uri);
+            link.then(function (resolve) {
+              checkedImages ++;
+              console.log('URL resolve: ', resolve);
+              urlArray.push(resolve);
+              self.state.params.images = urlArray;
+              /* Save the post*/
+              self.savePost(checkedImages / posImagesLenght);
+            })
+          }
+        })
+      } else {
+        // caso a postagem não contenha imagem
+        params.active = 1;
+        params.date = await heimdallr.getServerTime();
+        params.sort_value = params.date;
+        params.text = text;
+        params.uid = heimdallr.user_id;
+        params.images = this.state.postImages;
+        params.user_name = heimdallr.user_name;
+        params.anonymous = this.state.anonymousUser;
+        params.user_image = heimdallr.user_image;
+        params.gif = this.state.gifIncluded;
+        params.comments = 0;
+        params.video = this.state.videoIncluded;
+        params.liked_by = [];
+        params.likes = 0;
+        params.pid = await heimdallr.getUID();
+        this.state.params = params;
+        AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
+        this.props.call({...params, newPost: true});
+        this.savePost(1);
+      }
+    } catch (e) {
+      console.log("deu ruim mano: ", e)
     }
-
-		/* caso a postagem possua ao menos uma foto */
-		let posImagesLenght = this.state.postImages.length;
-		if (this.state.postImages.length > 0) {
-			params.active = 1;
-			params.date = await heimdallr.getServerTime();
-			params.sort_value = params.date;
-			params.text = this.state.postText;
-			params.uid = heimdallr.user_id;
-			params.images = this.state.postImages;
-			params.user_name = heimdallr.user_name;
-			params.anonymous = this.state.anonymousUser;
-			params.user_image = heimdallr.user_image;
-			params.gif = this.state.gifIncluded;
-			params.comments = 0;
-			params.video = this.state.videoIncluded;
-			params.liked_by = [];
-			params.likes = 0;
-			params.images = this.state.postImages.map(i => i.path);
-			params.pid = await heimdallr.getUID();
-			this.state.params = params;
-			AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
-			this.props.call({...params, newPost: true});
-
-			let urlArray = [];
-			let self = this;
-			let checkedImages = 0;
-			/* Save images in storage */
-			this.state.postImages.forEach((img) => {
-				if (this.state.gifIncluded) {
-					checkedImages ++;
-					urlArray.push(img.path);
-					self.state.postImages = urlArray;
-					/* Save the post*/
-					self.savePost(checkedImages / posImagesLenght);
-				} else if (img.type !== 'video/mp4') {
-					console.log('before: ', this.state.postImages);
-					let propCo =  900000 / img.fileSize;
-					let quality = propCo > 1 ? 100 : 100 * propCo;
-					let constant = propCo > 1 ? 0.8 : 1;
-					ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
-						(resolve) => {
-							let link = heimdallr.uploadImage(resolve.uri);
-							link.then(function (resolve) {
-								checkedImages ++;
-								console.log('URL resolve: ', resolve);
-								urlArray.push(resolve);
-								self.state.params.images = urlArray;
-								/* Save the post*/
-								self.savePost(checkedImages / posImagesLenght);
-							})
-
-						},
-					)
-				} else {
-					let link = heimdallr.uploadImage(img.uri);
-					link.then(function (resolve) {
-						checkedImages ++;
-						console.log('URL resolve: ', resolve);
-						urlArray.push(resolve);
-						self.state.params.images = urlArray;
-						/* Save the post*/
-						self.savePost(checkedImages / posImagesLenght);
-					})
-				}
-			})
-		} else {
-			// caso a postagem não contenha imagem
-			params.active = 1;
-			params.date = await heimdallr.getServerTime();
-			params.sort_value = params.date;
-			params.text = this.state.postText;
-			params.uid = heimdallr.user_id;
-			params.images = this.state.postImages;
-			params.user_name = heimdallr.user_name;
-			params.anonymous = this.state.anonymousUser;
-			params.user_image = heimdallr.user_image;
-			params.gif = this.state.gifIncluded;
-			params.comments = 0;
-			params.video = this.state.videoIncluded;
-			params.liked_by = [];
-			params.likes = 0;
-			params.pid = await heimdallr.getUID();
-			this.state.params = params;
-			AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
-			this.props.call({...params, newPost: true});
-			this.savePost(1);
-		}
 	}
 
 	getAnonymous = () => {
@@ -222,7 +220,6 @@ export default class PostWrite extends React.Component {
 			heimdallr.sendEvent('post_write');
 			let result = heimdallr.saveCollection('post', this.state.params);
 			result.then((resolve) => {
-        console.log("Sim foi devolvido")
 				this.postTextInput.clear();
 				this.setState({postImages: [], params : null});
 			});
@@ -287,7 +284,7 @@ export default class PostWrite extends React.Component {
 								onDone: () => {
 									let images = this.state.postImages;
 									images.push(response);
-                  if (this.state.postImages.length === 0) {
+                  if (this.state.postImages.length > 0) {
                     Animated.timing(
                       this.state.textInputHeight,
                       {
@@ -480,11 +477,14 @@ export default class PostWrite extends React.Component {
 	}
 
   closeTagUser () {
+    if (!this.state.searchingForUser) {
+      return ;
+    }
     Animated.timing(
       this.state.textInputHeight,
       {
         toValue: this.state.postImages.length > 0 ? (theme.height * 0.38) : (theme.height * 0.69),
-        duration: 200,
+        duration: 400,
         useNativeDriver: false
       }
     ).start();
@@ -492,7 +492,7 @@ export default class PostWrite extends React.Component {
       this.state.userTagInputHeight,
       {
         toValue: (0),
-        duration: 200,
+        duration: 400,
         useNativeDriver: false
       }
     ).start();
@@ -508,37 +508,36 @@ export default class PostWrite extends React.Component {
     Animated.timing(
       this.state.textInputHeight,
       {
-        toValue: this.state.postImages.length > 0 ? (theme.height * 0.26) : (theme.height * 0.57),
-        duration: 200,
+        toValue: this.state.postImages.length > 0 ? (theme.height * 0.16) : (theme.height * 0.47),
+        duration: 400,
         useNativeDriver: false
       }
     ).start();
     Animated.timing(
       this.state.userTagInputHeight,
       {
-        toValue: (theme.height * 0.12),
-        duration: 200,
+        toValue: (theme.height * 0.22),
+        duration: 400,
         useNativeDriver: false
       }
     ).start();
   }
 
   _onTextChange(text) {
-    // try {
-    //   console.log("Char:  ", event.nativeEvent.key)
-    //
-    // } catch (e) {
-    //   console.log("deu merda")
-    // }
+    // Não foi utilizado "OnKeyPress" porquê ele estva duplicando entradas aleatóriamente
     try {
       let postText = this.state.postText;
       let key = null;
       let deletedKey = null;
+      // substitui usuários marcados com @% em ambos os textos
       for (let i = 0; i < this.state.taggedUserNames.length; i++) {
-        console.log("Pessoa: ", this.state.taggedUserNames[i], )
         if (text.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
-          console.log("Substituindo");
           text = text.replace('@' + this.state.taggedUserNames[i], '@%');
+        } else {
+          this.state.taggedUsers.splice(i, 1);
+          this.state.taggedUserNames.splice(i, 1);
+          this.setState({});
+
         }
 
         if (postText.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
@@ -546,16 +545,13 @@ export default class PostWrite extends React.Component {
         }
       }
 
-
-
-      console.log(">>>> ", text, `<>`,  postText)
+      // Verifica qual caracter foi digitado
       if (text.length > postText.length) {
         key = text.replace(postText, '');
       } else {
         key = "Backspace";
         deletedKey = postText.replace(text, '');
       }
-      console.log("KEY: ", key);
       this.state.postText = text;
       if (this.state.searchingForUser && key !== '@' && key !== 'Enter' && deletedKey !== '@') {
         if (key === ' ' && (this.state.cursor - 1) === this.state.startEditingIndex) {
@@ -567,7 +563,10 @@ export default class PostWrite extends React.Component {
 
 
         } else if (key === '@') {
-         this.openTagUser();
+          this.state.cursor = text.length - 1;
+          if (this.state.cursor === 0 || text[this.state.cursor - 1] == ' ') {
+            this.openTagUser();
+          }
         } else {
           this.closeTagUser();
 
@@ -576,145 +575,6 @@ export default class PostWrite extends React.Component {
     } catch (e) {
       console.log("Erro: ", e)
     }
-
-    // const key = event.nativeEvent.key;
-
-
-    // if (key === 'Backspace') {
-    //   // this.setState({ }, () => {
-    //   //   for (let i = 0; i < this.state.taggedUserNames.length; i++) {
-    //   //     console.log("COMO EU VEHO AQUI? ", this.state.postText)
-    //   //     if (this.state.postText.indexOf(`@${this.state.taggedUserNames[i]}`) === -1) {
-    //   //       // this.state.postText = '';
-    //   //       // this.
-    //   //     }
-    //   //   }
-    //   //   this.renderText();
-    //   //   console.log('BEM TE VI')
-    //   //
-    //   // })
-    // }
-
-    // if (this.state.searchingForUser && key !== '@' && key !== 'Enter') {
-    //   if (key === 'Backspace') {
-    //    if (this.state.currentUserSearch) {
-    //       this.state.currentUserSearch = this.state.currentUserSearch.substring(0,  this.state.currentUserSearch.length - 1)
-    //    }
-    //   } else {
-    //     if (!this.state.currentUserSearch) {
-    //       this.state.currentUserSearch = key
-    //     } else {
-    //       this.state.currentUserSearch += key
-    //     }
-    //   }
-    //   this.searchToTagUser(this.state.currentUserSearch);
-    //
-    // } else if (event.nativeEvent.key === '@') {
-    //   console.log("Entra aqui diabo: ", this.state.cursor - 1)
-    //   Animated.timing(
-    //     this.state.textInputHeight,
-    //     {
-    //       toValue: this.state.postImages.length > 0 ? (theme.height * 0.26) : (theme.height * 0.57),
-    //       duration: 200,
-    //       useNativeDriver: false
-    //     }
-    //   ).start();
-    //   Animated.timing(
-    //     this.state.userTagInputHeight,
-    //     {
-    //       toValue: (theme.height * 0.12),
-    //       duration: 200,
-    //       useNativeDriver: false
-    //     }
-    //   ).start();
-    //
-    //   this.state.searchingForUser = true;
-    //   this.state.startEditingIndex = this.state.cursor - 1;
-    //   this.searchToTagUser(null);
-    // } else {
-    //   Animated.timing(
-    //     this.state.textInputHeight,
-    //     {
-    //       toValue: this.state.postImages.length > 0 ? (theme.height * 0.38) : (theme.height * 0.69),
-    //       duration: 200,
-    //       useNativeDriver: false
-    //     }
-    //   ).start();
-    //   Animated.timing(
-    //     this.state.userTagInputHeight,
-    //     {
-    //       toValue: (0),
-    //       duration: 200,
-    //       useNativeDriver: false
-    //     }
-    //   ).start();
-    //   this.state.searchingForUser = false;
-    //   this.setState({ searchingForUser: false, currentUserSearch: null, filteredUsers: null})
-    //
-    //
-    //
-    //   if (this.state.postText.length !== this.state.cursor) {
-    //     let search = [key]
-    //
-    //     for (let i = this.state.cursor - 1; i >= 0; i--) {
-    //       let txt = this.state.postText.split('')
-    //       if (txt[i] === '@') {
-    //         Animated.timing(
-    //           this.state.textInputHeight,
-    //           {
-    //             toValue: this.state.postImages.length > 0 ? (theme.height * 0.26) : (theme.height * 0.57),
-    //             duration: 200,
-    //             useNativeDriver: false
-    //           }
-    //         ).start();
-    //         Animated.timing(
-    //           this.state.userTagInputHeight,
-    //           {
-    //             toValue: (theme.height * 0.12),
-    //             duration: 200,
-    //             useNativeDriver: false
-    //           }
-    //         ).start();
-    //
-    //         this.state.searchingForUser = true;
-    //         this.state.currentUserSearch = search.join('');
-    //         this.state.startEditingIndex = i;
-    //         this.searchToTagUser(search.join(''));
-    //         break;
-    //       } else if (txt[i] === ' ') {
-    //         break;
-    //       } else {
-    //         search.unshift(txt[i]);
-    //       }
-    //     }
-    //
-    //   }
-    //
-    // }
-    // if (this.state.postText[this.state.cursor - 1] === '@') {
-    //   console.log("quem tá é esse <_")
-    //   this.state.filteredUsers = null;
-    //   Animated.timing(
-    //     this.state.textInputHeight,
-    //     {
-    //       toValue: this.state.postImages.length > 0 ? (theme.height * 0.38) : (theme.height * 0.69),
-    //       duration: 200,
-    //       useNativeDriver: false
-    //     }
-    //   ).start();
-    //   Animated.timing(
-    //     this.state.userTagInputHeight,
-    //     {
-    //       toValue: (0),
-    //       duration: 200,
-    //       useNativeDriver: false
-    //     }
-    //   ).start();
-    //   this.setState({ searchingForUser: false, currentUserSearch: null, filteredUsers: null})
-    //
-    // }
-
-
 
 
   }
@@ -731,27 +591,33 @@ export default class PostWrite extends React.Component {
         this.renderText();
       })
     }
-
-
-    // this.setState({})
   }
 
   tagUser(user) {
-    console.log(user)
     this.state.taggedUsers.push(user);
     this.state.taggedUserNames.push(user.data().name)
     this.closeTagUser();
+
+    for (let i = 0; i < this.state.taggedUserNames.length; i++) {
+      if (this.state.postText.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
+        this.state.postText = this.state.postText.replace('@' + this.state.taggedUserNames[i], '@%');
+      }
+    }
+    this.state.cursor = this.state.postText.length;
     for (let i = this.state.cursor; i >= 0; i--) {
       this.state.postText = [this.state.postText.slice(0, i), this.state.postText.slice(i + 1)].join('');
       if(this.state.postText[i - 1] === '@') {
         this.setState({ postText: [this.state.postText.slice(0, i - 1), '@% ', this.state.postText.slice(i)].join('')})
         break;
       }
+      if (!this.state.postText[i - 1]) {
+        this.setState({ postText: '@% ' })
+        break;
+      }
     }
   }
 
   renderText () {
-    // console.log("Aqui no render: <", this.state.cursor, this.state.searchingForUser)
     if (this.state.postText.indexOf('@%') === -1) {
       for (let i = 0; i < this.state.taggedUserNames.length; i++) {
         if (this.state.postText.indexOf('@' + this.state.taggedUserNames[i]) >= 0) {
@@ -777,9 +643,6 @@ export default class PostWrite extends React.Component {
         }
       })
       }</Text>
-
-
-
       return (
         element
       )
@@ -796,8 +659,6 @@ export default class PostWrite extends React.Component {
         }
       })
       }</Text>
-
-
       return (
         element
       )
@@ -808,7 +669,6 @@ export default class PostWrite extends React.Component {
   _handleCursor(event) {
     event.preventDefault();
     const cursor = event.nativeEvent.selection;
-    console.log("cursor: ", cursor)
     if (cursor.end != cursor.start) {
       Animated.timing(
         this.state.textInputHeight,
@@ -828,10 +688,7 @@ export default class PostWrite extends React.Component {
       ).start();
       this.setState({ searchingForUser: false, currentUserSearch: null, filteredUsers: null})
     } else {
-      console.log()
-
       this.state.cursor = cursor.end;
-
     }
   }
 
@@ -852,8 +709,15 @@ export default class PostWrite extends React.Component {
 								</View>
 							</TouchableOpacity>
 						</View>
-						<View style = {{borderColor: '#f2f2f2', borderBottomWidth: 2, marginTop: theme.height * 0.02 }}>
-              <Animated.ScrollView style={{ height: this.state.userTagInputHeight}} keyboardShouldPersistTaps={'always'}>
+						<View style={styles.tagUserView}>
+              <Animated.ScrollView
+                style={{
+                  height: this.state.userTagInputHeight,
+                  borderWidth: this.state.filteredUsers ? 0.2 : 0,
+                  borderTopRightRadius: 5,
+                  borderTopLeftRadius: 5
+                }}
+                keyboardShouldPersistTaps={'always'}>
               {
                   this.state.filteredUsers &&
                   this.state.filteredUsers.map((user) =>
@@ -882,7 +746,7 @@ export default class PostWrite extends React.Component {
                     onChangeText={text => {this._onTextChange(text)}}
                     autoCapitalize="sentences"
                     multiline
-                    autoFocus={true}
+                    // autoFocus={true}
                     textAlignVertical="top"
                     placeholder="O que você está pensando?"
                     onImageChange={this._onImageChange}
@@ -968,7 +832,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 5,
     borderTopWidth: 0.2,
-    borderColor: 'rgba(59, 56, 50, 0.2)',
+    borderColor: 'rgba(59, 56, 50, 0.2)', //rgba(59, 56, 50, 0.2)
+    borderRadius: 10,
+    zIndex: 1,
   },
   info: {
     alignContent: 'center',
@@ -978,6 +844,11 @@ const styles = StyleSheet.create({
   },
   textFieldContainer: {
     borderWidth: 1,
+  },
+  tagUserView: {
+    borderColor: '#f2f2f2',
+    borderBottomWidth: 2,
+    marginTop: theme.height * 0.02,
   }
 
 });

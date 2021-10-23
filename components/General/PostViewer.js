@@ -483,27 +483,37 @@ export default class PostViewer extends React.Component {
         }
 	}
 
+  redirectToTaggedUser (user) {
+    this.props.navigation.navigate('UserProfile', {
+      userId: user.uid,
+    });
+  }
+
 
   renderPostText (text) {
-    console.log("E ai;/", this.props.taggedUsers)
     try {
       if (this.props.taggedUsers) {
-
         let words = text.split(' ');
         let p_index= 0;
-
         let element = <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}} > {words.map((w) => {
           if (w !== '@%') {
             return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
           } else {
             if (this.props.taggedUsers[p_index]) {
-              return <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0, color: theme.primary, fontWeight: "bold"}}>@{this.props.taggedUsers[p_index++].name} </Text>
+              const user = this.props.taggedUsers[p_index]
+              return (
+                <Text
+                  style = {{marginBottom:this.props.images.length === 1? 15 : 0, color: theme.primary, fontWeight: "bold", zIndex: 10}}
+                  onPress={() => this.redirectToTaggedUser(user)}
+                >
+                  @{this.props.taggedUsers[p_index++].name}
+                </Text>
+              )
             } else {
               return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
             }
           }
         })} </Text>
-
         return (
             element
           )
