@@ -484,6 +484,56 @@ export default class CommentaryViewer extends React.Component {
 		}
 	}
 
+  redirectToTaggedUser (user) {
+    this.props.navigation.navigate('UserProfile', {
+      userId: user.uid,
+    });
+  }
+
+  renderPostText (text) {
+    try {
+      if (this.props.taggedUsers) {
+        let words = text.split(' ');
+        let p_index= 0;
+        let element = <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}} > {words.map((w) => {
+          if (w !== '@%') {
+            return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
+          } else {
+            if (this.props.taggedUsers[p_index]) {
+              const user = this.props.taggedUsers[p_index]
+              return (
+                <Text
+                  style = {{marginBottom:this.props.images.length === 1? 15 : 0, color: theme.primary, fontWeight: "bold", zIndex: 10}}
+                  onPress={() => this.redirectToTaggedUser(user)}
+                >
+                  @{this.props.taggedUsers[p_index++].name}
+                </Text>
+              )
+            } else {
+              return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
+            }
+          }
+        })} </Text>
+        return (
+          element
+        )
+      }
+      return (
+        <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>
+          {text}
+        </Text>
+      );
+    } catch (e) {
+      console.log(e);
+      return (
+        <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>
+          {text}
+        </Text>
+      )
+    }
+
+  }
+
 
 	render = () => {
 		return (
@@ -537,7 +587,7 @@ export default class CommentaryViewer extends React.Component {
 					{
 						this.props.text != '' &&
 						<View style={{width: theme.width * 0.75,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'flex-end'}}>
-							<Text>{ this.props.text }</Text>
+              { this.renderPostText(this.props.text) }
 						</View>
 
 					}

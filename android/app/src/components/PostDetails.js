@@ -864,6 +864,7 @@ export default class PostDetails extends React.Component {
 										liked_by={item.liked_by}
 										likes={item.likes}
 										newComment={item.newComment}
+                    taggedUsers={item.taggedUsers}
 									/>
 								}
 								keyExtractor={item => item.cid}

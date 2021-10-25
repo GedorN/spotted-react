@@ -30,105 +30,98 @@ import ImageViewer from "react-native-image-zoom-viewer";
 
 export default class BoardItemDetails extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            showBoardCommentaryModal: false,
-            title: '',
-            text: '',
-            images: false,
-            videoIncluded: false,
-            userImage: false,
-            userName: false,
-            date:false,
-            showImages: false,
-            indexImage: 0,
-            galleryObj: [],
-            uid: false,
-            pid: false,
-            comments: null,
-            isRefreshing: false,
-            endPulling: false,
-            pulling: false,
-            pulledComments: 10,
-            showAlert: false,
-            deleteComment: false,
-            showDeleteAlert: false,
-            commentId: null,
-            docName: null,
-            reportAlert: true,
-        }
+      super(props);
+      this.state = {
+        showBoardCommentaryModal: false,
+        title: '',
+        text: '',
+        images: false,
+        videoIncluded: false,
+        userImage: false,
+        userName: false,
+        date:false,
+        showImages: false,
+        indexImage: 0,
+        galleryObj: [],
+        uid: false,
+        pid: false,
+        comments: null,
+        isRefreshing: false,
+        endPulling: false,
+        pulling: false,
+        pulledComments: 10,
+        showAlert: false,
+        deleteComment: false,
+        showDeleteAlert: false,
+        commentId: null,
+        docName: null,
+        reportAlert: true,
+      }
     }
 
     componentDidMount = () => {
+      if(this.props.navigation.getParam('origin')) {
+        const docName = this.props.navigation.getParam('docName');
+        const pid = this.props.navigation.getParam('pid');
+          heimdallr.getBoardItem(docName, pid).then(
+            (item) => {
+                this.setState({
+                  title: item[0].title, text: item[0].text, images: item[0].images,
+                    videoIncluded: item[0].video,
+                  userImage: item[0].user_image,
+                  userName: item[0].user_name,
+                    date: moment(item[0].date).locale('pt-br').format('LLLL'),
+                  uid: item[0].uid,
+                  pid: item[0].pid,
+                  docName: docName,
+                });
 
-        if(this.props.navigation.getParam('origin')) {
-        	const docName = this.props.navigation.getParam('docName');
-        	const pid = this.props.navigation.getParam('pid');
-            heimdallr.getBoardItem(docName, pid).then(
-            	(item) => {
-	                this.setState({
-		                title: item[0].title, text: item[0].text, images: item[0].images,
-	                    videoIncluded: item[0].video,
-		                userImage: item[0].user_image,
-		                userName: item[0].user_name,
-	                    date: moment(item[0].date).locale('pt-br').format('LLLL'),
-		                uid: item[0].uid,
-		                pid: item[0].pid,
-		                docName: docName,
-	                });
+                if (item[0].uid === heimdallr.user_id){
+                    this.state.reportAlert = false;
+                }
+          });
 
-	                if (item[0].uid === heimdallr.user_id){
-	                    this.state.reportAlert = false;
-	                }
-            });
+        heimdallr.getComments(pid, this.state.pulledComments).then(
+          (resolve) => {
+          resolve.forEach((doc) => {
+            const time = moment(doc.date).fromNow();
+            doc.elapsed_time = heimdallr.getElapsedTime(time);
+          })
+          this.setState({ comments: resolve });
+        });
+      } else {
+        const item = this.props.navigation.getParam('item');
 
-	        heimdallr.getComments(pid, this.state.pulledComments).then(
-	        	(resolve) => {
-		        resolve.forEach((doc) => {
-			        const time = moment(doc.date).fromNow();
-			        doc.elapsed_time = heimdallr.getElapsedTime(time);
-		        })
-		        this.setState({ comments: resolve });
-	        });
-        }
-        else{
-        	const item = this.props.navigation.getParam('item');
-
-            if (item.uid === heimdallr.user_id){
-                this.state.reportAlert = false;
-            }
-
-            let postImages = item.images;
-            let images = [];
-            for (let i = 0; i < postImages.length; i++) {
-                images.push({url: postImages[i]});
-            }
-
-	        this.setState({
-		        title: item.title,
-		        text: item.text,
-		        images: item.images,
-		        videoIncluded: item.video,
-		        userImage: item.user_image,
-		        userName: item.user_name,
-		        date:  moment(item.date).locale('pt-br').format('LLLL'),
-		        uid: item.uid,
-		        pid: item.pid,
-		        docName: this.props.navigation.getParam('docName'),
-		        galleryObj: images
-	        });
-
-	        heimdallr.getComments(item.pid, this.state.pulledComments).then((resolve) => {
-	        	for (let j = 0; j < resolve.length; j++) {
-			        const time = moment(resolve[j].date).fromNow();
-			        resolve[j].elapsed_time = heimdallr.getElapsedTime(time);
-		        }
-		        this.setState({ comments: resolve });
-	        });
+        if (item.uid === heimdallr.user_id){
+            this.state.reportAlert = false;
         }
 
-
-
+        let postImages = item.images;
+        let images = [];
+        for (let i = 0; i < postImages.length; i++) {
+            images.push({url: postImages[i]});
+        }
+        this.setState({
+          title: item.title,
+          text: item.text,
+          images: item.images,
+          videoIncluded: item.video,
+          userImage: item.user_image,
+          userName: item.user_name,
+          date:  moment(item.date).locale('pt-br').format('LLLL'),
+          uid: item.uid,
+          pid: item.pid,
+          docName: this.props.navigation.getParam('docName'),
+          galleryObj: images
+        });
+        heimdallr.getComments(item.pid, this.state.pulledComments).then((resolve) => {
+          for (let j = 0; j < resolve.length; j++) {
+            const time = moment(resolve[j].date).fromNow();
+            resolve[j].elapsed_time = heimdallr.getElapsedTime(time);
+          }
+          this.setState({ comments: resolve });
+        });
+      }
     }
 
     _hideModal = () => {
@@ -165,9 +158,9 @@ export default class BoardItemDetails extends React.Component {
 			notifications.user_image = heimdallr.user_image;
 			notifications.anonymous =  false,
 			notifications.content = comment;
-            notifications.cid = cid;
-            notifications.origin = 1;
-            notifications.board = this.state.docName;
+      notifications.cid = cid;
+      notifications.origin = 1;
+      notifications.board = this.state.docName;
 			notifications.date = await heimdallr.getServerTime();
 			notifications.visualized = 0;
 			notifications.entity = "commentary";
@@ -350,67 +343,72 @@ export default class BoardItemDetails extends React.Component {
 						</Text>
 					</View>
 				</TouchableOpacity>
-                <FlatList
-                    ListHeaderComponent = {() =>
-                        <View style={styles.header}>
-                                <View style={styles.userHeader}>
-                                    <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
-                                        <View style={{width: theme.width * 0.82, flexDirection :'row',alignItems: 'center'}}>
-                                            <UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.state.userImage? this.state.userImage : null}/>
-                                            <Text style={styles.userName}>{this.state.userName}</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => this.RBSheet.open()}>
-                                        <View
-                                            style={{width: 40, height: 20, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end', alignContent: 'flex-end'}}
-                                        >
-                                            <Image
-                                                style={{width: 20, height: 12}}
-                                                source={require('../../../../assets/images/ellipsis-h-solid.png')}
-                                            />
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                            <View style={styles.postHeader}>
-                                <View style={styles.textHeader}>
-                                    <Text style={styles.title}>{this.state.title}</Text>
-                                    <View style = {{width: theme.width * 0.9}}>
-                                        <Text style={styles.text}>{this.state.text}</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.carouselView}>
-                                    <CarouselModaFoka images={this.state.images} renderMethod={this.getModalImagesLayout.bind(this)}/>
-                                </View>
-                            </View>
-                            <Text style={styles.date}>{this.state.date}</Text>
+          <FlatList
+              ListHeaderComponent = {() =>
+                  <View style={styles.header}>
+                    <View style={styles.userHeader}>
+                      <TouchableOpacity onPress={this.goToUserProfile.bind(this)}>
+                          <View style={{width: theme.width * 0.82, flexDirection :'row',alignItems: 'center'}}>
+                              <UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.state.userImage? this.state.userImage : null}/>
+                              <Text style={styles.userName}>{this.state.userName}</Text>
+                          </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => this.RBSheet.open()}>
+                          <View
+                              style={{width: 40, height: 20, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end', alignContent: 'flex-end'}}
+                          >
+                            <Image
+                              style={{width: 20, height: 12}}
+                              source={require('../../../../assets/images/ellipsis-h-solid.png')}
+                            />
+                          </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.postHeader}>
+                      <View style={styles.textHeader}>
+                        <Text style={styles.title}>{this.state.title}</Text>
+                        <View style = {{width: theme.width * 0.9}}>
+                            <Text style={styles.text}>{this.state.text}</Text>
                         </View>
-                    }
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.isRefreshing}
-                            onRefresh={this.onRefresh.bind(this)}
-                        />
-                    }
-                    data = {this.state.comments}
-                    renderItem={ ({item}) =>
-                        < BoardCommentaryViewer commentary={item} navigation={this.props.navigation} commentaryCallback= {this.commentaryCallback.bind(this)} deleteCommentary={this.commentaryDelete.bind(this)} />
-                    }
-                    keyExtractor={item => item.cid}
-                    onEndReachedThreshold={0.3}
-                    showsVerticalScrollIndicator={false}
-                    onEndReached={ ({ distanceFromEnd }) => {
-                        this.pullMoreCommentaries(distanceFromEnd);
-                    }}
-                    ListFooterComponent={ this.renderFooter.bind(this)}
-                />
-                <FAB
-	                visible={heimdallr.email !== 'spotted@utfpr.com'}
-                    style={styles.fab}
-                    color={'white'}
-                    small
-                    icon={require('../../../../assets/images/comment-regular.png')}
-                    onPress={this._openBoardCommentaryWriter.bind(this)}
-                />
+                      </View>
+                      <View style={styles.carouselView}>
+                        <CarouselModaFoka images={this.state.images} renderMethod={this.getModalImagesLayout.bind(this)}/>
+                      </View>
+                    </View>
+                    <Text style={styles.date}>{this.state.date}</Text>
+                  </View>
+              }
+              refreshControl={
+                  <RefreshControl
+                      refreshing={this.state.isRefreshing}
+                      onRefresh={this.onRefresh.bind(this)}
+                  />
+              }
+              data = {this.state.comments}
+              renderItem={ ({item}) =>
+                  <BoardCommentaryViewer
+                    commentary={item}
+                    navigation={this.props.navigation}
+                    commentaryCallback= {this.commentaryCallback.bind(this)}
+                    deleteCommentary={this.commentaryDelete.bind(this)}
+                  />
+              }
+              keyExtractor={item => item.cid}
+              onEndReachedThreshold={0.3}
+              showsVerticalScrollIndicator={false}
+              onEndReached={ ({ distanceFromEnd }) => {
+                  this.pullMoreCommentaries(distanceFromEnd);
+              }}
+              ListFooterComponent={ this.renderFooter.bind(this)}
+          />
+          <FAB
+            visible={heimdallr.email !== 'spotted@utfpr.com'}
+              style={styles.fab}
+              color={'white'}
+              small
+              icon={require('../../../../assets/images/comment-regular.png')}
+              onPress={this._openBoardCommentaryWriter.bind(this)}
+          />
                 <RBSheet
 					ref={ref => {
 						this.RBSheet = ref;
@@ -422,11 +420,11 @@ export default class BoardItemDetails extends React.Component {
 				>
 					<PostOptions deletePost={this.deletePostConfirm.bind(this)} close={this.closeAlert.bind(this)} typeEntity={'post'} userId={this.state.uid} report={this.reportPost.bind(this)} />
 				</RBSheet>
-                <AwesomeAlert
+        <AwesomeAlert
 					show={this.state.showAlert}
 					showProgress={false}
 					title= {"Denúncia realizada"}
-		      		message= {"Nossos criadores irão analisar a postagem denunciada"}
+          message= {"Nossos criadores irão analisar a postagem denunciada"}
 					closeOnTouchOutside={true}
 					closeOnHardwareBackPress={false}
 					showConfirmButton={true}

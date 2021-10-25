@@ -22,22 +22,21 @@ export default class BoardCommentaryViewer extends React.Component {
 	constructor(props) {
 		super (props);
 		this.state = {
-            reportAlert: true,
+      reportAlert: true,
 		}
-    }
+  }
 
-    componentDidMount = () => {
+  componentDidMount = () => {
 		if(this.props.commentary.id_user === heimdallr.user_id){
 			this.setState({reportAlert: false})
 		}
 	}
 
-    goToUserProfile = () => {
-
+  goToUserProfile = () => {
 		this.props.navigation.push('UserProfile', {
 			userId: this.props.commentary.id_user,
 		});
-    }
+  }
 
 	reportPost = () => {
 		this.RBSheet.close();
@@ -58,54 +57,106 @@ export default class BoardCommentaryViewer extends React.Component {
 		this.props.commentaryCallback();
 	}
 
-    render(){
-        return(
-            <View style={styles.container}>
-                <View style={styles.body}>
-                    <View style = {{flexDirection:'row'}}>
-                        <TouchableOpacity  onPress={this.goToUserProfile.bind(this)}>
-                            <UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.props.commentary.user_image? this.props.commentary.user_image : null}/>
-                        </TouchableOpacity>
-                        <View style={styles.commentaryHeader}>
-                            <View style = {styles.userHeader}>
-                                <Text style={styles.userNameText}>
-                                    {this.props.commentary.user_name}
-                                </Text>
-                                {this.props.commentary.elapsed_time &&
-                                    <Image style={styles.circleSolid}
-                                        source={require('../../../../../assets/images/circle-solid.png') }
-                                    />
-                                }
-                                <Text style= {{flexWrap: 'wrap'}}>
-                                    { this.props.commentary.elapsed_time }
-                                </Text>
-                            </View>
-                            <TouchableOpacity style = {styles.report} onPress={() => this.RBSheet.open()}>
-                                <View style={styles.reportView}>
-                                    <Image
-                                    style={styles.ellipsis}
-                                    source={require('../../../../../assets/images/ellipsis-h-solid.png')}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    <View style={styles.comment}>
-                        <Text>{ this.props.commentary.comment }</Text>
-                    </View>
-                </View>
-                <RBSheet
-                    ref={ref => {
-                        this.RBSheet = ref;
-                    }}
-                    height={150}
-                    animationType={'slide'}
-                    duration={250}
+  redirectToTaggedUser (user) {
+    this.props.navigation.navigate('UserProfile', {
+      userId: user.uid,
+    });
+  }
+
+  renderPostText (text) {
+    try {
+      console.log("O que tenho aqui: ", this.props.commentary.taggedUsers)
+      if (this.props.commentary.taggedUsers) {
+        console.log("Entrei")
+        let words = text.split(' ');
+        let p_index= 0;
+        let element = <Text> {words.map((w) => {
+          if (w !== '@%') {
+            return  <Text >{w} </Text>
+          } else {
+            if (this.props.commentary.taggedUsers[p_index]) {
+              const user = this.props.commentary.taggedUsers[p_index]
+              return (
+                <Text
+                  style = {{color: theme.primary, fontWeight: "bold", zIndex: 10}}
+                  onPress={() => this.redirectToTaggedUser(user)}
                 >
-                    <PostOptions  deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} idEntity = {this.props.commentary.cid} typeEntity = {'comentario'} pid = {this.props.commentary.pid} userId = {this.props.commentary.id_user} report={this.reportPost.bind(this)}/>
-                </RBSheet>
-            </View>
+                  @{this.props.commentary.taggedUsers[p_index++].name}
+                </Text>
+              )
+            } else {
+              return  <Text>{w} </Text>
+            }
+          }
+        })} </Text>
+        return (
+          element
         )
+      }
+      return (
+        <Text>
+          {text}
+        </Text>
+      );
+    } catch (e) {
+      console.log(e);
+      return (
+        <Text>
+          {text}
+        </Text>
+      )
+    }
+
+  }
+
+    render(){
+      return(
+        <View style={styles.container}>
+          <View style={styles.body}>
+            <View style = {{flexDirection:'row'}}>
+              <TouchableOpacity  onPress={this.goToUserProfile.bind(this)}>
+                <UserImgProfile circular marginBottom={5} height={45} width={45} uri={this.props.commentary.user_image? this.props.commentary.user_image : null}/>
+              </TouchableOpacity>
+              <View style={styles.commentaryHeader}>
+                <View style = {styles.userHeader}>
+                  <Text style={styles.userNameText}>
+                    {this.props.commentary.user_name}
+                  </Text>
+                  {this.props.commentary.elapsed_time &&
+                    <Image style={styles.circleSolid}
+                        source={require('../../../../../assets/images/circle-solid.png') }
+                    />
+                  }
+                  <Text style= {{flexWrap: 'wrap'}}>
+                    { this.props.commentary.elapsed_time }
+                  </Text>
+                </View>
+                <TouchableOpacity style = {styles.report} onPress={() => this.RBSheet.open()}>
+                  <View style={styles.reportView}>
+                    <Image
+                      style={styles.ellipsis}
+                      source={require('../../../../../assets/images/ellipsis-h-solid.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.comment}>
+              { this.renderPostText(this.props.commentary.comment) }
+            </View>
+          </View>
+          <RBSheet
+            ref={ref => {
+                this.RBSheet = ref;
+            }}
+            height={150}
+            animationType={'slide'}
+            duration={250}
+          >
+            <PostOptions  deletePost={this.deletePost.bind(this)} close={this.closeAlert.bind(this)} idEntity = {this.props.commentary.cid} typeEntity = {'comentario'} pid = {this.props.commentary.pid} userId = {this.props.commentary.id_user} report={this.reportPost.bind(this)}/>
+          </RBSheet>
+        </View>
+      )
     }
 }
 

@@ -4,51 +4,51 @@
 * */
 
 const collections = {
-        user: [
-            {
-                desc: 'name',
-                type: 'string',
-	            required: true,
-            },
-            {
-                desc: 'email',
-                type: 'string',
-	            required: true,
-            },
-	        {
-	        	desc: 'user_image',
-		        type: 'string',
-	        },
-	        {
-	        	desc: 'uid',
-		        type: 'string',
-		        required: true,
-	        },
-            {
-                desc: 'creation_date',
-                type: 'number',
-	            required: true,
-            },
-            {
-                desc: 'phone',
-                type: 'string',
-	            required: true,
-            },
-            {
-                desc: 'active',
-                type: 'number',
-	            required: true,
-            },
-            {
-                desc: 'deactivation_date',
-                type: 'timestamp',
-            },
-            {
-                desc: 'password',
-                type: 'string',
-	            required: true,
-            }
-        ],
+    user: [
+      {
+          desc: 'name',
+          type: 'string',
+        required: true,
+      },
+      {
+          desc: 'email',
+          type: 'string',
+        required: true,
+      },
+      {
+        desc: 'user_image',
+        type: 'string',
+      },
+      {
+        desc: 'uid',
+        type: 'string',
+        required: true,
+      },
+      {
+        desc: 'creation_date',
+        type: 'number',
+        required: true,
+      },
+      {
+        desc: 'phone',
+        type: 'string',
+        required: true,
+      },
+      {
+        desc: 'active',
+        type: 'number',
+        required: true,
+      },
+      {
+        desc: 'deactivation_date',
+        type: 'timestamp',
+      },
+      {
+        desc: 'password',
+        type: 'string',
+        required: true,
+      }
+    ],
 		comment: [
 			{
 				desc: 'pid',
@@ -84,100 +84,184 @@ const collections = {
 				desc: 'user_image',
 				type: 'string',
 				required: false,
-            },
-            {
-                desc: 'images',
-                type: 'array',
-                required: false,
-            },
-	        {
-	        	desc: 'video',
-		        type: 'boolean',
-		        required: false,
-	        },
+      },
+      {
+        desc: 'images',
+        type: 'array',
+        required: false,
+      },
+      {
+        desc: 'video',
+        type: 'boolean',
+        required: false,
+      },
 			{
 				desc: 'gif',
 				type: 'boolean',
 				required: false,
 			},
-            {
-                desc: 'anonymous',
-                type: 'boolean'
-            }
+      {
+        desc: 'taggedUsers',
+        type: 'array',
+        required: false,
+      },
+      {
+        desc: 'anonymous',
+        type: 'boolean'
+      }
 		],
-        post: [
-            {
-                desc: 'user_name',
-                type: 'string',
-                require: true,
-            },
-	        {
-	        	desc: 'liked_by',
-		        type: 'array',
-		        required: false,
-	        },
-	        {
-	        	desc: 'likes',
-		        type: 'number',
-		        required: false,
-	        },
-	        {
-	        	desc: 'pid',
-		        type: 'string',
-		        required: true,
-	        },
-            {
-                desc: 'user_image',
-                type: 'string',
-                require: true,
-            },
-	        {
-	        	desc: 'comments',
-		        type: 'number',
-	        },
-            {
-                desc: 'uid',
-                type: 'string',
-                require: true,
-            },
-            {
-                desc: 'text',
-                type: 'string',
-            },
-            {
-                desc: 'active',
-                type: 'number',
-                required: true,
-            },
-            {
-              desc: 'date',
-              type: 'number',
-	            required: true,
-            },
-	        {
-	        	desc: 'sort_value',
-		        type: 'number',
-		        required: false
-	        },
-            {
-                desc: 'images',
-                type: 'array',
-                required: false,
-            },
-	        {
-		        desc: 'gif',
-		        type: 'boolean',
-		        required: false,
-	        },
-	        {
-	        	desc: 'video',
-		        type: 'boolean',
-		        required: false,
-	        },
-            {
-                desc: 'anonymous',
-                type: 'boolean'
-            }
+    post: [
+        {
+            desc: 'user_name',
+            type: 'string',
+            require: true,
+        },
+      {
+        desc: 'liked_by',
+        type: 'array',
+        required: false,
+      },
+      {
+        desc: 'likes',
+        type: 'number',
+        required: false,
+      },
+      {
+        desc: 'pid',
+        type: 'string',
+        required: true,
+      },
+        {
+            desc: 'user_image',
+            type: 'string',
+            require: true,
+        },
+      {
+        desc: 'comments',
+        type: 'number',
+      },
+        {
+            desc: 'uid',
+            type: 'string',
+            require: true,
+        },
+        {
+            desc: 'text',
+            type: 'string',
+        },
+        {
+            desc: 'active',
+            type: 'number',
+            required: true,
+        },
+        {
+          desc: 'date',
+          type: 'number',
+          required: true,
+        },
+      {
+        desc: 'sort_value',
+        type: 'number',
+        required: false
+      },
+      {
+          desc: 'images',
+          type: 'array',
+          required: false,
+      },
+      {
+        desc: 'gif',
+        type: 'boolean',
+        required: false,
+      },
+      {
+        desc: 'video',
+        type: 'boolean',
+        required: false,
+      },
+      {
+        desc: 'taggedUsers',
+        type: 'array',
+        required: false,
+      },
+      {
+          desc: 'anonymous',
+          type: 'boolean'
+      }
+    ],
+        dev_post: [
+          {
+            desc: 'user_name',
+            type: 'string',
+            require: true,
+          },
+          {
+            desc: 'liked_by',
+            type: 'array',
+            required: false,
+          },
+          {
+            desc: 'likes',
+            type: 'number',
+            required: false,
+          },
+          {
+            desc: 'pid',
+            type: 'string',
+            required: true,
+          },
+          {
+            desc: 'user_image',
+            type: 'string',
+            require: true,
+          },
+          {
+            desc: 'comments',
+            type: 'number',
+          },
+          {
+            desc: 'uid',
+            type: 'string',
+            require: true,
+          },
+          {
+            desc: 'text',
+            type: 'string',
+          },
+          {
+            desc: 'active',
+            type: 'number',
+            required: true,
+          },
+          {
+            desc: 'date',
+            type: 'number',
+            required: true,
+          },
+          {
+            desc: 'sort_value',
+            type: 'number',
+            required: false
+          },
+          {
+            desc: 'images',
+            type: 'array',
+            required: false,
+          },
+          {
+            desc: 'gif',
+            type: 'boolean',
+            required: false,
+          },
+          {
+            desc: 'video',
+            type: 'boolean',
+            required: false,
+          },
+          {
+            desc: 'anonymous',
+            type: 'boolean'
+          }
         ],
         boardPost : [
             {
