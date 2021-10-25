@@ -12,7 +12,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
-import { APP_KEY } from '@env';
+import { APP_KEY, APP_VERSION } from '@env';
 
 
 const HTTPS_UNAUTHORIZED = 401;
@@ -1516,7 +1516,8 @@ function HeimdallrLib() {
 					let time = await this.getServerTime();
 					firebase.firestore().collection('user').doc(result.docs[0]._ref.id).set({
 						lastSeen: time,
-					}, {merge: true});
+            appVersion: APP_VERSION,
+          }, {merge: true});
 				},
 				(error) => {
 					reject(error);
