@@ -87,6 +87,13 @@ export default class Notification extends React.Component {
 			                    <Text style={{flexWrap: 'wrap', marginLeft: 4}}>{this.props.notification_text}</Text>
 		                    </View>
 	                    }
+                      {
+                        this.props.entity === 'generic' &&
+                        <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+                          <Text style={{fontWeight: 'bold', flexWrap: 'wrap'}}>{this.props.anonymous == '0'?this.props.user_name:'Anônimo'}</Text>
+                          <Text style={{flexWrap: 'wrap', marginLeft: 4}}>{this.props.notification_text}</Text>
+                        </View>
+                      }
 
                     </View>
                 </TouchableOpacity>

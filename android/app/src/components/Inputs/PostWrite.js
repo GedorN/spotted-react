@@ -99,6 +99,7 @@ export default class PostWrite extends React.Component {
           let taggedUser = {}
           taggedUser.name = this.state.taggedUsers[i].data().name;
           taggedUser.uid = this.state.taggedUsers[i].data().uid;
+          taggedUser.deviceToken = this.state.taggedUsers[i].data().deviceToken;
 
           taggedUsers.push(taggedUser);
         }
