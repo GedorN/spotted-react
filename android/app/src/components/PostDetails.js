@@ -29,7 +29,7 @@ import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
 import CommentaryWriter from "./Inputs/CommentaryWriter";
 import PostOptions from "./Inputs/PostOptions";
-
+import { POST } from '@env';
 
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
@@ -98,7 +98,7 @@ export default class PostDetails extends React.Component {
 			this.setState({ pulling: false });
 			this.setState({ anonymousProfile: this.state.post._data.anonymous });
 		} else { // Procedimento para quando é uma postagem vinda do banco de dados
-			let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
+			let result = heimdallr.querycolletion(POST, 'pid', this.props.navigation.getParam('pid'));
 			result.then((resolve) => {
 				if (resolve.length === 0) {
 					this.setState({ removedPost: true });

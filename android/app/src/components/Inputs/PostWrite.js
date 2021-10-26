@@ -23,6 +23,7 @@ var RNFS = require('react-native-fs');
 import {RNPhotoEditor} from "react-native-photo-editor";
 import AsyncStorage from "@react-native-community/async-storage";
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
+import { POST } from '@env';
 
 export default class PostWrite extends React.Component {
 	constructor(props) {
@@ -218,7 +219,7 @@ export default class PostWrite extends React.Component {
 		 * */
 		if (sendedImages >= 1) {
 			heimdallr.sendEvent('post_write');
-			let result = heimdallr.saveCollection('post', this.state.params);
+			let result = heimdallr.saveCollection(POST, this.state.params);
 			result.then((resolve) => {
 				this.postTextInput.clear();
 				this.setState({postImages: [], params : null});

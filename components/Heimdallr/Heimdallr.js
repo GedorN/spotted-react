@@ -12,7 +12,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
-import { APP_KEY, APP_VERSION } from '@env';
+import { APP_KEY, APP_VERSION, POST } from '@env';
 
 
 const HTTPS_UNAUTHORIZED = 401;
@@ -198,9 +198,9 @@ function HeimdallrLib() {
 		return new Promise((resolve) => {
 			firebase.firestore().collection('comment').add(params).then(
 				(result) => {
-					firebase.firestore().collection('post').where('pid', '==', params.pid).get().then(
+					firebase.firestore().collection(POST).where('pid', '==', params.pid).get().then(
 						(res) => {
-							firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
+							firebase.firestore().collection(POST).doc(res.docs[0]._ref.path.split('/')[1]).set({
 								comments: res.docs[0].data().comments + 1
 							}, {merge: true});
 							this.logCall('comment', params, res);
@@ -867,7 +867,7 @@ function HeimdallrLib() {
   this.getUserColletion = function (limit, uid) {
   	return new Promise((resolve) => {
         firebase.firestore()
-		    .collection('post')
+		    .collection(POST)
 	        .where('uid', '==', uid)
 		    .get().then((result) => {
 		    	if (result && result.docs) {
@@ -968,10 +968,10 @@ function HeimdallrLib() {
 	this.deletePost = function (pid) {
   	    this.sendEvent('delete_post');
 		return new Promise((resolve, reject) => {
-			firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+			firebase.firestore().collection(POST).where('pid', '==', pid).get().then(
 				(result) => {
 
-					firebase.firestore().collection('post').doc(result._docs[0]._ref.id).delete().then(
+					firebase.firestore().collection(POST).doc(result._docs[0]._ref.id).delete().then(
 						() => {
 							resolve();
 						},
@@ -995,9 +995,9 @@ function HeimdallrLib() {
 					firebase.firestore().collection('comment').doc(result.docs[0]._ref.path.split('/')[1]).delete().then(
 						(res) => {
 							this.logCall('deleteCommentary', {pid, cid}, res);
-							firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+							firebase.firestore().collection(POST).where('pid', '==', pid).get().then(
 								(res) => {
-									firebase.firestore().collection('post').doc(res.docs[0]._ref.path.split('/')[1]).set({
+									firebase.firestore().collection(POST).doc(res.docs[0]._ref.path.split('/')[1]).set({
 										comments: res.docs[0].data().comments - 1
 									}, {merge: true});
 								}
@@ -1101,7 +1101,7 @@ function HeimdallrLib() {
         }
       });
 
-      if (parametersOK && collection === 'post') {
+      if (parametersOK && collection === POST) {
       	    returnValue = params.pid;
 	        heimdallr.saveCollection('unverified_post', params);
 	        firebase.firestore().collection(collection).doc(params.pid).set(params).then(
@@ -1115,7 +1115,7 @@ function HeimdallrLib() {
           (docRef) => {
 	          this.logCall(collection, params, docRef);
 	          returnValue = docRef.id;
-            if (collection === 'post') {
+            if (collection === POST) {
             	heimdallr.saveCollection('unverified_post', params);
             	console.log('deve entrar: ', params.anonymous);
             }
@@ -1262,7 +1262,7 @@ function HeimdallrLib() {
   }
 
   this.likePost = (pid) => {
-	  firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+	  firebase.firestore().collection(POST).where('pid', '==', pid).get().then(
 		  async (resolve) => {
 		  	if (!resolve.docs[0]) {
 			    this.likePost(pid);
@@ -1280,7 +1280,7 @@ function HeimdallrLib() {
 					    doc.liked_by = [this.user_id];
 				    }
 				    // adiciona o like a acrescenta "5 min" da postagem
-				    firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
+				    firebase.firestore().collection(POST).doc(resolve.docs[0]._ref.id).set({
 					    likes: doc.likes,
 					    liked_by: doc.liked_by,
 					    sort_value: doc.sort_value + 300000
@@ -1325,7 +1325,7 @@ function HeimdallrLib() {
   }
 
 	this.dislikePost = function (pid) {
-		firebase.firestore().collection('post').where('pid', '==', pid).get().then(
+		firebase.firestore().collection(POST).where('pid', '==', pid).get().then(
 			(resolve) => {
 				if (!resolve.docs[0]) {
 					this.dislikePost(pid);
@@ -1336,7 +1336,7 @@ function HeimdallrLib() {
 						doc.likes = doc.likes - 1;
 						doc.liked_by.splice(index, 1);
 					}
-					firebase.firestore().collection('post').doc(resolve.docs[0]._ref.id).set({
+					firebase.firestore().collection(POST).doc(resolve.docs[0]._ref.id).set({
 						likes: doc.likes,
 						liked_by: doc.liked_by,
 						sort_value: doc.sort_value - 300000

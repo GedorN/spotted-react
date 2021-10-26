@@ -17,6 +17,7 @@ import AwesomeAlert from "react-native-awesome-alerts";
 import theme from "../../../../components/General/Theme";
 import RUMineTextInput from "./Inputs/RUMineTextInput";
 import schedule from "../../../../components/Heimdallr/UTFPRSchedule";
+import { POST } from '@env';
 
 const PULL_QUANTITY = 100;
 
@@ -46,7 +47,7 @@ export default class Home extends React.Component {
   		StatusBar.setBarStyle('dark-content');
   	});
   	  this.getStudentInfo();
-      let result = heimdallr.getCollection('post', this.state.pulledPosts);
+      let result = heimdallr.getCollection(POST, this.state.pulledPosts);
   	result.then( (resolve) => {
         if (resolve.length === 0 ) {
   			this.setState({ endPulling: true })
@@ -77,7 +78,7 @@ export default class Home extends React.Component {
 	        this.setState({ pulling: true });
 		    let n = this.state.pulledPosts;
 		    n = PULL_QUANTITY + n;
-		    let result = heimdallr.getCollection('post', n);
+		    let result = heimdallr.getCollection(POST, n);
 		    result.then((resolve) => {
 			    resolve.forEach((doc) => {
 			    	if (!doc.elapsed_time) {
@@ -103,7 +104,7 @@ export default class Home extends React.Component {
 
   onRefresh = () => {
 	  this.setState({ isRefreshing: true });
-	  let result = heimdallr.getCollection('post', PULL_QUANTITY);
+	  let result = heimdallr.getCollection(POST, PULL_QUANTITY);
 	  if (heimdallr.UTFPRToken) {
 	    this.getStudentInfo();
       }
