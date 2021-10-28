@@ -565,7 +565,7 @@ export default class PostViewer extends React.Component {
 							<View style={{ flexDirection: 'row', alignItems: 'center'}}>
 								<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
 										<Text
-												style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+												style={{marginLeft: 16, marginTop:5, fontWeight: 'bold'}}
 										>
 												{this.props.user}
 										</Text>
@@ -661,17 +661,16 @@ export default class PostViewer extends React.Component {
 	      backgroundColor: 'white'
       },
       body: {
-		flexDirection: 'column',
-		marginTop:10,
+        flexDirection: 'column',
+        marginTop:10,
       },
       postHeader: {
         justifyContent: 'space-between',
         flexDirection: 'row',
-		height: 15,
-		fontWeight: 'bold',
-		alignItems: 'center',
-		alignContent: 'center',
-		width: theme.width * 0.70,
+        fontWeight: 'bold',
+        alignItems: 'center',
+        alignContent: 'center',
+        width: theme.width * 0.70,
       },
       postFooter: {
 	      flexDirection: 'row',
