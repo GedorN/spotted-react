@@ -12,7 +12,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
-import { APP_KEY, APP_VERSION, POST } from '@env';
+import { APP_KEY, APP_VERSION, POST, SERVER_ADDRESS } from '@env';
 
 
 const HTTPS_UNAUTHORIZED = 401;
@@ -1883,6 +1883,30 @@ function HeimdallrLib() {
         },
         (err)=> {
           reject({error: 500});
+        }
+      )
+    })
+  }
+
+  this.sendTaggedUsersNotification = function (params) {
+    params.sender = this.user_name;
+    params.senderUserImage = this.user_image;
+    return new Promise((resolve, reject) => {
+      RNFetchBlob.config({ trusty: true }).fetch(
+        'POST',
+        `https://${SERVER_ADDRESS}/sendTagUserNotification`,
+        { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}` },
+        JSON.stringify(params)
+      ).then(
+        (success) => {
+          if (success.respInfo.status === 200) {
+            resolve(200);
+          } else {
+            reject(success.respInfo.status)
+          }
+        },
+        (err) => {
+          reject(500);
         }
       )
     })

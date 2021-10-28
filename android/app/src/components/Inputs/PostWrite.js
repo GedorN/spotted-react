@@ -93,8 +93,8 @@ export default class PostWrite extends React.Component {
       const params = {};
 
       this.setState({activity: true});
+      const taggedUsers = []
       if (this.state.taggedUsers.length > 0) {
-        const taggedUsers = []
         for (let i = 0; i < this.state.taggedUsers.length; i++) {
           let taggedUser = {}
           taggedUser.name = this.state.taggedUsers[i].data().name;
@@ -197,6 +197,11 @@ export default class PostWrite extends React.Component {
         AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
         this.props.call({...params, newPost: true});
         this.savePost(1);
+      }
+
+      // envio de notificação para usuários marcados
+      if (taggedUsers.length > 0) {
+        heimdallr.sendTaggedUsersNotification({ entity: 'post', pid: params.pid, taggedUsers: taggedUsers });
       }
     } catch (e) {
       console.log("deu ruim mano: ", e)

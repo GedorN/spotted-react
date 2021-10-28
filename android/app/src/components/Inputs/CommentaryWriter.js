@@ -191,8 +191,8 @@ export default class CommentaryWriter extends React.Component {
     let text = this.state.postText;
 		const params = {};
 
+    const taggedUsers = []
     if (this.state.taggedUsers.length > 0) {
-      const taggedUsers = []
       for (let i = 0; i < this.state.taggedUsers.length; i++) {
         let taggedUser = {}
         taggedUser.name = this.state.taggedUsers[i].data().name;
@@ -277,6 +277,10 @@ export default class CommentaryWriter extends React.Component {
 			// caso a postagem não contenha imagem
 			this.savePost(1);
 		}
+
+    if (taggedUsers.length > 0) {
+      heimdallr.sendTaggedUsersNotification({ entity: 'comment', pid: params.pid, taggedUsers: taggedUsers });
+    }
 	}
 
 	triggerNotification = async (comment, cid) => {
