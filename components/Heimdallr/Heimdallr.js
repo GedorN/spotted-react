@@ -177,7 +177,7 @@ function HeimdallrLib() {
 		RNFetchBlob.config({
 			trusty: true
 		}).fetch('POST',
-			'https://3.23.33.91/comment-message',
+			`https://${SERVER_ADDRESS}/comment-message`,
 			{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 			JSON.stringify({
 				destUserId: uid,
