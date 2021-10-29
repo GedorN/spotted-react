@@ -495,7 +495,7 @@ export default class PostViewer extends React.Component {
       if (this.props.taggedUsers) {
         let words = text.split(' ');
         let p_index= 0;
-        let element = <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}} > {words.map((w) => {
+        let element = <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}} >{words.map((w) => {
           if (w !== '@%') {
             return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
           } else {
@@ -505,15 +505,13 @@ export default class PostViewer extends React.Component {
                 <Text
                   style = {{marginBottom:this.props.images.length === 1? 15 : 0, color: theme.primary, fontWeight: "bold", zIndex: 10}}
                   onPress={() => this.redirectToTaggedUser(user)}
-                >
-                  @{this.props.taggedUsers[p_index++].name}
-                </Text>
+                >@{this.props.taggedUsers[p_index++].name}</Text>
               )
             } else {
               return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
             }
           }
-        })} </Text>
+        })}</Text>
         return (
             element
           )
