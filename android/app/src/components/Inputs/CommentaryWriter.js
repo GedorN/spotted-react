@@ -284,6 +284,19 @@ export default class CommentaryWriter extends React.Component {
 	}
 
 	triggerNotification = async (comment, cid) => {
+    let taggedUsers = [];
+    if (this.state.taggedUsers.length > 0) {
+      for (let i = 0; i < this.state.taggedUsers.length; i++) {
+        let taggedUser = {}
+        taggedUser.name = this.state.taggedUsers[i].data().name;
+        taggedUser.uid = this.state.taggedUsers[i].data().uid;
+        taggedUser.deviceToken = this.state.taggedUsers[i].data().deviceToken;
+
+        taggedUsers.push(taggedUser);
+      }
+    } else {
+      taggedUsers = false;
+    }
 		if(heimdallr.user_id != this.props.uid){
 			const notifications = {};
 			notifications.eid = this.props.pid;
@@ -297,6 +310,9 @@ export default class CommentaryWriter extends React.Component {
 			notifications.date = await heimdallr.getServerTime();
 			notifications.visualized = 0;
 			notifications.entity = "commentary";
+      if (taggedUsers) {
+        notifications.taggedUsers = taggedUsers;
+      }
 			heimdallr.incrementNotification(this.props.uid);
 
 			heimdallr.getUID().then((uuid) => {

@@ -475,6 +475,11 @@ const collections = {
             {
                 desc: 'anonymous',
                 type: 'boolean'
+            },
+            {
+              desc: "taggedUsers",
+              type: "array",
+              required: false,
             }
         ],
         post_report: [

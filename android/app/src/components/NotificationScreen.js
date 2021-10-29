@@ -94,42 +94,44 @@ export default class NotificationScreen extends React.Component {
 				{
 					 this.state.notifications != null && this.state.notifications.length > 0 &&
 					<FlatList
-                    data = {this.state.notifications}
-                    renderItem={ ({item}) =>
-	                    <View style={item.visualized > 0 ? {} : {backgroundColor: '#e0e0eb'}}>
-		                    {
-			                    (item.entity !== 'phoneRequest' && item.entity !== 'sendedPhoneRequest') &&
+            data = {this.state.notifications}
+            renderItem={ ({item}) =>
+            <View style={item.visualized > 0 ? {} : {backgroundColor: '#e0e0eb'}}>
+              {
+                (item.entity !== 'phoneRequest' && item.entity !== 'sendedPhoneRequest') &&
 								<Notification
 									image_uri = {item.user_image}
 									notification_text = {item.content}
-							        user_name = {item.user_name}
+                  user_name = {item.user_name}
 									uid_notification = {item.uid_notification}
-							        eid = {item.eid}
+                  eid = {item.eid}
 									navigation={this.props.navigation} visualized = {item.visualized}
-							        anonymous = {item.anonymous?item.anonymous:'0'}
+                  anonymous = {item.anonymous?item.anonymous:'0'}
 									origin={item.origin? item.origin : null}
 									docName={item.board? item.board : null}
+                  taggedUsers={ item.taggedUsers }
 									entity={item.entity} />
-		                    }
-		                    {
+
+              }
+              {
 								item.entity === 'phoneRequest' &&
 								<ReceivedRequest senderImage={item.sender_image} senderName={item.sender_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} senderId={item.sender_id} navigation={this.props.navigation}/>
 
-		                    }
-		                    {
-		                    	item.entity === 'sendedPhoneRequest' &&
-			                    <MyRequest receiverPhone={item.receiver_phone ? item.receiver_phone : null} receiverImage={item.receiver_image} receiverName={item.receiver_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} receiverId={item.receiver_id} navigation={this.props.navigation}/>
-		                    }
-	                    </View>
-                    }
-                        keyExtractor={item => item.nid ? item.nid : item.request_id}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={this.state.isRefreshing}
-                                onRefresh={this.onRefresh.bind(this)}
-                                colors={[theme.primary, '#000000']}
-                            />
-                        }
+              }
+              {
+                item.entity === 'sendedPhoneRequest' &&
+                <MyRequest receiverPhone={item.receiver_phone ? item.receiver_phone : null} receiverImage={item.receiver_image} receiverName={item.receiver_name} requestId={item.request_id} allowed={item.allowed} reading_status={item.reading_status} receiverId={item.receiver_id} navigation={this.props.navigation}/>
+              }
+              </View>
+              }
+                keyExtractor={item => item.nid ? item.nid : item.request_id}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.isRefreshing}
+                    onRefresh={this.onRefresh.bind(this)}
+                    colors={[theme.primary, '#000000']}
+                  />
+                }
 						onEndReachedThreshold={0.3}
 						onEndReached={ ({ distanceFromEnd }) => {
 							this.pullMoreNotifications(distanceFromEnd);

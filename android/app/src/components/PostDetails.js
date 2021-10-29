@@ -781,7 +781,7 @@ export default class PostDetails extends React.Component {
 													<View style={{flexDirection: 'row', alignItems: 'center'}}>
 														<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
 															<Text
-																style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+																style={{marginLeft: 16,marginTop: 5, fontWeight: 'bold'}}
 															>
 																{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
 															</Text>
@@ -792,7 +792,7 @@ export default class PostDetails extends React.Component {
 													style = {{width:theme.width * 0.14,height:theme.height * 0.048,flexDirection:'column',justifyContent:'flex-end'}}
 													onPress={() => this.RBSheet.open()}>
 													<View
-														style={{width: 40, height: 20, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+														style={{width: 40, height: 20, zIndex: 9, alignItems: 'flex-end', justifyContent: 'flex-end'}}
 													>
 														<Image
 															style={{width: 20, height: 12}}
@@ -988,7 +988,6 @@ const styles = StyleSheet.create({
 	postHeader: {
 		justifyContent: 'space-between',
 		flexDirection: 'row',
-		height: 15,
 		fontWeight: 'bold',
 		alignItems: 'center',
 		alignContent: 'center',
