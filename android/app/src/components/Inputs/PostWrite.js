@@ -741,11 +741,11 @@ export default class PostWrite extends React.Component {
     }
     if (this.state.searchingForUser) {
       let c_index = 0;
-      const letters = this.state.postText.split('');
+      const letters = Array.from(this.state.postText);
       let element =  <Text>{letters.map((letter, index) => {
-        if (letter === '%' && this.state.postText[index - 1] && this.state.postText[index - 1] === '@') {
+        if (letter === '%' && letters[index - 1] && letters[index - 1] === '@') {
           return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>{this.state.taggedUserNames[c_index++]}</Text>
-        } else if (( letter === '@' && (this.state.postText[index - 1] || index === 0) && this.state.postText[index + 1] === '%' ) ) {
+        } else if (( letter === '@' && (letters[index - 1] || index === 0) && letters[index + 1] === '%' ) ) {
           return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
         } else if (index >= this.state.startEditingIndex && index <= this.state.cursor) {
           return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>{letter}</Text>
@@ -759,11 +759,11 @@ export default class PostWrite extends React.Component {
       )
     } else {
       let c_index = 0;
-      const letters = this.state.postText.split('');
+      const letters = Array.from(this.state.postText);
       let element =  <Text>{letters.map((letter, index) => {
-        if (letter === '%' && this.state.postText[index - 1] && this.state.postText[index - 1] === '@') {
+        if (letter === '%' && letters[index - 1] && letters[index - 1] === '@') {
           return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>{this.state.taggedUserNames[c_index++]}</Text>
-        } else if (( letter === '@' && (this.state.postText[index - 1] || index === 0) && this.state.postText[index + 1] === '%' ) ) {
+        } else if (( letter === '@' && (letters[index - 1] || index === 0) && letters[index + 1] === '%' ) ) {
           return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
         } else {
           return letter
