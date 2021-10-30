@@ -516,18 +516,26 @@ export default class PostViewer extends React.Component {
             element
           )
       }
-      return (
-        <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>
-          {text}
-        </Text>
-      );
+      if (text) {
+        return (
+          <Text style = {{marginBottom:this.props.images.length === 1? 2 : 0}}>{text}</Text>
+        );
+      } else {
+        return (
+          <View></View>
+        )
+      }
     } catch (e) {
       console.log(e);
-      return (
-        <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>
-          {text}
-        </Text>
-      )
+      if (text) {
+        return (
+          <Text style = {{marginBottom:this.props.images.length === 1? 2 : 0}}>{text}</Text>
+        );
+      } else {
+        return (
+          <View></View>
+        )
+      }
     }
 
   }
