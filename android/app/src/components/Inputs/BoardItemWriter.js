@@ -80,7 +80,7 @@ export default class BoardItemWriter extends React.Component {
 					let propCo =  900000 / img.fileSize;
 					let quality = propCo > 1 ? 100 : 100 * propCo;
 					let constant = propCo > 1 ? 0.8 : 1;
-					ImageResizer.createResizedImage(img.path, img.width / constant, img.height / constant, 'JPEG', quality ).then(
+					ImageResizer.createResizedImage(img.path, img.assets[0].width / constant, img.assets[0].height / constant, 'JPEG', quality ).then(
 						(resolve) => {
 							let link = heimdallr.uploadImage(resolve.uri);
 							link.then(function (resolve) {

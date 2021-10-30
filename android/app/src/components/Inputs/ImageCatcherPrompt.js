@@ -43,8 +43,8 @@ export default class ImageCatcherPrompt extends React.Component {
       <Provider >
         <View>
           <Portal theme={this.props.overlay === false ?  {colors: {backdrop: 'transparent'}} : {}}>
-            <Dialog visible={this.props.visible} onDismiss={this.hideDialog.bind(this)}>
-              <Dialog.Title>Escolha como pegar a sua imagem</Dialog.Title>
+            <Dialog visible={this.props.visible} onDismiss={this.hideDialog.bind(this)} style={{ backgroundColor: 'white' }} >
+              <Dialog.Title style={{ color: 'black' }} >Escolha como pegar a sua imagem</Dialog.Title>
               <Dialog.Content>
                 <TouchableOpacity onPress={this.getUserCamera.bind(this)}>
                   <View style={styles.option}>
@@ -58,7 +58,9 @@ export default class ImageCatcherPrompt extends React.Component {
                 </TouchableOpacity>
               </Dialog.Content>
               <Dialog.Actions>
-                <Button color={theme.primary} onPress={this.hideDialog.bind(this)} title={'Fechar'} />
+                <TouchableOpacity onPress={this.hideDialog.bind(this)}>
+                  <Text style={{ fontWeight: 'bold', padding: 10 }} >FECHAR</Text>
+                </TouchableOpacity>
               </Dialog.Actions>
             </Dialog>
           </Portal>
@@ -76,6 +78,6 @@ const styles = StyleSheet.create({
     padding: 15
   },
   optionText: {
-    fontWeight: "200"
+    fontWeight: "700"
   }
 })
