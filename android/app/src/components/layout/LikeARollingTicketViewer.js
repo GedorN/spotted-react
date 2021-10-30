@@ -302,12 +302,11 @@ const styles = StyleSheet.create({
 		height:theme.height*0.11
 	},
 	ticketStatus : {
-		padding:20,
+		padding:10,
 		borderRadius:15,
 		alignSelf:'center',
 		justifyContent:'center',
 		marginTop: theme.height * 0.01,
-		height: theme.height * 0.05,
 		width: theme.width * 0.52
 	},
 	paymentLetter : {
