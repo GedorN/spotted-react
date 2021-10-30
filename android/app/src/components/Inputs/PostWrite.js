@@ -13,16 +13,17 @@ import {
 } from 'react-native';
 import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
-import ImagePicker from "react-native-image-picker";
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import ImageResizer from "react-native-image-resizer";
 import Video from 'react-native-video';
 import {Text} from "react-native-paper";
 var RNFS = require('react-native-fs');
-import {RNPhotoEditor} from "react-native-photo-editor";
+import PhotoEditor  from "react-native-photo-editor";
 import AsyncStorage from "@react-native-community/async-storage";
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
+import ImageCatcherPrompt from "./ImageCatcherPrompt";
 import { POST } from '@env';
 
 export default class PostWrite extends React.Component {
@@ -48,6 +49,7 @@ export default class PostWrite extends React.Component {
       cursor: 0,
       startEditingIndex: null,
       endEditingIndex: null,
+      showImagePrompt: false,
 
       textInputHeight: new Animated.Value(theme.height * 0.69),
       userTagInputHeight: new Animated.Value(0)
@@ -233,44 +235,46 @@ export default class PostWrite extends React.Component {
 		}
 	}
 
-	async sendImagePropt() {
-		try {
-			const granted = await PermissionsAndroid.request(
-				PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-				{
-					title: 'Spotted Camera Permission',
-					message:
-						'Spotted needs access to your camera ' +
-						'so you can take awesome pictures ;)',
-					buttonNeutral: 'Ask Me Later',
-					buttonNegative: 'Cancel',
-					buttonPositive: 'OK',
-				},
-			);
-			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-				console.log('You can use the camera');
-				const options = {
-					title: 'Enviar imagem',
-					takePhotoButtonTitle: 'Tirar foto',
-					chooseFromLibraryButtonTitle: 'Pegar do celular',
-					storageOptions: {
-						skipBackup: true,
-						path: 'images',
-					},
-					mediaType: 'mixed',
-					noData: false, // we use response.data to display gif
-					allowsEditing: false // make sure we don't edit the gif
-				};
-
-				ImagePicker.showImagePicker(options, response => {
-					if (response.didCancel) {
-					} else if (response.error) {
-						console.log('ImagePicker Error: ', response.error);
-					} else if (response.customButton) {
-						console.log('User tapped custom button: ', response.customButton);
-					} else {
-						if (response.type === 'video/mp4') {
-              if (this.state.postImages.length === 0) {
+  async openCamera() {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchCamera(options, async response => {
+      if (response.didCancel) {
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        if (response.type === 'video/mp4') {
+          if (this.state.postImages.length === 0) {
+            Animated.timing(
+              this.state.textInputHeight,
+              {
+                toValue: (theme.height * 0.38),
+                duration: 200,
+                useNativeDriver: false
+              }
+            ).start();
+          }
+          this.setState({postImages: [response], videoIncluded: true});
+        } else {
+          console.log("Entrei aqui: ", response.assets[0].uri)
+          const name = Date.now().toString() + '.jpg';
+          console.log("Name: ", name)
+          await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+          await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+          let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
+          response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+          console.log("Aqui tem algo? ", response.path)
+          console.log("Veja tudo: ", a.map(i => i.name));
+          PhotoEditor.Edit({
+            path: response.path,
+            onDone: () => {
+              let images = this.state.postImages;
+              images.push(response);
+              if (this.state.postImages.length > 0) {
                 Animated.timing(
                   this.state.textInputHeight,
                   {
@@ -280,36 +284,136 @@ export default class PostWrite extends React.Component {
                   }
                 ).start();
               }
-							this.setState({postImages: [response], videoIncluded: true});
-						} else {
-							const name = Date.now().toString() + '.jpg';
-							RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
-							RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
-							response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
-							RNPhotoEditor.Edit({
-								path: response.path,
-								onDone: () => {
-									let images = this.state.postImages;
-									images.push(response);
-                  if (this.state.postImages.length > 0) {
-                    Animated.timing(
-                      this.state.textInputHeight,
-                      {
-                        toValue: (theme.height * 0.38),
-                        duration: 200,
-                        useNativeDriver: false
-                      }
-                    ).start();
+              this.setState({postImages: images});
+            }
+          });
+        }
+      }
+    });
+  }
+
+  async openImageLibrary () {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchImageLibrary(options, async response => {
+      if (response.didCancel) {
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        if (response.type === 'video/mp4') {
+          if (this.state.postImages.length === 0) {
+            Animated.timing(
+              this.state.textInputHeight,
+              {
+                toValue: (theme.height * 0.38),
+                duration: 200,
+                useNativeDriver: false
+              }
+            ).start();
+          }
+          this.setState({postImages: [response], videoIncluded: true});
+        } else {
+          console.log("Entrei aqui: ", response.assets[0].uri)
+          const name = Date.now().toString() + '.jpg';
+          console.log("Name: ", name)
+          await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+          await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+          let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
+          response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+          console.log("Aqui tem algo? ", response.path)
+          console.log("Veja tudo: ", a.map(i => i.name));
+          PhotoEditor.Edit({
+            path: response.path,
+            onDone: () => {
+              let images = this.state.postImages;
+              images.push(response);
+              if (this.state.postImages.length > 0) {
+                Animated.timing(
+                  this.state.textInputHeight,
+                  {
+                    toValue: (theme.height * 0.38),
+                    duration: 200,
+                    useNativeDriver: false
                   }
-									this.setState({postImages: images});
-								}
-							});
-						}
-					}
-				});
-			}
-		} catch (err) {
-		}
+                ).start();
+              }
+              this.setState({postImages: images});
+            }
+          });
+        }
+      }
+    });
+  }
+
+  async getUserImage(type) {
+    try {
+      let cameraGranted = null;
+      const writeGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Write Permission',
+          message:
+            'Spotted needs permission to save write in disk to save tou amazing custom pictures ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+
+
+      );
+      const readGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Read Permission',
+          message:
+            'Spotted needs to read your files to get your amazing pictures in library ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+
+
+      );
+      if (readGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode ler os arquivos");
+      }
+      if (writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode escrever os arquivos");
+      }
+      if (type === 'camera') {
+        cameraGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Spotted Camera Permission',
+            message:
+              'Spotted needs access to your camera ' +
+              'so you can take awesome pictures ;)',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('You can use the camera');
+        }
+
+        await this.openCamera();
+      } else {
+        await this.openImageLibrary();
+      }
+
+    } catch (err) {
+    }
+  }
+
+	toggleImagePropt() {
+    const status = !this.state.showImagePrompt
+    this.state.showImagePrompt = status;
+    this.setState({ showImagePrompt: status });
 	}
 
 	_onImageChange = (event) => {
@@ -779,7 +883,7 @@ export default class PostWrite extends React.Component {
 
 							</TouchableOpacity>
 							<Text style = {{ ...styles.anonymousText, opacity: !this.state.anonymousUser ? 0.5 : 1, fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
-							<TouchableOpacity disabled={this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded} onPress={this.sendImagePropt.bind(this)}>
+							<TouchableOpacity disabled={this.state.postImages.length === 4 || this.state.videoIncluded || this.state.gifIncluded} onPress={this.toggleImagePropt.bind(this)}>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}
 									style={{
@@ -796,6 +900,7 @@ export default class PostWrite extends React.Component {
 						</View>
 					</View>
 				</View>
+        <ImageCatcherPrompt visible={this.state.showImagePrompt} close={this.toggleImagePropt.bind(this)} getUserImage={this.getUserImage.bind(this)} />
 			</View>
 		);
 	}

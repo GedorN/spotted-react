@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-	StyleSheet,
-	View,
-	TextInput,
-	TouchableOpacity,
-	Image,
-	PermissionsAndroid,
+  StyleSheet,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  PermissionsAndroid,
 } from 'react-native';
 import {ProgressBar} from "react-native-paper";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
-import ImagePicker from "react-native-image-picker";
+import {launchCamera, launchImageLibrary} from "react-native-image-picker";
 import CarouselModaFoka from "../layout/CarouselModaFoka";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
@@ -17,23 +17,25 @@ import ImageResizer from "react-native-image-resizer";
 import Video from 'react-native-video';
 import {Text} from "react-native-paper";
 var RNFS = require('react-native-fs');
-import {RNPhotoEditor} from "react-native-photo-editor";
+import PhotoEditor  from "react-native-photo-editor";
+import ImageCatcherPrompt from "./ImageCatcherPrompt";
 
 
 export default class BoardItemWriter extends React.Component {
 	constructor(props) {
-        super(props);
-        this.state = {
-            postText: null,
-            titleText: null,
-			postImages: [],
-			videoIncluded: false,
-            placeholder: null,
-            titlePlaceholder: 'Digite aqui o título de sua postagem*',
-            activity: false,
-	        blockButton: false,
+    super(props);
+    this.state = {
+      postText: null,
+      titleText: null,
+      postImages: [],
+      videoIncluded: false,
+      placeholder: null,
+      titlePlaceholder: 'Digite aqui o título de sua postagem*',
+      activity: false,
+      blockButton: false,
+      showImagePrompt: false,
 		};
-    }
+  }
 
     componentDidMount(): void {
         if(this.props.id === 'properties'){
@@ -122,17 +124,17 @@ export default class BoardItemWriter extends React.Component {
 			heimdallr.sendEvent('board_post_write');
 			let self = this;
 			const params = {};
-            params.active = 1;
-            params.day_counter = 190;
-            params.date = await heimdallr.getServerTime();
-            params.title = this.state.titleText;
-			params.text = this.state.postText;
-			params.uid = heimdallr.user_id;
-			params.images = this.state.postImages;
-			params.user_name = heimdallr.user_name;
-			params.user_image = heimdallr.user_image;
-            params.docName = this.props.id,
-			params.video = this.state.videoIncluded;
+      params.active = 1;
+      params.day_counter = 190;
+      params.date = await heimdallr.getServerTime();
+      params.title = this.state.titleText;
+      params.text = this.state.postText;
+      params.uid = heimdallr.user_id;
+      params.images = this.state.postImages;
+      params.user_name = heimdallr.user_name;
+      params.user_image = heimdallr.user_image;
+      params.docName = this.props.id,
+      params.video = this.state.videoIncluded;
 			heimdallr.getUID().then((uuid) => {
 				params.pid = uuid;
 				let result = heimdallr.saveBoardPost(params);
@@ -148,70 +150,146 @@ export default class BoardItemWriter extends React.Component {
 		}
 	}
 
-	async sendImagePropt() {
-		try {
-			const granted = await PermissionsAndroid.request(
-				PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-				{
-					title: 'Spotted Camera Permission',
-					message:
-						'Spotted needs access to your camera ' +
-						'so you can take awesome pictures ;)',
-					buttonNeutral: 'Ask Me Later',
-					buttonNegative: 'Cancel',
-					buttonPositive: 'OK',
-				},
-			);
-			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-				console.log('You can use the camera');
-				const options = {
-					title: 'Enviar imagem',
-					takePhotoButtonTitle: 'Tirar foto',
-					chooseFromLibraryButtonTitle: 'Pegar do celular',
-					storageOptions: {
-						skipBackup: true,
-						path: 'images',
-					},
-					mediaType: 'mixed',
-					noData: false, // we use response.data to display gif
-					allowsEditing: false // make sure we don't edit the gif
-				};
+  async openCamera() {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchCamera(options, async response => {
+      if (response.didCancel) {
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        if (response.type === 'video/mp4') {
+          this.setState({postImages: [response], videoIncluded: true});
+        } else {
+          console.log("Entrei aqui: ", response.assets[0].uri)
+          const name = Date.now().toString() + '.jpg';
+          console.log("Name: ", name)
+          await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+          await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+          let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
+          response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+          console.log("Aqui tem algo? ", response.path)
+          console.log("Veja tudo: ", a.map(i => i.name));
+          PhotoEditor.Edit({
+            path: response.path,
+            onDone: () => {
+              let images = this.state.postImages;
+              images.push(response);
+              this.setState({postImages: images});
+            }
+          });
+        }
+      }
+    });
+  }
 
-				ImagePicker.showImagePicker(options, response => {
-					if (response.didCancel) {
-						console.log('User cancelled image picker');
-					} else if (response.error) {
-						console.log('ImagePicker Error: ', response.error);
-					} else if (response.customButton) {
-						console.log('User tapped custom button: ', response.customButton);
-					} else {
-						if (response.type === 'video/mp4') {
-							this.setState({postImages: [response], videoIncluded: true});
-						} else {
-							const name = Date.now().toString() + '.jpg';
-							RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
-							RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
-							response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
-							RNPhotoEditor.Edit({
-								path: response.path,
-								onDone: (a) => {
-									console.log('e agora: ', a);
-									let images = this.state.postImages;
-									images.push(response);
-									this.setState({postImages: images});
-									console.log('Imagem: ', response);
-								}
-							});
-						}
-					}
-				});
-			} else {
-				console.log('Camera permission denied');
-			}
-		} catch (err) {
-			console.warn(err);
-		}
-	}
+  async openImageLibrary () {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchImageLibrary(options, async response => {
+      if (response.didCancel) {
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        if (response.type === 'video/mp4') {
+          this.setState({postImages: [response], videoIncluded: true});
+        } else {
+          console.log("Entrei aqui: ", response.assets[0].uri)
+          const name = Date.now().toString() + '.jpg';
+          console.log("Name: ", name)
+          await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+          await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+          let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
+          response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+          console.log("Aqui tem algo? ", response.path)
+          console.log("Veja tudo: ", a.map(i => i.name));
+          PhotoEditor.Edit({
+            path: response.path,
+            onDone: () => {
+              let images = this.state.postImages;
+              images.push(response);
+              this.setState({postImages: images});
+            }
+          });
+        }
+      }
+    });
+  }
+
+  async getUserImage(type) {
+    try {
+      let cameraGranted = null;
+      const writeGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Write Permission',
+          message:
+            'Spotted needs permission to save write in disk to save tou amazing custom pictures ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+
+
+      );
+      const readGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Read Permission',
+          message:
+            'Spotted needs to read your files to get your amazing pictures in library ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+
+
+      );
+      if (readGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode ler os arquivos");
+      }
+      if (writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode escrever os arquivos");
+      }
+      if (type === 'camera') {
+        cameraGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Spotted Camera Permission',
+            message:
+              'Spotted needs access to your camera ' +
+              'so you can take awesome pictures ;)',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('You can use the camera');
+        }
+
+        await this.openCamera();
+      } else {
+        await this.openImageLibrary();
+      }
+
+    } catch (err) {
+    }
+  }
+
+  toggleImagePropt() {
+    const status = !this.state.showImagePrompt
+    this.state.showImagePrompt = status;
+    this.setState({ showImagePrompt: status });
+  }
 
 	getModalImagesLayout = ({item}) => {
 		if (this.state.videoIncluded) {
@@ -318,7 +396,7 @@ export default class BoardItemWriter extends React.Component {
                                 <Text style={{fontSize:11, color:'#8f8f8f' }}>Sua postagem ficará no mural por 90 dias</Text>
                             </View>
 							<Text style = {{ ...styles.anonymousText, opacity: !this.state.anonymousUser ? 0.5 : 1, fontWeight: !this.state.anonymousUser ? 'normal':'bold' }}>{this.state.anonymousText}</Text>
-							<TouchableOpacity disabled={ this.state.videoIncluded} onPress={this.sendImagePropt.bind(this) }>
+							<TouchableOpacity disabled={ this.state.videoIncluded} onPress={this.toggleImagePropt.bind(this) }>
 								<Image
 									source={require('../../../../../assets/images/camera-icon.png')}
 									style={{
@@ -335,7 +413,8 @@ export default class BoardItemWriter extends React.Component {
 						</View>
 					</View>
 				</View>
-			</View>
+        <ImageCatcherPrompt visible={this.state.showImagePrompt} close={this.toggleImagePropt.bind(this)} getUserImage={this.getUserImage.bind(this)} />
+      </View>
 		);
 	}
 }

@@ -10,11 +10,12 @@ import {
 } from 'react-native';
 import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import RUMineTextInput from "../Inputs/RUMineTextInput";
-import ImagePicker from "react-native-image-picker";
-import {RNPhotoEditor} from "react-native-photo-editor";
+import {launchCamera, launchImageLibrary} from "react-native-image-picker";
+import PhotoEditor  from "react-native-photo-editor";
 import ImageResizer from "react-native-image-resizer";
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
+import ImageCatcherPrompt from "../Inputs/ImageCatcherPrompt";
 
 var RNFS = require('react-native-fs');
 
@@ -32,6 +33,7 @@ export default class FirstStep extends React.Component {
 			profileImage: null,
 			imageCompressed: null,
 			showImage: true,
+      showImagePrompt: false,
 		}
 	}
 
@@ -44,60 +46,140 @@ export default class FirstStep extends React.Component {
 			this.state.showEmailBadlyFormatted = this.props.showEmailBadlyFormatted;
 		}
 	}
+  async openCamera() {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchCamera(options, response => {
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else if (response.customButton) {
+      } else {
+        const name = Date.now().toString() + '.jpg';
+        RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+        RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+        response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+        let image = 'file://' + response.path;
+        PhotoEditor.Edit({
+          path: response.path,
+          onDone: () => {
+            ImageResizer.createResizedImage(response.path, response.assets[0].width / 5, response.assets[0].height / 5, 'JPEG', 60).then(
+              (resolve) => {
+                this.setState({imageCompressed: resolve.uri});
+                this.setState({profileImage: image});
 
-	async sendImagePropt() {
-		const granted = await PermissionsAndroid.request(
-			PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-			{
-				title: 'Spotted Camera Permission',
-				message:
-					'Spotted needs access to your camera ' +
-					'so you can take awesome pictures ;)',
-				buttonNeutral: 'Ask Me Later',
-				buttonNegative: 'Cancel',
-				buttonPositive: 'OK',
-			},
-		);
-		if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-			const options = {
-				title: 'Enviar imagem',
-				takePhotoButtonTitle: 'Tirar foto',
-				chooseFromLibraryButtonTitle: 'Pegar do celular',
-				storageOptions: {
-					skipBackup: true,
-					path: 'images',
-				},
-			};
+              },
+              (error) => {
+              }).catch((err) => {
+            })
+          }
+        });
 
-			ImagePicker.showImagePicker(options, response => {
-				if (response.didCancel) {
-				} else if (response.error) {
-				} else if (response.customButton) {
-				} else {
-					const name = Date.now().toString() + '.jpg';
-					RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
-					RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
-					response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
-					let image = 'file://' + response.path;
-					RNPhotoEditor.Edit({
-						path: response.path,
-						onDone: () => {
-							ImageResizer.createResizedImage(response.path, response.width / 5, response.height / 5, 'JPEG', 60).then(
-								(resolve) => {
-									this.setState({imageCompressed: resolve.uri});
-									this.setState({profileImage: image});
+      }
+    });
+  }
 
-								},
-								(error) => {
-								}).catch((err) => {
-							})
-						}
-					});
+  async openImageLibrary () {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else if (response.customButton) {
+      } else {
+        const name = Date.now().toString() + '.jpg';
+        RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+        RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+        response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+        let image = 'file://' + response.path;
+        PhotoEditor.Edit({
+          path: response.path,
+          onDone: () => {
+            ImageResizer.createResizedImage(response.path, response.assets[0].width / 5, response.assets[0].height / 5, 'JPEG', 60).then(
+              (resolve) => {
+                this.setState({imageCompressed: resolve.uri});
+                this.setState({profileImage: image});
 
-				}
-			});
-		}
-	}
+              },
+              (error) => {
+              }).catch((err) => {
+            })
+          }
+        });
+
+      }
+    });
+  }
+
+  async getUserImage(type) {
+    try {
+      let cameraGranted = null;
+      const writeGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Write Permission',
+          message:
+            'Spotted needs permission to save write in disk to save tou amazing custom pictures ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+
+
+      );
+      const readGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Read Permission',
+          message:
+            'Spotted needs to read your files to get your amazing pictures in library ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+
+
+      );
+      if (readGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode ler os arquivos");
+      }
+      if (writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode escrever os arquivos");
+      }
+      if (type === 'camera') {
+        cameraGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Spotted Camera Permission',
+            message:
+              'Spotted needs access to your camera ' +
+              'so you can take awesome pictures ;)',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('You can use the camera');
+        }
+
+        await this.openCamera();
+      } else {
+        await this.openImageLibrary();
+      }
+
+    } catch (err) {
+    }
+  }
+
+  toggleImagePropt() {
+    const status = !this.state.showImagePrompt
+    this.state.showImagePrompt = status;
+    this.setState({ showImagePrompt: status });
+  }
 
 	validateNameAndEmail = () => {
 		if (!this.state.email || !this.state.name) {
@@ -140,7 +222,7 @@ export default class FirstStep extends React.Component {
 						</View>
 					</TouchableOpacity>
 					<View style={{justifyContent: 'center', alignContent: 'center'}}>
-						<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+						<TouchableOpacity onPress={this.toggleImagePropt.bind(this)}>
 							<Text style={{alignSelf: 'center', justifyContent: 'center', fontSize: 9, marginTop: 4, color: '#b2b5b1'}}> Escolher imagem: </Text>
 							{
 								this.state.showImage &&
@@ -188,7 +270,8 @@ export default class FirstStep extends React.Component {
 				<View style={{paddingBottom: 20}}>
 					<FatBottomedButton text='Avançar' backgroundColor={theme.primary} color={theme.secondary} onTap={this.goToForward.bind(this)}/>
 				</View>
-			</KeyboardAvoidingView>
+        <ImageCatcherPrompt visible={this.state.showImagePrompt} close={this.toggleImagePropt.bind(this)} getUserImage={this.getUserImage.bind(this)} />
+      </KeyboardAvoidingView>
 		)
 	}
 }
