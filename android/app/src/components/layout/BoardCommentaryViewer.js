@@ -67,31 +67,46 @@ export default class BoardCommentaryViewer extends React.Component {
     try {
       console.log("O que tenho aqui: ", this.props.commentary.taggedUsers)
       if (this.props.commentary.taggedUsers) {
-        console.log("Entrei")
-        let words = text.split(' ');
-        let p_index= 0;
-        let element = <Text> {words.map((w) => {
-          if (w !== '@%') {
-            return  <Text >{w} </Text>
+        let c_index = 0;
+        const letters = Array.from(text);
+        let element =  <Text>{letters.map((letter, index) => {
+          if (letter === '%' && letters[index - 1] && letters[index - 1] === '@') {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }} onPress={this.redirectToTaggedUser.bind(this, this.props.commentary.taggedUsers[c_index])} >{this.props.commentary.taggedUsers[c_index++].name}</Text>
+          } else if (( letter === '@' && (letters[index - 1] || index === 0) && letters[index + 1] === '%' ) ) {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
           } else {
-            if (this.props.commentary.taggedUsers[p_index]) {
-              const user = this.props.commentary.taggedUsers[p_index]
-              return (
-                <Text
-                  style = {{color: theme.primary, fontWeight: "bold", zIndex: 10}}
-                  onPress={() => this.redirectToTaggedUser(user)}
-                >
-                  @{this.props.commentary.taggedUsers[p_index++].name}
-                </Text>
-              )
-            } else {
-              return  <Text>{w} </Text>
-            }
+            return letter
           }
-        })} </Text>
+        })
+        }</Text>
         return (
           element
         )
+        // console.log("Entrei")
+        // let words = text.split(' ');
+        // let p_index= 0;
+        // let element = <Text> {words.map((w) => {
+        //   if (w !== '@%') {
+        //     return  <Text >{w} </Text>
+        //   } else {
+        //     if (this.props.commentary.taggedUsers[p_index]) {
+        //       const user = this.props.commentary.taggedUsers[p_index]
+        //       return (
+        //         <Text
+        //           style = {{color: theme.primary, fontWeight: "bold", zIndex: 10}}
+        //           onPress={() => this.redirectToTaggedUser(user)}
+        //         >
+        //           @{this.props.commentary.taggedUsers[p_index++].name}
+        //         </Text>
+        //       )
+        //     } else {
+        //       return  <Text>{w} </Text>
+        //     }
+        //   }
+        // })} </Text>
+        // return (
+        //   element
+        // )
       }
       return (
         <Text>

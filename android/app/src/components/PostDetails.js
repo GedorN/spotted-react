@@ -681,29 +681,18 @@ export default class PostDetails extends React.Component {
     try {
       const taggedUsers = this.state.post.data().taggedUsers;
       if (taggedUsers) {
-        let words = this.state.post.data().text.split(' ');
-        let p_index= 0;
-
-        let element = <Text style={styles.postText} > {words.map((w) => {
-          if (w !== '@%') {
-            return  <Text style={styles.postText}>{w} </Text>
+        let c_index = 0;
+        const letters = Array.from(this.state.post.data().text);
+        let element =  <Text>{letters.map((letter, index) => {
+          if (letter === '%' && letters[index - 1] && letters[index - 1] === '@') {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }}  onPress={this.redirectToTaggedUser.bind(this, taggedUsers[c_index])}>{taggedUsers[c_index++].name}</Text>
+          } else if (( letter === '@' && (letters[index - 1] || index === 0) && letters[index + 1] === '%' ) ) {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
           } else {
-            if (taggedUsers[p_index]) {
-              const user = taggedUsers[p_index]
-
-              return (
-                <Text
-                  style={{ marginTop: theme.height*0.01, fontWeight: 'bold', marginBottom: theme.height*0.02, paddingRight: theme.width*0.01, paddingLeft: theme.width * 0.01, color: theme.primary }}
-                  onPress={() => this.redirectToTaggedUser(user)}
-                >
-                  @{taggedUsers[p_index++].name}
-                </Text>
-              )
-            } else {
-              return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
-            }
+            return letter
           }
-        })} </Text>
+        })
+        }</Text>
         return (
           element
         )

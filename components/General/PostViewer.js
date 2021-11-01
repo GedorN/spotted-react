@@ -493,28 +493,21 @@ export default class PostViewer extends React.Component {
   renderPostText (text) {
     try {
       if (this.props.taggedUsers) {
-        let words = text.split(' ');
-        let p_index= 0;
-        let element = <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}} >{words.map((w) => {
-          if (w !== '@%') {
-            return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
+        let c_index = 0;
+        const letters = Array.from(text);
+        let element =  <Text>{letters.map((letter, index) => {
+          if (letter === '%' && letters[index - 1] && letters[index - 1] === '@') {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }} onPress={this.redirectToTaggedUser.bind(this, this.props.taggedUsers[c_index])} >{this.props.taggedUsers[c_index++].name}</Text>
+          } else if (( letter === '@' && (letters[index - 1] || index === 0) && letters[index + 1] === '%' ) ) {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
           } else {
-            if (this.props.taggedUsers[p_index]) {
-              const user = this.props.taggedUsers[p_index]
-              return (
-                <Text
-                  style = {{marginBottom:this.props.images.length === 1? 15 : 0, color: theme.primary, fontWeight: "bold", zIndex: 10}}
-                  onPress={() => this.redirectToTaggedUser(user)}
-                >@{this.props.taggedUsers[p_index++].name}</Text>
-              )
-            } else {
-              return  <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{w} </Text>
-            }
+            return letter
           }
-        })}</Text>
+        })
+        }</Text>
         return (
-            element
-          )
+          element
+        )
       }
       if (text) {
         return (
