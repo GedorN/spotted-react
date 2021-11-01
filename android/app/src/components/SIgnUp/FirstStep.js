@@ -186,6 +186,7 @@ export default class FirstStep extends React.Component {
 			this.setState({showErrorMessage: true});
 			return false;
 		}
+    this.state.name = this.state.name.trim();
 		if (this.state.name.split(' ').length < 2) {
 
 			this.setState({showNameErrorMessage: true, showErrorMessage: false});
