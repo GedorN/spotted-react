@@ -687,13 +687,11 @@ function HeimdallrLib() {
 		  firebase.auth().signOut().then(
 		      () => {
 		      	if (badgeListner) {
-		      		console.log('limpando badge');
 		      	    badgeListner();
 		      	    badgeListner = null;
 		        }
 
 		      	if (userListner) {
-		      		console.log('limpando lisnter');
 		      		userListner();
 		      		userListner = null;
 		        }
@@ -826,7 +824,7 @@ function HeimdallrLib() {
 	    firebase.auth().createUserWithEmailAndPassword(params.email, params.password).then(
 		    (success) => {
 		    	this.logCall('signUp', {email: params.email}, success);
-		    	newUser = success;
+          newUser = success;
 			    resolve();
 		    },
 		    (error) => {
@@ -1145,11 +1143,12 @@ function HeimdallrLib() {
 	  RNFetchBlob.config({
 		  trusty: true
 	  }).fetch('POST',
-		  'https://3.23.33.91/new-account',
+		  `https://${SERVER_ADDRESS}/new-account`,
 		  { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 		  JSON.stringify({
 			  email: this.email,
 			  uid: this.uid,
+        name: this.user_name,
 		  })
 	  );
   }
