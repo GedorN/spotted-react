@@ -21,12 +21,13 @@ import UserImgProfile from "../../../../../components/General/UserImgProfile";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import theme from "../../../../../components/General/Theme";
-import ImagePicker from "react-native-image-picker";
+import {launchCamera, launchImageLibrary} from "react-native-image-picker";
 import ImageResizer from "react-native-image-resizer";
 import AwesomeAlert from "react-native-awesome-alerts";
 import EyeOfThePassword from "../Inputs/EyeOfThePassword";
 import { StackActions, NavigationActions } from 'react-navigation';
-import {RNPhotoEditor} from "react-native-photo-editor";
+import PhotoEditor  from "react-native-photo-editor";
+import ImageCatcherPrompt from "../Inputs/ImageCatcherPrompt";
 var RNFS = require('react-native-fs');
 
 
@@ -46,7 +47,9 @@ export default class GeneralSettings extends  React.Component {
 			password: null,
 			showLoadingModal: false,
 			acceptPhoneRequest: heimdallr.accepting_phone_requests,
-		};
+      showImagePrompt: false,
+
+    };
 	}
 
 	componentDidMount = () => {
@@ -56,75 +59,170 @@ export default class GeneralSettings extends  React.Component {
 		this.setState({ securePassword: !this.state.securePassword });
 	}
 
-	async sendImagePropt() {
-		try {
-			const granted = await PermissionsAndroid.request(
-				PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-				{
-					title: 'Spotted Camera Permission',
-					message:
-						'Spotted needs access to your camera ' +
-						'so you can take awesome pictures ;)',
-					buttonNeutral: 'Ask Me Later',
-					buttonNegative: 'Cancel',
-					buttonPositive: 'OK',
-				},
-			);
-			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-				console.log('You can use the camera');
-				const options = {
-					title: 'Enviar imagem',
-					takePhotoButtonTitle: 'Tirar foto',
-					chooseFromLibraryButtonTitle: 'Pegar do celular',
-					storageOptions: {
-						skipBackup: true,
-						path: 'images',
-					},
-				};
+  async openCamera() {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchCamera(options, async response => {
+      if (response.didCancel) {
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        if (response.type === 'video/mp4') {
+          this.setState({postImages: [response], videoIncluded: true});
+        } else {
+          let propCo =  900000 / response.assets[0].fileSize;
+          let quality = propCo > 1 ? 100 : 100 * propCo;
+          let constant = propCo > 1 ? 0.8 : 1;
+          const name = Date.now().toString() + '.jpg';
+          console.log("Name: ", name)
+          await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+          await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+          let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
+          response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+          let image = 'file://' + response.path;
+          console.log("Aqui tem algo? ", response.path)
+          console.log("Veja tudo: ", a.map(i => i.name));
+          PhotoEditor.Edit({
+            path: response.path,
+            onDone: () => {
+              ImageResizer.createResizedImage(response.path, response.assets[0].width / 5, response.assets[0].height / constant, 'JPEG', quality).then(
+                (resolve) => {
+                  console.log('resolve: ', resolve);
+                  this.setState({imageCompressed: resolve.uri});
+                  this.setState({userImage: image});
+                  console.log('Imagem: ', this.state.postImages);
+                },
+                (error) => {
+                  console.log('Image resize error: ', error);
+                }).catch((err) => {
+                console.log(err);
+              })
+            }
+          });
+        }
+      }
+    });
+  }
 
-				ImagePicker.showImagePicker(options, response => {
-					if (response.didCancel) {
-						console.log('User cancelled image picker');
-					} else if (response.error) {
-						console.log('ImagePicker Error: ', response.error);
-					} else if (response.customButton) {
-						console.log('User tapped custom button: ', response.customButton);
-					} else {
-						let propCo =  900000 / response.fileSize;
-						let quality = propCo > 1 ? 100 : 100 * propCo;
-						let constant = propCo > 1 ? 0.8 : 1;
+  async openImageLibrary () {
+    const options = {
+      mediaType: 'photo',
+      // saveToPhotos: true
+    };
+    launchImageLibrary(options, async response => {
+      if (response.didCancel) {
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        if (response.type === 'video/mp4') {
+          this.setState({postImages: [response], videoIncluded: true});
+        } else {
+          let propCo =  900000 / response.assets[0].fileSize;
+          let quality = propCo > 1 ? 100 : 100 * propCo;
+          let constant = propCo > 1 ? 0.8 : 1;
+          const name = Date.now().toString() + '.jpg';
+          console.log("Name: ", name)
+          await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
+          await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
+          let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
+          response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
+          let image = 'file://' + response.path;
+          console.log("Aqui tem algo? ", response.path)
+          console.log("Veja tudo: ", a.map(i => i.name));
+          PhotoEditor.Edit({
+            path: response.path,
+            onDone: () => {
+              ImageResizer.createResizedImage(response.path, response.assets[0].width / 5, response.assets[0].height / constant, 'JPEG', quality).then(
+                (resolve) => {
+                  console.log('resolve: ', resolve);
+                  this.setState({imageCompressed: resolve.uri});
+                  this.setState({userImage: image});
+                  console.log('Imagem: ', this.state.postImages);
+                },
+                (error) => {
+                  console.log('Image resize error: ', error);
+                }).catch((err) => {
+                console.log(err);
+              })
+            }
+          });
+        }
+      }
+    });
+  }
 
-						const name = Date.now().toString() + '.jpg';
-						RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
-						RNFS.copyFile(response.path, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
-						response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
-						let image = 'file://' + response.path;
+  async getUserImage(type) {
+    try {
+      let cameraGranted = null;
+      const writeGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Write Permission',
+          message:
+            'Spotted needs permission to save write in disk to save tou amazing custom pictures ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
 
 
-						RNPhotoEditor.Edit({
-							path: response.path,
-							onDone: () => {
-								ImageResizer.createResizedImage(response.path, response.width / 5, response.height / constant, 'JPEG', quality).then(
-									(resolve) => {
-										console.log('resolve: ', resolve);
-										this.setState({imageCompressed: resolve.uri});
-										this.setState({userImage: image});
-										console.log('Imagem: ', this.state.postImages);
-									},
-									(error) => {
-										console.log('Image resize error: ', error);
-									}).catch((err) => {
-									console.log(err);
-								})
-							}
-						});
+      );
+      const readGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Spotted Read Permission',
+          message:
+            'Spotted needs to read your files to get your amazing pictures in library ;)',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
 
-					}
-				});
-			}
-		} catch (err) {
-		}
-	}
+
+      );
+      if (readGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode ler os arquivos");
+      }
+      if (writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Você pode escrever os arquivos");
+      }
+      if (type === 'camera') {
+        cameraGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Spotted Camera Permission',
+            message:
+              'Spotted needs access to your camera ' +
+              'so you can take awesome pictures ;)',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('You can use the camera');
+        }
+
+        await this.openCamera();
+      } else {
+        await this.openImageLibrary();
+      }
+
+    } catch (err) {
+    }
+  }
+
+  toggleImagePropt() {
+    const status = !this.state.showImagePrompt
+    this.state.showImagePrompt = status;
+    this.setState({ showImagePrompt: status });
+  }
 
 	deleteUser = () => {
 		if (!this.state.password) {
@@ -234,9 +332,9 @@ export default class GeneralSettings extends  React.Component {
 
 	render () {
 		return (
-			<View>
-				<View style={{zIndex: 0}}>
-				<TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
+			<View style={{ flex: 1 }}>
+				<View>
+          <TouchableOpacity  onPress={() => {this.props.navigation.goBack()}}>
 								<View style={{flexDirection: 'row', marginTop: 7,width:theme.width * 0.2,height:theme.height * 0.04}}>
 									<Image
 										style={{width: 30, height: 30, marginTop:4, opacity: 0.6}}
@@ -249,7 +347,7 @@ export default class GeneralSettings extends  React.Component {
 					<Text>
 						Foto de perfil:
 					</Text>
-					<TouchableOpacity onPress={this.sendImagePropt.bind(this)}>
+					<TouchableOpacity onPress={this.toggleImagePropt.bind(this)}>
 						<View style={{flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginTop: 20}}>
 							<UserImgProfile circular height={120} width={120} uri={this.state.userImage} />
 						</View>
@@ -306,6 +404,7 @@ export default class GeneralSettings extends  React.Component {
 						</Text>
 					</TouchableOpacity>
 				</View>
+        <ImageCatcherPrompt overlay={false} visible={this.state.showImagePrompt} close={this.toggleImagePropt.bind(this)} getUserImage={this.getUserImage.bind(this)} />
 
 				<AwesomeAlert
 					show={this.state.showAlert}
@@ -374,7 +473,7 @@ export default class GeneralSettings extends  React.Component {
 					</View>
 				</Modal>
 				<FlashMessage ref={'message'} style={{ zIndex: 99 }} />
-			</View>
+      </View>
 
 		)
 	}

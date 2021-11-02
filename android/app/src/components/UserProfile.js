@@ -328,6 +328,7 @@ export default class UserProfile extends React.Component {
 										likes={item.likes}
 										liked_by={item.liked_by}
 										comments={item.comments}
+                    taggedUsers={item.taggedUsers}
 									/>
 							}
 							ListHeaderComponent={() =>

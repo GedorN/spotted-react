@@ -38,8 +38,17 @@ export default class Login extends React.Component {
     }
 
     componentWillUnmount(): void {
-	    this.keyboardDidShowListener.remove();
-	    this.keyboardDidHideListener.remove();
+      try {
+        if (this.keyboardDidShowListener) {
+          this.keyboardDidShowListener.remove();
+        }
+        if (this.keyboardDidHideListener) {
+          this.keyboardDidHideListener.remove();
+        }
+      } catch (e) {
+        console.error("[-] Erro ao remover listners: ", e)
+      }
+
     }
 
 	showAlert = () => {

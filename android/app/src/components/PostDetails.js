@@ -29,7 +29,7 @@ import AwesomeAlert from "react-native-awesome-alerts";
 import ImageViewer from "react-native-image-zoom-viewer";
 import CommentaryWriter from "./Inputs/CommentaryWriter";
 import PostOptions from "./Inputs/PostOptions";
-
+import { POST } from '@env';
 
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
@@ -98,7 +98,7 @@ export default class PostDetails extends React.Component {
 			this.setState({ pulling: false });
 			this.setState({ anonymousProfile: this.state.post._data.anonymous });
 		} else { // Procedimento para quando é uma postagem vinda do banco de dados
-			let result = heimdallr.querycolletion('post', 'pid', this.props.navigation.getParam('pid'));
+			let result = heimdallr.querycolletion(POST, 'pid', this.props.navigation.getParam('pid'));
 			result.then((resolve) => {
 				if (resolve.length === 0) {
 					this.setState({ removedPost: true });
@@ -671,6 +671,45 @@ export default class PostDetails extends React.Component {
 		}
 	}
 
+  redirectToTaggedUser (user) {
+    this.props.navigation.navigate('UserProfile', {
+      userId: user.uid,
+    });
+  }
+
+  renderPostText() {
+    try {
+      const taggedUsers = this.state.post.data().taggedUsers;
+      if (taggedUsers) {
+        let c_index = 0;
+        const letters = Array.from(this.state.post.data().text);
+        let element =  <Text>{letters.map((letter, index) => {
+          if (letter === '%' && letters[index - 1] && letters[index - 1] === '@') {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }}  onPress={this.redirectToTaggedUser.bind(this, taggedUsers[c_index])}>{taggedUsers[c_index++].name}</Text>
+          } else if (( letter === '@' && (letters[index - 1] || index === 0) && letters[index + 1] === '%' ) ) {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
+          } else {
+            return letter
+          }
+        })
+        }</Text>
+        return (
+          element
+        )
+      } else {
+        return (
+          <Text style={styles.postText} >{this.state.post ? this.state.post.data().text : null}</Text>
+        )
+      }
+
+    } catch (e) {
+      console.log(e);
+      return (
+        <Text style={styles.postText}>{this.state.post ? this.state.post.data().text : null}</Text>
+      )
+    }
+  }
+
 
 
 	render() {
@@ -731,7 +770,7 @@ export default class PostDetails extends React.Component {
 													<View style={{flexDirection: 'row', alignItems: 'center'}}>
 														<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
 															<Text
-																style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+																style={{marginLeft: 16,marginTop: 5, fontWeight: 'bold'}}
 															>
 																{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
 															</Text>
@@ -742,7 +781,7 @@ export default class PostDetails extends React.Component {
 													style = {{width:theme.width * 0.14,height:theme.height * 0.048,flexDirection:'column',justifyContent:'flex-end'}}
 													onPress={() => this.RBSheet.open()}>
 													<View
-														style={{width: 40, height: 20, zIndex: 9999, alignItems: 'flex-end', justifyContent: 'flex-end'}}
+														style={{width: 40, height: 20, zIndex: 9, alignItems: 'flex-end', justifyContent: 'flex-end'}}
 													>
 														<Image
 															style={{width: 20, height: 12}}
@@ -754,7 +793,8 @@ export default class PostDetails extends React.Component {
 											<View style={styles.body}>
 												<View style={styles.post}>
 													<View style = {{width:theme.width * 0.77,flexWrap:'wrap',alignItems:'flex-start',alignSelf:'center'}}>
-														<Text style={{marginTop:theme.height*0.01,marginBottom:theme.height*0.02,paddingRight:theme.width*0.01,paddingLeft:theme.width * 0.01}}>{this.state.post ? this.state.post.data().text : null}</Text>
+                            {/*Aqui o texto do post*/}
+                            { this.renderPostText() }
 													</View>
 													<View style = {{marginLeft:theme.width * 0.01}}>
 														{this.getModalImagesLayout()}
@@ -813,6 +853,7 @@ export default class PostDetails extends React.Component {
 										liked_by={item.liked_by}
 										likes={item.likes}
 										newComment={item.newComment}
+                    taggedUsers={item.taggedUsers}
 									/>
 								}
 								keyExtractor={item => item.cid}
@@ -936,7 +977,6 @@ const styles = StyleSheet.create({
 	postHeader: {
 		justifyContent: 'space-between',
 		flexDirection: 'row',
-		height: 15,
 		fontWeight: 'bold',
 		alignItems: 'center',
 		alignContent: 'center',
@@ -955,7 +995,11 @@ const styles = StyleSheet.create({
 		marginTop: theme.height * 0.75,
 		marginLeft: theme.width * 0.80,
 		padding: 5,
-
-
-	}
+	},
+  postText: {
+    marginTop:theme.height*0.01,
+    marginBottom:theme.height*0.02,
+    paddingRight:theme.width*0.01,
+    paddingLeft:theme.width * 0.01
+  }
 });

@@ -483,6 +483,56 @@ export default class PostViewer extends React.Component {
         }
 	}
 
+  redirectToTaggedUser (user) {
+    this.props.navigation.navigate('UserProfile', {
+      userId: user.uid,
+    });
+  }
+
+
+  renderPostText (text) {
+    try {
+      if (this.props.taggedUsers) {
+        let c_index = 0;
+        const letters = Array.from(text);
+        let element =  <Text>{letters.map((letter, index) => {
+          if (letter === '%' && letters[index - 1] && letters[index - 1] === '@') {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }} onPress={this.redirectToTaggedUser.bind(this, this.props.taggedUsers[c_index])} >{this.props.taggedUsers[c_index++].name}</Text>
+          } else if (( letter === '@' && (letters[index - 1] || index === 0) && letters[index + 1] === '%' ) ) {
+            return <Text style={{ color: theme.primary, fontWeight: 'bold' }}>@</Text>
+          } else {
+            return letter
+          }
+        })
+        }</Text>
+        return (
+          element
+        )
+      }
+      if (text) {
+        return (
+          <Text style = {{marginBottom:this.props.images.length === 1? 2 : 0}}>{text}</Text>
+        );
+      } else {
+        return (
+          <View></View>
+        )
+      }
+    } catch (e) {
+      console.log(e);
+      if (text) {
+        return (
+          <Text style = {{marginBottom:this.props.images.length === 1? 2 : 0}}>{text}</Text>
+        );
+      } else {
+        return (
+          <View></View>
+        )
+      }
+    }
+
+  }
+
 
   render () {
     return (
@@ -514,7 +564,7 @@ export default class PostViewer extends React.Component {
 							<View style={{ flexDirection: 'row', alignItems: 'center'}}>
 								<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
 										<Text
-												style={{marginLeft: 16,marginTop:35, fontWeight: 'bold'}}
+												style={{marginLeft: 16, marginTop:5, fontWeight: 'bold'}}
 										>
 												{this.props.user}
 										</Text>
@@ -546,7 +596,8 @@ export default class PostViewer extends React.Component {
 					</View>
 			      <View style={styles.body}>
 			          <View style={styles.post}>
-			              <Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.props.text}</Text>
+			              {/*<Text style = {{marginBottom:this.props.images.length === 1? 15 : 0}}>{this.renderPostText(this.props.text)}</Text>*/}
+                    {this.renderPostText(this.props.text)}
 			              <View style = {{ height: this.props.images.length > 0 ? 230 : 0}}>
 			                  {this.getModalImagesLayout()}
 			              </View>
@@ -609,17 +660,16 @@ export default class PostViewer extends React.Component {
 	      backgroundColor: 'white'
       },
       body: {
-		flexDirection: 'column',
-		marginTop:10,
+        flexDirection: 'column',
+        marginTop:10,
       },
       postHeader: {
         justifyContent: 'space-between',
         flexDirection: 'row',
-		height: 15,
-		fontWeight: 'bold',
-		alignItems: 'center',
-		alignContent: 'center',
-		width: theme.width * 0.70,
+        fontWeight: 'bold',
+        alignItems: 'center',
+        alignContent: 'center',
+        width: theme.width * 0.70,
       },
       postFooter: {
 	      flexDirection: 'row',
