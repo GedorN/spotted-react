@@ -135,7 +135,7 @@ android {
         applicationId "com.triade.spotted"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3145760
+        versionCode 3145761
         versionName "4.6.0"
 
         // Needed to support API<21, though there is a small chance proguard shrinks things sufficiently
