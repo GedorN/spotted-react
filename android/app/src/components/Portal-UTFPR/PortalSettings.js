@@ -9,13 +9,15 @@ import {
 import theme from "../../../../../components/General/Theme";
 import FatBottomedButton from "../buttons/FatBottomedButton";
 import heimdallr from "../../../../../components/Heimdallr/Heimdallr";
+import {Slider} from '@miblanchard/react-native-slider';
 import {NavigationActions, StackActions} from "react-navigation";
 
 export default class PortalSettings extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            acceptClassNotification: heimdallr.accepting_class_notification
+            acceptClassNotification: heimdallr.accepting_class_notification,
+            customClassNotificationTime: heimdallr.customClassNotificationTime,
         }
     }
 
@@ -35,6 +37,17 @@ export default class PortalSettings extends React.Component {
         });
         this.props.navigation.dispatch(resetAction);
     }
+
+  renderTrackMarkComponent = () => {
+      return (
+       <Text>{this.state.customClassNotificationTime}</Text>
+      )
+  }
+
+  setCustomClassNotificationTime = (newTime) => {
+      heimdallr.setCustomClassNotificationTime(newTime[0])
+      this.setState({customClassNotificationTime: newTime[0]})
+  }
 
     render() {
         return (
@@ -57,6 +70,29 @@ export default class PortalSettings extends React.Component {
                                 value={this.state.acceptClassNotification}
                             />
                         </View>
+                        {
+                          this.state.acceptClassNotification &&
+                          <View style={{ marginTop: 16 }}>
+                            <Text style={styles.activeText }>Quantos minutos antes da aula gostaria de receber a notificação?</Text>
+                            <View style={{ marginTop: 25 }}>
+                              <Slider
+                                value={this.state.customClassNotificationTime}
+                                onValueChange={this.setCustomClassNotificationTime}
+                                animateTransitions
+                                maximumValue={49}
+                                minimumValue={1}
+                                thumbStyle={styles.thumb}
+                                trackStyle={styles.track}
+                                thumbTintColor={'red'}
+                                minimumTrackTintColor={theme.UTFPRPrimary}
+                                trackClickable={true}
+                                step={1}
+                                trackMarks={[0,1 ,5]}
+                                renderAboveThumbComponent={this.renderTrackMarkComponent.bind(this) }
+                              />
+                            </View>
+                          </View>
+                        }
                     </View>
                 </View>
 
@@ -82,5 +118,39 @@ const styles = StyleSheet.create({
         padding: 10,
         height: theme.height * 0.87,
         justifyContent: 'space-between',
-    }
+    },
+   activeText: {
+      color: 'black',
+     fontWeight: 'bold'
+   },
+  inactiveText: {
+      color: 'rgba(0, 0, 0, 0.5)'
+  },
+  thumb: {
+    backgroundColor: theme.UTFPRPrimary,
+    borderColor: '#000000',
+    borderRadius: 100,
+    borderWidth: 6,
+    height: 22,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 2,
+    width: 22,
+  },
+  track: {
+    backgroundColor: '#d0d0d0',
+    borderRadius: 5,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 1,
+    height: 10,
+  },
 })

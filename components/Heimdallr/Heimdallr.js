@@ -32,6 +32,7 @@ function HeimdallrLib() {
   this.deviceToken = null;
   this.accepting_phone_requests= true;
   this.accepting_class_notification = true;
+  this.customClassNotificationTime = 30;
   this.jwt = null;
 
   this.refreshKey = null;
@@ -789,6 +790,7 @@ function HeimdallrLib() {
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
         this.accepting_class_notification = user.accepting_class_notification === false ? user.accepting_class_notification : true;
+        this.customClassNotificationTime = user.customClassNotificationTime ? user.customClassNotificationTime : 30;
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
         this.getJWToken();
@@ -1909,6 +1911,20 @@ function HeimdallrLib() {
         }
       )
     })
+  }
+
+  this.setCustomClassNotificationTime = function (value) {
+    firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+      async (res) => {
+        // salva dados do primeiro login
+        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+          customClassNotificationTime: value,
+        }, {merge: true});
+      },
+      (error) => {
+        reject(error);
+      }
+    );
   }
 
 
