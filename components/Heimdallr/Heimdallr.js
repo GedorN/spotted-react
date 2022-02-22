@@ -1689,7 +1689,7 @@ function HeimdallrLib() {
 			        	const data = result && result.data ? JSON.parse(result.data) : null;
 			        	let cursos = data.cursos.filter((curso) => curso.nivEnsDescrVc === 'Ensino Superior');
 			        	if (cursos.length > 0) {
-				            let curso  = cursos.reduce((a, b) => a.alCuAnoingNr >  b.alCuAnoingNr ? a: b);
+                  let curso  = cursos.reduce((a, b) => a.alCuAnoingNr >  b.alCuAnoingNr ? a: b);
 					        curso.pessNomeVc = data.pessNomeVc;
 					        curso.ra = data.login.substring(1);
 					        if (!this.UTFPRidInCourse) {
@@ -1697,6 +1697,7 @@ function HeimdallrLib() {
 							        async (res) => {
 								        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
 									        UTFPRidInCourse: curso.alCuIdVc,
+                          UTFPRComum: curso.unidCodNr
 								        }, {merge: true});
 							        },
 							        (error) => {
