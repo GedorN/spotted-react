@@ -780,7 +780,8 @@ function HeimdallrLib() {
   }
 
   this.getUserData = function (userData) {
-	  userListner =  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
+    this.getJWToken();
+    userListner =  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
 	  (result) => {
 			  let user =  result && result.docs[0] ? result.docs[0].data() : userData;
 			  this.phone = user.phone;
@@ -793,7 +794,6 @@ function HeimdallrLib() {
         this.customClassNotificationTime = user.customClassNotificationTime ? user.customClassNotificationTime : 30;
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
-        this.getJWToken();
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  }
 	  )
