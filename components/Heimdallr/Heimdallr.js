@@ -32,6 +32,7 @@ function HeimdallrLib() {
   this.deviceToken = null;
   this.accepting_phone_requests= true;
   this.accepting_class_notification = true;
+  this.customClassNotificationTime = 30;
   this.jwt = null;
 
   this.refreshKey = null;
@@ -779,7 +780,8 @@ function HeimdallrLib() {
   }
 
   this.getUserData = function (userData) {
-	  userListner =  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
+    this.getJWToken();
+    userListner =  firebase.firestore().collection('user').where('uid', '==', userData._user.uid).onSnapshot(
 	  (result) => {
 			  let user =  result && result.docs[0] ? result.docs[0].data() : userData;
 			  this.phone = user.phone;
@@ -789,9 +791,9 @@ function HeimdallrLib() {
 			  this.deviceToken = user.deviceToken ? user.deviceToken : null;
 			  this.accepting_phone_requests = user.accepting_phone_requests === false ? user.accepting_phone_requests : true;
         this.accepting_class_notification = user.accepting_class_notification === false ? user.accepting_class_notification : true;
+        this.customClassNotificationTime = user.customClassNotificationTime ? user.customClassNotificationTime : 30;
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
-        this.getJWToken();
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  }
 	  )
@@ -1687,7 +1689,7 @@ function HeimdallrLib() {
 			        	const data = result && result.data ? JSON.parse(result.data) : null;
 			        	let cursos = data.cursos.filter((curso) => curso.nivEnsDescrVc === 'Ensino Superior');
 			        	if (cursos.length > 0) {
-				            let curso  = cursos.reduce((a, b) => a.alCuAnoingNr >  b.alCuAnoingNr ? a: b);
+                  let curso  = cursos.reduce((a, b) => a.alCuAnoingNr >  b.alCuAnoingNr ? a: b);
 					        curso.pessNomeVc = data.pessNomeVc;
 					        curso.ra = data.login.substring(1);
 					        if (!this.UTFPRidInCourse) {
@@ -1695,6 +1697,7 @@ function HeimdallrLib() {
 							        async (res) => {
 								        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
 									        UTFPRidInCourse: curso.alCuIdVc,
+                          UTFPRComum: curso.unidCodNr
 								        }, {merge: true});
 							        },
 							        (error) => {
@@ -1909,6 +1912,20 @@ function HeimdallrLib() {
         }
       )
     })
+  }
+
+  this.setCustomClassNotificationTime = function (value) {
+    firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
+      async (res) => {
+        // salva dados do primeiro login
+        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
+          customClassNotificationTime: value,
+        }, {merge: true});
+      },
+      (error) => {
+        reject(error);
+      }
+    );
   }
 
 
