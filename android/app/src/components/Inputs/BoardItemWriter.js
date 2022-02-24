@@ -77,7 +77,7 @@ export default class BoardItemWriter extends React.Component {
 			this.state.postImages.forEach((img) => {
 				 if (img.type !== 'video/mp4') {
 					console.log('before: ', this.state.postImages);
-					let propCo =  900000 / img.fileSize;
+					let propCo =  900000 / img.assets[0].fileSize;
 					let quality = propCo > 1 ? 100 : 100 * propCo;
 					let constant = propCo > 1 ? 0.8 : 1;
 					ImageResizer.createResizedImage(img.path, img.assets[0].width / constant, img.assets[0].height / constant, 'JPEG', quality ).then(

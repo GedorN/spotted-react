@@ -311,6 +311,7 @@ export default class CommentaryWriter extends React.Component {
 		if (!this.state.postText && this.state.postImages.length === 0) {
 			return ;
 		}
+    console.log('Passou do check inicial');
 
 		this.setState({activity: true});
 
@@ -331,6 +332,7 @@ export default class CommentaryWriter extends React.Component {
       params.taggedUsers = taggedUsers;
 
     } else {
+      console.log('sem tah em users');
       params.taggedUsers = false;
     }
 
@@ -349,8 +351,14 @@ export default class CommentaryWriter extends React.Component {
 		params.likes = 0;
 		params.cid = await heimdallr.getUID();
 		this.state.params = params;
+    console.log('aqui foi o que? ', JSON.stringify({...params, newComment: true}))
 		AsyncStorage.setItem('new_comment', JSON.stringify({...params, newComment: true}));
-		this.props.newCommentary();
+    console.log('aqui foi 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+
+    this.props.newCommentary();
+    console.log('aqui foi3 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+
+    console.log('infos salvas $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 
 		let posImagesLenght = this.state.postImages.length;
 		if (this.state.postImages.length > 0) {
@@ -367,8 +375,7 @@ export default class CommentaryWriter extends React.Component {
 					/* Save the post*/
 					self.savePost(checkedImages / posImagesLenght);
 				} else if (img.type !== 'video/mp4') {
-					console.log('before: ', this.state.postImages);
-					let propCo =  900000 / img.fileSize;
+          let propCo =  900000 / img.assets[0].fileSize;
 					let quality = propCo > 1 ? 100 : 100 * propCo;
 					let constant = propCo > 1 ? 0.8 : 1;
 					ImageResizer.createResizedImage(img.path, img.assets[0].width / constant, img.assets[0].height / constant, 'JPEG', quality ).then(
@@ -376,7 +383,6 @@ export default class CommentaryWriter extends React.Component {
 							heimdallr.uploadImage(resolve.uri).then(
 								(result) => {
 									checkedImages ++;
-									console.log('URL resolve: ', result);
 									urlArray.push(result);
 									this.state.params.images = urlArray;
 									/* Save the post*/
