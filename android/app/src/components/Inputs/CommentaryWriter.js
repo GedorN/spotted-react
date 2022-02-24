@@ -311,8 +311,6 @@ export default class CommentaryWriter extends React.Component {
 		if (!this.state.postText && this.state.postImages.length === 0) {
 			return ;
 		}
-    console.log('Passou do check inicial');
-
 		this.setState({activity: true});
 
     let text = this.state.postText;
@@ -332,7 +330,6 @@ export default class CommentaryWriter extends React.Component {
       params.taggedUsers = taggedUsers;
 
     } else {
-      console.log('sem tah em users');
       params.taggedUsers = false;
     }
 
@@ -351,15 +348,9 @@ export default class CommentaryWriter extends React.Component {
 		params.likes = 0;
 		params.cid = await heimdallr.getUID();
 		this.state.params = params;
-    console.log('aqui foi o que? ', JSON.stringify({...params, newComment: true}))
 		AsyncStorage.setItem('new_comment', JSON.stringify({...params, newComment: true}));
-    console.log('aqui foi 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
     this.props.newCommentary();
-    console.log('aqui foi3 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
-
-    console.log('infos salvas $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
-
 		let posImagesLenght = this.state.postImages.length;
 		if (this.state.postImages.length > 0) {
 			let urlArray = [];
@@ -368,7 +359,7 @@ export default class CommentaryWriter extends React.Component {
 			/* this.props.close(); */
 			/* Save images in storage */
 			this.state.postImages.forEach((img) => {
-				if (this.state.gifIncluded) {
+        if (this.state.gifIncluded) {
 					checkedImages ++;
 					urlArray.push(img.path);
 					self.state.postImages = urlArray;
