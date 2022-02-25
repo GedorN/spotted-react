@@ -135,6 +135,9 @@ export default class BoardItemWriter extends React.Component {
       params.user_image = heimdallr.user_image;
       params.docName = this.props.id,
       params.video = this.state.videoIncluded;
+      if (heimdallr.UTFPRComum) {
+        params.UTFPRComum = heimdallr.UTFPRComum;
+      }
 			heimdallr.getUID().then((uuid) => {
 				params.pid = uuid;
 				let result = heimdallr.saveBoardPost(params);

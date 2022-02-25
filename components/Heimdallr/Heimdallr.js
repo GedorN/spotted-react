@@ -27,6 +27,7 @@ function HeimdallrLib() {
   this.UTFPRToken = null;
   this.UTFPRidInCourse = null;
   this.UTFPRPortalLogin = null;
+  this.UTFPRComum = null;
   this.userPlans = null;
   this.messages = null;
   this.deviceToken = null;
@@ -794,6 +795,7 @@ function HeimdallrLib() {
         this.customClassNotificationTime = user.customClassNotificationTime ? user.customClassNotificationTime : 30;
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
+        this.UTFPRComum = user.UTFPRComum ? user.UTFPRComum : null;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  }
 	  )
