@@ -54,9 +54,8 @@ export default class Store extends React.Component {
 		this.verifyPlan().then(() => {
 			heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
 				(resolve) => {
-					if (resolve.docs.length > 0) {
-						let mappedDocs =  resolve.docs.map((d) => d._data);
-						this.setState({ products: mappedDocs, filteredProducts: mappedDocs, loaded: true });
+					if (resolve.length > 0) {
+						this.setState({ products: resolve, filteredProducts: resolve, loaded: true });
 					}
 				}
 			)
@@ -119,9 +118,8 @@ export default class Store extends React.Component {
 		this.setState({ isRefreshing: true, products: [], filteredProducts: [] });
 		heimdallr.getStoreProducts(this.props.navigation.getParam('store')).then(
 			(resolve) => {
-				if (resolve.docs.length > 0) {
-					let mappedDocs =  resolve.docs.map((d) => d._data);
-					this.setState({ products: mappedDocs, filteredProducts: mappedDocs, isRefreshing: false });
+				if (resolve.length > 0) {
+					this.setState({ products: resolve, filteredProducts: resolve, isRefreshing: false });
 				}
 			}
 		)

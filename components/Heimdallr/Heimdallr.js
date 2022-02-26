@@ -325,7 +325,9 @@ function HeimdallrLib() {
   	return new Promise((resolve) => {
 	  firebase.firestore().collection('products').where('sid', '==', store).get().then(
 		  (result) => {
-		  	resolve(result);
+        let mappedDocs =  result.docs.map((d) => d._data);
+        let avaliableProducts = mappedDocs.filter((mp) => !mp.restrict_to_campus || mp.restrict_to_campus.indexOf(this.UTFPRComum) !== -1 )
+		  	resolve(avaliableProducts);
 		  },
 		  () => {
 		  },
