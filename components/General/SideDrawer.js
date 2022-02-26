@@ -32,7 +32,7 @@ export default class SideDrawer extends React.Component {
     componentDidMount = () => {
 	    heimdallr.getDrawer().then(
 		    (res) => {
-		    	this.setState({ stores: res.items });
+		    	this.setState({ stores: res });
 		    }
 	    );
 

@@ -1222,7 +1222,9 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
   		firebase.firestore().collection('sideDrawer').get().then(
 		    (result) => {
-		    	resolve(result.docs[0].data());
+          let stores = result.docs[0].data().items;
+          stores = stores.filter((s) => s.visible)
+		    	resolve(stores);
 		    }
 	    )
     })
