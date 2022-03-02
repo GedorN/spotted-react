@@ -98,14 +98,14 @@ export default class PortalSettings extends React.Component {
 
                 <View style={{}}>
                     <View style={{padding: 5}}>
-                        <FatBottomedButton text='Voltar' backgroundColor={theme.UTFPRPrimary} color={'white'} borderColor={theme.UTFPRPrimary}  onTap={() => {this.props.navigation.goBack()}} />
-                    </View>
-                    <View style={{ marginTop: 10, alignItems: 'flex-end' }}>
-                        <TouchableOpacity onPress={this.disconnectUserFromPortal.bind(this)}>
-                            <Text style={{color: theme.primary}}>
-                                Desconectar
-                            </Text>
-                        </TouchableOpacity>
+                        <FatBottomedButton text='Salvar' backgroundColor={theme.UTFPRPrimary} color={'white'} borderColor={theme.UTFPRPrimary}  onTap={() => {this.props.navigation.goBack()}} />
+                        <View style={{ marginTop: 10, paddingHorizontal: 10,  alignItems: 'flex-end' }}>
+                            <TouchableOpacity onPress={this.disconnectUserFromPortal.bind(this)}>
+                                <Text style={{color: theme.primary}}>
+                                    Desconectar
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -116,6 +116,7 @@ export default class PortalSettings extends React.Component {
 const styles = StyleSheet.create({
     container: {
         padding: 10,
+        paddingHorizontal: 30,
         height: theme.height * 0.87,
         justifyContent: 'space-between',
     },
