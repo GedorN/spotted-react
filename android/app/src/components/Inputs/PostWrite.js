@@ -87,15 +87,18 @@ export default class PostWrite extends React.Component {
 	doPost = async () => {
 
     try {
-
+      // Verificação simples para ver se há conteúdo na postagem
       if (this.state.postText == '' && this.state.postImages.length == 0  && this.state.postImages.length === 0 || this.state.activity) {
         return ;
       }
+
       let text = this.state.postText;
       const params = {};
 
       this.setState({activity: true});
       const taggedUsers = []
+
+      // Analise e processa usuários marcados na postagem
       if (this.state.taggedUsers.length > 0) {
         for (let i = 0; i < this.state.taggedUsers.length; i++) {
           let taggedUser = {}
@@ -105,36 +108,39 @@ export default class PostWrite extends React.Component {
 
           taggedUsers.push(taggedUser);
         }
-
         params.taggedUsers = taggedUsers;
-
       } else {
         params.taggedUsers = false;
       }
 
-      /* caso a postagem possua ao menos uma foto */
-      let posImagesLenght = this.state.postImages.length;
-      if (this.state.postImages.length > 0) {
-        params.active = 1;
-        params.date = await heimdallr.getServerTime();
-        params.sort_value = params.date;
-        params.text = text;
-        params.uid = heimdallr.user_id;
-        params.images = this.state.postImages;
-        params.user_name = heimdallr.user_name;
-        params.anonymous = this.state.anonymousUser;
-        params.user_image = heimdallr.user_image;
-        params.gif = this.state.gifIncluded;
-        params.comments = 0;
-        params.video = this.state.videoIncluded;
-        params.liked_by = [];
-        params.likes = 0;
-        params.images = this.state.postImages.map(i => i.path);
-        params.pid = await heimdallr.getUID();
-        this.state.params = params;
-        AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
-        this.props.call({...params, newPost: true});
+      // Dados gerais da postagem
+      params.active = 1;
+      params.date = await heimdallr.getServerTime();
+      params.sort_value = params.date;
+      params.text = text;
+      params.uid = heimdallr.user_id;
+      params.images = this.state.postImages;
+      params.user_name = heimdallr.user_name;
+      params.anonymous = this.state.anonymousUser;
+      params.user_image = heimdallr.user_image;
+      params.gif = this.state.gifIncluded;
+      params.comments = 0;
+      params.video = this.state.videoIncluded;
+      params.liked_by = [];
+      params.likes = 0;
+      params.images = this.state.postImages.map(i => i.path);
+      params.pid = await heimdallr.getUID();
 
+      if (heimdallr.UTFPRComum) {
+        params.UTFPRComum = heimdallr.UTFPRComum;
+      }
+
+      this.state.params = params;
+      AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
+      this.props.call({...params, newPost: true});
+
+      if (this.state.postImages.length > 0) {
+        let posImagesLength = this.state.postImages.length;
         let urlArray = [];
         let self = this;
         let checkedImages = 0;
@@ -145,9 +151,8 @@ export default class PostWrite extends React.Component {
             urlArray.push(img.path);
             self.state.postImages = urlArray;
             /* Save the post*/
-            self.savePost(checkedImages / posImagesLenght);
+            self.savePost(checkedImages / posImagesLength);
           } else if (img.type !== 'video/mp4') {
-            console.log('before: ', this.state.postImages);
             let propCo =  900000 / img.assets[0].fileSize;
             let quality = propCo > 1 ? 100 : 100 * propCo;
             let constant = propCo > 1 ? 0.8 : 1;
@@ -156,11 +161,10 @@ export default class PostWrite extends React.Component {
                 let link = heimdallr.uploadImage(resolve.uri);
                 link.then(function (resolve) {
                   checkedImages ++;
-                  console.log('URL resolve: ', resolve);
                   urlArray.push(resolve);
                   self.state.params.images = urlArray;
                   /* Save the post*/
-                  self.savePost(checkedImages / posImagesLenght);
+                  self.savePost(checkedImages / posImagesLength);
                 })
 
               },
@@ -170,34 +174,14 @@ export default class PostWrite extends React.Component {
             let link = heimdallr.uploadImage(img.uri);
             link.then(function (resolve) {
               checkedImages ++;
-              console.log('URL resolve: ', resolve);
               urlArray.push(resolve);
               self.state.params.images = urlArray;
               /* Save the post*/
-              self.savePost(checkedImages / posImagesLenght);
+              self.savePost(checkedImages / posImagesLength);
             })
           }
         })
       } else {
-        // caso a postagem não contenha imagem
-        params.active = 1;
-        params.date = await heimdallr.getServerTime();
-        params.sort_value = params.date;
-        params.text = text;
-        params.uid = heimdallr.user_id;
-        params.images = this.state.postImages;
-        params.user_name = heimdallr.user_name;
-        params.anonymous = this.state.anonymousUser;
-        params.user_image = heimdallr.user_image;
-        params.gif = this.state.gifIncluded;
-        params.comments = 0;
-        params.video = this.state.videoIncluded;
-        params.liked_by = [];
-        params.likes = 0;
-        params.pid = await heimdallr.getUID();
-        this.state.params = params;
-        AsyncStorage.setItem('new_post', JSON.stringify({...params, newPost: true}));
-        this.props.call({...params, newPost: true});
         this.savePost(1);
       }
 
@@ -206,7 +190,7 @@ export default class PostWrite extends React.Component {
         heimdallr.sendTaggedUsersNotification({ entity: 'post', pid: params.pid, taggedUsers: taggedUsers });
       }
     } catch (e) {
-      console.log("deu ruim mano: ", e)
+      console.log("[PostWrite] - Error when posting: ", e)
     }
 	}
 
@@ -260,15 +244,11 @@ export default class PostWrite extends React.Component {
           }
           this.setState({postImages: [response], videoIncluded: true});
         } else {
-          console.log("Entrei aqui: ", response.assets[0].uri)
           const name = Date.now().toString() + '.jpg';
-          console.log("Name: ", name)
           await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
           await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
           let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
           response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
-          console.log("Aqui tem algo? ", response.path)
-          console.log("Veja tudo: ", a.map(i => i.name));
           PhotoEditor.Edit({
             path: response.path,
             onDone: () => {
@@ -317,15 +297,11 @@ export default class PostWrite extends React.Component {
           }
           this.setState({postImages: [response], videoIncluded: true});
         } else {
-          console.log("Entrei aqui: ", response.assets[0].uri)
           const name = Date.now().toString() + '.jpg';
-          console.log("Name: ", name)
           await RNFS.mkdir(RNFS.PicturesDirectoryPath + '/Spotted');
           await RNFS.copyFile(response.assets[0].uri, RNFS.PicturesDirectoryPath + '/Spotted/' + name);
           let a = await RNFS.readDir(RNFS.PicturesDirectoryPath + '/Spotted');
           response.path = RNFS.PicturesDirectoryPath + '/Spotted/' + name;
-          console.log("Aqui tem algo? ", response.path)
-          console.log("Veja tudo: ", a.map(i => i.name));
           PhotoEditor.Edit({
             path: response.path,
             onDone: () => {

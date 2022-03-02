@@ -27,6 +27,7 @@ function HeimdallrLib() {
   this.UTFPRToken = null;
   this.UTFPRidInCourse = null;
   this.UTFPRPortalLogin = null;
+  this.UTFPRComum = null;
   this.userPlans = null;
   this.messages = null;
   this.deviceToken = null;
@@ -324,7 +325,9 @@ function HeimdallrLib() {
   	return new Promise((resolve) => {
 	  firebase.firestore().collection('products').where('sid', '==', store).get().then(
 		  (result) => {
-		  	resolve(result);
+        let mappedDocs =  result.docs.map((d) => d._data);
+        let avaliableProducts = mappedDocs.filter((mp) => !mp.restrict_to_campus || mp.restrict_to_campus.indexOf(this.UTFPRComum) !== -1 )
+		  	resolve(avaliableProducts);
 		  },
 		  () => {
 		  },
@@ -794,6 +797,7 @@ function HeimdallrLib() {
         this.customClassNotificationTime = user.customClassNotificationTime ? user.customClassNotificationTime : 30;
 			  this.UTFPRPortalLogin = user.UTFPRPortalLogin ? user.UTFPRPortalLogin : null;
 			  this.UTFPRidInCourse = user.UTFPRidInCourse ? user.UTFPRidInCourse : null;
+        this.UTFPRComum = user.UTFPRComum ? user.UTFPRComum : null;
 			  // AsyncStorage.setItem('user_messages', JSON.stringify(user.messages));
 		  }
 	  )
@@ -1218,7 +1222,9 @@ function HeimdallrLib() {
   	return new Promise((resolve, reject) => {
   		firebase.firestore().collection('sideDrawer').get().then(
 		    (result) => {
-		    	resolve(result.docs[0].data());
+          let stores = result.docs[0].data().items;
+          stores = stores.filter((s) => s.visible)
+		    	resolve(stores);
 		    }
 	    )
     })
