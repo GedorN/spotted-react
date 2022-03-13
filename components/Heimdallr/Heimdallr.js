@@ -1934,6 +1934,27 @@ function HeimdallrLib() {
     );
   }
 
+  this.getStudentReportCard = function () {
+    return new Promise((resolve, reject) => {
+      RNFetchBlob.fetch('GET', `https://webapp.utfpr.edu.br/portalAluno/ws/${heimdallr.UTFPRidInCourse}/boletim`, {
+        Authorization: 'Bearer ' + heimdallr.UTFPRToken,
+        Accept: '*/*'
+      }).then(
+        (result) => {
+          if (result.respInfo.status === HTTPS_UNAUTHORIZED) {
+            reject();
+          } else {
+            const data = result && result.data ? JSON.parse(result.data) : null;
+            resolve(data);
+          }
+        },
+        (error) => {
+          reject(error);
+        }
+      )
+    })
+  }
+
 
 
 }
