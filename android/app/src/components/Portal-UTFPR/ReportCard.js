@@ -50,8 +50,8 @@ export default class ReportCard extends React.Component {
           this.state.loaded ?
             <View style={ styles.body }>
               <FlatList
-                showsVerticalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
+                // showsVerticalScrollIndicator={false}
+                // showsVerticalScrollIndicator={false}
                 keyExtractor={ (item, index) => index }
                 data={ this.state.courses }
                 renderItem={ ({ item }) =>
@@ -62,11 +62,15 @@ export default class ReportCard extends React.Component {
           :
             <SkeletonPlaceholder>
               <SkeletonPlaceholder style={{ marginTop: 25, justifyContent: 'space-evenly', alignItems: 'center'}}>
-                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20}>
+                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.17 } borderRadius={20}>
                 </SkeletonPlaceholder.Item>
-                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
+                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.17 } borderRadius={20} marginTop={10}>
                 </SkeletonPlaceholder.Item>
-                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.23 } borderRadius={20} marginTop={10}>
+                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.17 } borderRadius={20} marginTop={10}>
+                </SkeletonPlaceholder.Item>
+                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.17 } borderRadius={20} marginTop={10}>
+                </SkeletonPlaceholder.Item>
+                <SkeletonPlaceholder.Item width={ theme.width * 0.93 } height={ theme.height * 0.17 } borderRadius={20} marginTop={10}>
                 </SkeletonPlaceholder.Item>
               </SkeletonPlaceholder>
             </SkeletonPlaceholder>
@@ -82,7 +86,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20
   },
   body: {
-    marginTop: 10
+    marginTop: 10,
+    height: theme.height * 0.79,
   },
   headerText: {
     fontSize: 20,

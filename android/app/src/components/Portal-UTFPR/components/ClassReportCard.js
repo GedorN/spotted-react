@@ -15,6 +15,10 @@ export default class ClassReportCard extends React.Component {
     }
   }
 
+  getPercentage(a, b) {
+    return Math.trunc( ((a - b) / a) * 100 );
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -22,7 +26,45 @@ export default class ClassReportCard extends React.Component {
           <Text style={styles.className} >{this.props.class.discNomeVc}</Text>
         </View>
         <View style={styles.body}>
-          <Text>oi</Text>
+          <View style={styles.classInfoRow}>
+            <Text style={styles.classInfoTitle} > Aulas: </Text>
+            {
+              this.props.class.aulasPrevistas ?
+                <Text style={ styles.classInfoData } >
+                  {this.props.class.aulasDadas} de {this.props.class.aulasPrevistas} previstas
+                </Text>
+              :
+                <Text>Não informado</Text>
+            }
+          </View>
+          <View style={styles.classInfoRow}>
+            <Text style={styles.classInfoTitle} > Faltas: </Text>
+            {
+              this.props.class.aulasPrevistas ?
+                <Text style={ styles.classInfoData } >
+                  {this.props.class.faltas} de {Math.trunc(this.props.class.aulasPrevistas * 0.25)} permitidas
+                </Text>
+              :
+                <Text>Não informado</Text>
+            }
+          </View>
+          <View style={styles.classInfoRow}>
+            <View style={{flexDirection: 'row', width: '50%', flexWrap: 'wrap', wordWrap: 'break-word'}}>
+              <Text style={styles.classInfoTitle} > Frequência: </Text>
+              {
+                this.props.class.aulasDadas > 0 ?
+                  <Text style={ styles.classInfoData } >
+                    {this.getPercentage(this.props.class.aulasDadas, this.props.class.faltas)}%
+                  </Text>
+                  :
+                  <Text style={{  }}>Aulas não lançadas</Text>
+              }
+            </View>
+            <View style={{ flexDirection: 'row', width: '50%' }} >
+              <Text style={styles.classInfoTitle} > Nota: </Text>
+              <Text style={ styles.classInfoData } > Indisponível </Text>
+            </View>
+          </View>
         </View>
       </View>
     )
@@ -48,12 +90,24 @@ const styles = StyleSheet.create({
     padding: 12
   },
   body: {
-    flex: 3
+    flex: 3,
+    padding: 10
   },
   className: {
     fontWeight: 'bold',
     textAlign: 'left',
     color: 'black',
     fontSize: 16,
+  },
+  classInfoTitle: {
+    fontWeight: 'bold'
+  },
+  classInfoData: {
+
+  },
+  classInfoRow: {
+    flexDirection: 'row',
+    padding: 5
   }
+
 })
