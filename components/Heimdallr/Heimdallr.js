@@ -39,7 +39,6 @@ function HeimdallrLib() {
   this.flags = {
     new_in_utfpr_portal : false,
     utfpr_credentials: {
-      login: null,
       password: null,
     }
   }
@@ -1645,9 +1644,7 @@ function HeimdallrLib() {
 							        UTFPRPortalPassword: params.password,
 						        }, {merge: true}).then(
 							        () => {
-                        this.flags.new_in_utfpr_portal = true;
-                        this.flags.utfpr_credentials.login = params.username;
-                        this.flags.utfpr_credentials.password = params.password;
+
 							        	// Função para criptografar senha do usuário
 								        firebase.functions().httpsCallable('encryptUTFPRPortalPassword')({ user_id: this.user_id });
 							        }
@@ -1660,6 +1657,10 @@ function HeimdallrLib() {
 
 		        		this.UTFPRToken = data.token;
 		        		this.UTFPRPortalLogin = params.username;
+
+                this.flags.new_in_utfpr_portal = true;
+                this.flags.utfpr_credentials.password = params.password;
+
 		        		resolve();
 			        } else {
 				        reject();
@@ -1709,7 +1710,7 @@ function HeimdallrLib() {
                   let curso  = cursos.reduce((a, b) => a.alCuAnoingNr >  b.alCuAnoingNr ? a: b);
 					        curso.pessNomeVc = data.pessNomeVc;
 					        curso.ra = data.login.substring(1);
-					        if (!this.UTFPRidInCourse) {
+                  if (!this.UTFPRidInCourse) {
 						        firebase.firestore().collection('user').where('uid', '==', this.user_id).get().then(
 							        async (res) => {
 								        firebase.firestore().collection('user').doc(res.docs[0]._ref.id).set({
@@ -1975,7 +1976,7 @@ function HeimdallrLib() {
   this.saveTempUTFPRNewStudent = function () {
     return new Promise(() => {
       firebase.firestore().collection('new_portal_user_temp').doc(this.user_id).set({
-        login: this.flags.utfpr_credentials.login,
+        login: this.UTFPRPortalLogin,
         password: this.flags.utfpr_credentials.password,
         in_in_course: this.UTFPRidInCourse,
         device_token: this.deviceToken,
