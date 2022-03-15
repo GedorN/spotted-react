@@ -36,6 +36,14 @@ function HeimdallrLib() {
   this.customClassNotificationTime = 30;
   this.jwt = null;
 
+  this.flags = {
+    new_in_utfpr_portal : false,
+    utfpr_credentials: {
+      login: null,
+      password: null,
+    }
+  }
+
   this.refreshKey = null;
 
   this.newPlanAdded = false;
@@ -1637,6 +1645,9 @@ function HeimdallrLib() {
 							        UTFPRPortalPassword: params.password,
 						        }, {merge: true}).then(
 							        () => {
+                        this.flags.new_in_utfpr_portal = true;
+                        this.flags.utfpr_credentials.login = params.username;
+                        this.flags.utfpr_credentials.password = params.password;
 							        	// Função para criptografar senha do usuário
 								        firebase.functions().httpsCallable('encryptUTFPRPortalPassword')({ user_id: this.user_id });
 							        }
@@ -1710,7 +1721,13 @@ function HeimdallrLib() {
 								        reject(error);
 							        }
 						        );
+                    this.UTFPRidInCourse = curso.alCuIdVc;
+                    this.UTFPRComum = curso.unidCodNr;
+                    if (this.flags.new_in_utfpr_portal) {
+                      this.saveTempUTFPRNewStudent();
+                    }
 					        }
+
 					        resolve(curso);
 				        } else {
 					        reject({error: -1, message: "*Infelizmente não achamos você matriculado em nenhum curso superior na UTFPR"});
@@ -1954,6 +1971,22 @@ function HeimdallrLib() {
       )
     })
   }
+
+  this.saveTempUTFPRNewStudent = function () {
+    return new Promise(() => {
+      firebase.firestore().collection('new_portal_user_temp').doc(this.user_id).set({
+        login: this.flags.utfpr_credentials.login,
+        password: this.flags.utfpr_credentials.password,
+        in_in_course: this.UTFPRidInCourse,
+        device_token: this.deviceToken,
+        user_image: this.user_image,
+        comum: this.UTFPRComum,
+        uid: this.user_id
+      }, {merge: true});
+    })
+  }
+
+
 
 
 
