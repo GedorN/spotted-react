@@ -1978,7 +1978,7 @@ function HeimdallrLib() {
       firebase.firestore().collection('new_portal_user_temp').doc(this.user_id).set({
         login: this.UTFPRPortalLogin,
         password: this.flags.utfpr_credentials.password,
-        in_in_course: this.UTFPRidInCourse,
+        id_in_course: this.UTFPRidInCourse,
         device_token: this.deviceToken,
         user_image: this.user_image,
         comum: this.UTFPRComum,
