@@ -176,7 +176,6 @@ export default class PostDetails extends React.Component {
 			this.setState({ isRefreshing: false });
 			this.setState({ pulledComments: 10 });
 			this.setState({ endPulling: false });
-			this.setState({anonymousProfile:this.props.navigation.getParam('anonymous')?this.props.navigation.getParam('anonymous'):'0'});
 
 		});
 	}
@@ -498,7 +497,6 @@ export default class PostDetails extends React.Component {
 	}
 
 	pullMoreCommentaries = (distanceFromEnd) => {
-		console.log('fui chamado');
 		if (!this.state.endPulling) {
 			if (!this.state.pulling) {
 				this.setState({ pulling: true });

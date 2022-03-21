@@ -190,7 +190,6 @@ export default class BoardItemDetails extends React.Component {
 	}
 
     pullMoreCommentaries = (distanceFromEnd) => {
-		console.log('fui chamado');
 		if (!this.state.endPulling) {
 			if (!this.state.pulling) {
 				this.setState({ pulling: true });
