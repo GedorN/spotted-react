@@ -41,7 +41,6 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-  	heimdallr.refreshKey = new Date();
   	this.props.navigation.addListener('willFocus', () => {
   		StatusBar.setBackgroundColor('white');
   		StatusBar.setBarStyle('dark-content');

@@ -15,7 +15,7 @@ export default class UserImgProfile extends React.Component {
 	    if (this.props.uri) {
 	      return (
 	        <Image
-		        source={{uri: this.props.uri.indexOf('firebase') > 0 ? this.props.uri + '&refreshKey=' + heimdallr.refreshKey : this.props.uri}}
+		        source={{uri: this.props.uri }}
 		        style={{width: this.props.width ? this.props.width : 60,
 			        height: this.props.height ? this.props.height : 60,
 			        borderRadius: this.props.circular ? 100 : 0,

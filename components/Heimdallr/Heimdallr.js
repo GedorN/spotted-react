@@ -43,8 +43,6 @@ function HeimdallrLib() {
     }
   }
 
-  this.refreshKey = null;
-
   this.newPlanAdded = false;
 
 
