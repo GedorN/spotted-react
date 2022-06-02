@@ -12,7 +12,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Linking} from 'react-native';
 let badgeListner = null;
 let userListner = null;
-import { APP_KEY, APP_VERSION, POST, SERVER_ADDRESS } from '@env';
+import { APP_KEY, APP_VERSION, POST, SERVER_URL } from '@env';
 
 
 const HTTPS_UNAUTHORIZED = 401;
@@ -184,7 +184,7 @@ function HeimdallrLib() {
 		RNFetchBlob.config({
 			trusty: true
 		}).fetch('POST',
-			`https://${SERVER_ADDRESS}/comment-message`,
+			`https://${SERVER_URL}/comment-message`,
 			{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 			JSON.stringify({
 				destUserId: uid,
@@ -1063,7 +1063,7 @@ function HeimdallrLib() {
 			RNFetchBlob.config({
 				trusty: true
 			}).fetch('POST',
-				'https://3.23.33.91/newPhoneRequest',
+				`https://${SERVER_URL}/newPhoneRequest`,
 				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
@@ -1154,7 +1154,7 @@ function HeimdallrLib() {
 	  RNFetchBlob.config({
 		  trusty: true
 	  }).fetch('POST',
-		  `https://${SERVER_ADDRESS}/new-account`,
+		  `https://${SERVER_URL}/new-account`,
 		  { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 		  JSON.stringify({
 			  email: this.email,
@@ -1316,7 +1316,7 @@ function HeimdallrLib() {
 						    RNFetchBlob.config({
 							    trusty: true
 						    }).fetch('POST',
-							    'https://3.23.33.91/like-message',
+							    `https://${SERVER_URL}/like-message`,
 							    { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 							    JSON.stringify({
 								    destUserId: doc.uid,
@@ -1465,7 +1465,7 @@ function HeimdallrLib() {
 		RNFetchBlob.config({
 			trusty: true
 		}).fetch('POST',
-			'https://3.23.33.91/comment-board-message',
+			`https://${SERVER_URL}/comment-board-message`,
 			{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 			JSON.stringify({
 				destUserId: notification.uid,
@@ -1603,7 +1603,7 @@ function HeimdallrLib() {
 			RNFetchBlob.config({
 				trusty: true
 			}).fetch('POST',
-				'https://3.23.33.91/refusePhoneRequest',
+				`https://${SERVER_URL}/refusePhoneRequest`,
 				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
@@ -1615,7 +1615,7 @@ function HeimdallrLib() {
 			RNFetchBlob.config({
 				trusty: true
 			}).fetch('POST',
-				'https://3.23.33.91/acceptPhoneRequest',
+				`https://${SERVER_URL}/acceptPhoneRequest`,
 				{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}`},
 				JSON.stringify(params)
 			);
@@ -1889,7 +1889,7 @@ function HeimdallrLib() {
     return new Promise((resolve, reject) => {
       RNFetchBlob.config({trusty: true}).fetch(
         'POST',
-        'https://3.23.33.91/create-user-token',
+        `https://${SERVER_URL}/create-user-token`,
         { 'Content-Type': 'application/json'},
         JSON.stringify({
           usermail: this.email,
@@ -1918,7 +1918,7 @@ function HeimdallrLib() {
     return new Promise((resolve, reject) => {
       RNFetchBlob.config({ trusty: true }).fetch(
         'POST',
-        `https://${SERVER_ADDRESS}/sendTagUserNotification`,
+        `https://${SERVER_URL}/sendTagUserNotification`,
         { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.jwt}` },
         JSON.stringify(params)
       ).then(

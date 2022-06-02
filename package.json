@@ -1,6 +1,6 @@
 {
   "name": "Spotted",
-  "version": "4.6.2",
+  "version": "4.8.0",
   "private": true,
   "scripts": {
     "android-bundle": "ORG_GRADLE_PROJECT_bundleInDev=true npm run android",

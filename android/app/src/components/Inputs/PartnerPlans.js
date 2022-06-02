@@ -21,7 +21,7 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
 import RNFetchBlob from 'rn-fetch-blob';
-import { X_PIC_PAY_TOKEN } from '@env';
+import { X_PIC_PAY_TOKEN, SERVER_URL } from '@env';
 
 let verify = null;
 
@@ -94,7 +94,7 @@ export default class PartnerPlans extends React.Component {
 						headers: {'x-picpay-token': X_PIC_PAY_TOKEN},
 						data: {
 							"referenceId": params.referenceId,
-							"callbackUrl": "http://3.23.33.91/plan-status",
+							"callbackUrl": `http://${SERVER_URL}/plan-status`,
 							"value": params.userPrice,
 							"expiresAt": payment_due_date,
 							"buyer": {
@@ -111,7 +111,7 @@ export default class PartnerPlans extends React.Component {
 								RNFetchBlob.config({
 									trusty: true
 								}).fetch('POST',
-									'https://3.23.33.91/allocate-plan',
+									`https://${SERVER_URL}/allocate-plan`,
 									{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${heimdallr.jwt}`},
 									JSON.stringify({
 										...params

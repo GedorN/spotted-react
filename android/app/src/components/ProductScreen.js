@@ -29,7 +29,7 @@ import CarouselModaFoka from "./layout/CarouselModaFoka";
 import RNFetchBlob from 'rn-fetch-blob';
 import moment from "moment";
 import {NavigationActions, StackActions} from "react-navigation";
-import { X_PIC_PAY_TOKEN } from '@env';
+import { X_PIC_PAY_TOKEN, SERVER_URL } from '@env';
 
 export default class ProductScreen extends React.Component {
 	constructor(props) {
@@ -340,7 +340,7 @@ export default class ProductScreen extends React.Component {
 					headers: {'x-picpay-token': X_PIC_PAY_TOKEN},
 					data: {
 						"referenceId": params.referenceId,
-						"callbackUrl": "http://3.23.33.91/purchase-status",
+						"callbackUrl": `http://${SERVER_URL}/purchase-status`,
 						"returnUrl": "https://spottedutfpr.com/app/tickets",
 						"value": params.productPrice,
 						"expiresAt": due_date,
@@ -358,7 +358,7 @@ export default class ProductScreen extends React.Component {
 						RNFetchBlob.config({
 							trusty: true
 						}).fetch('POST',
-							'https://3.23.33.91/allocate-product',
+							`https://${SERVER_URL}/allocate-product`,
 							{ 'Content-Type': 'application/json', 'Authorization': `Bearer ${heimdallr.jwt}`},
 							JSON.stringify({
 								...params
