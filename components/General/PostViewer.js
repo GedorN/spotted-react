@@ -17,22 +17,25 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import PostOptions from "../../android/app/src/components/Inputs/PostOptions";
 import theme from "./Theme";
 import PostDetails from "../../android/app/src/components/PostDetails";
+import UTFPRCampus from "../utils/UTFPRCampus";
 
 
 export default class PostViewer extends React.Component {
   constructor () {
     super ();
     this.state = {
-        showAlert: false,
+      showAlert: false,
 	    showImages: false,
 	    galleryObj: [],
 	    indexImage: 0,
 	    opacityValue: 0.7,
 	    opacityValueScrolling: 1,
-		opacity: new Animated.Value(0),
-		reportAlert: true,
+		  opacity: new Animated.Value(0),
+		  reportAlert: true,
 	    liked: false,
 	    likes: 0,
+      name: null,
+      lastName: null
     };
   }
 
@@ -44,6 +47,11 @@ export default class PostViewer extends React.Component {
 	  this.state.likes = this.props.likes;
 	  const liked = this.props.liked_by && this.props.liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
 	  this.setState({ liked: liked });
+    if (this.props.anonymous) {
+      const name = this.props.user.split(' ');
+      this.name = name[0];
+      this.lastName = name.length > 1 ? ` ${name[1]}` : null;
+    }
 
 	  if (this.props.images) {
 	  	this.props.images.forEach((img) => {
@@ -561,14 +569,33 @@ export default class PostViewer extends React.Component {
 				<View style={{flexDirection: 'column'}}>
 					<View style = {{flexDirection: 'row'}}>
 						<View style={styles.postHeader}>
-							<View style={{ flexDirection: 'row', alignItems: 'center'}}>
+							<View style={styles.centeredRow}>
 								<TouchableOpacity activeOpacity={this.props.scrolling ? this.state.opacityValueScrolling :  this.state.opacityValue} onPress={this.props.anonymous?(this.props.anonymous == '0'?this.goToUserProfile.bind(this):null):this.goToUserProfile.bind(this)}>
 										<Text
 												style={{marginLeft: 16, marginTop:5, fontWeight: 'bold'}}
 										>
-												{this.props.user}
+												{this.name}{this.lastName}
 										</Text>
 								</TouchableOpacity>
+                {
+                  this.props.comum &&
+                  <View style={styles.centeredRow}>
+                    	<Image
+                    		style={{width: 4, height: 4, marginLeft: 4, alignSelf: 'center', marginTop: 6, opacity:0.7}}
+                    		source={require('../../assets/images/circle-solid.png') }
+                    	/>
+                    <Text style={{
+                      marginTop: 5,
+                      marginLeft: 4,
+                      opacity: 0.5,
+                      fontWeight: "bold",
+                      alignSelf: 'flex-end',
+                      fontSize: 12
+                    }}>
+                      {UTFPRCampus[this.props.comum - 1].name}
+                    </Text>
+                  </View>
+                }
 								{/*{*/}
 								{/*	this.props.elapsed_time &&*/}
 								{/*	<Image*/}
@@ -695,4 +722,8 @@ export default class PostViewer extends React.Component {
           borderRadius: 8,
           color: 'black',
       },
+      centeredRow: {
+        flexDirection: 'row',
+        alignItems: 'center'
+      }
   });

@@ -956,17 +956,14 @@ function HeimdallrLib() {
 	this.querycolletion = function (collection, param, condition) {
 		let docs = null;
 		return new Promise((resolve) => {
-			console.log('indo pegar com condição...');
 			const post = firebase.firestore()
 				.collection(collection)
 				.where(param, '==', condition)
 				.get().then((result) => {
-					console.log('chegou');
 					let orderByDesc = [];
 					docs = result.docs;
 					resolve();
 				}).catch ((e) => {
-					console.log('que caca: ', e);
 				});
 
 		}).then(function (resolve) {

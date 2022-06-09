@@ -30,6 +30,7 @@ import ImageViewer from "react-native-image-zoom-viewer";
 import CommentaryWriter from "./Inputs/CommentaryWriter";
 import PostOptions from "./Inputs/PostOptions";
 import { POST } from '@env';
+import UTFPRCampus from "../../../../components/utils/UTFPRCampus";
 
 const width = Dimensions.get('screen').width;
 const  height = Dimensions.get('screen').height;
@@ -65,6 +66,8 @@ export default class PostDetails extends React.Component {
 			removedPost: false,
 			likes: 0,
 			liked: false,
+      name: null,
+      lastName: null
 		};
 	}
 
@@ -75,7 +78,6 @@ export default class PostDetails extends React.Component {
 		if (this.props.navigation.getParam('userId') === heimdallr.user_id){
 			this.state.reportAlert = false;
 		}
-
 		// Procedimento para o caso de uma postagem recem feita. Ou seja, não está no banco de dados
 		if (this.props.navigation.getParam('newPost')) {
 			// Construção de uma estrutura similar à que vem do banco de dados
@@ -86,7 +88,12 @@ export default class PostDetails extends React.Component {
 
 			resolve._data.date = moment(resolve._data.date).locale('pt-br').format('LLLL');
 			let liked = resolve._data.liked_by && resolve._data.liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
-			this.setState( { post: resolve, likes: resolve._data.likes, liked: liked});
+      // Nome e sobrenome do usuário
+      const name = resolve._data.user_name.split(' ')
+      this.name = name[0]
+      this.lastName = name.length > 1 ? ` ${name[1]}` : null
+
+      this.setState( { post: resolve, likes: resolve._data.likes, liked: liked});
 			if (resolve._data.images) {
 				(resolve._data.images).forEach((img) => {
 					let images = this.state.galleryObj;
@@ -106,7 +113,11 @@ export default class PostDetails extends React.Component {
 				}
 				resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
 				let liked = resolve[0].data().liked_by && resolve[0].data().liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
-				this.setState( { post: resolve[0], likes: resolve[0].data().likes, liked: liked});
+        // Nome e sobrenome do usuário
+        const name = resolve[0].data().user_name.split(' ')
+        this.name = name[0]
+        this.lastName = name.length > 1 ? ` ${name[1]}` : null
+        this.setState( { post: resolve[0], likes: resolve[0].data().likes, liked: liked});
 				if (resolve[0].data().images) {
 					(resolve[0].data().images).forEach((img) => {
 						let images = this.state.galleryObj;
@@ -765,14 +776,33 @@ export default class PostDetails extends React.Component {
 										<View style={{flexDirection: 'column'}}>
 											<View style={{flexDirection:'row'}}>
 												<View style={styles.postHeader}>
-													<View style={{flexDirection: 'row', alignItems: 'center'}}>
+													<View style={styles.centeredRow}>
 														<TouchableOpacity  onPress={this.state.post?(this.state.anonymousProfile == '0'? this.goToUserProfile.bind(this):null):null}>
 															<Text
 																style={{marginLeft: 16,marginTop: 5, fontWeight: 'bold'}}
 															>
-																{this.state.post ?(this.state.anonymousProfile == '0'?this.state.post.data().user_name:'Anônimo'): null}
+																{this.state.post ?(this.state.anonymousProfile == '0'? `${this.name}${this.lastName}` :'Anônimo'): null}
 															</Text>
 														</TouchableOpacity>
+                            {
+                              this.state.post && this.state.post.data().UTFPRComum &&
+                              <View style={styles.centeredRow}>
+                                <Image
+                                  style={{width: 4, height: 4, marginLeft: 4, alignSelf: 'center', marginTop: 6, opacity:0.7}}
+                                  source={require('../../../../assets/images/circle-solid.png') }
+                                />
+                                <Text style={{
+                                  marginTop: 5,
+                                  marginLeft: 4,
+                                  opacity: 0.5,
+                                  fontWeight: "bold",
+                                  alignSelf: 'flex-end',
+                                  fontSize: 12
+                                }}>
+                                  {UTFPRCampus[this.state.post.data().UTFPRComum - 1].name}
+                                </Text>
+                              </View>
+                            }
 													</View>
 												</View>
 												<TouchableOpacity
@@ -999,5 +1029,9 @@ const styles = StyleSheet.create({
     marginBottom:theme.height*0.02,
     paddingRight:theme.width*0.01,
     paddingLeft:theme.width * 0.01
+  },
+  centeredRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
   }
 });
