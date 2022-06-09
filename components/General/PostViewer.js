@@ -82,6 +82,7 @@ export default class PostViewer extends React.Component {
 	    Animated.timing(this.state.opacity, {
 		    toValue: 1,
 		    duration: 300,
+        useNativeDriver: true
 	    }).start();
     }
 

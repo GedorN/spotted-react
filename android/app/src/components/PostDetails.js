@@ -89,9 +89,11 @@ export default class PostDetails extends React.Component {
 			resolve._data.date = moment(resolve._data.date).locale('pt-br').format('LLLL');
 			let liked = resolve._data.liked_by && resolve._data.liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
       // Nome e sobrenome do usuário
-      const name = resolve._data.user_name.split(' ')
-      this.name = name[0]
-      this.lastName = name.length > 1 ? ` ${name[1]}` : null
+      if (!resolve._data.anonymous) {
+        const name = resolve._data.user_name.split(' ')
+        this.name = name[0]
+        this.lastName = name.length > 1 ? ` ${name[1]}` : null
+      }
 
       this.setState( { post: resolve, likes: resolve._data.likes, liked: liked});
 			if (resolve._data.images) {
@@ -114,9 +116,12 @@ export default class PostDetails extends React.Component {
 				resolve[0]._data.date = moment(resolve[0].data().date).locale('pt-br').format('LLLL');
 				let liked = resolve[0].data().liked_by && resolve[0].data().liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
         // Nome e sobrenome do usuário
-        const name = resolve[0].data().user_name.split(' ')
-        this.name = name[0]
-        this.lastName = name.length > 1 ? ` ${name[1]}` : null
+        if (!resolve[0].data().anonymous)  {
+          const name = resolve[0].data().user_name.split(' ')
+          this.name = name[0]
+          this.lastName = name.length > 1 ? ` ${name[1]}` : null
+        }
+
         this.setState( { post: resolve[0], likes: resolve[0].data().likes, liked: liked});
 				if (resolve[0].data().images) {
 					(resolve[0].data().images).forEach((img) => {
