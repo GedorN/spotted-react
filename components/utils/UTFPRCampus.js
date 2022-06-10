@@ -4,7 +4,7 @@ export default [
     id: 1,
   },
   {
-    name: "Conélio Procópio",
+    name: "Cornélio Procópio",
     id: 2,
   },
   {
