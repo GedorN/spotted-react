@@ -41,17 +41,16 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-  	heimdallr.refreshKey = new Date();
   	this.props.navigation.addListener('willFocus', () => {
   		StatusBar.setBackgroundColor('white');
   		StatusBar.setBarStyle('dark-content');
   	});
   	  this.getStudentInfo();
       let result = heimdallr.getCollection(POST, this.state.pulledPosts);
-  	result.then( (resolve) => {
+      result.then( (resolve) => {
         if (resolve.length === 0 ) {
-  			this.setState({ endPulling: true })
-	    }
+        this.setState({ endPulling: true })
+      }
 
         resolve.forEach((doc) => {
 		    const time = moment(doc.data().date).fromNow();
@@ -307,14 +306,15 @@ export default class Home extends React.Component {
 									navigation={this.props.navigation}
 									scrolling={this.state.scrolling}
 									video={item._data.video ? true : false}
-						            gif={item._data.gif ? true : false}
-								    closeAlert={this.confirmReport.bind(this)}
-						            confirmPostRm={this.confirmPostRm.bind(this)}
+                  gif={item._data.gif ? true : false}
+                  closeAlert={this.confirmReport.bind(this)}
+                  confirmPostRm={this.confirmPostRm.bind(this)}
 									likes={item._data.likes}
 									liked_by={item._data.liked_by}
 									comments={item._data.comments}
 									new_post={item._data.newPost}
                   taggedUsers={item._data.taggedUsers}
+                  comum={item._data.UTFPRComum}
 							/>
               }
               refreshControl={
