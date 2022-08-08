@@ -47,11 +47,9 @@ export default class PostViewer extends React.Component {
 	  this.state.likes = this.props.likes;
 	  const liked = this.props.liked_by && this.props.liked_by.indexOf(heimdallr.user_id) !== - 1 ? true : false;
 	  this.setState({ liked: liked });
-    if (this.props.anonymous) {
-      const name = this.props.user.split(' ');
-      this.name = name[0];
-      this.lastName = name.length > 1 ? ` ${name[1]}` : null;
-    }
+    const name = this.props.user.split(' ');
+    this.name = name[0];
+    this.lastName = name.length > 1 ? ` ${name[1]}` : null;
 
 	  if (this.props.images) {
 	  	this.props.images.forEach((img) => {
