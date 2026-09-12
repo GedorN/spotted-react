@@ -18,7 +18,6 @@ import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage;
-import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import io.invertase.firebase.functions.RNFirebaseFunctionsPackage;
 import io.invertase.firebase.instanceid.RNFirebaseInstanceIdPackage;
@@ -49,7 +48,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             packages.add(new RNFirebaseAnalyticsPackage());
             packages.add(new RNFirebaseAuthPackage());
             packages.add(new RNFirebaseRemoteConfigPackage());
-            packages.add(new RNFirebaseCrashlyticsPackage());
             packages.add(new RNFirebaseDatabasePackage());
             packages.add(new RNFirebaseFirestorePackage());
             packages.add(new RNFirebaseFunctionsPackage());

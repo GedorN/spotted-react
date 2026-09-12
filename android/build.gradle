@@ -11,16 +11,12 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven {
-          url 'https://maven.fabric.io/public'
-        }
         maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath('com.android.tools.build:gradle:3.6.0')
         classpath 'com.google.gms:google-services:4.3.3'
         classpath 'com.google.firebase:perf-plugin:1.3.1'
-        classpath 'io.fabric.tools:gradle:1.31.0'
         classpath('com.android.support:multidex:1.0.3')
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -41,5 +37,20 @@ allprojects {
         }
         google()
         jcenter()
+        // jcenter() foi desativado pelo Bintray em 2022; este mirror ainda serve
+        // artefatos antigos publicados lá (ex: com.yqritc:android-scalablevideoview,
+        // dependência nativa do react-native-video que não existe em nenhum outro repo).
+        maven { url "https://maven.aliyun.com/repository/jcenter" }
+    }
+
+    // Vários módulos nativos antigos declaram 'com.facebook.react:react-native:+'.
+    // Isso funcionava porque só o repositório local (node_modules/react-native/android)
+    // publicava esse groupId; hoje o Maven Central também publica versões (bem mais
+    // novas e binariamente incompatíveis) sob o mesmo nome, e o '+' pega a mais alta
+    // disponível em qualquer repo. Forçar a versão instalada evita resolver a errada.
+    configurations.all {
+        resolutionStrategy {
+            force "com.facebook.react:react-native:0.66.4"
+        }
     }
 }
