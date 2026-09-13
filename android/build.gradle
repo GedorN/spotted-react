@@ -1,56 +1,21 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext {
-        buildToolsVersion = "28.0.3"
-        minSdkVersion = 21
-        compileSdkVersion = 29
-        targetSdkVersion = 30
-        supportLibVersion = "28.0.0"
+        buildToolsVersion = "37.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 37
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.2.0"
     }
     repositories {
         google()
-        jcenter()
-        maven { url "https://jitpack.io" }
+        mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:3.6.0')
-        classpath 'com.google.gms:google-services:4.3.3'
-        classpath 'com.google.firebase:perf-plugin:1.3.1'
-        classpath('com.android.support:multidex:1.0.3')
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
 
-allprojects {
-    repositories {
-        mavenLocal()
-        maven { url "https://jitpack.io" }
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
-        }
-        maven {
-            // Android JSC is installed from npm
-            url("$rootDir/../node_modules/jsc-android/dist")
-        }
-        google()
-        jcenter()
-        // jcenter() foi desativado pelo Bintray em 2022; este mirror ainda serve
-        // artefatos antigos publicados lá (ex: com.yqritc:android-scalablevideoview,
-        // dependência nativa do react-native-video que não existe em nenhum outro repo).
-        maven { url "https://maven.aliyun.com/repository/jcenter" }
-    }
-
-    // Vários módulos nativos antigos declaram 'com.facebook.react:react-native:+'.
-    // Isso funcionava porque só o repositório local (node_modules/react-native/android)
-    // publicava esse groupId; hoje o Maven Central também publica versões (bem mais
-    // novas e binariamente incompatíveis) sob o mesmo nome, e o '+' pega a mais alta
-    // disponível em qualquer repo. Forçar a versão instalada evita resolver a errada.
-    configurations.all {
-        resolutionStrategy {
-            force "com.facebook.react:react-native:0.66.4"
-        }
-    }
-}
+apply plugin: "com.facebook.react.rootproject"
