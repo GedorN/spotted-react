@@ -13,12 +13,25 @@ export default function SignUpStep1Screen({
 }: RootScreenProps<'SignUpStep1'>) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | undefined>();
+
+  const handleNext = () => {
+    if (!name.trim() || !email.trim()) {
+      setError('Preencha seu nome e email institucional.');
+      return;
+    }
+
+    navigation.navigate('SignUpStep2', {
+      name: name.trim(),
+      email: email.trim(),
+    });
+  };
 
   return (
     <AuthLayout
       headerHeight={132}
       header={
-        <StepHeader title="Criar conta" step="1 / 3" onBack={navigation.goBack} />
+        <StepHeader title="Criar conta" step="1 / 2" onBack={navigation.goBack} />
       }
     >
       <Pressable style={styles.photoRow}>
@@ -40,23 +53,27 @@ export default function SignUpStep1Screen({
           placeholder="Maria Alves"
           autoCapitalize="words"
           value={name}
-          onChangeText={setName}
+          onChangeText={value => {
+            setName(value);
+            setError(undefined);
+          }}
         />
         <Field
           label="EMAIL INSTITUCIONAL"
           placeholder="maria.alves@alunos.utfpr.edu.br"
           keyboardType="email-address"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={value => {
+            setEmail(value);
+            setError(undefined);
+          }}
+          error={error}
         />
       </View>
 
       <View style={styles.footer}>
-        <StepProgress current={1} />
-        <Button
-          title="Avançar"
-          onPress={() => navigation.navigate('SignUpStep2')}
-        />
+        <StepProgress current={1} total={2} />
+        <Button title="Avançar" onPress={handleNext} />
       </View>
     </AuthLayout>
   );

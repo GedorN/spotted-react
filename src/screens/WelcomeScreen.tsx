@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import AuthLayout from '../components/AuthLayout';
 import Button from '../components/Button';
 import Logo from '../components/Logo';
-import type { RootScreenProps } from '../navigation/types';
 import { colors, fonts } from '../theme';
+import { signOut } from '../services/firebase/auth';
 
 // Tela generica pos-login. O feed real entra aqui numa proxima etapa.
-export default function WelcomeScreen({ navigation }: RootScreenProps<'Welcome'>) {
+export default function WelcomeScreen() {
+  const [leaving, setLeaving] = useState(false);
+  const [error, setError] = useState<string>();
+
+  const handleSignOut = async () => {
+    if (leaving) {
+      return;
+    }
+
+    setError(undefined);
+    setLeaving(true);
+    try {
+      await signOut();
+    } catch {
+      setError('Não foi possível sair da conta. Tente novamente.');
+    } finally {
+      setLeaving(false);
+    }
+  };
+
   return (
     <AuthLayout
       headerHeight={300}
@@ -24,13 +43,13 @@ export default function WelcomeScreen({ navigation }: RootScreenProps<'Welcome'>
         vão aparecer aqui.
       </Text>
 
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
       <View style={styles.footer}>
         <Button
-          title="Sair"
+          title={leaving ? 'Saindo...' : 'Sair'}
           variant="secondary"
-          onPress={() =>
-            navigation.reset({ index: 0, routes: [{ name: 'Login' }] })
-          }
+          onPress={leaving ? undefined : handleSignOut}
         />
       </View>
     </AuthLayout>
@@ -66,6 +85,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 23,
     color: colors.muted,
+  },
+  error: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.error,
+    marginTop: 16,
   },
   footer: {
     marginTop: 'auto',

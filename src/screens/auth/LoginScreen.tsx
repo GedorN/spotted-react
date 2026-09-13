@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -14,26 +14,31 @@ import Logo from '../../components/Logo';
 import PasswordToggle from '../../components/PasswordToggle';
 import type { RootScreenProps } from '../../navigation/types';
 import { colors, fonts, radius } from '../../theme';
-
-const FAKE_CHECK_MS = 1200;
+import { authErrorMessage, signIn } from '../../services/firebase/auth';
 
 export default function LoginScreen({ navigation }: RootScreenProps<'Login'>) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [error, setError] = useState<string | undefined>();
 
-  // Sem verificacao real: mostra o modal "perguntando ao servidor" e segue para a tela de boas-vindas.
-  useEffect(() => {
-    if (!checking) {
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      setError('Preencha email e senha para entrar.');
       return;
     }
-    const timer = setTimeout(() => {
+
+    setError(undefined);
+    setChecking(true);
+    try {
+      await signIn(email, password);
+    } catch (requestError) {
+      setError(authErrorMessage(requestError));
+    } finally {
       setChecking(false);
-      navigation.reset({ index: 0, routes: [{ name: 'Welcome' }] });
-    }, FAKE_CHECK_MS);
-    return () => clearTimeout(timer);
-  }, [checking, navigation]);
+    }
+  };
 
   return (
     <AuthLayout
@@ -54,13 +59,17 @@ export default function LoginScreen({ navigation }: RootScreenProps<'Login'>) {
           autoComplete="email"
           value={email}
           onChangeText={setEmail}
+          autoCapitalize="none"
         />
         <Field
           label="SENHA"
           placeholder="••••••••"
           secureTextEntry={!showPassword}
           value={password}
-          onChangeText={setPassword}
+          onChangeText={value => {
+            setPassword(value);
+            setError(undefined);
+          }}
           right={
             <PasswordToggle
               visible={showPassword}
@@ -70,6 +79,8 @@ export default function LoginScreen({ navigation }: RootScreenProps<'Login'>) {
         />
       </View>
 
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
       <Pressable
         style={styles.forgot}
         onPress={() => navigation.navigate('PasswordRestore')}
@@ -78,7 +89,7 @@ export default function LoginScreen({ navigation }: RootScreenProps<'Login'>) {
       </Pressable>
 
       <View style={styles.footer}>
-        <Button title="Entrar" onPress={() => setChecking(true)} />
+        <Button title="Entrar" onPress={handleLogin} />
         <View style={styles.signupRow}>
           <Text style={styles.signupText}>Não tem conta? </Text>
           <Pressable onPress={() => navigation.navigate('SignUpStep1')}>
@@ -92,7 +103,7 @@ export default function LoginScreen({ navigation }: RootScreenProps<'Login'>) {
           <View style={styles.modal}>
             <ActivityIndicator size="large" color={colors.brand} />
             <Text style={styles.modalText}>
-              Perguntando ao nosso servidor se você pode entrar...
+              Entrando na sua conta...
             </Text>
           </View>
         </View>
@@ -142,6 +153,13 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     paddingTop: 32,
     gap: 12,
+  },
+  error: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.error,
+    marginTop: 16,
   },
   signupRow: {
     flexDirection: 'row',

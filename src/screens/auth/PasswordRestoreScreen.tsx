@@ -1,15 +1,33 @@
 import React, { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import AuthLayout from '../../components/AuthLayout';
 import Button from '../../components/Button';
 import Field from '../../components/Field';
 import type { RootScreenProps } from '../../navigation/types';
 import { colors, fonts, spacing } from '../../theme';
+import { authErrorMessage, requestPasswordReset } from '../../services/firebase/auth';
 
 export default function PasswordRestoreScreen({
   navigation,
 }: RootScreenProps<'PasswordRestore'>) {
   const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | undefined>();
+
+  const handlePasswordReset = async () => {
+    if (!email.trim()) {
+      setError('Digite seu email institucional.');
+      return;
+    }
+
+    setError(undefined);
+    try {
+      await requestPasswordReset(email);
+      Alert.alert('Email enviado', 'Enviamos as instruções para redefinir sua senha.');
+      navigation.goBack();
+    } catch (requestError) {
+      setError(authErrorMessage(requestError));
+    }
+  };
 
   return (
     <AuthLayout
@@ -41,11 +59,15 @@ export default function PasswordRestoreScreen({
         placeholder="seu.nome@alunos.utfpr.edu.br"
         keyboardType="email-address"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={value => {
+          setEmail(value);
+          setError(undefined);
+        }}
+        error={error}
       />
 
       <View style={styles.footer}>
-        <Button title="Recuperar" onPress={navigation.goBack} />
+        <Button title="Recuperar" onPress={handlePasswordReset} />
         <Button title="Cancelar" variant="secondary" onPress={navigation.goBack} />
       </View>
     </AuthLayout>
