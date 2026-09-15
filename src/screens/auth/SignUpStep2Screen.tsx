@@ -13,12 +13,18 @@ export default function SignUpStep2Screen({
   navigation,
   route,
 }: RootScreenProps<'SignUpStep2'>) {
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const [creating, setCreating] = useState(false);
 
   const handleCreateAccount = async () => {
+    if (!/^\+[1-9]\d{7,14}$/.test(phone.replace(/[\s()-]/g, ''))) {
+      setError('Informe o celular no formato internacional, como +5541999999999.');
+      return;
+    }
+
     if (password.length < 6) {
       setError('Use uma senha com pelo menos 6 caracteres.');
       return;
@@ -28,6 +34,10 @@ export default function SignUpStep2Screen({
     setCreating(true);
     try {
       await createAccount(route.params.name, route.params.email, password);
+      navigation.navigate('SignUpStep3', {
+        phone: phone.replace(/[\s()-]/g, ''),
+        flow: 'enrollment',
+      });
     } catch (requestError) {
       setError(authErrorMessage(requestError));
     } finally {
@@ -43,14 +53,17 @@ export default function SignUpStep2Screen({
       }
     >
       <View style={styles.fields}>
-        {/* Autenticação por telefone/SMS será reativada na próxima etapa.
         <Field
           label="CELULAR"
-          placeholder="(41) 99804-6357"
+          placeholder="+55 41 99804-6357"
           keyboardType="phone-pad"
+          autoComplete="tel"
           value={phone}
-          onChangeText={setPhone}
-        /> */}
+          onChangeText={value => {
+            setPhone(value);
+            setError(undefined);
+          }}
+        />
         <Field
           label="SENHA"
           placeholder="••••••••"

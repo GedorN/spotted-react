@@ -18,7 +18,22 @@ module.exports = {
   createUserWithEmailAndPassword: jest.fn(),
   updateProfile: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
+  sendEmailVerification: jest.fn(),
   sendPasswordResetEmail: jest.fn(),
+  reload: jest.fn(),
+  multiFactor: jest.fn(() => ({
+    getSession: jest.fn(),
+    enroll: jest.fn(),
+  })),
+  getMultiFactorResolver: jest.fn(),
+  PhoneAuthProvider: class {
+    static credential = jest.fn();
+    verifyPhoneNumber = jest.fn();
+  },
+  PhoneMultiFactorGenerator: {
+    FACTOR_ID: 'phone',
+    assertion: jest.fn(),
+  },
   signOut,
   __emitAuthState(user) {
     auth.currentUser = user;

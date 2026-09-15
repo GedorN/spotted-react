@@ -5,9 +5,10 @@ import Button from '../components/Button';
 import Logo from '../components/Logo';
 import { colors, fonts } from '../theme';
 import { signOut } from '../services/firebase/auth';
+import type { RootScreenProps } from '../navigation/types';
 
 // Tela generica pos-login. O feed real entra aqui numa proxima etapa.
-export default function WelcomeScreen() {
+export default function WelcomeScreen({ navigation }: RootScreenProps<'Welcome'>) {
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -20,6 +21,7 @@ export default function WelcomeScreen() {
     setLeaving(true);
     try {
       await signOut();
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     } catch {
       setError('Não foi possível sair da conta. Tente novamente.');
     } finally {

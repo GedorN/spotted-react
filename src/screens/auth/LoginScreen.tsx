@@ -14,7 +14,12 @@ import Logo from '../../components/Logo';
 import PasswordToggle from '../../components/PasswordToggle';
 import type { RootScreenProps } from '../../navigation/types';
 import { colors, fonts, radius } from '../../theme';
-import { authErrorMessage, signIn } from '../../services/firebase/auth';
+import {
+  authErrorMessage,
+  isMfaRequiredError,
+  signIn,
+  startSmsMfaSignIn,
+} from '../../services/firebase/auth';
 
 export default function LoginScreen({ navigation }: RootScreenProps<'Login'>) {
   const [email, setEmail] = useState('');
@@ -33,8 +38,18 @@ export default function LoginScreen({ navigation }: RootScreenProps<'Login'>) {
     setChecking(true);
     try {
       await signIn(email, password);
+      navigation.reset({ index: 0, routes: [{ name: 'Welcome' }] });
     } catch (requestError) {
-      setError(authErrorMessage(requestError));
+      if (isMfaRequiredError(requestError)) {
+        try {
+          const challenge = await startSmsMfaSignIn(requestError);
+          navigation.navigate('SignUpStep3', challenge);
+        } catch (mfaError) {
+          setError(authErrorMessage(mfaError));
+        }
+      } else {
+        setError(authErrorMessage(requestError));
+      }
     } finally {
       setChecking(false);
     }
